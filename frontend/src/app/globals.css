@@ -1,0 +1,40 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #fffaf3;
+  color: #2e2118;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  width: min(720px, calc(100% - 40px));
+  margin: 15vh auto 0;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1;
+}
+
+p {
+  max-width: 60ch;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  color: #a34717;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
