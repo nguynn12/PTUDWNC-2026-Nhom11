@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Culinary Blog PostgreSQL",
+      "Group": "Development",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "culinary_blog_dev",
+      "Username": "culinary_blog",
+      "SSLMode": "prefer"
+    }
+  }
+}
