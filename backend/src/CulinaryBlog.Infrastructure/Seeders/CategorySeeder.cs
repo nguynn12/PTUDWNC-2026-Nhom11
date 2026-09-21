@@ -43,25 +43,53 @@ public static class CategorySeeder
         "Nước chấm & Sốt"
     ];
 
+    private static readonly string[] DescriptionTemplates =
+    [
+        "Tổng hợp các công thức {0} thơm ngon, chuẩn vị truyền thống cho bữa cơm gia đình.",
+        "Khám phá thế giới {0} phong phú, hấp dẫn và dễ dàng thực hiện ngay tại gian bếp của bạn.",
+        "Hướng dẫn chi tiết cách chế biến {0} thanh đạm, bổ dưỡng và tốt cho sức khỏe cả gia đình.",
+        "Bộ sưu tập {0} đặc sắc, kết hợp tinh tế giữa nguyên liệu tươi ngon và gia vị tròn vị.",
+        "Tuyển chọn {0} tuyệt hảo dành cho dịp sum họp cuối tuần, tiệc tùng và chiêu đãi bạn bè.",
+        "Cẩm nang nấu {0} chuẩn vị với các bí quyết chế biến đơn giản, ngon miệng và đẹp mắt.",
+        "Tuyển tập công thức {0} độc đáo, kích thích vị giác và mang lại trải nghiệm ẩm thực trọn vẹn.",
+        "Gợi ý thực đơn {0} nhanh gọn, thơm ngon và giàu giá trị dinh dưỡng cho mọi bữa ăn."
+    ];
+
+    /// <summary>
+    /// Danh sách 20 CategoryId cố định để đồng bộ khóa ngoại liên kết với RecipeSeeder (Thành viên 3).
+    /// </summary>
+    public static readonly IReadOnlyList<Guid> DeterministicIds = Enumerable.Range(1, 20)
+        .Select(i => Guid.Parse($"00000000-0000-0000-0000-{i:D12}"))
+        .ToList();
+
     /// <summary>
     /// Tạo đối tượng Faker để cấu hình quy tắc sinh dữ liệu ngẫu nhiên cho Category.
     /// </summary>
     public static Faker<Category> CreateFaker()
     {
-        var categoryIndex = 0;
-
         return new Faker<Category>("vi")
-            .RuleFor(c => c.Id, f => f.Random.Guid())
+            .RuleFor(c => c.Id, f =>
+            {
+                var idx = f.IndexFaker;
+                return idx < DeterministicIds.Count
+                    ? DeterministicIds[idx]
+                    : f.Random.Guid();
+            })
             .RuleFor(c => c.Name, f =>
             {
-                if (categoryIndex < CategoryBaseNames.Length)
+                var idx = f.IndexFaker;
+                if (idx < CategoryBaseNames.Length)
                 {
-                    return CategoryBaseNames[categoryIndex++];
+                    return CategoryBaseNames[idx];
                 }
-                return $"{f.Commerce.Department()} Ẩm Thực {f.IndexFaker}";
+                return $"{f.Commerce.Department()} Ẩm Thực {idx + 1}";
             })
             .RuleFor(c => c.Slug, (f, c) => Slugify(c.Name))
-            .RuleFor(c => c.Description, f => f.Lorem.Sentence(f.Random.Number(8, 15)))
+            .RuleFor(c => c.Description, (f, c) =>
+            {
+                var template = f.PickRandom(DescriptionTemplates);
+                return string.Format(template, c.Name.ToLowerInvariant());
+            })
             .RuleFor(c => c.ImageUrl, f => $"https://picsum.photos/seed/{f.Random.AlphaNumeric(8)}/800/600")
             .RuleFor(c => c.OrderIndex, f => f.IndexFaker + 1)
             .RuleFor(c => c.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
