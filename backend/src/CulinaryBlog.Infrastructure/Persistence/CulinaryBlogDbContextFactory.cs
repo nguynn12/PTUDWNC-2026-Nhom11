@@ -40,7 +40,10 @@ public class CulinaryBlogDbContextFactory : IDesignTimeDbContextFactory<Culinary
         connectionString ??= "Host=localhost;Port=5432;Database=culinary_blog_dev;Username=culinary_blog;Password=culinary_blog_dev";
 
         var optionsBuilder = new DbContextOptionsBuilder<CulinaryBlogDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(connectionString, b =>
+        {
+            b.MigrationsAssembly(typeof(CulinaryBlogDbContext).Assembly.FullName);
+        });
 
         return new CulinaryBlogDbContext(optionsBuilder.Options);
     }

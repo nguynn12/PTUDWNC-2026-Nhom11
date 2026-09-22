@@ -71,12 +71,6 @@ public class Recipe : BaseEntity
     public DateTimeOffset? PublishedAt { get; set; }
 
     /// <summary>
-    /// Thời điểm công thức bị xóa mềm.
-    /// Dùng cho background job PurgeExpiredRecipesJob xóa vĩnh viễn sau 30 ngày theo A1.
-    /// </summary>
-    public DateTimeOffset? DeletedAt { get; set; }
-
-    /// <summary>
     /// Thông tin giá trị dinh dưỡng đính kèm (Value Object / Owned Entity).
     /// </summary>
     public RecipeNutrition? Nutrition { get; set; }

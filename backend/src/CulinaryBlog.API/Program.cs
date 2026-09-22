@@ -26,6 +26,7 @@ if (app.Environment.IsDevelopment())
     {
         await initialiser.InitialiseAsync();
         await initialiser.SeedAsync();
+        await CategorySeeder.SeedAsync(dbContext);
         await RecipeSeeder.SeedAsync(dbContext);
     }
 }
