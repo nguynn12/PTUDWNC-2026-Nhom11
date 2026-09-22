@@ -12,12 +12,12 @@ using CulinaryBlog.Domain.ValueObjects;
 public class Recipe : BaseEntity
 {
     /// <summary>
-    /// Tiêu đề công thức nấu ăn (tối đa 150 ký tự, bắt buộc).
+    /// Tiêu đề công thức nấu ăn (tối đa 200 ký tự, bắt buộc).
     /// </summary>
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
-    /// Chuỗi định danh URL-friendly duy nhất (tối đa 160 ký tự, bắt buộc).
+    /// Chuỗi định danh URL-friendly duy nhất (tối đa 220 ký tự, bắt buộc).
     /// Sau khi xuất bản lần đầu (PublishedAt != null), slug trở thành bất biến theo C7.
     /// </summary>
     public string Slug { get; set; } = string.Empty;
@@ -26,11 +26,6 @@ public class Recipe : BaseEntity
     /// Mô tả ngắn gọn hoặc tóm tắt hương vị món ăn (tối đa 500 ký tự).
     /// </summary>
     public string Description { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Hướng dẫn tổng quan hoặc ghi chú chế biến bổ sung.
-    /// </summary>
-    public string Instructions { get; set; } = string.Empty;
 
     /// <summary>
     /// Thời gian sơ chế nguyên liệu (đơn vị: phút, bắt buộc > 0 theo E4).

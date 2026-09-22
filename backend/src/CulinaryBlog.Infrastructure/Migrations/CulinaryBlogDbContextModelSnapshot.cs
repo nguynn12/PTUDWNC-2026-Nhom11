@@ -46,14 +46,11 @@ namespace CulinaryBlog.Infrastructure.Migrations
                         .HasColumnType("timestamptz");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("Difficulty")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Instructions")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<short>("Difficulty")
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -71,18 +68,18 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(160)
-                        .HasColumnType("character varying(160)");
+                        .HasMaxLength(220)
+                        .HasColumnType("character varying(220)");
 
-                    b.Property<int>("Status")
+                    b.Property<short>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)0);
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamptz");
@@ -193,12 +190,10 @@ namespace CulinaryBlog.Infrastructure.Migrations
                                 .HasColumnType("numeric(8,2)")
                                 .HasColumnName("Nutrition_Sodium");
 
-                            b1.Property<string>("Source")
-                                .IsRequired()
+                            b1.Property<short>("Source")
                                 .ValueGeneratedOnAdd()
-                                .HasMaxLength(20)
-                                .HasColumnType("character varying(20)")
-                                .HasDefaultValue("Manual")
+                                .HasColumnType("smallint")
+                                .HasDefaultValue((short)0)
                                 .HasColumnName("Nutrition_Source");
 
                             b1.HasKey("RecipeId");

@@ -21,20 +21,16 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
 
         // 3. Các thuộc tính cơ bản
         builder.Property(r => r.Title)
-            .HasMaxLength(150)
+            .HasMaxLength(200)
             .IsRequired();
 
         builder.Property(r => r.Slug)
-            .HasMaxLength(160)
+            .HasMaxLength(220)
             .IsRequired();
 
         builder.Property(r => r.Description)
-            .HasMaxLength(500)
-            .IsRequired(false);
-
-        builder.Property(r => r.Instructions)
             .HasColumnType("text")
-            .IsRequired(false);
+            .IsRequired(true);
 
         builder.Property(r => r.PrepTimeMinutes)
             .IsRequired();
@@ -46,11 +42,11 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired();
 
         builder.Property(r => r.Difficulty)
-            .HasConversion<int>()
+            .HasConversion<short>()
             .IsRequired();
 
         builder.Property(r => r.Status)
-            .HasConversion<int>()
+            .HasConversion<short>()
             .HasDefaultValue(RecipeStatus.Draft)
             .IsRequired();
 
@@ -124,8 +120,7 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
                 .IsRequired(false);
 
             nutrition.Property(n => n.Source)
-                .HasConversion<string>()
-                .HasMaxLength(20)
+                .HasConversion<short>()
                 .HasColumnName("Nutrition_Source")
                 .HasDefaultValue(NutritionSource.Manual)
                 .IsRequired();

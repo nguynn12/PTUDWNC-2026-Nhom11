@@ -99,7 +99,6 @@ public static class RecipeSeeder
                 Title = title,
                 Slug = slug,
                 Description = $"Công thức nấu {title} thơm ngon, chuẩn vị với các bước hướng dẫn chi tiết, dễ làm tại nhà.",
-                Instructions = $"Tổng quan các bước thực hiện món {title}: chuẩn bị nguyên liệu sạch, sơ chế kỹ lưỡng, nêm nếm gia vị vừa miệng và trang trí bắt mắt khi dọn ra đĩa.",
                 PrepTimeMinutes = prepTime,
                 CookTimeMinutes = cookTime,
                 Servings = random.Next(2, 8),
