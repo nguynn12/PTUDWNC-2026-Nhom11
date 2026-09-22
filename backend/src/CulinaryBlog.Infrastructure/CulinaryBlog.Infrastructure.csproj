@@ -5,6 +5,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <!-- IdentityDbContext<,,> + AddEntityFrameworkStores(). Kéo theo
+         Microsoft.Extensions.Identity.Core (AddIdentityCore, UserManager<T>, RoleManager<T>)
+         nên KHÔNG cần thêm FrameworkReference tới Microsoft.AspNetCore.App. -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <!-- Sinh dữ liệu người dùng mẫu ngẫu nhiên — ApplicationDbContextInitialiser -->
+    <PackageReference Include="Bogus" />
+    <!-- IDesignTimeDbContextFactory cho dotnet-ef (CulinaryBlogDbContextFactory.cs) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
-
