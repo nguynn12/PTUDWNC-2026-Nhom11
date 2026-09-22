@@ -3,13 +3,20 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <!-- Dùng để seed dữ liệu ngẫu nhiên (ApplicationDbContextInitialiser) — phiên bản chưa
+         xác minh qua mạng (môi trường này không truy cập được nuget.org); nếu
+         `dotnet restore` báo lỗi resolve, chạy `dotnet add package Bogus` (không ghi version)
+         để lấy version mới nhất rồi cập nhật lại dòng này. -->
+    <PackageVersion Include="Bogus" Version="35.6.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
-    <PackageVersion Include="Bogus" Version="35.6.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,17 @@
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CulinaryBlog.Infrastructure.Persistence;
 
 /// <summary>
-/// DbContext chính của ứng dụng CulinaryBlog, quản lý kết nối PostgreSQL và ánh xạ các thực thể.
+/// DbContext chính của ứng dụng CulinaryBlog, kế thừa IdentityDbContext để quản lý
+/// xác thực ASP.NET Core Identity và các thực thể nghiệp vụ (Recipe, RefreshToken,...).
 /// </summary>
 public sealed class CulinaryBlogDbContext(DbContextOptions<CulinaryBlogDbContext> options)
-    : DbContext(options), IApplicationDbContext
+    : IdentityDbContext<ApplicationUser, IdentityRole, string>(options), IApplicationDbContext
 {
     /// <summary>
     /// Bảng quản lý các công thức nấu ăn.
@@ -20,9 +23,14 @@ public sealed class CulinaryBlogDbContext(DbContextOptions<CulinaryBlogDbContext
     /// </summary>
     public DbSet<RecipeSlugHistory> RecipeSlugHistories => Set<RecipeSlugHistory>();
 
+    /// <summary>
+    /// Bảng lưu trữ Refresh Token của người dùng.
+    /// </summary>
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CulinaryBlogDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CulinaryBlogDbContext).Assembly);
     }
 }

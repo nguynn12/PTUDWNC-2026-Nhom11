@@ -1,6 +1,7 @@
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
+using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,14 +15,17 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-// Tự động Migrate và Seed dữ liệu ngẫu nhiên khi khởi động môi trường Development
+// Tự động Migrate và Seed dữ liệu mẫu (User/Role/Recipe) ở môi trường Development
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
+    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+
     if (dbContext.Database.IsRelational())
     {
-        await dbContext.Database.MigrateAsync();
+        await initialiser.InitialiseAsync();
+        await initialiser.SeedAsync();
         await RecipeSeeder.SeedAsync(dbContext);
     }
 }

@@ -1,2 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk" />
-
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <!-- Chỉ để dùng IdentityUser<TKey>/IdentityRole<TKey> làm base class cho
+         ApplicationUser — package này KHÔNG kéo theo ASP.NET Core web framework. -->
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
+  </ItemGroup>
+</Project>
