@@ -2,6 +2,58 @@
 
 Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng nền tảng blog ẩm thực và chia sẻ công thức nấu ăn.
 
+## Phân công bài tập Lab - Buổi 1
+
+**Mục tiêu:** Đọc và phân tích tài liệu SRS, tìm hiểu các chức năng cần xây dựng, xác định mô hình dữ liệu và các mối quan hệ chính của hệ thống; đồng thời rà soát các điểm chưa rõ hoặc mâu thuẫn trong đặc tả để chuẩn bị cho giai đoạn triển khai.
+
+| Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên | Nguyễn Phú Quý |
+|---|---|---|---|
+| Phân tích nhóm chức năng **Tài khoản và xác thực**. | Phân tích nhóm chức năng **Danh mục và tra cứu công thức**. | Phân tích nhóm chức năng **Vòng đời công thức**. | Phân tích nhóm chức năng **Nội dung chi tiết và hình ảnh công thức**. |
+| Xác định các dữ liệu chính liên quan đến `ApplicationUser`, `RefreshToken` và vai trò người dùng. | Xác định các dữ liệu chính liên quan đến `Category` và các yêu cầu tìm kiếm, lọc, sắp xếp Recipe. | Xác định các dữ liệu chính liên quan đến `Recipe`, trạng thái Recipe, thông tin dinh dưỡng và lịch sử Slug. | Xác định các dữ liệu chính liên quan đến `RecipeIngredient`, `RecipeStep`, `RecipeImage`. |
+| Phân tích mối quan hệ giữa User và Recipe; đối chiếu các yêu cầu xác thực, phân quyền trong SRS. | Phân tích mối quan hệ giữa Category và Recipe; đối chiếu các yêu cầu truy vấn dữ liệu trong SRS. | Phân tích quan hệ giữa Recipe với User, Category và các dữ liệu con; xác định các quy tắc lifecycle của Recipe. | Phân tích quan hệ giữa Recipe với Ingredient, Step và Image; xác định các ràng buộc dữ liệu cần thiết. |
+| Ghi nhận các điểm chưa rõ hoặc mâu thuẫn liên quan đến Identity, Role và cấu trúc User. | Ghi nhận các điểm chưa rõ hoặc mâu thuẫn liên quan đến Category và Search. | Ghi nhận các điểm chưa rõ hoặc mâu thuẫn liên quan đến Recipe, concurrency, slug và lifecycle. | Ghi nhận các điểm chưa rõ hoặc mâu thuẫn liên quan đến Ingredient, Step, Image và File Storage. |
+
+### Công việc chung của cả nhóm
+
+- Đọc và rà soát toàn bộ tài liệu SRS.
+- Thống nhất cách phân chia các nhóm chức năng giữa 4 thành viên.
+- Xác định các Entity chính và mối quan hệ giữa các Entity.
+- Đối chiếu yêu cầu chức năng với Data Model và API được mô tả trong SRS.
+- Tổng hợp các điểm mâu thuẫn, chưa rõ hoặc cần nhóm thống nhất trước khi code.
+- Tìm hiểu kiến trúc **Clean Architecture** và cấu trúc các project `Domain`, `Application`, `Infrastructure`, `API`.
+- Chuẩn bị môi trường phát triển gồm .NET SDK, Git, VS Code và các công cụ cần thiết cho những buổi tiếp theo.
+
+## Phân công bài tập Lab - Buổi 2
+
+**Mục tiêu:** Bắt đầu triển khai hệ thống từ tài liệu SRS đã phân tích ở Buổi 1. Hoàn thiện cấu trúc Backend theo Clean Architecture, xây dựng mô hình dữ liệu, tạo Migration và tạo cơ sở dữ liệu PostgreSQL có dữ liệu mẫu theo yêu cầu Lab 2.
+
+| Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên | Nguyễn Phú Quý |
+|---|---|---|---|
+| Hoàn thiện cấu trúc Backend theo **Clean Architecture** và kiểm tra quan hệ giữa các project `Domain`, `Application`, `Infrastructure`, `API`. | Xây dựng Entity `Category` và lớp `CategoryConfiguration`. | Xây dựng các Entity và Enum chính của Recipe gồm `Recipe`, `RecipeNutrition`, `RecipeSlugHistory`, `RecipeStatus`, `RecipeDifficulty`. | Xây dựng các Entity chi tiết của Recipe gồm `RecipeIngredient`, `RecipeStep`, `RecipeImage`. |
+| Cài đặt và kiểm tra các thư viện cần thiết cho **EF Core, PostgreSQL, Identity và Bogus**. | Thiết lập các ràng buộc, index và quan hệ giữa `Category` và `Recipe`. | Xây dựng `RecipeConfiguration`, các ràng buộc dữ liệu, index và quan hệ của `Recipe` với User/Category. | Xây dựng Configuration và các ràng buộc cho Ingredient, Step, Image; thiết lập quan hệ với `Recipe`. |
+| Xây dựng `ApplicationUser`, `RefreshToken` và cấu hình dữ liệu liên quan đến tài khoản người dùng. | Xây dựng lớp tạo dữ liệu mẫu cho Category, đảm bảo có ít nhất **20 Categories**. | Xây dựng lớp tạo dữ liệu mẫu cho Recipe, đảm bảo có ít nhất **100 Recipes** và mỗi Recipe được gán Author/Category hợp lệ. | Xây dựng dữ liệu mẫu cho nội dung Recipe, đảm bảo mỗi Recipe có ít nhất **10 Ingredients** và **5 Steps**. |
+| Xây dựng dữ liệu mẫu cho tài khoản `Author` và `Admin` để phục vụ liên kết dữ liệu Recipe. | Kiểm tra dữ liệu Category và quan hệ với các Recipe được sinh tự động. | Kiểm tra dữ liệu Recipe, trạng thái, thông tin dinh dưỡng và các quan hệ sau khi sinh dữ liệu. | Kiểm tra dữ liệu Ingredient, Step, Image và thứ tự của các dữ liệu con trong từng Recipe. |
+
+### Công việc chung của cả nhóm
+
+- Thống nhất mô hình dữ liệu và các Entity sau khi hoàn thành phân tích SRS ở Buổi 1.
+- Hoàn thiện cấu trúc Backend theo **Clean Architecture** gồm các project `Domain`, `Application`, `Infrastructure`, `API`.
+- Cài đặt và kiểm tra các thư viện cần thiết cho **Entity Framework Core, PostgreSQL, ASP.NET Core Identity và Bogus**.
+- Hoàn thiện lớp `CulinaryBlogDbContext` và đăng ký đầy đủ các `DbSet` cần thiết.
+- Ghép các Entity và lớp Configuration của 4 thành viên vào nhánh chung.
+- Kiểm tra các khóa chính, khóa ngoại, quan hệ, index và ràng buộc dữ liệu trước khi tạo Migration.
+- Tạo Migration đầu tiên cho toàn bộ cơ sở dữ liệu.
+- Chạy Migration để tạo cơ sở dữ liệu PostgreSQL từ các Entity và Configuration đã xây dựng.
+- Tích hợp các lớp tạo dữ liệu mẫu bằng Bogus.
+- Kiểm tra cơ sở dữ liệu có tối thiểu:
+  - **20 Categories**
+  - **100 Recipes**
+  - Mỗi Recipe có ít nhất **10 Ingredients**
+  - Mỗi Recipe có ít nhất **5 Steps**
+- Kiểm tra dữ liệu Recipe được liên kết đúng với Author, Category, Ingredient và Step.
+- Chạy `dotnet build` và đảm bảo project không có lỗi biên dịch trước khi merge vào nhánh `develop`.
+- Mỗi thành viên phải kiểm tra được Migration và database trên môi trường cá nhân sau khi đồng bộ mã nguồn.
+
 ## Công nghệ sử dụng
 
 - Backend: .NET 10 Minimal API, Entity Framework Core và PostgreSQL.
@@ -239,28 +291,3 @@ npm --prefix frontend run typecheck
 npm --prefix frontend run lint
 npm --prefix frontend run build
 ```
-
-## Phân công bài tập Lab - Buổi 1
-
-**Mục tiêu:** Đọc tài liệu SRS, xác định cấu trúc dữ liệu và hoàn thành cơ sở dữ liệu ban đầu của hệ thống.
-
-| Thành viên 1 | Thành viên 2 | Thành viên 3 | Thành viên 4 |
-|---|---|---|---|
-| Phân tích dữ liệu liên quan đến **người dùng và tài khoản**. | Phân tích dữ liệu liên quan đến **danh mục món ăn**. | Phân tích dữ liệu chính của **công thức**. | Phân tích dữ liệu chi tiết bên trong **công thức**. |
-| Xây dựng bảng `ApplicationUser`. | Xây dựng bảng `Category`. | Xây dựng bảng `Recipe`. | Xây dựng bảng `RecipeIngredient`. |
-| Xây dựng bảng `RefreshToken`. | Xác định mối liên hệ giữa `Category` và `Recipe`. | Xây dựng bảng `RecipeNutrition`. | Xây dựng bảng `RecipeStep`. |
-| Xác định mối liên hệ giữa người dùng và công thức. | Kiểm tra các dữ liệu cần thiết để sau này tìm kiếm, lọc và sắp xếp công thức. | Liên kết `Recipe` với người dùng và danh mục. | Xây dựng bảng `RecipeImage` và liên kết với `Recipe`. |
-| Chuẩn bị dữ liệu mẫu cho người dùng. | Chuẩn bị dữ liệu mẫu cho danh mục. | Chuẩn bị dữ liệu mẫu cho công thức. | Chuẩn bị dữ liệu mẫu cho nguyên liệu, bước nấu và hình ảnh. |
-
-
-## Phân công bài tập Lab - Buổi 2
-
-**Mục tiêu:** Bắt đầu triển khai hệ thống từ tài liệu SRS đã phân tích ở Buổi 1. Hoàn thiện cấu trúc Backend theo Clean Architecture, xây dựng mô hình dữ liệu, tạo Migration và tạo cơ sở dữ liệu PostgreSQL có dữ liệu mẫu theo yêu cầu Lab 2.
-
-| Thành viên 1 | Thành viên 2 | Thành viên 3 | Thành viên 4 |
-|---|---|---|---|
-| Hoàn thiện cấu trúc Backend theo **Clean Architecture** và kiểm tra quan hệ giữa các project `Domain`, `Application`, `Infrastructure`, `API`. | Xây dựng Entity và Configuration cho **Category**. | Xây dựng Entity chính của **Recipe**, gồm `Recipe`, `RecipeNutrition`, `RecipeSlugHistory`, `RecipeStatus`, `RecipeDifficulty`. | Xây dựng các Entity chi tiết của Recipe gồm `RecipeIngredient`, `RecipeStep`, `RecipeImage`. |
-| Cài đặt và kiểm tra các thư viện cần thiết cho **EF Core, PostgreSQL, Identity và Bogus**. | Thiết lập các ràng buộc, index và quan hệ giữa `Category` và `Recipe`. | Xây dựng `RecipeConfiguration`, các ràng buộc dữ liệu và quan hệ `Recipe` với User/Category. | Xây dựng Configuration và các ràng buộc cho Ingredient, Step, Image; thiết lập quan hệ với `Recipe`. |
-| Xây dựng `ApplicationUser`, `RefreshToken` và cấu hình dữ liệu liên quan đến tài khoản người dùng. | Xây dựng lớp tạo dữ liệu mẫu cho Category, đảm bảo có ít nhất **20 Categories**. | Xây dựng lớp tạo dữ liệu mẫu cho Recipe, đảm bảo có ít nhất **100 Recipes** và mỗi Recipe được gán Author/Category hợp lệ. | Xây dựng dữ liệu mẫu cho nội dung Recipe, đảm bảo mỗi Recipe có ít nhất **10 Ingredients** và **5 Steps**. |
-| Xây dựng dữ liệu mẫu cho tài khoản `Author` và `Admin` để phục vụ liên kết dữ liệu Recipe. | Kiểm tra dữ liệu Category và quan hệ với các Recipe được sinh tự động. | Kiểm tra dữ liệu Recipe, trạng thái, thông tin dinh dưỡng và các quan hệ sau khi sinh dữ liệu. | Kiểm tra dữ liệu Ingredient/Step/Image và thứ tự của các dữ liệu con trong từng Recipe. |
-
