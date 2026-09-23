@@ -33,3 +33,4 @@ Mỗi module chịu trách nhiệm xuyên suốt từ giao diện đến test. T
 - API version qua prefix `/api/v1`.
 - Cấu hình local có giá trị development mặc định; secret thật không được commit.
 - Migration được tạo sau khi chốt entity nền tảng, tránh migration rỗng hoặc schema giả định quá sớm.
+- Mâu thuẫn phát hiện trong SRS và quyết định xử lý được ghi lại tại [`docs/decisions/`](../decisions/README.md) — đọc trước khi implement bất kỳ module nào.
