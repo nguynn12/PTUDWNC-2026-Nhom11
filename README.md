@@ -255,3 +255,15 @@ npm --prefix frontend run build
 ## Ghi chú hiện tại
 
 Skeleton đã cấu hình kết nối PostgreSQL nhưng chưa tạo migration nghiệp vụ đầu tiên. Nhóm cần thống nhất entity nền tảng trước khi tạo và commit migration.
+
+## Phân công bài tập Lab - Buổi 2
+
+**Mục tiêu:** Bắt đầu triển khai hệ thống từ tài liệu SRS đã phân tích ở Buổi 1. Hoàn thiện cấu trúc Backend theo Clean Architecture, xây dựng mô hình dữ liệu, tạo Migration và tạo cơ sở dữ liệu PostgreSQL có dữ liệu mẫu theo yêu cầu Lab 2.
+
+| Thành viên 1 | Thành viên 2 | Thành viên 3 | Thành viên 4 |
+|---|---|---|---|
+| Hoàn thiện cấu trúc Backend theo **Clean Architecture** và kiểm tra quan hệ giữa các project `Domain`, `Application`, `Infrastructure`, `API`. | Xây dựng Entity và Configuration cho **Category**. | Xây dựng Entity chính của **Recipe**, gồm `Recipe`, `RecipeNutrition`, `RecipeSlugHistory`, `RecipeStatus`, `RecipeDifficulty`. | Xây dựng các Entity chi tiết của Recipe gồm `RecipeIngredient`, `RecipeStep`, `RecipeImage`. |
+| Cài đặt và kiểm tra các thư viện cần thiết cho **EF Core, PostgreSQL, Identity và Bogus**. | Thiết lập các ràng buộc, index và quan hệ giữa `Category` và `Recipe`. | Xây dựng `RecipeConfiguration`, các ràng buộc dữ liệu và quan hệ `Recipe` với User/Category. | Xây dựng Configuration và các ràng buộc cho Ingredient, Step, Image; thiết lập quan hệ với `Recipe`. |
+| Xây dựng `ApplicationUser`, `RefreshToken` và cấu hình dữ liệu liên quan đến tài khoản người dùng. | Xây dựng lớp tạo dữ liệu mẫu cho Category, đảm bảo có ít nhất **20 Categories**. | Xây dựng lớp tạo dữ liệu mẫu cho Recipe, đảm bảo có ít nhất **100 Recipes** và mỗi Recipe được gán Author/Category hợp lệ. | Xây dựng dữ liệu mẫu cho nội dung Recipe, đảm bảo mỗi Recipe có ít nhất **10 Ingredients** và **5 Steps**. |
+| Xây dựng dữ liệu mẫu cho tài khoản `Author` và `Admin` để phục vụ liên kết dữ liệu Recipe. | Kiểm tra dữ liệu Category và quan hệ với các Recipe được sinh tự động. | Kiểm tra dữ liệu Recipe, trạng thái, thông tin dinh dưỡng và các quan hệ sau khi sinh dữ liệu. | Kiểm tra dữ liệu Ingredient/Step/Image và thứ tự của các dữ liệu con trong từng Recipe. |
+
