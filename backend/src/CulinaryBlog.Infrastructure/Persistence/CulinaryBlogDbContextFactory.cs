@@ -24,7 +24,7 @@ public class CulinaryBlogDbContextFactory : IDesignTimeDbContextFactory<Culinary
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            var apiProjectPath = Path.Combine("..", "CulinaryBlog.API");
+            var apiProjectPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "CulinaryBlog.API"));
             var basePath = Directory.Exists(apiProjectPath) ? apiProjectPath : Directory.GetCurrentDirectory();
 
             var configuration = new ConfigurationBuilder()

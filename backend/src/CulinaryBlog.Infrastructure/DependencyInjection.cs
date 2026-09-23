@@ -20,7 +20,10 @@ public static class DependencyInjection
                 "Connection string 'DefaultConnection' was not configured.");
 
         services.AddDbContext<CulinaryBlogDbContext>(options =>
-            options.UseNpgsql(connectionString));
+        {
+            options.UseNpgsql(connectionString);
+            options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+        });
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
@@ -29,6 +32,8 @@ public static class DependencyInjection
         // AddIdentityCore (không phải AddIdentity đầy đủ): API dùng JWT thuần, không cần
         // SignInManager/cookie auth scheme của MVC. Chính sách mật khẩu & lockout theo
         // SRS.md FR-AUTH-001/002.
+        services.AddDataProtection();
+
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {

@@ -68,6 +68,26 @@ public static class RecipeSeeder
         var recipes = new List<Recipe>();
         var usedSlugs = new HashSet<string>();
 
+        // Lấy danh sách CategoryId thực tế từ bảng Categories đã nạp bởi CategorySeeder (Thành viên 2)
+        var availableCategoryIds = await context.Categories
+            .Select(c => c.Id)
+            .ToListAsync(cancellationToken);
+
+        if (availableCategoryIds.Count == 0)
+        {
+            availableCategoryIds = [.. CategoryIds];
+        }
+
+        // Lấy danh sách AuthorId thực tế từ bảng AspNetUsers đã nạp bởi ApplicationDbContextInitialiser (Thành viên 1)
+        var availableAuthorIds = await context.Users
+            .Select(u => u.Id)
+            .ToListAsync(cancellationToken);
+
+        if (availableAuthorIds.Count == 0)
+        {
+            availableAuthorIds = [.. AuthorIds];
+        }
+
         for (int i = 0; i < 100; i++)
         {
             var prefix = DishPrefixes[i % DishPrefixes.Length];
@@ -82,8 +102,8 @@ public static class RecipeSeeder
                 slug = $"{baseSlug}-{counter++}";
             }
 
-            var categoryId = CategoryIds[i % CategoryIds.Count];
-            var authorId = AuthorIds[random.Next(AuthorIds.Count)];
+            var categoryId = availableCategoryIds[i % availableCategoryIds.Count];
+            var authorId = availableAuthorIds[random.Next(availableAuthorIds.Count)];
             var status = (RecipeStatus)(i % 3); // Phân bổ Draft, Published, Archived
 
             var prepTime = random.Next(10, 60);

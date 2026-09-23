@@ -39,6 +39,8 @@ public class RecipeSlugHistoryConfiguration : IEntityTypeConfiguration<RecipeSlu
             .HasDefaultValue(false)
             .IsRequired();
 
+        builder.Ignore(h => h.DeletedAt);
+
         // 5. Concurrency Token qua PostgreSQL xmin
         builder.Property<uint>("xmin")
             .HasColumnType("xid")

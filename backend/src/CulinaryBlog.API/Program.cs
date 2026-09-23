@@ -45,6 +45,35 @@ api.MapGet("/recipes", async (CulinaryBlogDbContext dbContext) =>
     return Results.Ok(new { total = count, sample });
 });
 
+api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
+{
+    var usersCount = await dbContext.Users.CountAsync();
+    var categoriesCount = await dbContext.Categories.CountAsync();
+    var recipesCount = await dbContext.Recipes.CountAsync();
+
+    var sampleWithRelations = await dbContext.Recipes
+        .Include(r => r.Category)
+        .Include(r => r.Author)
+        .Take(5)
+        .Select(r => new
+        {
+            r.Id,
+            r.Title,
+            r.Slug,
+            Category = r.Category != null ? new { r.Category.Id, r.Category.Name } : null,
+            Author = r.Author != null ? new { r.Author.Id, r.Author.DisplayName, r.Author.Email } : null
+        })
+        .ToListAsync();
+
+    return Results.Ok(new
+    {
+        totalUsers = usersCount,
+        totalCategories = categoriesCount,
+        totalRecipes = recipesCount,
+        sampleWithRelations
+    });
+});
+
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 
 app.MapGet("/health/database", async (

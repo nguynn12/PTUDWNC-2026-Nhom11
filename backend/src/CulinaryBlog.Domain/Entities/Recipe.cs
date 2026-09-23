@@ -54,15 +54,23 @@ public class Recipe : BaseEntity
 
     /// <summary>
     /// Khóa ngoại tham chiếu đến Danh mục món ăn (Category).
-    /// Lưu dạng scalar Guid để tránh phụ thuộc sớm vào code của thành viên khác trước khi merge.
     /// </summary>
     public Guid CategoryId { get; set; }
 
     /// <summary>
+    /// Điều hướng tham chiếu đến thực thể Danh mục món ăn (Category).
+    /// </summary>
+    public Category? Category { get; set; }
+
+    /// <summary>
     /// Mã định danh người dùng tác giả tạo công thức.
-    /// Lưu dạng string thuần để tránh phụ thuộc Identity/ApplicationUser theo Open Question #1.
     /// </summary>
     public string AuthorId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Điều hướng tham chiếu đến người dùng tác giả (ApplicationUser).
+    /// </summary>
+    public ApplicationUser? Author { get; set; }
 
     /// <summary>
     /// Thời điểm công thức được xuất bản công khai lần đầu tiên.

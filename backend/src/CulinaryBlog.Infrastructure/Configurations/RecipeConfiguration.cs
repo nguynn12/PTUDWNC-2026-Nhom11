@@ -50,13 +50,23 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .HasDefaultValue(RecipeStatus.Draft)
             .IsRequired();
 
-        // 4. Khóa ngoại dạng scalar (tránh phụ thuộc sớm vào module khác)
+        // 4. Khóa ngoại liên kết với Category và ApplicationUser
         builder.Property(r => r.CategoryId)
             .IsRequired();
 
         builder.Property(r => r.AuthorId)
             .HasMaxLength(450)
             .IsRequired();
+
+        builder.HasOne(r => r.Category)
+            .WithMany()
+            .HasForeignKey(r => r.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(r => r.Author)
+            .WithMany()
+            .HasForeignKey(r => r.AuthorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // 5. Các mốc thời gian xuất bản & xóa mềm
         builder.Property(r => r.PublishedAt)

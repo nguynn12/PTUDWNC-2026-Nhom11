@@ -252,6 +252,4 @@ npm --prefix frontend run build
 | Xác định mối liên hệ giữa người dùng và công thức. | Kiểm tra các dữ liệu cần thiết để sau này tìm kiếm, lọc và sắp xếp công thức. | Liên kết `Recipe` với người dùng và danh mục. | Xây dựng bảng `RecipeImage` và liên kết với `Recipe`. |
 | Chuẩn bị dữ liệu mẫu cho người dùng. | Chuẩn bị dữ liệu mẫu cho danh mục. | Chuẩn bị dữ liệu mẫu cho công thức. | Chuẩn bị dữ liệu mẫu cho nguyên liệu, bước nấu và hình ảnh. |
 
-## Ghi chú hiện tại
 
-Skeleton đã cấu hình kết nối PostgreSQL nhưng chưa tạo migration nghiệp vụ đầu tiên. Nhóm cần thống nhất entity nền tảng trước khi tạo và commit migration.

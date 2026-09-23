@@ -34,6 +34,8 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .HasDefaultValue(true);
 
         builder.Property(u => u.CreatedAt)
+            .HasColumnType("timestamptz")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 
         // Truy vấn phổ biến của Admin: lọc danh sách user theo trạng thái active/inactive

@@ -24,19 +24,32 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .HasMaxLength(64) // SHA-256 hex digest = 64 ký tự
             .IsFixedLength();
 
-        builder.Property(rt => rt.ExpiresAt).IsRequired();
-        builder.Property(rt => rt.RevokedAt);
+        builder.Property(rt => rt.ExpiresAt)
+            .HasColumnType("timestamptz")
+            .IsRequired();
+
+        builder.Property(rt => rt.RevokedAt)
+            .HasColumnType("timestamptz");
 
         builder.Property(rt => rt.ReplacedByTokenHash)
             .HasMaxLength(64)
             .IsFixedLength();
 
         builder.Property(rt => rt.RevocationReason)
-            .HasMaxLength(100);
+            .HasColumnName("ReasonRevoked")
+            .HasMaxLength(250);
 
-        builder.Property(rt => rt.CreatedAt).IsRequired();
-        builder.Property(rt => rt.CreatedByIp).HasMaxLength(45); // Đủ cho IPv6
-        builder.Property(rt => rt.RevokedByIp).HasMaxLength(45);
+        builder.Property(rt => rt.CreatedAt)
+            .HasColumnType("timestamptz")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .IsRequired();
+
+        builder.Property(rt => rt.CreatedByIp)
+            .IsRequired()
+            .HasMaxLength(45); // Đủ cho IPv6
+
+        builder.Property(rt => rt.RevokedByIp)
+            .HasMaxLength(45);
 
         // Các cờ suy ra (IsRevoked/IsExpired/IsActive) — KHÔNG map vào DB
         builder.Ignore(rt => rt.IsRevoked);
