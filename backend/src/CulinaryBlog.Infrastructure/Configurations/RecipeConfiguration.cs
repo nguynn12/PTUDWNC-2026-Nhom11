@@ -156,5 +156,21 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
 
         builder.HasIndex(r => r.AuthorId)
             .HasDatabaseName("IDX_Recipe_AuthorId");
+
+        // 12. Cấu hình quan hệ 1-N với các thực thể con do TV4 phụ trách
+        builder.HasMany(r => r.Ingredients)
+            .WithOne(i => i.Recipe)
+            .HasForeignKey(i => i.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(r => r.Steps)
+            .WithOne(s => s.Recipe)
+            .HasForeignKey(s => s.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(r => r.Images)
+            .WithOne(img => img.Recipe)
+            .HasForeignKey(img => img.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

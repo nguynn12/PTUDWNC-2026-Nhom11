@@ -82,4 +82,19 @@ public class Recipe : BaseEntity
     /// Thông tin giá trị dinh dưỡng đính kèm (Value Object / Owned Entity).
     /// </summary>
     public RecipeNutrition? Nutrition { get; set; }
+
+    /// <summary>
+    /// Danh sách các nguyên liệu chi tiết của công thức (Thành viên 4).
+    /// </summary>
+    public virtual ICollection<RecipeIngredient> Ingredients { get; set; } = new List<RecipeIngredient>();
+
+    /// <summary>
+    /// Danh sách các bước chế biến chi tiết của công thức (Thành viên 4).
+    /// </summary>
+    public virtual ICollection<RecipeStep> Steps { get; set; } = new List<RecipeStep>();
+
+    /// <summary>
+    /// Danh sách hình ảnh minh họa của công thức (Thành viên 4).
+    /// </summary>
+    public virtual ICollection<RecipeImage> Images { get; set; } = new List<RecipeImage>();
 }

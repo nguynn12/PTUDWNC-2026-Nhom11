@@ -33,6 +33,21 @@ public sealed class CulinaryBlogDbContext(DbContextOptions<CulinaryBlogDbContext
     /// </summary>
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    /// <summary>
+    /// Bảng quản lý nguyên liệu chi tiết của công thức (Thành viên 4).
+    /// </summary>
+    public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
+
+    /// <summary>
+    /// Bảng quản lý các bước chế biến chi tiết của công thức (Thành viên 4).
+    /// </summary>
+    public DbSet<RecipeStep> RecipeSteps => Set<RecipeStep>();
+
+    /// <summary>
+    /// Bảng quản lý hình ảnh minh họa của công thức (Thành viên 4).
+    /// </summary>
+    public DbSet<RecipeImage> RecipeImages => Set<RecipeImage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

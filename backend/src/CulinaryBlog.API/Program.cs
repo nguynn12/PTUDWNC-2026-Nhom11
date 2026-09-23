@@ -28,6 +28,7 @@ if (app.Environment.IsDevelopment())
         await initialiser.SeedAsync();
         await CategorySeeder.SeedAsync(dbContext);
         await RecipeSeeder.SeedAsync(dbContext);
+        await RecipeDetailSeeder.SeedAsync(dbContext);
     }
 }
 
@@ -50,10 +51,16 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
     var usersCount = await dbContext.Users.CountAsync();
     var categoriesCount = await dbContext.Categories.CountAsync();
     var recipesCount = await dbContext.Recipes.CountAsync();
+    var ingredientsCount = await dbContext.RecipeIngredients.CountAsync();
+    var stepsCount = await dbContext.RecipeSteps.CountAsync();
+    var imagesCount = await dbContext.RecipeImages.CountAsync();
 
     var sampleWithRelations = await dbContext.Recipes
         .Include(r => r.Category)
         .Include(r => r.Author)
+        .Include(r => r.Ingredients)
+        .Include(r => r.Steps)
+        .Include(r => r.Images)
         .Take(5)
         .Select(r => new
         {
@@ -61,7 +68,10 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
             r.Title,
             r.Slug,
             Category = r.Category != null ? new { r.Category.Id, r.Category.Name } : null,
-            Author = r.Author != null ? new { r.Author.Id, r.Author.DisplayName, r.Author.Email } : null
+            Author = r.Author != null ? new { r.Author.Id, r.Author.DisplayName, r.Author.Email } : null,
+            IngredientsCount = r.Ingredients.Count,
+            StepsCount = r.Steps.Count,
+            ImagesCount = r.Images.Count
         })
         .ToListAsync();
 
@@ -70,6 +80,9 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
         totalUsers = usersCount,
         totalCategories = categoriesCount,
         totalRecipes = recipesCount,
+        totalIngredients = ingredientsCount,
+        totalSteps = stepsCount,
+        totalImages = imagesCount,
         sampleWithRelations
     });
 });
