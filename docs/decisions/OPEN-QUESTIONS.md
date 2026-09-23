@@ -12,7 +12,7 @@
 
 **Chi tiết + tác động kỹ thuật:** xem `RESOLVED-CONFLICTS.md` mục **D7** (mục này giữ lại dạng tóm tắt để tra cứu, không còn là câu hỏi mở).
 
-**Người chốt:** LiengHotHaLuyen (2312682 — phụ trách module Auth).
+**Người chốt:** Liêng Hót Ha Luyến (2312682 — phụ trách module Auth).
 
 ---
 
@@ -50,7 +50,7 @@
 
 | # | Câu hỏi | Trạng thái | Phương án đã chọn | Người chốt | Ngày |
 |---|---|---|---|---|---|
-| 1 | ApplicationUser đặt ở đâu? | ✅ Đã chốt | `Infrastructure/Identity`; Domain chỉ giữ `AuthorId`/`UserId` (string), không navigation — RESOLVED-CONFLICTS D7 | Thành viên 1 (2312682) | 2026-09-23 |
+| 1 | ApplicationUser đặt ở đâu? | ✅ Đã chốt | `Infrastructure/Identity`; Domain chỉ giữ `AuthorId`/`UserId` (string), không navigation — RESOLVED-CONFLICTS D7 | Liêng Hót Ha Luyến (2312682) | 2026-09-23 |
 | 2 | "Category active" là gì? | ⬜ Chưa chốt | | | |
 | 3 | Unarchive về trạng thái nào? | ⬜ Chưa chốt | | | |
 | 4 | Retention ảnh bao nhiêu ngày? | ⬜ Chưa chốt | | | |

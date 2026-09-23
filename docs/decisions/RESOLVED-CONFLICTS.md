@@ -128,7 +128,7 @@
 - **WHY:** chốt `OPEN-QUESTIONS.md` mục 1 — SRS vừa đặt `ApplicationUser` trong Domain vừa cấm Domain dùng NuGet (NFR-MAINT-004), trong khi `ApplicationUser` bắt buộc kế thừa `IdentityUser`. Giữ nguyên rule NFR-MAINT-004, chuyển class sang Infrastructure (mẫu Clean Architecture chuẩn). Giữ khoá `string` (không đổi sang `Guid` như đề xuất tham khảo) để không phải đổi kiểu cột/khoá ngoại đã có trong DB.
 - **IMPACT (DB):** **không đổi schema, không cần migration mới.** FK `Recipes.AuthorId → AspNetUsers.Id` (Restrict) và `RefreshTokens.UserId → AspNetUsers.Id` (Cascade) giữ nguyên, khai báo bằng `HasOne<ApplicationUser>()` trong `RecipeConfiguration` / `ApplicationUserConfiguration`. `ModelSnapshot` chỉ đổi tên kiểu CLR.
 - **IMPACT (Code):** không viết `recipe.Author` hay `.Include(r => r.Author)` nữa. Test `backend/tests/CulinaryBlog.UnitTests/Architecture/DomainLayerTests.cs` tự động fail nếu Domain tham chiếu lại Identity / EF Core / Npgsql / ASP.NET Core / Application / Infrastructure.
-- **Người chốt:** Thành viên 1 (2312682 — phụ trách module Auth), ngày 2026-09-23.
+- **Người chốt:** Liêng Hót Ha Luyến (2312682 — phụ trách module Auth), ngày 2026-09-23.
 
 ---
 

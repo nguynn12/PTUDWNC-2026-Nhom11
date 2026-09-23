@@ -1,4 +1,4 @@
-# Roadmap Backend cá nhân — 2312682 Hà Luyến
+# Roadmap Backend cá nhân — 2312682 Liêng Hót Ha Luyến
 
 > **Module:** Tài khoản, Xác thực và Phân quyền (Identity & Profile)
 > **Loại tài liệu:** kế hoạch phát triển. Tài liệu này **chưa triển khai code**.
@@ -31,7 +31,7 @@
 
 | Mục | Nội dung |
 |---|---|
-| Họ tên | Liêng Hót Ha Luyến (Ha Luyến) |
+| Họ tên | Liêng Hót Ha Luyến |
 | MSSV | 2312682 |
 | Lớp / Nhóm | CTK47B — Nhóm 11, môn Phát triển Ứng dụng Web Nâng cao |
 | Vai trò trong nhóm | Thành viên 1 — Backend module **Tài khoản và xác thực** |
