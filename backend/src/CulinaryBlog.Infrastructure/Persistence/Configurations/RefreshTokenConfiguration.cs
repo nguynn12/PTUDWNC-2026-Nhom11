@@ -62,9 +62,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.HasIndex(rt => rt.UserId);                 // Revoke toàn bộ token của user (FR-AUTH-010)
         builder.HasIndex(rt => new { rt.UserId, rt.RevokedAt }); // Lọc token còn hiệu lực của 1 user
 
-        builder.HasOne(rt => rt.User)
-            .WithMany(u => u.RefreshTokens)
-            .HasForeignKey(rt => rt.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Khoá ngoại UserId -> AspNetUsers.Id (ON DELETE CASCADE) được cấu hình trong
+        // ApplicationUserConfiguration — RefreshToken không có navigation User (mục D7).
     }
 }

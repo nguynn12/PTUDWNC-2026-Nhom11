@@ -1,5 +1,5 @@
 using CulinaryBlog.Domain.Constants;
-using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Identity;
 using Bogus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -57,7 +57,6 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 
     var sampleWithRelations = await dbContext.Recipes
         .Include(r => r.Category)
-        .Include(r => r.Author)
         .Include(r => r.Ingredients)
         .Include(r => r.Steps)
         .Include(r => r.Images)
@@ -68,7 +67,12 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
             r.Title,
             r.Slug,
             Category = r.Category != null ? new { r.Category.Id, r.Category.Name } : null,
-            Author = r.Author != null ? new { r.Author.Id, r.Author.DisplayName, r.Author.Email } : null,
+            // Recipe không còn navigation Author (mục D7) — lấy tác giả bằng subquery theo AuthorId,
+            // JSON trả về giữ nguyên dạng { Id, DisplayName, Email }.
+            Author = dbContext.Users
+                .Where(u => u.Id == r.AuthorId)
+                .Select(u => new { u.Id, u.DisplayName, u.Email })
+                .FirstOrDefault(),
             IngredientsCount = r.Ingredients.Count,
             StepsCount = r.Steps.Count,
             ImagesCount = r.Images.Count

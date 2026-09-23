@@ -63,14 +63,12 @@ public class Recipe : BaseEntity
     public Category? Category { get; set; }
 
     /// <summary>
-    /// Mã định danh người dùng tác giả tạo công thức.
+    /// Mã định danh người dùng tác giả tạo công thức (FK tới AspNetUsers.Id, varchar(450)).
+    /// Cố ý KHÔNG có navigation Author: ApplicationUser nằm ở Infrastructure để Domain không
+    /// phụ thuộc thư viện Identity (NFR-MAINT-004, RESOLVED-CONFLICTS.md mục D7).
+    /// Cần tên/ảnh tác giả thì dùng IUserQueryService.GetAuthorSummariesAsync.
     /// </summary>
     public string AuthorId { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Điều hướng tham chiếu đến người dùng tác giả (ApplicationUser).
-    /// </summary>
-    public ApplicationUser? Author { get; set; }
 
     /// <summary>
     /// Thời điểm công thức được xuất bản công khai lần đầu tiên.

@@ -1,4 +1,4 @@
-using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,8 +41,10 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         // Truy vấn phổ biến của Admin: lọc danh sách user theo trạng thái active/inactive
         builder.HasIndex(u => u.IsActive);
 
+        // Quan hệ 1-n User -> RefreshTokens chỉ khai báo ở ĐÂY (RefreshToken trong Domain
+        // không có navigation User — RESOLVED-CONFLICTS.md mục D7).
         builder.HasMany(u => u.RefreshTokens)
-            .WithOne(rt => rt.User)
+            .WithOne()
             .HasForeignKey(rt => rt.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

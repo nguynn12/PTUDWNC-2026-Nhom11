@@ -1,5 +1,5 @@
 using CulinaryBlog.Application.Common.Interfaces;
-using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using Microsoft.AspNetCore.Identity;
@@ -64,6 +64,10 @@ public static class DependencyInjection
         // Development — xem Program.cs). Xem ApplicationDbContextInitialiser để biết
         // phạm vi seed (Auth/User) và cách thành viên khác cắm seeder Category/Recipe.
         services.AddScoped<ApplicationDbContextInitialiser>();
+
+        // Tra cứu thông tin công khai của user (tên, ảnh tác giả) cho tầng Application —
+        // thay cho navigation Recipe.Author đã bỏ (RESOLVED-CONFLICTS.md mục D7).
+        services.AddScoped<IUserQueryService, UserQueryService>();
 
         return services;
     }

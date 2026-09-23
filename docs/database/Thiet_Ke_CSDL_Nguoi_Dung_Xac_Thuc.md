@@ -144,8 +144,8 @@ Theo đúng FR-AUTH-001/002, cấu hình trong `AddInfrastructure()`:
 
 | File | Layer | Nội dung |
 |---|---|---|
-| `Domain/Entities/ApplicationUser.cs` | Domain | Entity mở rộng `IdentityUser`, factory `Create()`/`CreateFromGoogle()` |
-| `Domain/Entities/RefreshToken.cs` | Domain | Entity token rotation, factory `CreateNewFamily()`/`CreateRotated()`, `Revoke()` |
+| `Infrastructure/Identity/ApplicationUser.cs` | Infrastructure | Entity mở rộng `IdentityUser`, factory `Create()`/`CreateFromGoogle()` — chuyển từ Domain sang ngày 2026-09-23 (RESOLVED-CONFLICTS D7) |
+| `Domain/Entities/RefreshToken.cs` | Domain | Entity token rotation, factory `CreateNewFamily()`/`CreateRotated()`, `Revoke()` — chỉ giữ `UserId`, không navigation `User` (D7) |
 | `Domain/Constants/Roles.cs` | Domain | Hằng số `Admin`, `Author` |
 | `Domain/Constants/Policies.cs` | Domain | Hằng số `VerifiedAuthor` |
 | `Infrastructure/Persistence/Configurations/ApplicationUserConfiguration.cs` | Infrastructure | Fluent API cho field mở rộng |
@@ -154,7 +154,8 @@ Theo đúng FR-AUTH-001/002, cấu hình trong `AddInfrastructure()`:
 | `Infrastructure/Persistence/CulinaryBlogDbContext.cs` | Infrastructure | Đổi sang `IdentityDbContext<ApplicationUser, IdentityRole, string>` |
 | `Application/Common/Interfaces/IApplicationDbContext.cs` | Application | Thêm `DbSet<RefreshToken> RefreshTokens` |
 | `Infrastructure/DependencyInjection.cs` | Infrastructure | `AddIdentityCore` + policy mật khẩu/lockout |
-| `Directory.Packages.props`, 3 file `.csproj` | — | Thêm `Microsoft.Extensions.Identity.Stores`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `Microsoft.EntityFrameworkCore` |
+| `Directory.Packages.props`, 3 file `.csproj` | — | Thêm `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `Microsoft.EntityFrameworkCore`. Từ 2026-09-23 `Domain.csproj` không còn `Microsoft.Extensions.Identity.Stores` (D7) |
+| `Application/Common/Interfaces/IUserQueryService.cs`, `Infrastructure/Identity/UserQueryService.cs` | Application / Infrastructure | Lấy tên/ảnh tác giả theo danh sách `AuthorId` — thay cho navigation `Recipe.Author` (D7) |
 
 ## 7. Server database (Docker) — đã có sẵn trong repo
 

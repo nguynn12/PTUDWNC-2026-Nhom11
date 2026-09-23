@@ -30,6 +30,7 @@ Mỗi module chịu trách nhiệm xuyên suốt từ giao diện đến test. T
 - Modular monolith, không dùng microservices trong phiên bản môn học.
 - PostgreSQL 16 là nguồn dữ liệu chính.
 - Entity Framework Core theo Code First.
+- Domain chỉ dùng .NET BCL, không có NuGet dependency (NFR-MAINT-004). `ApplicationUser` (kế thừa `IdentityUser`) đặt ở `Infrastructure/Identity`; entity trong Domain chỉ tham chiếu user qua `AuthorId`/`UserId`, lấy thông tin tác giả qua `IUserQueryService` — xem [`RESOLVED-CONFLICTS.md` D7](../decisions/RESOLVED-CONFLICTS.md).
 - API version qua prefix `/api/v1`.
 - Cấu hình local có giá trị development mặc định; secret thật không được commit.
 - Migration được tạo sau khi chốt entity nền tảng, tránh migration rỗng hoặc schema giả định quá sớm.

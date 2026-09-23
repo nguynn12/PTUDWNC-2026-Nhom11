@@ -1,7 +1,7 @@
 # Resolved Conflicts — SRS v1.2.0 (Culinary Blog)
 
 **Trạng thái:** Đã chốt, có hiệu lực áp dụng ngay. Ghi đè lên phần tương ứng trong `SRS.md` gốc khi có khác biệt.
-**Phạm vi:** 27 mâu thuẫn được phát hiện khi rà soát SRS trước khi tạo migration nghiệp vụ đầu tiên, chia 5 nhóm.
+**Phạm vi:** 27 mâu thuẫn được phát hiện khi rà soát SRS trước khi tạo migration nghiệp vụ đầu tiên, chia 5 nhóm. Bổ sung D7 (chốt từ `OPEN-QUESTIONS.md` mục 1, ngày 2026-09-23) — tổng 28 mục.
 **Cách dùng cho AI coding agent:** Mỗi mục có RULE (quy tắc áp dụng ngay, không cần đọc phần giải thích để code đúng) + WHY (lý do, chỉ cần đọc nếu cần hiểu ngữ cảnh) + IMPACT (thay đổi cụ thể về schema/API/UI).
 
 ---
@@ -119,8 +119,16 @@
 
 ### D6. BaseEntity — `ApplicationUser` và `RefreshToken` là ngoại lệ có chủ đích
 
-- **RULE:** `BaseEntity` (Id/CreatedAt/UpdatedAt/IsDeleted/RowVersion) chỉ áp dụng cho Domain Content Entities (Recipe, Category, RecipeStep, RecipeIngredient, RecipeImage). `ApplicationUser` kế thừa `IdentityUser<Guid>`, dùng `IsActive=false` để "deactivate" thay vì `IsDeleted`. `RefreshToken` chỉ có `Id, CreatedAt, ExpiresAt, RevokedAt, ReplacedByTokenHash` — không có `RowVersion`/`IsDeleted`.
-- **LƯU Ý — CÒN 1 MÂU THUẪN CHƯA GIẢI QUYẾT LIÊN QUAN TỚI MỤC NÀY:** xem `OPEN-QUESTIONS.md` mục 1 — vị trí đặt file `ApplicationUser.cs` (project `Domain` hay `Infrastructure`) vẫn đang mâu thuẫn với rule "Domain không NuGet dependency", **chưa được quyết**, không tự ý code trước khi có quyết định.
+- **RULE:** `BaseEntity` (Id/CreatedAt/UpdatedAt/IsDeleted/RowVersion) chỉ áp dụng cho Domain Content Entities (Recipe, Category, RecipeStep, RecipeIngredient, RecipeImage). `ApplicationUser` kế thừa `IdentityUser` (khoá `string`, varchar(450), giá trị sinh bằng `Guid.NewGuid().ToString()`), dùng `IsActive=false` để "deactivate" thay vì `IsDeleted`. `RefreshToken` chỉ có `Id, CreatedAt, ExpiresAt, RevokedAt, ReplacedByTokenHash` — không có `RowVersion`/`IsDeleted`.
+- **LƯU Ý:** vị trí file `ApplicationUser.cs` đã được chốt — xem **D7** ngay dưới.
+
+### D7. `ApplicationUser` đặt ở `Infrastructure` — Domain không phụ thuộc thư viện Identity
+
+- **RULE:** `ApplicationUser` nằm tại `backend/src/CulinaryBlog.Infrastructure/Identity/ApplicationUser.cs` (namespace `CulinaryBlog.Infrastructure.Identity`). Project `CulinaryBlog.Domain` **không có `PackageReference` nào**. Entity trong Domain chỉ tham chiếu user bằng khoá chuỗi (`Recipe.AuthorId`, `RefreshToken.UserId` — `string`, max 450), **không** có navigation `Recipe.Author` / `RefreshToken.User`. Cần tên/ảnh tác giả → gọi `IUserQueryService.GetAuthorSummariesAsync(ids)` (Application interface, 1 truy vấn cho cả danh sách). Thao tác ghi trên user (đăng ký, đăng nhập, khoá tài khoản...) đi qua service ở Infrastructure dùng `UserManager<ApplicationUser>`.
+- **WHY:** chốt `OPEN-QUESTIONS.md` mục 1 — SRS vừa đặt `ApplicationUser` trong Domain vừa cấm Domain dùng NuGet (NFR-MAINT-004), trong khi `ApplicationUser` bắt buộc kế thừa `IdentityUser`. Giữ nguyên rule NFR-MAINT-004, chuyển class sang Infrastructure (mẫu Clean Architecture chuẩn). Giữ khoá `string` (không đổi sang `Guid` như đề xuất tham khảo) để không phải đổi kiểu cột/khoá ngoại đã có trong DB.
+- **IMPACT (DB):** **không đổi schema, không cần migration mới.** FK `Recipes.AuthorId → AspNetUsers.Id` (Restrict) và `RefreshTokens.UserId → AspNetUsers.Id` (Cascade) giữ nguyên, khai báo bằng `HasOne<ApplicationUser>()` trong `RecipeConfiguration` / `ApplicationUserConfiguration`. `ModelSnapshot` chỉ đổi tên kiểu CLR.
+- **IMPACT (Code):** không viết `recipe.Author` hay `.Include(r => r.Author)` nữa. Test `backend/tests/CulinaryBlog.UnitTests/Architecture/DomainLayerTests.cs` tự động fail nếu Domain tham chiếu lại Identity / EF Core / Npgsql / ASP.NET Core / Application / Infrastructure.
+- **Người chốt:** Thành viên 1 (2312682 — phụ trách module Auth), ngày 2026-09-23.
 
 ---
 
@@ -199,7 +207,8 @@
 | D3 | Logout | Không cần Access Token hợp lệ |
 | D4 | Refresh token length | 256-bit |
 | D5 | IsRevoked | Computed property từ `RevokedAt` |
-| D6 | BaseEntity exception | User/RefreshToken ngoại lệ (xem OPEN-QUESTIONS #1) |
+| D6 | BaseEntity exception | User/RefreshToken ngoại lệ, khoá User là `string` |
+| D7 | Vị trí ApplicationUser | `Infrastructure/Identity`; Domain không navigation tới User, dùng `IUserQueryService` |
 | E1 | Quantity type | decimal, UX xử lý ở FE |
 | E2 | Quantity/Unit nullable | Có, validate điều kiện |
 | E3 | Nutrition | Manual-only MVP |

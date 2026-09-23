@@ -1,20 +1,18 @@
 # Open Questions — Chưa chốt, KHÔNG tự implement
 
-**Trạng thái:** 4 điểm dưới đây vẫn còn mơ hồ hoặc tự mâu thuẫn trong `SRS.md` v1.2.0, kể cả sau khi đã áp dụng toàn bộ `RESOLVED-CONFLICTS.md`. Chưa có quyết định chính thức từ nhóm.
+**Trạng thái:** mục 1 đã chốt ngày 2026-09-23 (chuyển sang `RESOLVED-CONFLICTS.md` mục D7). 3 điểm còn lại (mục 2–4) vẫn còn mơ hồ hoặc tự mâu thuẫn trong `SRS.md` v1.2.0, kể cả sau khi đã áp dụng toàn bộ `RESOLVED-CONFLICTS.md`. Chưa có quyết định chính thức từ nhóm.
 
 **QUY TẮC BẮT BUỘC cho AI coding agent:** nếu 1 task được giao chạm vào bất kỳ mục nào dưới đây (tên file/class/bảng trùng khớp), **dừng lại và hỏi người dùng trước khi viết code**, dù trong mục có ghi "đề xuất" — đề xuất chỉ là gợi ý tham khảo, **không phải quyết định đã chốt**, không được tự ý áp dụng.
 
 ---
 
-## 1. 🔴 [BLOCKING] `ApplicationUser` đặt sai layer so với chính rule của SRS
+## 1. ✅ [ĐÃ CHỐT 2026-09-23] `ApplicationUser` đặt ở layer nào
 
-**Vấn đề:** `docs/architecture/README.md` / SRS liệt kê `ApplicationUser` nằm trong project `CulinaryBlog.Domain`, đồng thời quy định layer này *"Không có NuGet dependencies (chỉ .NET BCL)"*. Nhưng `ApplicationUser` (mục 7.7 SRS) bắt buộc kế thừa `IdentityUser<string>` — 1 class từ package `Microsoft.AspNetCore.Identity`. Hai rule này loại trừ lẫn nhau.
+**Quyết định:** đặt `ApplicationUser` trong `CulinaryBlog.Infrastructure/Identity`; Domain không còn `PackageReference` nào, `Recipe`/`RefreshToken` chỉ giữ `AuthorId`/`UserId` (`string`), không có navigation tới User. Không đổi schema DB.
 
-**Vì sao blocking:** đây là quyết định vị trí file/project reference — ảnh hưởng tới toàn bộ code sau này tham chiếu tới User (Recipe.AuthorId, RefreshToken.UserId, mọi Command/Query có `[Authorize]`...). Đổi sau khi đã có nhiều code phụ thuộc sẽ tốn công sửa lại toàn bộ.
+**Chi tiết + tác động kỹ thuật:** xem `RESOLVED-CONFLICTS.md` mục **D7** (mục này giữ lại dạng tóm tắt để tra cứu, không còn là câu hỏi mở).
 
-**Không tự chọn — nhưng nếu cần 1 đề xuất tham khảo để hỏi lại người dùng:** đặt `ApplicationUser` trong `CulinaryBlog.Infrastructure`; `Domain` chỉ giữ tham chiếu dạng `AuthorId (Guid)` ở Recipe, không có entity User đầy đủ trong Domain.
-
-**Ai quyết:** cần xác nhận từ người phụ trách module Auth (Thành viên 1) + được ghi lại thành 1 dòng sửa trong `SRS.md` hoặc `docs/architecture/README.md` (vì đây là NFR-MAINT-004, có kế hoạch enforce bằng ArchUnit.NET test — sửa code mà không sửa rule/test sẽ vẫn bị fail).
+**Người chốt:** LiengHotHaLuyen (2312682 — phụ trách module Auth).
 
 ---
 
@@ -52,7 +50,7 @@
 
 | # | Câu hỏi | Trạng thái | Phương án đã chọn | Người chốt | Ngày |
 |---|---|---|---|---|---|
-| 1 | ApplicationUser đặt ở đâu? | ⬜ Chưa chốt | | | |
+| 1 | ApplicationUser đặt ở đâu? | ✅ Đã chốt | `Infrastructure/Identity`; Domain chỉ giữ `AuthorId`/`UserId` (string), không navigation — RESOLVED-CONFLICTS D7 | Thành viên 1 (2312682) | 2026-09-23 |
 | 2 | "Category active" là gì? | ⬜ Chưa chốt | | | |
 | 3 | Unarchive về trạng thái nào? | ⬜ Chưa chốt | | | |
 | 4 | Retention ảnh bao nhiêu ngày? | ⬜ Chưa chốt | | | |

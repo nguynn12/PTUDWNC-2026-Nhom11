@@ -10,7 +10,10 @@ public class RefreshToken
 {
     public Guid Id { get; private set; }
 
-    /// <summary>FK tới AspNetUsers.Id (varchar(450)).</summary>
+    /// <summary>
+    /// FK tới AspNetUsers.Id (varchar(450)). Cố ý KHÔNG có navigation User — quan hệ được
+    /// cấu hình ở Infrastructure (ApplicationUserConfiguration), xem RESOLVED-CONFLICTS.md mục D7.
+    /// </summary>
     public string UserId { get; private set; } = string.Empty;
 
     /// <summary>
@@ -38,8 +41,6 @@ public class RefreshToken
     public string? CreatedByIp { get; private set; }
 
     public string? RevokedByIp { get; private set; }
-
-    public ApplicationUser? User { get; private set; }
 
     // ── Cờ suy ra — KHÔNG map thành cột DB (SRS 7.8: "IsRevoked là giá trị suy ra") ──
     public bool IsRevoked => RevokedAt is not null;
