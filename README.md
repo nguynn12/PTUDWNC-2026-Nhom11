@@ -29,30 +29,36 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 
 | Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên | Nguyễn Phú Quý |
 |---|---|---|---|
-| Hoàn thiện cấu trúc Backend theo **Clean Architecture** và kiểm tra quan hệ giữa các project `Domain`, `Application`, `Infrastructure`, `API`. | Xây dựng Entity `Category` và lớp `CategoryConfiguration`. | Xây dựng các Entity và Enum chính của Recipe gồm `Recipe`, `RecipeNutrition`, `RecipeSlugHistory`, `RecipeStatus`, `RecipeDifficulty`. | Xây dựng các Entity chi tiết của Recipe gồm `RecipeIngredient`, `RecipeStep`, `RecipeImage`. |
-| Cài đặt và kiểm tra các thư viện cần thiết cho **EF Core, PostgreSQL, Identity và Bogus**. | Thiết lập các ràng buộc, index và quan hệ giữa `Category` và `Recipe`. | Xây dựng `RecipeConfiguration`, các ràng buộc dữ liệu, index và quan hệ của `Recipe` với User/Category. | Xây dựng Configuration và các ràng buộc cho Ingredient, Step, Image; thiết lập quan hệ với `Recipe`. |
-| Xây dựng `ApplicationUser`, `RefreshToken` và cấu hình dữ liệu liên quan đến tài khoản người dùng. | Xây dựng lớp tạo dữ liệu mẫu cho Category, đảm bảo có ít nhất **20 Categories**. | Xây dựng lớp tạo dữ liệu mẫu cho Recipe, đảm bảo có ít nhất **100 Recipes** và mỗi Recipe được gán Author/Category hợp lệ. | Xây dựng dữ liệu mẫu cho nội dung Recipe, đảm bảo mỗi Recipe có ít nhất **10 Ingredients** và **5 Steps**. |
-| Xây dựng dữ liệu mẫu cho tài khoản `Author` và `Admin` để phục vụ liên kết dữ liệu Recipe. | Kiểm tra dữ liệu Category và quan hệ với các Recipe được sinh tự động. | Kiểm tra dữ liệu Recipe, trạng thái, thông tin dinh dưỡng và các quan hệ sau khi sinh dữ liệu. | Kiểm tra dữ liệu Ingredient, Step, Image và thứ tự của các dữ liệu con trong từng Recipe. |
+| Kiểm tra và hoàn thiện cấu trúc các project `Domain`, `Application`, `Infrastructure`, `API`; kiểm tra project reference đúng theo Clean Architecture. | Tạo entity `Category` với đầy đủ các thuộc tính theo SRS. | Tạo entity `Recipe` với đầy đủ các thuộc tính chính theo SRS. | Tạo entity `RecipeIngredient` với đầy đủ các thuộc tính và quan hệ với `Recipe`. |
+| Cài đặt các package dùng chung: EF Core, Npgsql PostgreSQL, Identity EF Core và Bogus. | Tạo lớp `CategoryConfiguration` để cấu hình tên bảng, kiểu dữ liệu, độ dài trường, index và unique constraint. | Tạo các enum `RecipeStatus`, `RecipeDifficulty`, `NutritionSource`. | Tạo entity `RecipeStep` với `StepNumber`, `Title`, `Description`, `TimerMinutes`, `ImageUrl`. |
+| Tạo lớp `ApplicationUser` và các thuộc tính mở rộng của người dùng. | Cấu hình quan hệ `Category 1-N Recipe`. | Tạo `RecipeNutrition` và cấu hình dữ liệu dinh dưỡng của Recipe. | Tạo entity `RecipeImage` với các thuộc tính URL, `AltText`, `IsPrimary`, `OrderIndex`. |
+| Tạo entity `RefreshToken` và cấu hình quan hệ với `ApplicationUser`. | Cấu hình index cho `Name`, `Slug` và các ràng buộc liên quan đến soft delete của Category. | Tạo entity `RecipeSlugHistory` để lưu lịch sử Slug của Recipe. | Tạo `RecipeIngredientConfiguration`, `RecipeStepConfiguration`, `RecipeImageConfiguration`. |
+| Cấu hình `ApplicationUser`, `RefreshToken` và các ràng buộc liên quan đến Identity. | Tạo `CategorySeeder` bằng Bogus, sinh tối thiểu **20 Categories**. | Tạo `RecipeConfiguration` để cấu hình kiểu dữ liệu, index, soft delete, `xmin` và các quan hệ chính của Recipe. | Cấu hình các quan hệ `Recipe 1-N Ingredient`, `Recipe 1-N Step`, `Recipe 1-N Image`. |
+| Tạo dữ liệu mẫu cho tài khoản `Author` và `Admin`. | Kiểm tra các Category sinh ra không trùng Slug và có dữ liệu hợp lệ. | Tạo `RecipeSeeder` bằng Bogus, sinh tối thiểu **100 Recipes**. | Tạo lớp sinh dữ liệu mẫu Ingredient, đảm bảo mỗi Recipe có ít nhất **10 Ingredients**. |
+| Kiểm tra quan hệ `ApplicationUser -> Recipe` và `ApplicationUser -> RefreshToken`. | Kiểm tra Recipe được gán đúng Category sau khi tích hợp dữ liệu. | Trong `RecipeSeeder`, gán `CategoryId`, `AuthorId`, trạng thái, độ khó và dữ liệu dinh dưỡng hợp lệ. | Tạo lớp sinh dữ liệu mẫu Step, đảm bảo mỗi Recipe có ít nhất **5 Steps**. |
+| Phối hợp hoàn thiện `CulinaryBlogDbContext` và đăng ký các entity liên quan đến User. | Đăng ký `DbSet<Category>` và kiểm tra Configuration được EF Core nhận đúng. | Đăng ký `DbSet<Recipe>` và `DbSet<RecipeSlugHistory>`; kiểm tra Configuration được EF Core nhận đúng. | Đăng ký các `DbSet` của Ingredient, Step, Image và kiểm tra Configuration. |
+| Kiểm tra build và hỗ trợ xử lý lỗi Identity/PostgreSQL khi merge. | Kiểm tra build và xử lý lỗi liên quan đến Category khi merge. | Kiểm tra build và xử lý lỗi liên quan đến Recipe khi merge. | Kiểm tra build và xử lý lỗi liên quan đến Recipe Content khi merge. |
 
 ### Công việc chung của cả nhóm
 
-- Thống nhất mô hình dữ liệu và các Entity sau khi hoàn thành phân tích SRS ở Buổi 1.
-- Hoàn thiện cấu trúc Backend theo **Clean Architecture** gồm các project `Domain`, `Application`, `Infrastructure`, `API`.
-- Cài đặt và kiểm tra các thư viện cần thiết cho **Entity Framework Core, PostgreSQL, ASP.NET Core Identity và Bogus**.
-- Hoàn thiện lớp `CulinaryBlogDbContext` và đăng ký đầy đủ các `DbSet` cần thiết.
-- Ghép các Entity và lớp Configuration của 4 thành viên vào nhánh chung.
-- Kiểm tra các khóa chính, khóa ngoại, quan hệ, index và ràng buộc dữ liệu trước khi tạo Migration.
-- Tạo Migration đầu tiên cho toàn bộ cơ sở dữ liệu.
-- Chạy Migration để tạo cơ sở dữ liệu PostgreSQL từ các Entity và Configuration đã xây dựng.
-- Tích hợp các lớp tạo dữ liệu mẫu bằng Bogus.
-- Kiểm tra cơ sở dữ liệu có tối thiểu:
+- Merge mã nguồn của 4 thành viên vào nhánh `develop`.
+- Review các Entity và Configuration trước khi tạo Migration.
+- Hoàn thiện lớp `CulinaryBlogDbContext`.
+- Kiểm tra toàn bộ Primary Key, Foreign Key, quan hệ, index và constraint.
+- Tạo Migration đầu tiên cho toàn bộ database.
+- Chạy `database update` để tạo database PostgreSQL.
+- Chạy toàn bộ Seeder.
+- Kiểm tra database có tối thiểu:
   - **20 Categories**
   - **100 Recipes**
-  - Mỗi Recipe có ít nhất **10 Ingredients**
-  - Mỗi Recipe có ít nhất **5 Steps**
-- Kiểm tra dữ liệu Recipe được liên kết đúng với Author, Category, Ingredient và Step.
-- Chạy `dotnet build` và đảm bảo project không có lỗi biên dịch trước khi merge vào nhánh `develop`.
-- Mỗi thành viên phải kiểm tra được Migration và database trên môi trường cá nhân sau khi đồng bộ mã nguồn.
+  - **1.000 RecipeIngredients**
+  - **500 RecipeSteps**
+- Kiểm tra mỗi Recipe có:
+  - ít nhất **10 Ingredients**
+  - ít nhất **5 Steps**
+  - `CategoryId` hợp lệ
+  - `AuthorId` hợp lệ
+- Chạy `dotnet build` và đảm bảo project không có lỗi trước khi kết thúc Lab 2.
 
 ## Công nghệ sử dụng
 
