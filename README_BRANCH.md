@@ -39,20 +39,19 @@ Nhánh được chia thành **11 commits độc lập**, mỗi commit hoàn thà
 ```text
 develop (40ab20a)
    │
-   ├── Commit 01: cấu hình: tích hợp MediatR, FluentValidation, Caching và DI
-   ├── Commit 02: thêm: DTOs và Request Contracts cho phân hệ Category
-   ├── Commit 03: thêm: CQRS Queries đọc danh mục món ăn kèm Redis cache
-   ├── Commit 04: thêm: CQRS Commands và FluentValidation cho thêm sửa xóa danh mục
-   ├── Commit 05: thêm: Minimal API Endpoints và xử lý ngoại lệ Problem Details cho Category
-   ├── Commit 06: kiểm-thử: bổ sung unit test cho phân hệ Category và xác thực API
-   ├── Commit 07: thêm: API duyệt danh sách và xem chi tiết công thức nấu ăn
-   ├── Commit 08: thêm: bộ lọc công thức đa tiêu chí và sắp xếp kết quả
-   ├── Commit 09: cấu hình: migration bổ sung SearchVector, GIN Index và trigger Full-Text Search
-   ├── Commit 10: thêm: API tìm kiếm công thức tiếng Việt sử dụng PostgreSQL Full-Text Search
-   └── Commit 11: kiểm-thử: hoàn tất kiểm thử và hoàn thiện toàn bộ phân hệ Backend
+   ├── Commit 01 [f3abdc8]: thêm: DTOs và Request Contracts cho phân hệ Category
+   ├── Commit 02 [0cc77c6]: thêm: CQRS Queries đọc danh sách và chi tiết danh mục món ăn
+   ├── Commit 03 [64f29eb]: thêm: CQRS Commands và FluentValidation cho thêm sửa xóa danh mục
+   ├── Commit 04 [12bb82b]: thêm: Minimal API Endpoints và xử lý ngoại lệ Problem Details cho Category
+   ├── Commit 05 [228fa11]: kiểm-thử: bổ sung unit test cho phân hệ Category và chuẩn hóa API
+   ├── Commit 06 [a05b6c5]: thêm: API duyệt danh sách và xem chi tiết công thức nấu ăn
+   ├── Commit 07 [b649611]: thêm: bộ lọc công thức đa tiêu chí và sắp xếp kết quả
+   ├── Commit 08 [65c46da]: cấu hình: migration bổ sung SearchVector, GIN Index và trigger Full-Text Search
+   ├── Commit 09 [eee795c]: thêm: query SearchRecipesQuery với Full-Text Search PostgreSQL và endpoint GET /api/v1/recipes/search
+   └── Commit 10: kiểm-thử: hoàn tất kiểm thử và hoàn thiện toàn bộ phân hệ Backend
          │
          ▼
-   Tạo Pull Request vào nhánh develop
+   Sẵn sàng tạo Pull Request vào nhánh develop
 ```
 
 ---
