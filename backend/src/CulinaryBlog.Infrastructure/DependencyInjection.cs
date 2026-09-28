@@ -2,6 +2,7 @@ using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
+using CulinaryBlog.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,9 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
+
+        // ── Dịch vụ lưu trữ tệp tin (Thành viên 4) ───────────────────────────────
+        services.AddScoped<IFileStorageService, FileStorageService>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         // AddIdentityCore (không phải AddIdentity đầy đủ): API dùng JWT thuần, không cần
