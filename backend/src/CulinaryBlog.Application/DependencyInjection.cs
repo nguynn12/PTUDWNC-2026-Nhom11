@@ -1,3 +1,4 @@
+using CulinaryBlog.Application.Features.RecipeImages.Services;
 using CulinaryBlog.Application.Features.RecipeIngredients.Services;
 using CulinaryBlog.Application.Features.RecipeSteps.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IRecipeIngredientService, RecipeIngredientService>();
         services.AddScoped<IRecipeStepService, RecipeStepService>();
+        services.AddScoped<IRecipeImageService, RecipeImageService>();
 
         return services;
     }
