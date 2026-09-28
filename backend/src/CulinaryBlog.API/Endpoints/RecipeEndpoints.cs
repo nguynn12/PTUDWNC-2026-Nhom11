@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
+using CulinaryBlog.Domain.Enums;
+
 /// <summary>
 /// Minimal API Endpoints phục vụ tra cứu và xem công thức nấu ăn theo FR-RCP-001 và FR-RCP-002.
 /// </summary>
@@ -20,18 +22,34 @@ public static class RecipeEndpoints
         var group = routes.MapGroup("/recipes")
             .WithTags("Recipes");
 
-        // FR-RCP-001: Duyệt danh sách công thức phân trang và lọc theo Category (Public)
+        // FR-RCP-001: Duyệt danh sách công thức phân trang, lọc đa tiêu chí và sắp xếp linh hoạt (Public)
         group.MapGet("", async (
             int? page,
             int? pageSize,
             Guid? categoryId,
+            RecipeDifficulty? difficulty,
+            int? maxPrepTime,
+            int? maxCookTime,
+            int? maxTotalTime,
+            decimal? minCalories,
+            decimal? maxCalories,
+            string? sortBy,
+            string? sortOrder,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
             var query = new GetRecipesQuery(
                 Page: page ?? 1,
                 PageSize: pageSize ?? 12,
-                CategoryId: categoryId);
+                CategoryId: categoryId,
+                Difficulty: difficulty,
+                MaxPrepTime: maxPrepTime,
+                MaxCookTime: maxCookTime,
+                MaxTotalTime: maxTotalTime,
+                MinCalories: minCalories,
+                MaxCalories: maxCalories,
+                SortBy: sortBy,
+                SortOrder: sortOrder);
 
             var result = await sender.Send(query, cancellationToken);
 
@@ -47,7 +65,7 @@ public static class RecipeEndpoints
         })
         .WithName("GetRecipes")
         .WithSummary("Duyệt danh sách công thức nấu ăn")
-        .WithDescription("Trả về danh sách công thức đã xuất bản (Published), hỗ trợ phân trang và lọc theo danh mục (FR-RCP-001).")
+        .WithDescription("Trả về danh sách công thức đã xuất bản (Published), hỗ trợ phân trang, lọc đa tiêu chí (độ khó, thời gian, calo) và sắp xếp linh hoạt (FR-RCP-001).")
         .Produces<ApiResponse<IReadOnlyList<RecipeSummaryDto>>>(StatusCodes.Status200OK);
 
         // FR-RCP-002: Xem chi tiết công thức nấu ăn theo Slug (Public)

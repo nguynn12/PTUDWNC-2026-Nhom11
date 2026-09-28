@@ -3,6 +3,7 @@ namespace CulinaryBlog.Application.Features.Recipes.Queries.GetRecipes;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Application.Features.Recipes.DTOs;
+using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -43,10 +44,40 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             .AsNoTracking()
             .Where(r => !r.IsDeleted && r.Status == RecipeStatus.Published);
 
-        // 3. Áp dụng bộ lọc theo danh mục (nếu có)
+        // 3. Áp dụng các bộ lọc đa tiêu chí (kết hợp bằng toán tử AND theo FR-SRCH-002)
         if (request.CategoryId.HasValue)
         {
             query = query.Where(r => r.CategoryId == request.CategoryId.Value);
+        }
+
+        if (request.Difficulty.HasValue)
+        {
+            query = query.Where(r => r.Difficulty == request.Difficulty.Value);
+        }
+
+        if (request.MaxPrepTime.HasValue)
+        {
+            query = query.Where(r => r.PrepTimeMinutes <= request.MaxPrepTime.Value);
+        }
+
+        if (request.MaxCookTime.HasValue)
+        {
+            query = query.Where(r => r.CookTimeMinutes <= request.MaxCookTime.Value);
+        }
+
+        if (request.MaxTotalTime.HasValue)
+        {
+            query = query.Where(r => (r.PrepTimeMinutes + r.CookTimeMinutes) <= request.MaxTotalTime.Value);
+        }
+
+        if (request.MinCalories.HasValue)
+        {
+            query = query.Where(r => r.Nutrition != null && r.Nutrition.Calories != null && r.Nutrition.Calories >= request.MinCalories.Value);
+        }
+
+        if (request.MaxCalories.HasValue)
+        {
+            query = query.Where(r => r.Nutrition != null && r.Nutrition.Calories != null && r.Nutrition.Calories <= request.MaxCalories.Value);
         }
 
         // 4. Đếm tổng số bản ghi thỏa mãn điều kiện
@@ -57,9 +88,10 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             return new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
         }
 
-        // 5. Sắp xếp mặc định: Bài mới nhất lên đầu (PublishedAt ?? CreatedAt DESC) và phân trang
-        var items = await query
-            .OrderByDescending(r => r.PublishedAt ?? r.CreatedAt)
+        // 5. Áp dụng sắp xếp linh hoạt theo whitelist (FR-SRCH-003) và phân trang
+        var sortedQuery = ApplySorting(query, request.SortBy, request.SortOrder);
+
+        var items = await sortedQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(r => new RecipeSummaryDto
@@ -94,5 +126,50 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         _logger.LogInformation("Tìm thấy {Count}/{Total} Recipes cho trang {Page}", items.Count, total, page);
 
         return new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
+    }
+
+    /// <summary>
+    /// Áp dụng sắp xếp động theo danh sách whitelist quy định trong SRS FR-SRCH-003 và quyết định 2440.
+    /// </summary>
+    private static IQueryable<Recipe> ApplySorting(IQueryable<Recipe> query, string? sortBy, string? sortOrder)
+    {
+        var normalizedSortBy = sortBy?.Trim().ToLowerInvariant();
+        var isAsc = string.Equals(sortOrder?.Trim(), "asc", StringComparison.OrdinalIgnoreCase);
+
+        return normalizedSortBy switch
+        {
+            "totaltime" or "quickest" => isAsc
+                ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
+                : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
+
+            "preptime" => isAsc
+                ? query.OrderBy(r => r.PrepTimeMinutes)
+                : query.OrderByDescending(r => r.PrepTimeMinutes),
+
+            "cooktime" => isAsc
+                ? query.OrderBy(r => r.CookTimeMinutes)
+                : query.OrderByDescending(r => r.CookTimeMinutes),
+
+            "calories" => isAsc
+                ? query.OrderBy(r => r.Nutrition!.Calories)
+                : query.OrderByDescending(r => r.Nutrition!.Calories),
+
+            "title" => isAsc
+                ? query.OrderBy(r => r.Title)
+                : query.OrderByDescending(r => r.Title),
+
+            "servings" => isAsc
+                ? query.OrderBy(r => r.Servings)
+                : query.OrderByDescending(r => r.Servings),
+
+            "createdat" => isAsc
+                ? query.OrderBy(r => r.CreatedAt)
+                : query.OrderByDescending(r => r.CreatedAt),
+
+            // Mặc định hoặc "publishedat" / "newest"
+            _ => isAsc
+                ? query.OrderBy(r => r.PublishedAt ?? r.CreatedAt)
+                : query.OrderByDescending(r => r.PublishedAt ?? r.CreatedAt)
+        };
     }
 }
