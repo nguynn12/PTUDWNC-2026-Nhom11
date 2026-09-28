@@ -172,5 +172,14 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .WithOne(img => img.Recipe)
             .HasForeignKey(img => img.RecipeId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // 13. Full-Text Search tsvector (Shadow Property) và GIN Index (mục 3.4 & 7.2 SRS)
+        builder.Property<NpgsqlTypes.NpgsqlTsVector>("SearchVector")
+            .HasColumnType("tsvector")
+            .IsRequired(false);
+
+        builder.HasIndex("SearchVector")
+            .HasMethod("GIN")
+            .HasDatabaseName("IX_Recipes_SearchVector");
     }
 }
