@@ -22,7 +22,7 @@ public static class CategoryEndpoints
             .WithTags("Categories");
 
         // FR-CAT-001: Lấy danh sách tất cả danh mục (Public)
-        group.MapGet("/", async (ISender sender, CancellationToken cancellationToken) =>
+        group.MapGet("", async (ISender sender, CancellationToken cancellationToken) =>
         {
             var categories = await sender.Send(new GetCategoriesQuery(), cancellationToken);
             return Results.Ok(new ApiResponse<IEnumerable<CategoryDto>>(categories));
@@ -51,7 +51,7 @@ public static class CategoryEndpoints
         .ProducesProblem(StatusCodes.Status404NotFound);
 
         // FR-CAT-003: Tạo danh mục mới (Admin)
-        group.MapPost("/", async (CreateCategoryRequest request, ISender sender, CancellationToken cancellationToken) =>
+        group.MapPost("", async (CreateCategoryRequest request, ISender sender, CancellationToken cancellationToken) =>
         {
             var command = new CreateCategoryCommand(
                 request.Name,

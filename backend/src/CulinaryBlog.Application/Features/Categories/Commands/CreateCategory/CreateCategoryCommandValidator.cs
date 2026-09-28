@@ -12,7 +12,8 @@ public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCo
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Tên danh mục không được để trống.")
             .Length(2, 100).WithMessage("Tên danh mục phải có độ dài từ 2 đến 100 ký tự.")
-            .Must(name => !name.Contains('<') && !name.Contains('>')).WithMessage("Tên danh mục không được chứa thẻ HTML.");
+            .Must(name => string.IsNullOrEmpty(name) || (!name.Contains('<') && !name.Contains('>')))
+            .WithMessage("Tên danh mục không được chứa thẻ HTML.");
 
         RuleFor(x => x.OrderIndex)
             .GreaterThanOrEqualTo(0).WithMessage("Thứ tự hiển thị phải lớn hơn hoặc bằng 0.");
