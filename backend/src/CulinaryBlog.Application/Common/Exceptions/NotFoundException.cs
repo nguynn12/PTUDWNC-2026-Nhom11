@@ -5,7 +5,10 @@ namespace CulinaryBlog.Application.Common.Exceptions;
 /// </summary>
 public class NotFoundException : Exception
 {
-    public NotFoundException(string message) : base(message)
+    public string ErrorCode { get; }
+
+    public NotFoundException(string message, string errorCode = "RESOURCE_NOT_FOUND") : base(message)
     {
+        ErrorCode = errorCode;
     }
 }

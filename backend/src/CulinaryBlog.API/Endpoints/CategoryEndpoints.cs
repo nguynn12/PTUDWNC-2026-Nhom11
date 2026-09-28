@@ -39,7 +39,7 @@ public static class CategoryEndpoints
 
             if (category is null)
             {
-                throw new NotFoundException($"Không tìm thấy danh mục với đường dẫn '{slug}'.");
+                throw new NotFoundException($"Không tìm thấy danh mục với đường dẫn '{slug}'.", "CATEGORY_NOT_FOUND");
             }
 
             return Results.Ok(new ApiResponse<CategoryDetailDto>(category));

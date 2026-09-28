@@ -37,19 +37,13 @@ if (app.Environment.IsDevelopment())
 
 var api = app.MapGroup("/api/v1");
 api.MapCategoryEndpoints();
+api.MapRecipeEndpoints();
 
 api.MapGet("/", () => Results.Ok(new
 {
     name = "Culinary Blog API",
     version = "v1"
 }));
-
-api.MapGet("/recipes", async (CulinaryBlogDbContext dbContext) =>
-{
-    var count = await dbContext.Recipes.CountAsync();
-    var sample = await dbContext.Recipes.Take(10).ToListAsync();
-    return Results.Ok(new { total = count, sample });
-});
 
 api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 {

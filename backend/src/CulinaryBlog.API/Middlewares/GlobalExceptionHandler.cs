@@ -45,7 +45,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             ),
             NotFoundException notFoundEx => (
                 StatusCodes.Status404NotFound,
-                "CATEGORY_NOT_FOUND",
+                string.IsNullOrWhiteSpace(notFoundEx.ErrorCode) ? "RESOURCE_NOT_FOUND" : notFoundEx.ErrorCode,
                 "Not Found",
                 notFoundEx.Message,
                 null
