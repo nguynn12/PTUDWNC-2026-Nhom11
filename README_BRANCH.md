@@ -55,7 +55,7 @@ Nhánh được triển khai theo các commits độc lập, mỗi commit hoàn 
 ```text
 develop (40ab20a)
    │
-   ├── Commit 01: tài liệu: bổ sung README_BRANCH phân công công việc và lộ trình nhánh backend TV4
+   ├── Commit 01: tài liệu: bổ sung README_BRANCH phân công công việc và lộ trình nhánh backend
    ├── Commit 02: thêm: DTOs và Request Contracts cho phân hệ Recipe Content và Media
    ├── Commit 03: thêm: dịch vụ trừu tượng IFileStorageService và kiểm tra Magic Bytes file ảnh
    ├── Commit 04: thêm: Commands và Handlers quản lý Nguyên liệu (RecipeIngredient)
@@ -63,7 +63,7 @@ develop (40ab20a)
    ├── Commit 06: thêm: Commands và Handlers quản lý Hình ảnh (RecipeImage) và logic xử lý ảnh chính
    ├── Commit 07: thêm: Minimal API Endpoints cho phân hệ Recipe Content (Ingredients, Steps, Images)
    ├── Commit 08: kiểm-thử: bổ sung Unit Tests cho phân hệ Recipe Content và Media
-   └── Commit 09: hoàn thiện: tổng kết và rà soát nghiệm thu toàn diện phân hệ Backend TV4
+   └── Commit 09: hoàn thiện: tổng kết và rà soát nghiệm thu toàn diện phân hệ Backend
          │
          ▼
    Tạo Pull Request vào nhánh develop
@@ -98,3 +98,17 @@ develop (40ab20a)
 - **Quyền hạn:** Kiểm tra quyền tác giả sở hữu công thức (`AuthorId == currentUserId` hoặc role `Admin`).
 - **An toàn tệp tin:** Kiểm tra định dạng ảnh bằng Magic Bytes thực tế, chặn file độc hại, giới hạn 5MB.
 - **Biên dịch & Kiểm thử:** `dotnet build` đạt 0 Warning, 0 Error; 100% Unit Tests passed.
+
+---
+
+## 6. Kết quả Thực hiện & Nghiệm thu (Verification Summary)
+- **Trạng thái Biên dịch:** `dotnet build backend/CulinaryBlog.slnx` đạt **0 Warning, 0 Error**.
+- **Trạng thái Kiểm thử:** `dotnet test backend/CulinaryBlog.slnx` đạt **49/49 Unit Tests passed (100%)**.
+  - Kiểm tra Magic Bytes, MIME types, giới hạn 5MB, chặn file giả mạo (`FileValidationHelperTests`).
+  - Kiểm tra quy tắc định lượng số học và đơn vị đo lường nullable theo quyết định E1 & E2 (`RecipeIngredientValidatorTests`).
+  - Kiểm tra mô tả, thời gian ước tính, thứ tự và sắp xếp bước nấu theo quyết định E5 (`RecipeStepValidatorTests`).
+  - Kiểm tra cập nhật metadata ảnh, ràng buộc độ dài và hợp đồng `imageId` theo quyết định E6 & E7 (`RecipeImageValidatorTests`).
+  - Kiểm tra vỏ bọc phản hồi API theo quyết định C2 (`ApiResponseEnvelopeTests`).
+  - Kiểm tra lưu trữ file an toàn, phòng chống path traversal và xóa idempotent (`FileStorageServiceTests`).
+  - Kiểm tra các thực thể và seeder (`RecipeDetailEntityTests`, `RecipeDetailSeederTests`).
+- **Endpoints đã sẵn sàng:** Đầy đủ 11 Minimal API Endpoints tại `/api/v1/recipes/{id}/ingredients`, `/steps`, `/images` kèm middleware xử lý lỗi Problem Details.
