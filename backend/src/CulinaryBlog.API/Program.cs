@@ -1,3 +1,5 @@
+using CulinaryBlog.API.Endpoints;
+using CulinaryBlog.API.Infrastructure;
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -8,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -38,6 +41,11 @@ api.MapGet("/", () => Results.Ok(new
     name = "Culinary Blog API",
     version = "v1"
 }));
+
+// Đăng ký các endpoints của phân hệ Recipe Content và Media (Thành viên 4)
+api.MapRecipeIngredientEndpoints();
+api.MapRecipeStepEndpoints();
+api.MapRecipeImageEndpoints();
 
 api.MapGet("/recipes", async (CulinaryBlogDbContext dbContext) =>
 {
