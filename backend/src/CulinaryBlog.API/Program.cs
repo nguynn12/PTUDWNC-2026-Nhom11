@@ -1,3 +1,4 @@
+using CulinaryBlog.API;
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -7,13 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddProblemDetails();
+builder.Services.AddPresentation();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+// Exception → RFC 7807 Problem Details (GlobalExceptionHandler); response lỗi không có body
+// (404 route không tồn tại, 405, 401/403 từ middleware) cũng được trả dạng Problem Details.
 app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 // Tự động Migrate và Seed dữ liệu mẫu (User/Role/Recipe) ở môi trường Development
 if (app.Environment.IsDevelopment())
