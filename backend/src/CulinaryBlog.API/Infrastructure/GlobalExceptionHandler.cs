@@ -1,13 +1,14 @@
 namespace CulinaryBlog.API.Infrastructure;
 
 using CulinaryBlog.Application.Common.Exceptions;
+using CulinaryBlog.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// Trình xử lý ngoại lệ toàn cục cho Minimal API theo chuẩn RFC 7807 Problem Details.
-/// Ánh xạ các ngoại lệ nghiệp vụ sang HTTP status code tương ứng (400, 403, 404, 409, 422).
-/// Tuân thủ nghiêm ngặt quyết định kiến trúc RESOLVED-CONFLICTS.md (C3, C6).
+/// Ánh xạ các ngoại lệ nghiệp vụ và Domain Exceptions sang HTTP status code tương ứng (400, 403, 404, 409, 422).
+/// Tuân thủ nghiêm ngặt quyết định kiến trúc RESOLVED-CONFLICTS.md (C3, C6) và yêu cầu tối thiểu Lab 3.
 /// </summary>
 public class GlobalExceptionHandler : IExceptionHandler
 {
@@ -28,9 +29,10 @@ public class GlobalExceptionHandler : IExceptionHandler
         var (statusCode, title) = exception switch
         {
             ValidationException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
-            NotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
-            ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden"),
-            ConflictException => (StatusCodes.Status409Conflict, "Conflict"),
+            BusinessRuleValidationException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
+            EntityNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            ForbiddenDomainException => (StatusCodes.Status403Forbidden, "Forbidden"),
+            ConcurrencyConflictException => (StatusCodes.Status409Conflict, "Conflict"),
             BadRequestException => (StatusCodes.Status400BadRequest, "Bad Request"),
             _ => (StatusCodes.Status500InternalServerError, "Internal Server Error")
         };

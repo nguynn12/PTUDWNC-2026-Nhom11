@@ -1,10 +1,12 @@
 namespace CulinaryBlog.Application.Common.Exceptions;
 
+using CulinaryBlog.Domain.Exceptions;
+
 /// <summary>
 /// Ngoại lệ ném ra khi dữ liệu đầu vào vi phạm quy tắc nghiệp vụ hoặc kiểm thực (HTTP 422 Unprocessable Entity).
-/// Tuân thủ RFC 7807 và quyết định kiến trúc RESOLVED-CONFLICTS.md (C3).
+/// Kế thừa BusinessRuleValidationException từ Domain Layer để đảm bảo tính nhất quán kiến trúc.
 /// </summary>
-public class ValidationException : Exception
+public class ValidationException : BusinessRuleValidationException
 {
     public IDictionary<string, string[]> Errors { get; }
 
@@ -15,7 +17,7 @@ public class ValidationException : Exception
     }
 
     public ValidationException(string propertyName, string errorMessage)
-        : base(errorMessage)
+        : base(propertyName, errorMessage)
     {
         Errors = new Dictionary<string, string[]>
         {

@@ -2,6 +2,7 @@ using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
+using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,13 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
+
+        // ── Repository và Unit of Work (Yêu cầu chung Lab 3) ─────────────────────
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IRecipeIngredientRepository, RecipeIngredientRepository>();
+        services.AddScoped<IRecipeStepRepository, RecipeStepRepository>();
+        services.AddScoped<IRecipeImageRepository, RecipeImageRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // ── Dịch vụ lưu trữ tệp tin (Thành viên 4) ───────────────────────────────
         services.AddScoped<IFileStorageService, FileStorageService>();
