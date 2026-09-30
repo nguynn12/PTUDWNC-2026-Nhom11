@@ -514,9 +514,8 @@ namespace CulinaryBlog.Infrastructure.Migrations
                         .IsFixedLength();
 
                     b.Property<string>("RevocationReason")
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
-                        .HasColumnName("ReasonRevoked");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("timestamptz");

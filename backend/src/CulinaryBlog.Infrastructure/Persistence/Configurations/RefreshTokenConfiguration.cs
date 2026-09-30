@@ -35,9 +35,9 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .HasMaxLength(64)
             .IsFixedLength();
 
+        // SRS 7.8: RevocationReason varchar(100) — khớp cột đã tạo trong migration InitialCreate.
         builder.Property(rt => rt.RevocationReason)
-            .HasColumnName("ReasonRevoked")
-            .HasMaxLength(250);
+            .HasMaxLength(100);
 
         builder.Property(rt => rt.CreatedAt)
             .HasColumnType("timestamptz")
