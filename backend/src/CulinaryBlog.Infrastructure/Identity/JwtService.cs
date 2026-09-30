@@ -10,6 +10,9 @@ namespace CulinaryBlog.Infrastructure.Identity;
 
 public class JwtService : IJwtService
 {
+    /// <summary>Tên claim chứa role trong access token (mảng JSON khi user có nhiều role).</summary>
+    public const string RolesClaim = "roles";
+
     private readonly JwtSettings _settings;
 
     public JwtService(IOptions<JwtSettings> settings)
@@ -29,7 +32,8 @@ public class JwtService : IJwtService
             new Claim("email_verified", emailConfirmed.ToString().ToLower())
         };
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        // SRS NFR-SEC: claim tối thiểu sub, email, roles, jti.
+        claims.AddRange(roles.Select(role => new Claim(RolesClaim, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
