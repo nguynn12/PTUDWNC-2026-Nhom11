@@ -40,6 +40,9 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 var api = app.MapGroup("/api/v1");
 api.MapGet("/", () => Results.Ok(new
 {
