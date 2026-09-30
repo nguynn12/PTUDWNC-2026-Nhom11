@@ -131,7 +131,7 @@ public class IdentityService : IIdentityService
         return user == null ? null : await ToAccountAsync(user);
     }
 
-    public async Task<bool> UpdateProfileAsync(string userId, string displayName, string? bio, string? avatarUrl)
+    public async Task<bool> UpdateProfileAsync(string userId, string? displayName, string? bio, string? avatarUrl)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return false;

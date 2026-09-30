@@ -28,8 +28,14 @@ internal sealed class FakeIdentityService : IIdentityService
 
     public Task<bool> AuthorizeAsync(string userId, string policyName) => throw new NotSupportedException();
 
-    public Task<bool> UpdateProfileAsync(string userId, string displayName, string? bio, string? avatarUrl) =>
-        throw new NotSupportedException();
+    /// <summary>Tham số của lần gọi <see cref="UpdateProfileAsync"/> gần nhất.</summary>
+    public (string? DisplayName, string? Bio, string? AvatarUrl)? LastProfileUpdate { get; private set; }
+
+    public Task<bool> UpdateProfileAsync(string userId, string? displayName, string? bio, string? avatarUrl)
+    {
+        LastProfileUpdate = (displayName, bio, avatarUrl);
+        return Task.FromResult(Account is not null);
+    }
 
     public Task<bool> ToggleUserStatusAsync(string userId, bool isActive) => throw new NotSupportedException();
 

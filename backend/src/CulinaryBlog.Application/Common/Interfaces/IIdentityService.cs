@@ -23,7 +23,8 @@ public interface IIdentityService
 
     Task<UserAccount?> GetUserDetailsByEmailAsync(string email);
     Task<UserAccount?> GetUserDetailsByIdAsync(string userId);
-    Task<bool> UpdateProfileAsync(string userId, string displayName, string? bio, string? avatarUrl);
+    /// <summary>Cập nhật hồ sơ (FR-AUTH-007); tham số null thì giữ nguyên giá trị cũ.</summary>
+    Task<bool> UpdateProfileAsync(string userId, string? displayName, string? bio, string? avatarUrl);
     Task<bool> ToggleUserStatusAsync(string userId, bool isActive);
     Task<string?> GeneratePasswordResetTokenAsync(string email);
     Task<bool> ResetPasswordAsync(string email, string token, string newPassword);
