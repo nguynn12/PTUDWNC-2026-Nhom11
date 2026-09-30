@@ -97,18 +97,7 @@ public static class DependencyInjection
             };
         });
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(CulinaryBlog.Domain.Constants.Roles.Admin, policy => 
-                policy.RequireRole(CulinaryBlog.Domain.Constants.Roles.Admin));
-                
-            options.AddPolicy(CulinaryBlog.Domain.Constants.Roles.Author, policy => 
-                policy.RequireRole(CulinaryBlog.Domain.Constants.Roles.Author));
-                
-            options.AddPolicy(CulinaryBlog.Domain.Constants.Policies.VerifiedAuthor, policy => 
-                policy.RequireRole(CulinaryBlog.Domain.Constants.Roles.Author)
-                      .RequireClaim("email_verified", "true"));
-        });
+        services.AddAuthorization(AuthorizationPolicies.Configure);
 
         return services;
     }
