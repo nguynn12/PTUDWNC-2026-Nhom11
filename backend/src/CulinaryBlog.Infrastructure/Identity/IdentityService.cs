@@ -61,4 +61,44 @@ public class IdentityService : IIdentityService
         
         return (user.Id, user.Email!, user.DisplayName, roles, user.EmailConfirmed);
     }
+
+    public async Task<(string Id, string Email, string DisplayName, IEnumerable<string> Roles, bool EmailConfirmed)?> GetUserDetailsByIdAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return null;
+
+        var roles = await _userManager.GetRolesAsync(user);
+        
+        return (user.Id, user.Email!, user.DisplayName, roles, user.EmailConfirmed);
+    }
+
+    public async Task<bool> UpdateProfileAsync(string userId, string displayName, string? bio, string? avatarUrl)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        user.UpdateProfile(displayName, avatarUrl, bio);
+        var result = await _userManager.UpdateAsync(user);
+        
+        return result.Succeeded;
+    }
+
+    public async Task<bool> ToggleUserStatusAsync(string userId, bool isActive)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        if (isActive)
+        {
+            user.Activate();
+        }
+        else
+        {
+            user.Deactivate();
+        }
+        
+        var result = await _userManager.UpdateAsync(user);
+        
+        return result.Succeeded;
+    }
 }

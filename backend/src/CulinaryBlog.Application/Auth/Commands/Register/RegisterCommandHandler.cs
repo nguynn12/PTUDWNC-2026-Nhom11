@@ -37,7 +37,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 
         // 60 days expiry by default? Should be from config, but let's assume 7 days for refresh token.
         // Wait, IP address? The handler doesn't have HttpContext. Let's just pass empty or inject it.
-        var refreshToken = RefreshToken.CreateNewFamily(userId, tokenHash, 7, "127.0.0.1");
+        var refreshToken = CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(userId, tokenHash, 7, "127.0.0.1");
         
         _context.RefreshTokens.Add(refreshToken);
         await _context.SaveChangesAsync(cancellationToken);

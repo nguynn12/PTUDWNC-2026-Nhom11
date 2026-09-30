@@ -44,7 +44,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
         var (tokenHash, rawToken) = _jwtService.GenerateRefreshToken();
         
-        var refreshToken = RefreshToken.CreateNewFamily(userDetails.Value.Id, tokenHash, 7, "127.0.0.1");
+        var refreshToken = CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(userDetails.Value.Id, tokenHash, 7, "127.0.0.1");
         
         _context.RefreshTokens.Add(refreshToken);
         await _context.SaveChangesAsync(cancellationToken);

@@ -20,6 +20,7 @@ var app = builder.Build();
 // (404 route không tồn tại, 405, 401/403 từ middleware) cũng được trả dạng Problem Details.
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseRateLimiter();
 
 // Tự động Migrate và Seed dữ liệu mẫu (User/Role/Recipe) ở môi trường Development
 if (app.Environment.IsDevelopment())
@@ -45,6 +46,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuthEndpoints();
+app.MapAdminUserEndpoints();
 
 var api = app.MapGroup("/api/v1");
 api.MapGet("/", () => Results.Ok(new
