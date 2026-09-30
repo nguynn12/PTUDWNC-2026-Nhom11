@@ -1,5 +1,6 @@
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
+using CulinaryBlog.Domain.Constants;
 using Microsoft.AspNetCore.Identity;
 
 namespace CulinaryBlog.Infrastructure.Identity;
@@ -32,17 +33,56 @@ public class IdentityService : IIdentityService
         throw new NotImplementedException();
     }
     
-    public async Task<(bool Succeeded, string? Error, string UserId)> CreateUserAsync(string email, string password, string displayName)
+    public async Task<CreateUserResult> CreateUserAsync(string email, string password, string displayName)
     {
+        // Email unique, không phân biệt hoa thường (Identity so theo NormalizedEmail).
+        if (await _userManager.FindByEmailAsync(email) != null)
+        {
+            return CreateUserResult.Duplicate();
+        }
+
         var user = ApplicationUser.Create(email, displayName);
         var result = await _userManager.CreateAsync(user, password);
-        
-        if (result.Succeeded)
+
+        if (!result.Succeeded)
         {
-            return (true, null, user.Id);
+            // Trường hợp 2 request đăng ký cùng email chạy song song.
+            if (result.Errors.Any(error => error.Code is "DuplicateEmail" or "DuplicateUserName"))
+            {
+                return CreateUserResult.Duplicate();
+            }
+
+            var errors = result.Errors
+                .GroupBy(error => FieldForIdentityError(error.Code))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(error => error.Description).ToArray(),
+                    StringComparer.Ordinal);
+
+            return CreateUserResult.Failed(errors);
         }
-        
-        return (false, string.Join("; ", result.Errors.Select(e => e.Description)), string.Empty);
+
+        // SRS FR-AUTH-001: user mới luôn có role Author.
+        var roleResult = await _userManager.AddToRoleAsync(user, Roles.Author);
+        if (!roleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(user);
+            throw new InvalidOperationException(
+                "Không gán được role Author cho tài khoản mới: " +
+                string.Join("; ", roleResult.Errors.Select(error => error.Description)));
+        }
+
+        return CreateUserResult.Success(user.Id);
+    }
+
+    private static string FieldForIdentityError(string code)
+    {
+        if (code.StartsWith("Password", StringComparison.Ordinal))
+        {
+            return "password";
+        }
+
+        return code is "InvalidEmail" or "InvalidUserName" ? "email" : "account";
     }
 
     public async Task<CredentialCheckResult> CheckCredentialsAsync(string email, string password)

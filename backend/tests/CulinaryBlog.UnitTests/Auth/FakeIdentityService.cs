@@ -8,14 +8,14 @@ internal sealed class FakeIdentityService : IIdentityService
 {
     public CredentialCheckResult CredentialResult { get; set; } = new(CredentialCheckStatus.InvalidCredentials);
 
-    public (bool Succeeded, string? Error, string UserId) CreateResult { get; set; } = (true, null, "new-user");
+    public CreateUserResult CreateResult { get; set; } = CreateUserResult.Success("new-user");
 
     public UserAccount? Account { get; set; }
 
     public Task<CredentialCheckResult> CheckCredentialsAsync(string email, string password) =>
         Task.FromResult(CredentialResult);
 
-    public Task<(bool Succeeded, string? Error, string UserId)> CreateUserAsync(string email, string password, string displayName) =>
+    public Task<CreateUserResult> CreateUserAsync(string email, string password, string displayName) =>
         Task.FromResult(CreateResult);
 
     public Task<UserAccount?> GetUserDetailsByEmailAsync(string email) => Task.FromResult(Account);

@@ -12,7 +12,8 @@ public interface IIdentityService
     Task<bool> AuthorizeAsync(string userId, string policyName);
 
     // Auth specific methods
-    Task<(bool Succeeded, string? Error, string UserId)> CreateUserAsync(string email, string password, string displayName);
+    /// <summary>Tạo tài khoản mới và gán role Author (SRS FR-AUTH-001).</summary>
+    Task<CreateUserResult> CreateUserAsync(string email, string password, string displayName);
 
     /// <summary>
     /// Kiểm tra đăng nhập theo đúng thứ tự: lockout → mật khẩu (tăng bộ đếm sai) → IsActive.

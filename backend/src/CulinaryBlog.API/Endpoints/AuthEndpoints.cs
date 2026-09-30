@@ -22,10 +22,11 @@ public static class AuthEndpoints
             .WithTags("Auth")
             .RequireRateLimiting("Auth");
 
+        // FR-AUTH-001: 201 Created; body token ở top-level (RESOLVED-CONFLICTS C2 — ngoại lệ /auth/*).
         group.MapPost("/register", async (RegisterCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
-            return Results.Ok(result);
+            return Results.Created("/api/v1/auth/me", result);
         });
 
         group.MapPost("/login", async (LoginCommand command, ISender sender) =>
