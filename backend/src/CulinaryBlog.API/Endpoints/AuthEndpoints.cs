@@ -64,11 +64,13 @@ public static class AuthEndpoints
             return Results.NoContent();
         });
 
+        // RESOLVED-CONFLICTS D3: logout chỉ cần refreshToken trong body, KHÔNG yêu cầu access
+        // token còn hạn (access token có thể đã hết hạn khi người dùng bấm đăng xuất).
         group.MapPost("/logout", async (LogoutCommand command, ISender sender) =>
         {
             await sender.Send(command);
             return Results.NoContent();
-        }).RequireAuthorization();
+        });
 
         group.MapGet("/me", async (ISender sender) =>
         {
