@@ -1,6 +1,6 @@
+using CulinaryBlog.API.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace CulinaryBlog.API;
 
@@ -21,17 +21,12 @@ public static class DependencyInjection
         // trả 400 MALFORMED_REQUEST thống nhất ở mọi môi trường (RESOLVED-CONFLICTS C3).
         services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
+        // NFR-SEC: 10 request/phút/IP cho nhóm endpoint /api/v1/auth (AuthEndpoints dùng policy này).
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            
-            options.AddFixedWindowLimiter("Auth", limiterOptions =>
-            {
-                limiterOptions.PermitLimit = 5;
-                limiterOptions.Window = TimeSpan.FromMinutes(1);
-                limiterOptions.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-                limiterOptions.QueueLimit = 0;
-            });
+            options.OnRejected = AuthRateLimiting.OnRejectedAsync;
+            options.AddPolicy(AuthRateLimiting.PolicyName, AuthRateLimiting.GetPartition);
         });
 
         return services;

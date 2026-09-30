@@ -1,3 +1,4 @@
+using CulinaryBlog.API.RateLimiting;
 using CulinaryBlog.Application.Auth.Commands.Login;
 using CulinaryBlog.Application.Auth.Commands.Logout;
 using CulinaryBlog.Application.Auth.Commands.RefreshToken;
@@ -20,7 +21,7 @@ public static class AuthEndpoints
     {
         var group = app.MapGroup("/api/v1/auth")
             .WithTags("Auth")
-            .RequireRateLimiting("Auth");
+            .RequireRateLimiting(AuthRateLimiting.PolicyName);
 
         // FR-AUTH-001: 201 Created; body token ở top-level (RESOLVED-CONFLICTS C2 — ngoại lệ /auth/*).
         group.MapPost("/register", async (RegisterCommand command, ISender sender) =>
