@@ -3,6 +3,10 @@ using CulinaryBlog.Application.Auth.Commands.Logout;
 using CulinaryBlog.Application.Auth.Commands.RefreshToken;
 using CulinaryBlog.Application.Auth.Commands.Register;
 using CulinaryBlog.Application.Auth.Commands.UpdateProfile;
+using CulinaryBlog.Application.Auth.Commands.ConfirmEmail;
+using CulinaryBlog.Application.Auth.Commands.ResendConfirmationEmail;
+using CulinaryBlog.Application.Auth.Commands.ForgotPassword;
+using CulinaryBlog.Application.Auth.Commands.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -34,6 +38,30 @@ public static class AuthEndpoints
         {
             var result = await sender.Send(command);
             return Results.Ok(result);
+        });
+
+        group.MapPost("/email/confirm", async (ConfirmEmailCommand command, ISender sender) =>
+        {
+            await sender.Send(command);
+            return Results.NoContent();
+        });
+
+        group.MapPost("/email/resend", async (ResendConfirmationEmailCommand command, ISender sender) =>
+        {
+            await sender.Send(command);
+            return Results.NoContent();
+        });
+
+        group.MapPost("/password/forgot", async (ForgotPasswordCommand command, ISender sender) =>
+        {
+            await sender.Send(command);
+            return Results.NoContent();
+        });
+
+        group.MapPost("/password/reset", async (ResetPasswordCommand command, ISender sender) =>
+        {
+            await sender.Send(command);
+            return Results.NoContent();
         });
 
         group.MapPost("/logout", async (LogoutCommand command, ISender sender) =>
