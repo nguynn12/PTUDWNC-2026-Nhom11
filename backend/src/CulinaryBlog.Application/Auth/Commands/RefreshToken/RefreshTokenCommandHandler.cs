@@ -88,7 +88,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         {
             AccessToken = accessToken,
             RefreshToken = newRawToken,
-            ExpiresIn = 900,
+            ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
             User = new UserDto
             {
                 Id = userDetails.Value.Id,

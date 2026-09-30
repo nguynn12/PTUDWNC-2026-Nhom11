@@ -46,7 +46,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         {
             AccessToken = accessToken,
             RefreshToken = rawToken,
-            ExpiresIn = 900, // 15 mins
+            ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
             User = new UserDto
             {
                 Id = userId,

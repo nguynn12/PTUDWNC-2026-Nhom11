@@ -53,7 +53,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
         {
             AccessToken = accessToken,
             RefreshToken = rawToken,
-            ExpiresIn = 900,
+            ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
             User = new UserDto
             {
                 Id = userDetails.Value.Id,

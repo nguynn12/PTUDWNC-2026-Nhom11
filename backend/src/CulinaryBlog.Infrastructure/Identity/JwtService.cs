@@ -17,6 +17,8 @@ public class JwtService : IJwtService
         _settings = settings.Value;
     }
 
+    public int AccessTokenLifetimeSeconds => _settings.ExpiryMinutes * 60;
+
     public string GenerateAccessToken(string userId, string email, IEnumerable<string> roles, bool emailConfirmed)
     {
         var claims = new List<Claim>
