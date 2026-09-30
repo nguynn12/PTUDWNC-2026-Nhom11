@@ -96,6 +96,40 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 | **Recipe Content và Media** | API Ingredient, Recipe Step, Recipe Image hoạt động; chức năng upload file tích hợp thành công với MinIO |
 | **Tích hợp và build** | Toàn bộ API được kiểm thử; toàn bộ Backend build thành công (`0 Error`, `0 Warning`) và pass tất cả Unit Tests sau khi tích hợp |
 
+## Phân công bài tập Lab - Buổi 4
+
+**Mục tiêu:** Hoàn thiện 100% toàn bộ 41 Backend REST API Endpoints của hệ thống theo Clean Architecture và bắt đầu triển khai 14 Màn hình / Routes Frontend với Next.js 15 App Router, Tailwind CSS, TanStack Query v5, Zustand, React Hook Form + Zod, Auth.js v5. Tích hợp trọn vẹn luồng dữ liệu Full-Stack giữa Backend .NET 10 (cổng 5000) và Frontend Next.js (cổng 3000).
+
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên (Trưởng nhóm) | Nguyễn Phú Quý |
+|---|---|---|---|---|
+| **Module phụ trách** | **Tài khoản, Xác thực & Phân quyền** | **Category, Khám phá & Tra cứu** | **Vòng đời công thức & Giám sát hệ thống** | **Nội dung chi tiết & Đa phương tiện công thức** |
+| **Backend REST API** *(41 APIs)* | **10 Endpoints** (`FR-AUTH-001..007`):<br>- `POST /auth/register`<br>- `POST /auth/login`<br>- `POST /auth/google`<br>- `POST /auth/refresh`<br>- `POST /auth/logout`<br>- `POST /auth/confirm-email`<br>- `POST /auth/resend-confirmation`<br>- `GET /auth/me`<br>- `PATCH /auth/me`<br>- `GET /auth/lockout-status` | **10 Endpoints** (`FR-CAT-001..005`, `FR-RCP-001/002`, `FR-SRCH-001..004`, `FR-OBS-001`):<br>- `GET /categories`<br>- `GET /categories/{slug}`<br>- `POST /categories`<br>- `PUT /categories/{id}`<br>- `DELETE /categories/{id}`<br>- `GET /recipes`<br>- `GET /recipes/{slug}`<br>- `GET /recipes/search`<br>- `GET /health`<br>- `GET /health/live` | **11 Endpoints** (`FR-RCP-003..007`, `FR-OBS-001`):<br>- `POST /recipes`<br>- `PUT /recipes/{id}`<br>- `POST /recipes/{id}/publish`<br>- `POST /recipes/{id}/unpublish`<br>- `POST /recipes/{id}/archive`<br>- `POST /recipes/{id}/unarchive`<br>- `DELETE /recipes/{id}`<br>- `GET /recipes/trash`<br>- `POST /recipes/{id}/restore`<br>- `DELETE /recipes/{id}/purge`<br>- `GET /health/ready` | **10 Endpoints** (`FR-RCP-008..010`, `FR-FILE-001/002`):<br>- `POST /recipes/{id}/images`<br>- `PUT /recipes/{id}/images/{imgId}`<br>- `DELETE /recipes/{id}/images/{imgId}`<br>- `POST /recipes/{id}/ingredients`<br>- `PUT /recipes/{id}/ingredients/{ingId}`<br>- `DELETE /recipes/{id}/ingredients/{ingId}`<br>- `POST /recipes/{id}/steps`<br>- `PUT /recipes/{id}/steps/{stepId}`<br>- `DELETE /recipes/{id}/steps/{stepId}`<br>- `PUT /recipes/{id}/steps/reorder` |
+| **Frontend UI & Màn hình** *(14 Screens)* | **3 Màn hình + Auth Middleware**:<br>- `/auth/login` (CSR)<br>- `/auth/register` (CSR)<br>- `/profile` (CSR)<br>- Cấu hình Auth.js v5 (NextAuth), Middleware bảo vệ Route theo Role và Axios Interceptor tự động Refresh JWT Token | **6 Màn hình & Tối ưu SEO**:<br>- `/` Home (ISR 3600s)<br>- `/categories` & `/categories/[slug]` (ISR)<br>- `/recipes` Danh sách & Bộ lọc (SSR)<br>- `/search` Tìm kiếm FTS (SSR/CSR)<br>- `/recipes/[slug]` Chi tiết bài viết & Schema JSON-LD (ISR 300s)<br>- `/dashboard/categories` Quản lý danh mục Admin (CSR) | **3 Màn hình & Concurrency Control**:<br>- `/dashboard` Tổng quan Dashboard (CSR)<br>- `/dashboard/recipes` Quản lý bài viết cá nhân & thao tác vòng đời (CSR)<br>- `/admin/recipes/trash` Thùng rác công thức: Khôi phục & Xóa vĩnh viễn (CSR)<br>- Xử lý Concurrency Header `If-Match: "{xmin}"` và Modal xử lý xung đột 409 Conflict | **2 Màn hình & Quản lý Media**:<br>- `/dashboard/recipes/new` Multi-step Wizard 4 bước (CSR)<br>- `/dashboard/recipes/[id]/edit` Chỉnh sửa toàn diện công thức (CSR)<br>- Form mảng động `useFieldArray` cho Nguyên liệu & Các bước làm<br>- Upload file lên MinIO và tối ưu hóa hình ảnh với Next.js `<Image>` |
+| **Trách nhiệm kỹ thuật cốt lõi** | Quản lý vòng đời JWT/Refresh Token; mã hóa mật khẩu; xử lý khóa tài khoản Lockout; phân quyền `Author`/`Admin`; bảo vệ an toàn cho các API nhạy cảm | Tối ưu hóa truy vấn PostgreSQL Full-Text Search (SearchVector + GIN index, Trigram similarity); cài đặt Liveness Probe; cấu hình ISR/SSR tối ưu SEO | Đảm bảo tính toàn vẹn trạng thái vòng đời Recipe; slug bất biến sau xuất bản; chống ghi đè dữ liệu (Optimistic Concurrency Control qua `xmin`); cài đặt Readiness Probe kiểm tra DB & MinIO | Xử lý validation upload file ảnh (dung lượng tối đa 5MB, định dạng cho phép); cập nhật thứ tự `OrderIndex` của bước làm; đồng bộ lưu trữ media với MinIO |
+
+### Công việc chung của cả nhóm
+
+| Hạng mục | Công việc cần hoàn thành |
+|---|---|
+| **Khởi tạo và thiết lập Frontend** | Setup dự án `culinary-blog-web` bằng Next.js 15 App Router, TypeScript, Tailwind CSS; cài đặt `@tanstack/react-query`, `next-auth@beta`, `react-hook-form`, `@hookform/resolvers`, `zod`, `zustand`, `axios` |
+| **Layout & Cấu hình Providers** | Thiết lập Root Layout (`app/layout.tsx`) và `app/providers.tsx` tích hợp `QueryClientProvider`, `SessionProvider`; cấu hình Google Font Inter hỗ trợ Tiếng Việt và chuẩn hóa Title metadata `%s \| Culinary Blog` |
+| **Axios Client & Interceptors tập trung** | Tạo `lib/api/axios.ts` với baseURL trỏ tới .NET 10 API (`http://localhost:5000/api/v1`); cài đặt Request Interceptor tự động gắn Bearer Token; Response Interceptor bắt lỗi toàn cục `401 Unauthorized` để redirect đăng nhập |
+| **Quản lý Global UI State** | Cấu hình Zustand store (`store/useUIStore.ts`) quản lý Sidebar, Modal xác nhận toàn cục và chế độ hiển thị danh sách `recipesViewMode` (`grid`/`list`) lưu trữ bền vững qua `localStorage` (persist middleware) |
+| **Kiểm thử tích hợp Full-Stack (E2E)** | Khởi chạy đồng bộ Backend cổng 5000 và Frontend cổng 3000; kiểm thử trọn vẹn luồng tương tác người dùng: Đăng ký → Đăng nhập → Tạo bài viết qua Wizard kèm ảnh → Duyệt danh sách / Lọc / Tìm kiếm → Đọc chi tiết bài viết → Quản lý vòng đời |
+
+### Kết quả cần đạt cuối Buổi 4
+
+| Nhóm chức năng | Kết quả cần đạt |
+|---|---|
+| **Backend .NET 10 (Hoàn thiện 100%)** | Toàn bộ **41 REST API Endpoints** hoàn thành đầy đủ, biên dịch 0 error, 0 warning; vượt qua 100% Unit Tests & Integration Tests; 3 cổng giám sát sức khỏe `/health`, `/health/live`, `/health/ready` phản hồi chính xác |
+| **Frontend Next.js 15 (14 Màn hình)** | Xây dựng hoàn chỉnh **14 màn hình / routes** theo đúng Mục 5.1 trong SRS; áp dụng chuẩn xác các chiến lược Rendering (SSG, ISR, SSR, CSR); giao diện responsive, hiện đại và chuẩn thẩm mỹ |
+| **Hệ thống Xác thực & Bảo mật** | Auth.js v5 hoạt động ổn định với Email/Password và Google OAuth; Route Protection Middleware bảo vệ chặt chẽ các trang Dashboard / Admin theo vai trò người dùng |
+| **Trải nghiệm tác giả (Author Experience)** | Multi-step Wizard 4 bước mượt mà với React Hook Form + Zod; thêm/sửa/xóa nguyên liệu & bước làm bằng mảng động linh hoạt; kiểm soát xung đột dữ liệu Concurrency `xmin` chuẩn xác |
+| **Media & Tối ưu hóa hiệu năng** | Upload và quản lý ảnh qua MinIO lưu trữ đối tượng; Next.js `<Image>` tối ưu kích thước, chống nhảy layout (CLS) và tự động lazy-loading |
+| **Sẵn sàng nghiệm thu** | Toàn bộ hệ thống Backend và Frontend kết nối mượt mà, sẵn sàng cho buổi nghiệm thu và báo cáo đồ án |
+
 ## Công nghệ sử dụng
 
 - Backend: .NET 10 Minimal API, Entity Framework Core và PostgreSQL.
