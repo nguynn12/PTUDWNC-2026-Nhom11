@@ -1,3 +1,5 @@
+using CulinaryBlog.Domain.Exceptions;
+
 namespace CulinaryBlog.Domain.Entities;
 
 /// <summary>
@@ -88,6 +90,37 @@ public class RefreshToken
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedByIp = createdByIp,
         };
+    }
+
+    /// <summary>
+    /// Bảo đảm token còn dùng được để đổi token mới (FR-AUTH-004).
+    /// </summary>
+    /// <exception cref="RefreshTokenRevokedException">Token đã bị thu hồi.</exception>
+    /// <exception cref="RefreshTokenExpiredException">Token đã hết hạn.</exception>
+    public void EnsureUsable()
+    {
+        if (IsRevoked)
+        {
+            throw new RefreshTokenRevokedException();
+        }
+
+        if (IsExpired)
+        {
+            throw new RefreshTokenExpiredException();
+        }
+    }
+
+    /// <summary>
+    /// Token rotation (FR-AUTH-004): thu hồi token hiện tại (lý do "rotated", ghi hash token thay
+    /// thế) và trả về token kế tiếp trong CÙNG family.
+    /// </summary>
+    public RefreshToken Rotate(string newTokenHash, int expiryDays, string createdByIp)
+    {
+        EnsureUsable();
+
+        var next = CreateRotated(UserId, newTokenHash, FamilyId, expiryDays, createdByIp);
+        Revoke("rotated", createdByIp, newTokenHash);
+        return next;
     }
 
     /// <summary>Idempotent — gọi nhiều lần không lỗi (FR-AUTH-005: logout luôn trả 204).</summary>

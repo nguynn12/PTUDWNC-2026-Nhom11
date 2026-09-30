@@ -4,6 +4,7 @@ using CulinaryBlog.Application.Auth.Dtos;
 using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,13 +56,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            throw new UnauthorizedException(ErrorCodes.AuthRefreshTokenRevoked, "Refresh token đã bị thu hồi.");
+            throw new RefreshTokenRevokedException();
         }
 
-        if (token.IsExpired)
-        {
-            throw new UnauthorizedException(ErrorCodes.AuthRefreshTokenExpired, "Refresh token đã hết hạn.");
-        }
+        // Domain tự bảo vệ quy tắc: token hết hạn → RefreshTokenExpiredException (401).
+        token.EnsureUsable();
 
         // Kiểm tra user TRƯỚC khi xoay vòng token: tài khoản bị vô hiệu hoá không được cấp token mới.
         var user = await _identityService.GetUserDetailsByIdAsync(token.UserId);
@@ -79,14 +78,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         // Token is valid, rotate it
         var (newTokenHash, newRawToken) = _jwtService.GenerateRefreshToken();
-        var newToken = CulinaryBlog.Domain.Entities.RefreshToken.CreateRotated(
-            token.UserId,
-            newTokenHash,
-            token.FamilyId,
-            RefreshTokenExpiryDays,
-            ClientIp);
-
-        token.Revoke("rotated", null, newTokenHash);
+        var newToken = token.Rotate(newTokenHash, RefreshTokenExpiryDays, ClientIp);
         _context.RefreshTokens.Add(newToken);
 
         await _context.SaveChangesAsync(cancellationToken);

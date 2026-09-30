@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CulinaryBlog.Application.Common.Exceptions;
+using CulinaryBlog.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CulinaryBlog.API.ErrorHandling;
@@ -33,6 +34,9 @@ public static class ProblemDetailsMapper
                 TitleFor(app.Kind),
                 app.Message),
 
+            // Lỗi do entity trong Domain tự ném khi vi phạm quy tắc nghiệp vụ.
+            DomainException domain => MapDomain(domain),
+
             // JSON/query/route sai cú pháp hoặc sai kiểu khi Minimal API bind tham số (C3 → 400).
             // Giữ nguyên status gốc nếu framework trả mã 4xx khác (ví dụ 413 body quá lớn).
             BadHttpRequestException badRequest => new ProblemDescriptor(
@@ -63,6 +67,21 @@ public static class ProblemDetailsMapper
                 "Lỗi hệ thống",
                 InternalErrorDetail),
         };
+    }
+
+    /// <summary>Domain exception → nhóm lỗi tương ứng (Domain không biết HTTP).</summary>
+    public static AppErrorKind KindFor(DomainException exception) => exception switch
+    {
+        EntityNotFoundException => AppErrorKind.NotFound,
+        DomainConflictException => AppErrorKind.Conflict,
+        InvalidTokenException => AppErrorKind.Unauthorized,
+        _ => AppErrorKind.BusinessRule,
+    };
+
+    private static ProblemDescriptor MapDomain(DomainException exception)
+    {
+        var kind = KindFor(exception);
+        return new ProblemDescriptor(StatusFor(kind), exception.ErrorCode, TitleFor(kind), exception.Message);
     }
 
     public static int StatusFor(AppErrorKind kind) => kind switch
