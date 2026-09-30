@@ -1,6 +1,7 @@
 using CulinaryBlog.Application.Auth.Commands.Register;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Models;
+using FluentValidation;
 using Xunit;
 
 namespace CulinaryBlog.UnitTests.Auth;
@@ -11,7 +12,7 @@ public sealed class RegisterCommandHandlerTests
     private static readonly RegisterCommand Command = new("an@example.com", "Passw0rd!", "Nguyễn An");
 
     private static RegisterCommandHandler CreateHandler(CreateUserResult result, FakeUnitOfWork unitOfWork) =>
-        new(new FakeIdentityService { CreateResult = result }, new FakeJwtService(), unitOfWork);
+        new(new FakeIdentityService { CreateResult = result }, new FakeJwtService(), unitOfWork.Tokens, unitOfWork);
 
     [Fact]
     public async Task EmailDaTonTai_Tra409AuthEmailExists()
@@ -23,8 +24,8 @@ public sealed class RegisterCommandHandlerTests
             () => handler.Handle(Command, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.AuthEmailExists, ex.ErrorCode);
-        Assert.True(unitOfWork.RolledBack);
         Assert.Empty(unitOfWork.Tokens.Tokens);
+        Assert.Equal(0, unitOfWork.SaveChangesCount);
     }
 
     [Fact]
@@ -36,15 +37,15 @@ public sealed class RegisterCommandHandlerTests
         };
         var handler = CreateHandler(CreateUserResult.Failed(errors), new FakeUnitOfWork());
 
-        var ex = await Assert.ThrowsAsync<ValidationFailedException>(
+        var ex = await Assert.ThrowsAsync<ValidationException>(
             () => handler.Handle(Command, TestContext.Current.CancellationToken));
 
-        Assert.Equal(ErrorCodes.ValidationError, ex.ErrorCode);
-        Assert.True(ex.Errors.ContainsKey("password"));
+        var failure = Assert.Single(ex.Errors);
+        Assert.Equal("password", failure.PropertyName);
     }
 
     [Fact]
-    public async Task DangKyThanhCong_LuuRefreshTokenVaCommitTransaction()
+    public async Task DangKyThanhCong_LuuRefreshTokenQuaUnitOfWork()
     {
         var unitOfWork = new FakeUnitOfWork();
         var identity = new FakeIdentityService
@@ -52,13 +53,12 @@ public sealed class RegisterCommandHandlerTests
             CreateResult = CreateUserResult.Success("user-1"),
             Account = new UserAccount("user-1", "an@example.com", "Nguyễn An", null, null, ["Author"], false, true, DateTimeOffset.UtcNow),
         };
-        var handler = new RegisterCommandHandler(identity, new FakeJwtService(), unitOfWork);
+        var handler = new RegisterCommandHandler(identity, new FakeJwtService(), unitOfWork.Tokens, unitOfWork);
 
         var response = await handler.Handle(Command, TestContext.Current.CancellationToken);
 
         Assert.Contains("Author", response.User.Roles);
         Assert.Single(unitOfWork.Tokens.Tokens);
-        Assert.True(unitOfWork.Committed);
-        Assert.False(unitOfWork.RolledBack);
+        Assert.Equal(1, unitOfWork.SaveChangesCount);
     }
 }

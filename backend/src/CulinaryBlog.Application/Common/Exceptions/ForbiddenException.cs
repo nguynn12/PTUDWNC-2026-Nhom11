@@ -1,5 +1,16 @@
 namespace CulinaryBlog.Application.Common.Exceptions;
 
-/// <summary>Không đủ role/ownership/email chưa xác nhận → 403. Ví dụ: <c>RECIPE_FORBIDDEN</c>.</summary>
-public sealed class ForbiddenException(string errorCode, string message)
-    : AppException(errorCode, message, AppErrorKind.Forbidden);
+/// <summary>
+/// Ngoại lệ đại diện cho trường hợp người dùng không có quyền truy cập hoặc thao tác trên tài nguyên (HTTP 403 Forbidden).
+/// Tuân thủ mã lỗi RECIPE_FORBIDDEN theo SRS Phụ lục B.
+/// </summary>
+public class ForbiddenException : Exception
+{
+    public string ErrorCode { get; }
+
+    public ForbiddenException(string message = "Bạn không có quyền thực hiện thao tác này.", string errorCode = "FORBIDDEN")
+        : base(message)
+    {
+        ErrorCode = errorCode;
+    }
+}

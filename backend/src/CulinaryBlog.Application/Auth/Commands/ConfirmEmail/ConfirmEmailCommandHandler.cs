@@ -19,7 +19,7 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand>
         
         if (!result)
         {
-            throw new BusinessRuleException("AUTH_CONFIRMATION_TOKEN_INVALID", "Invalid or expired token.");
+            throw new BusinessRuleValidationException("Invalid or expired token.", "AUTH_CONFIRMATION_TOKEN_INVALID");
         }
     }
 }

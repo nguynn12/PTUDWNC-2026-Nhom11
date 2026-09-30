@@ -19,7 +19,7 @@ public sealed class LogoutCommandHandlerTests
         var token = RefreshTokenEntity.CreateNewFamily("user-1", Hash("raw-1"), 7, "127.0.0.1");
         unitOfWork.Tokens.Tokens.Add(token);
 
-        await new LogoutCommandHandler(unitOfWork).Handle(new LogoutCommand("raw-1"), TestContext.Current.CancellationToken);
+        await new LogoutCommandHandler(unitOfWork.Tokens, unitOfWork).Handle(new LogoutCommand("raw-1"), TestContext.Current.CancellationToken);
 
         Assert.True(token.IsRevoked);
         Assert.Equal("logout", token.RevocationReason);
@@ -31,7 +31,7 @@ public sealed class LogoutCommandHandlerTests
     {
         var unitOfWork = new FakeUnitOfWork();
         unitOfWork.Tokens.Tokens.Add(RefreshTokenEntity.CreateNewFamily("user-1", Hash("raw-1"), 7, "127.0.0.1"));
-        var handler = new LogoutCommandHandler(unitOfWork);
+        var handler = new LogoutCommandHandler(unitOfWork.Tokens, unitOfWork);
 
         await handler.Handle(new LogoutCommand("raw-1"), TestContext.Current.CancellationToken);
         await handler.Handle(new LogoutCommand("raw-1"), TestContext.Current.CancellationToken);
@@ -44,7 +44,7 @@ public sealed class LogoutCommandHandlerTests
     {
         var unitOfWork = new FakeUnitOfWork();
 
-        await new LogoutCommandHandler(unitOfWork).Handle(new LogoutCommand("khong-ton-tai"), TestContext.Current.CancellationToken);
+        await new LogoutCommandHandler(unitOfWork.Tokens, unitOfWork).Handle(new LogoutCommand("khong-ton-tai"), TestContext.Current.CancellationToken);
 
         Assert.Equal(0, unitOfWork.SaveChangesCount);
     }

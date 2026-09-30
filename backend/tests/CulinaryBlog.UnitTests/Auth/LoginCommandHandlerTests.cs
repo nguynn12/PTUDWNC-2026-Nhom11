@@ -12,7 +12,7 @@ namespace CulinaryBlog.UnitTests.Auth;
 public sealed class LoginCommandHandlerTests
 {
     private static LoginCommandHandler CreateHandler(CredentialCheckResult result) =>
-        new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), new FakeUnitOfWork());
+        new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), new FakeRefreshTokenRepository(), new FakeUnitOfWork());
 
     private static readonly LoginCommand Command = new("author@culinaryblog.local", "Sai-mat-khau1!");
 
@@ -38,7 +38,6 @@ public sealed class LoginCommandHandlerTests
             () => handler.Handle(Command, TestContext.Current.CancellationToken));
 
         Assert.Equal(ErrorCodes.AuthAccountLocked, ex.ErrorCode);
-        Assert.Equal(AppErrorKind.Locked, ex.Kind);
         Assert.Contains("phút", ex.Message, StringComparison.Ordinal);
     }
 

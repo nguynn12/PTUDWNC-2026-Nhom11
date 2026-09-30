@@ -1,5 +1,4 @@
-using System.Reflection;
-using CulinaryBlog.Application.Common.Behaviours;
+using CulinaryBlog.Application.Common.Behaviors;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,13 +9,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        var assembly = typeof(DependencyInjection).Assembly;
 
-        services.AddMediatR(cfg => {
-            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
-            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(assembly);
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
+
+        services.AddValidatorsFromAssembly(assembly);
 
         return services;
     }

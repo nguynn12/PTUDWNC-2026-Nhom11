@@ -2,7 +2,6 @@ using CulinaryBlog.Application.Auth.Dtos;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
-using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Commands.Login;
@@ -17,16 +16,22 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
     public const string AccountDisabledMessage = "Tài khoản đã bị quản trị viên vô hiệu hoá.";
 
     private const int RefreshTokenExpiryDays = 7;
-    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật qua ICurrentUser
+    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật từ HttpContext
 
     private readonly IIdentityService _identityService;
     private readonly IJwtService _jwtService;
+    private readonly IRefreshTokenRepository _refreshTokens;
     private readonly IUnitOfWork _unitOfWork;
 
-    public LoginCommandHandler(IIdentityService identityService, IJwtService jwtService, IUnitOfWork unitOfWork)
+    public LoginCommandHandler(
+        IIdentityService identityService,
+        IJwtService jwtService,
+        IRefreshTokenRepository refreshTokens,
+        IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
         _jwtService = jwtService;
+        _refreshTokens = refreshTokens;
         _unitOfWork = unitOfWork;
     }
 
@@ -36,25 +41,24 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
         if (check.Status == CredentialCheckStatus.LockedOut)
         {
-            throw new LockedException(ErrorCodes.AuthAccountLocked, BuildLockedMessage(check.LockoutEnd));
+            throw new LockedException(BuildLockedMessage(check.LockoutEnd), ErrorCodes.AuthAccountLocked);
         }
 
         if (check.Status == CredentialCheckStatus.Disabled)
         {
-            throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, AccountDisabledMessage);
+            throw new ForbiddenException(AccountDisabledMessage, ErrorCodes.AuthAccountDisabled);
         }
 
         if (check.Status != CredentialCheckStatus.Success || check.User is not { } user)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthInvalidCredentials, InvalidCredentialsMessage);
+            throw new UnauthorizedException(InvalidCredentialsMessage, ErrorCodes.AuthInvalidCredentials);
         }
 
         var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Email, user.Roles, user.EmailConfirmed);
         var (tokenHash, rawToken) = _jwtService.GenerateRefreshToken();
 
-        await _unitOfWork.RefreshTokens.AddAsync(
-            CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp),
-            cancellationToken);
+        _refreshTokens.Add(
+            CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new AuthResponseDto

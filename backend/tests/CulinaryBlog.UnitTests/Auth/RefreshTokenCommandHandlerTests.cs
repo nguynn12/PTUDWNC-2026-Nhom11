@@ -22,7 +22,7 @@ public sealed class RefreshTokenCommandHandlerTests
         new(UserId, "author@culinaryblog.local", "Tác giả", null, null, ["Author"], true, isActive, DateTimeOffset.UtcNow);
 
     private static RefreshTokenCommandHandler CreateHandler(FakeUnitOfWork unitOfWork, UserAccount? account) =>
-        new(unitOfWork, new FakeJwtService(), new FakeIdentityService { Account = account });
+        new(unitOfWork.Tokens, unitOfWork, new FakeJwtService(), new FakeIdentityService { Account = account });
 
     [Fact]
     public async Task TokenHopLe_ThuHoiTokenCuVaTaoTokenMoiCungFamily()

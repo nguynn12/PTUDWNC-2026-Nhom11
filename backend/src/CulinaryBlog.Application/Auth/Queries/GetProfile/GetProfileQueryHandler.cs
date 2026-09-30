@@ -8,10 +8,10 @@ namespace CulinaryBlog.Application.Auth.Queries.GetProfile;
 /// <summary>SRS FR-AUTH-006 — tài khoản bị vô hiệu hoá không xem được hồ sơ dù access token còn hạn.</summary>
 public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, UserDto>
 {
-    private readonly ICurrentUser _currentUser;
+    private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
 
-    public GetProfileQueryHandler(ICurrentUser currentUser, IIdentityService identityService)
+    public GetProfileQueryHandler(ICurrentUserService currentUser, IIdentityService identityService)
     {
         _currentUser = currentUser;
         _identityService = identityService;
@@ -19,20 +19,20 @@ public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, UserDto>
 
     public async Task<UserDto> Handle(GetProfileQuery request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(_currentUser.Id))
+        if (_currentUser.UserId is not { Length: > 0 } userId)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Bạn chưa đăng nhập.");
+            throw new UnauthorizedException("Bạn chưa đăng nhập.", ErrorCodes.AuthTokenInvalid);
         }
 
-        var user = await _identityService.GetUserDetailsByIdAsync(_currentUser.Id);
+        var user = await _identityService.GetUserDetailsByIdAsync(userId);
         if (user == null)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Tài khoản không còn tồn tại.");
+            throw new UnauthorizedException("Tài khoản không còn tồn tại.", ErrorCodes.AuthTokenInvalid);
         }
 
         if (!user.IsActive)
         {
-            throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, "Tài khoản đã bị quản trị viên vô hiệu hoá.");
+            throw new ForbiddenException("Tài khoản đã bị quản trị viên vô hiệu hoá.", ErrorCodes.AuthAccountDisabled);
         }
 
         return user.ToUserDto();

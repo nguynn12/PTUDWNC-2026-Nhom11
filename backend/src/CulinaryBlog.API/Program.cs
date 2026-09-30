@@ -1,5 +1,6 @@
 using CulinaryBlog.API;
 using CulinaryBlog.API.Endpoints;
+using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -10,13 +11,18 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddProblemDetails();
+// Thứ tự quan trọng: AuthExceptionHandler (401/423/400 của module Auth) chạy trước,
+// exception còn lại do GlobalExceptionHandler dùng chung của nhóm xử lý.
+builder.Services.AddExceptionHandler<AuthExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddPresentation();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
-// Exception → RFC 7807 Problem Details (GlobalExceptionHandler); response lỗi không có body
+// Exception → RFC 7807 Problem Details (AuthExceptionHandler + GlobalExceptionHandler); response lỗi không có body
 // (404 route không tồn tại, 405, 401/403 từ middleware) cũng được trả dạng Problem Details.
 app.UseExceptionHandler();
 app.UseStatusCodePages();
