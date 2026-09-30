@@ -106,6 +106,19 @@ app.MapGet("/health/database", async (
             statusCode: StatusCodes.Status503ServiceUnavailable);
 });
 
+app.MapGet("/health/ready", async (
+    CulinaryBlogDbContext dbContext,
+    CancellationToken cancellationToken) =>
+{
+    var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+
+    return canConnect
+        ? Results.Ok(new { status = "Ready", checks = new { database = "Healthy" } })
+        : Results.Problem(
+            title: "Service is not ready to receive traffic",
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+});
+
 app.Run();
 
 public partial class Program;
