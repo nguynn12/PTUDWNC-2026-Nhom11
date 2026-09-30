@@ -43,6 +43,27 @@ public sealed class GlobalExceptionHandler(
                 businessRuleEx.Message,
                 null
             ),
+            CulinaryBlog.Domain.Exceptions.RecipeIncompletePublishException publishEx => (
+                StatusCodes.Status422UnprocessableEntity,
+                publishEx.ErrorCode,
+                "Unprocessable Entity",
+                publishEx.Message,
+                null
+            ),
+            CulinaryBlog.Domain.Exceptions.OwnershipViolationException ownershipEx => (
+                StatusCodes.Status403Forbidden,
+                ownershipEx.ErrorCode,
+                "Forbidden",
+                ownershipEx.Message,
+                null
+            ),
+            CulinaryBlog.Domain.Exceptions.DomainException domainEx => (
+                StatusCodes.Status400BadRequest,
+                domainEx.ErrorCode,
+                "Domain Rule Violation",
+                domainEx.Message,
+                null
+            ),
             NotFoundException notFoundEx => (
                 StatusCodes.Status404NotFound,
                 string.IsNullOrWhiteSpace(notFoundEx.ErrorCode) ? "RESOURCE_NOT_FOUND" : notFoundEx.ErrorCode,

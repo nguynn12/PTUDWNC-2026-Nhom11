@@ -92,9 +92,10 @@ public static class RecipeLifecycleEndpoints
         .WithName("UpdateRecipe")
         .WithSummary("Cập nhật thông tin công thức nấu ăn kèm kiểm tra If-Match/xmin.");
 
-        // 3. Xuất bản công thức nấu ăn (Draft -> Published)
-        recipes.MapPost("/{id:guid}/publish", async (
+        // 3. Xuất bản công thức nấu ăn (Draft -> Published) - Hỗ trợ cả PATCH (theo SRS FR-RCP-005) và POST
+        recipes.MapMethods("/{id:guid}/publish", ["PATCH", "POST"], async (
             Guid id,
+            [FromHeader(Name = "If-Match")] string? ifMatch,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -102,11 +103,12 @@ public static class RecipeLifecycleEndpoints
             return Results.Ok(new { data = result });
         })
         .WithName("PublishRecipe")
-        .WithSummary("Xuất bản công thức nấu ăn (Draft -> Published).");
+        .WithSummary("Xuất bản công thức nấu ăn (Draft -> Published). Hỗ trợ PATCH/POST.");
 
-        // 4. Hủy xuất bản công thức nấu ăn (Published -> Draft)
-        recipes.MapPost("/{id:guid}/unpublish", async (
+        // 4. Hủy xuất bản công thức nấu ăn (Published -> Draft) - Hỗ trợ cả PATCH (theo SRS FR-RCP-005) và POST
+        recipes.MapMethods("/{id:guid}/unpublish", ["PATCH", "POST"], async (
             Guid id,
+            [FromHeader(Name = "If-Match")] string? ifMatch,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -114,11 +116,12 @@ public static class RecipeLifecycleEndpoints
             return Results.Ok(new { data = result });
         })
         .WithName("UnpublishRecipe")
-        .WithSummary("Hủy xuất bản công thức nấu ăn (Published -> Draft).");
+        .WithSummary("Hủy xuất bản công thức nấu ăn (Published -> Draft). Hỗ trợ PATCH/POST.");
 
-        // 5. Lưu trữ công thức nấu ăn (Draft/Published -> Archived)
-        recipes.MapPost("/{id:guid}/archive", async (
+        // 5. Lưu trữ công thức nấu ăn (Draft/Published -> Archived) - Hỗ trợ cả PATCH (theo SRS FR-RCP-006) và POST
+        recipes.MapMethods("/{id:guid}/archive", ["PATCH", "POST"], async (
             Guid id,
+            [FromHeader(Name = "If-Match")] string? ifMatch,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -126,11 +129,12 @@ public static class RecipeLifecycleEndpoints
             return Results.Ok(new { data = result });
         })
         .WithName("ArchiveRecipe")
-        .WithSummary("Lưu trữ công thức nấu ăn (Draft/Published -> Archived).");
+        .WithSummary("Lưu trữ công thức nấu ăn (Draft/Published -> Archived). Hỗ trợ PATCH/POST.");
 
-        // 6. Khôi phục công thức từ lưu trữ (Archived -> Draft)
-        recipes.MapPost("/{id:guid}/unarchive", async (
+        // 6. Khôi phục công thức từ lưu trữ (Archived -> Draft) - Hỗ trợ cả PATCH (theo SRS FR-RCP-006) và POST
+        recipes.MapMethods("/{id:guid}/unarchive", ["PATCH", "POST"], async (
             Guid id,
+            [FromHeader(Name = "If-Match")] string? ifMatch,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -138,11 +142,12 @@ public static class RecipeLifecycleEndpoints
             return Results.Ok(new { data = result });
         })
         .WithName("UnarchiveRecipe")
-        .WithSummary("Khôi phục công thức nấu ăn từ lưu trữ (Archived -> Draft).");
+        .WithSummary("Khôi phục công thức nấu ăn từ lưu trữ (Archived -> Draft). Hỗ trợ PATCH/POST.");
 
-        // 7. Xóa mềm công thức nấu ăn
+        // 7. Xóa mềm công thức nấu ăn (Soft Delete theo SRS FR-RCP-007)
         recipes.MapDelete("/{id:guid}", async (
             Guid id,
+            [FromHeader(Name = "If-Match")] string? ifMatch,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -150,7 +155,7 @@ public static class RecipeLifecycleEndpoints
             return Results.NoContent();
         })
         .WithName("DeleteRecipe")
-        .WithSummary("Xóa mềm công thức nấu ăn (Soft Delete).");
+        .WithSummary("Xóa mềm công thức nấu ăn (Soft Delete). Hỗ trợ If-Match.");
 
         return group;
     }
