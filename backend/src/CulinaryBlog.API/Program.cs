@@ -1,4 +1,5 @@
 using CulinaryBlog.API;
+using CulinaryBlog.API.Endpoints;
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -42,6 +43,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapAuthEndpoints();
 
 var api = app.MapGroup("/api/v1");
 api.MapGet("/", () => Results.Ok(new

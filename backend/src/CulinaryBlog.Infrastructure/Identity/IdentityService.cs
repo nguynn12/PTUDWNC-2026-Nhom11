@@ -51,4 +51,14 @@ public class IdentityService : IIdentityService
         
         return await _userManager.CheckPasswordAsync(user, password);
     }
+
+    public async Task<(string Id, string Email, string DisplayName, IEnumerable<string> Roles, bool EmailConfirmed)?> GetUserDetailsByEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null) return null;
+
+        var roles = await _userManager.GetRolesAsync(user);
+        
+        return (user.Id, user.Email!, user.DisplayName, roles, user.EmailConfirmed);
+    }
 }

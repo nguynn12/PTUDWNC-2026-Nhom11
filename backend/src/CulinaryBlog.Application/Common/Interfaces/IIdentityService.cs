@@ -9,4 +9,5 @@ public interface IIdentityService
     // Auth specific methods
     Task<(bool Succeeded, string? Error, string UserId)> CreateUserAsync(string email, string password, string displayName);
     Task<bool> CheckPasswordAsync(string email, string password);
+    Task<(string Id, string Email, string DisplayName, IEnumerable<string> Roles, bool EmailConfirmed)?> GetUserDetailsByEmailAsync(string email);
 }
