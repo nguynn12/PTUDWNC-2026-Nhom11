@@ -20,12 +20,12 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
     public const string EmailExistsMessage = "Email đã được đăng ký.";
 
     private const int RefreshTokenExpiryDays = 7;
-    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật từ HttpContext
 
     private readonly IIdentityService _identityService;
     private readonly IJwtService _jwtService;
     private readonly IRefreshTokenRepository _refreshTokens;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IClientInfoService _clientInfo;
     private readonly IAccountEmailSender _accountEmailSender;
     private readonly ILogger<RegisterCommandHandler> _logger;
 
@@ -34,6 +34,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         IJwtService jwtService,
         IRefreshTokenRepository refreshTokens,
         IUnitOfWork unitOfWork,
+        IClientInfoService clientInfo,
         IAccountEmailSender accountEmailSender,
         ILogger<RegisterCommandHandler> logger)
     {
@@ -41,6 +42,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         _jwtService = jwtService;
         _refreshTokens = refreshTokens;
         _unitOfWork = unitOfWork;
+        _clientInfo = clientInfo;
         _accountEmailSender = accountEmailSender;
         _logger = logger;
     }
@@ -70,7 +72,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         var (tokenHash, rawToken) = _jwtService.GenerateRefreshToken();
 
         _refreshTokens.Add(
-            CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp));
+            CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, _clientInfo.IpAddress));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await SendConfirmationEmailAsync(user.Id, user.Email, user.DisplayName, cancellationToken);

@@ -82,3 +82,9 @@ internal sealed class FakeJwtService : IJwtService
 
     public (string TokenHash, string RawToken) GenerateRefreshToken() => (new string('a', 64), "raw-refresh-token");
 }
+
+/// <summary>IClientInfoService giả lập — IP cố định.</summary>
+internal sealed class FakeClientInfo(string ipAddress = "203.0.113.7") : IClientInfoService
+{
+    public string IpAddress { get; } = ipAddress;
+}

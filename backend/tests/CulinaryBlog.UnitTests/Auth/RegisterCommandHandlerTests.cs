@@ -13,7 +13,7 @@ public sealed class RegisterCommandHandlerTests
     private static readonly RegisterCommand Command = new("an@example.com", "Passw0rd!", "Nguyễn An");
 
     private static RegisterCommandHandler CreateHandler(CreateUserResult result, FakeUnitOfWork unitOfWork) =>
-        new(new FakeIdentityService { CreateResult = result }, new FakeJwtService(), unitOfWork.Tokens, unitOfWork,
+        new(new FakeIdentityService { CreateResult = result }, new FakeJwtService(), unitOfWork.Tokens, unitOfWork, new FakeClientInfo(),
             new FakeAccountEmailSender(), NullLogger<RegisterCommandHandler>.Instance);
 
     [Fact]
@@ -57,14 +57,15 @@ public sealed class RegisterCommandHandlerTests
     {
         var unitOfWork = new FakeUnitOfWork();
         var emailSender = new FakeAccountEmailSender();
-        var handler = new RegisterCommandHandler(IdentityWithNewUser(), new FakeJwtService(), unitOfWork.Tokens, unitOfWork,
+        var handler = new RegisterCommandHandler(IdentityWithNewUser(), new FakeJwtService(), unitOfWork.Tokens, unitOfWork, new FakeClientInfo(),
             emailSender, NullLogger<RegisterCommandHandler>.Instance);
 
         var response = await handler.Handle(Command, TestContext.Current.CancellationToken);
 
         Assert.Contains("Author", response.User.Roles);
         Assert.False(response.User.EmailConfirmed);
-        Assert.Single(unitOfWork.Tokens.Tokens);
+        var token = Assert.Single(unitOfWork.Tokens.Tokens);
+        Assert.Equal("203.0.113.7", token.CreatedByIp);
         Assert.Equal(1, unitOfWork.SaveChangesCount);
 
         var sent = Assert.Single(emailSender.Sent);
@@ -77,7 +78,7 @@ public sealed class RegisterCommandHandlerTests
     public async Task GuiEmailLoi_VanDangKyThanhCong()
     {
         var unitOfWork = new FakeUnitOfWork();
-        var handler = new RegisterCommandHandler(IdentityWithNewUser(), new FakeJwtService(), unitOfWork.Tokens, unitOfWork,
+        var handler = new RegisterCommandHandler(IdentityWithNewUser(), new FakeJwtService(), unitOfWork.Tokens, unitOfWork, new FakeClientInfo(),
             new FakeAccountEmailSender { Fail = true }, NullLogger<RegisterCommandHandler>.Instance);
 
         var response = await handler.Handle(Command, TestContext.Current.CancellationToken);

@@ -6,6 +6,7 @@ using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Exceptions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace CulinaryBlog.Application.Auth.Commands.RefreshToken;
 
@@ -16,23 +17,28 @@ namespace CulinaryBlog.Application.Auth.Commands.RefreshToken;
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
 {
     private const int RefreshTokenExpiryDays = 7;
-    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật từ HttpContext
 
     private readonly IRefreshTokenRepository _refreshTokens;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IClientInfoService _clientInfo;
     private readonly IJwtService _jwtService;
     private readonly IIdentityService _identityService;
+    private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
     public RefreshTokenCommandHandler(
         IRefreshTokenRepository refreshTokens,
         IUnitOfWork unitOfWork,
+        IClientInfoService clientInfo,
         IJwtService jwtService,
-        IIdentityService identityService)
+        IIdentityService identityService,
+        ILogger<RefreshTokenCommandHandler> logger)
     {
         _refreshTokens = refreshTokens;
         _unitOfWork = unitOfWork;
+        _clientInfo = clientInfo;
         _jwtService = jwtService;
         _identityService = identityService;
+        _logger = logger;
     }
 
     public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
@@ -49,7 +55,12 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         if (token.IsRevoked)
         {
-            // Reuse detected: revoke the whole family
+            // Reuse detected (FR-AUTH-004): token đã thu hồi bị dùng lại → có thể bị đánh cắp.
+            // Ghi log cảnh báo bảo mật và thu hồi toàn bộ token cùng family.
+            _logger.LogWarning(
+                "Phát hiện dùng lại refresh token đã thu hồi: user {UserId}, family {FamilyId}, IP {IpAddress}",
+                token.UserId, token.FamilyId, _clientInfo.IpAddress);
+
             var familyTokens = await _refreshTokens.GetNotRevokedByFamilyIdAsync(token.FamilyId, cancellationToken);
 
             foreach (var familyToken in familyTokens)
@@ -80,7 +91,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         // Token is valid, rotate it
         var (newTokenHash, newRawToken) = _jwtService.GenerateRefreshToken();
-        var newToken = token.Rotate(newTokenHash, RefreshTokenExpiryDays, ClientIp);
+        var newToken = token.Rotate(newTokenHash, RefreshTokenExpiryDays, _clientInfo.IpAddress);
         _refreshTokens.Add(newToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

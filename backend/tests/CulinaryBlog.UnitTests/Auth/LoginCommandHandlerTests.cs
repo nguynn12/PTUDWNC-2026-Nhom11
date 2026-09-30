@@ -12,7 +12,7 @@ namespace CulinaryBlog.UnitTests.Auth;
 public sealed class LoginCommandHandlerTests
 {
     private static LoginCommandHandler CreateHandler(CredentialCheckResult result) =>
-        new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), new FakeRefreshTokenRepository(), new FakeUnitOfWork());
+        new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), new FakeRefreshTokenRepository(), new FakeUnitOfWork(), new FakeClientInfo());
 
     private static readonly LoginCommand Command = new("author@culinaryblog.local", "Sai-mat-khau1!");
 

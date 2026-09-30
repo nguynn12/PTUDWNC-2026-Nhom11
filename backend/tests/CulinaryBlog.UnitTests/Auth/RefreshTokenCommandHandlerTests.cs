@@ -4,6 +4,7 @@ using CulinaryBlog.Application.Auth.Commands.RefreshToken;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Domain.Exceptions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using RefreshTokenEntity = CulinaryBlog.Domain.Entities.RefreshToken;
 
@@ -22,7 +23,8 @@ public sealed class RefreshTokenCommandHandlerTests
         new(UserId, "author@culinaryblog.local", "Tác giả", null, null, ["Author"], true, isActive, DateTimeOffset.UtcNow);
 
     private static RefreshTokenCommandHandler CreateHandler(FakeUnitOfWork unitOfWork, UserAccount? account) =>
-        new(unitOfWork.Tokens, unitOfWork, new FakeJwtService(), new FakeIdentityService { Account = account });
+        new(unitOfWork.Tokens, unitOfWork, new FakeClientInfo(), new FakeJwtService(), new FakeIdentityService { Account = account },
+            NullLogger<RefreshTokenCommandHandler>.Instance);
 
     [Fact]
     public async Task TokenHopLe_ThuHoiTokenCuVaTaoTokenMoiCungFamily()
@@ -40,6 +42,7 @@ public sealed class RefreshTokenCommandHandlerTests
         var newToken = Assert.Single(unitOfWork.Tokens.Tokens, token => token.Id != oldToken.Id);
         Assert.Equal(oldToken.FamilyId, newToken.FamilyId);
         Assert.True(newToken.IsActive);
+        Assert.Equal("203.0.113.7", newToken.CreatedByIp);
     }
 
     [Fact]
