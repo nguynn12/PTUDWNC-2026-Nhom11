@@ -1,3 +1,5 @@
+using CulinaryBlog.API.Endpoints;
+using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -8,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -33,6 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 var api = app.MapGroup("/api/v1");
+api.MapRecipeLifecycleEndpoints();
 api.MapGet("/", () => Results.Ok(new
 {
     name = "Culinary Blog API",

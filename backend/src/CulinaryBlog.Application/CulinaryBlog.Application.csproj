@@ -3,6 +3,8 @@
     <ProjectReference Include="../CulinaryBlog.Domain/CulinaryBlog.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <!-- Chỉ để IApplicationDbContext expose được DbSet<T> — mẫu hình chuẩn của
          Clean Architecture (Jason Taylor template), không phá vỡ Dependency Rule

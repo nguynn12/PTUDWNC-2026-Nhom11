@@ -31,6 +31,8 @@ public static class DependencyInjection
 
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, Services.CurrentUserService>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         // AddIdentityCore (không phải AddIdentity đầy đủ): API dùng JWT thuần, không cần
