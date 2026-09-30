@@ -302,33 +302,33 @@ flowchart TD
 
 | STT | Chuc nang | Loai | Uu tien | Dependency | Branch | Commit | Trang thai |
 |---|---|---|---|---|---|---|---|
-| 1 | Chuẩn hoá xử lý lỗi và định dạng phản hồi API | Bat buoc | Critical | D7 | `2312682_HaLuyen_ChuanHoaPhanHoiApi` | `feat: chuan hoa xu ly loi va dinh dang phan hoi api` | Dang lam |
-| 2 | Pipeline CQRS (MediatR + FluentValidation) | Bat buoc | Critical | 1 | `2312682_HaLuyen_PipelineCqrs` | `feat: them pipeline cqrs voi mediatr va fluentvalidation` | Chua lam |
-| 3 | Tài liệu API OpenAPI + Scalar | Can thiet | Medium | 1 | `2312682_HaLuyen_TaiLieuApiScalar` | `feat: them tai lieu api openapi va scalar` | Chua lam |
-| 4 | Dữ liệu mẫu tài khoản Admin/Author cố định | Bat buoc | High | — | `2312682_HaLuyen_SeedTaiKhoanMau` | `feat: them du lieu mau tai khoan admin va author co dinh` | Dang lam |
-| 5 | Sửa ràng buộc `CreatedByIp` của RefreshToken | Bat buoc | High | — | `2312682_HaLuyen_SuaLoiRefreshTokenIp` | `fix: bat buoc ghi nhan ip khi tao refresh token` | Chua lam |
-| 6 | Dịch vụ tạo JWT Access Token và Refresh Token | Bat buoc | Critical | — | `2312682_HaLuyen_DichVuJwt` | `feat: them dich vu tao jwt access token va refresh token` | Chua lam |
-| 7 | IdentityService | Bat buoc | Critical | D7 | `2312682_HaLuyen_IdentityService` | `feat: them identity service xu ly nghiep vu tai khoan` | Chua lam |
-| 8 | Cấu hình Authentication/Authorization + `ICurrentUser` | Bat buoc | Critical | 1, 6 | `2312682_HaLuyen_CauHinhXacThuc` | `feat: cau hinh xac thuc jwt va phan quyen author admin` | Chua lam |
-| 9 | API đăng ký | Bat buoc | Critical | 2, 5, 6, 7, 8 | `2312682_HaLuyen_DangKy` | `feat: them api dang ky tai khoan` | Chua lam |
-| 10 | API đăng nhập | Bat buoc | Critical | 9 | `2312682_HaLuyen_DangNhap` | `feat: them api dang nhap` | Chua lam |
-| 11 | API làm mới token | Bat buoc | Critical | 10 | `2312682_HaLuyen_LamMoiToken` | `feat: them api lam moi token` | Chua lam |
-| 12 | API đăng xuất | Bat buoc | High | 10 | `2312682_HaLuyen_DangXuat` | `feat: them api dang xuat` | Chua lam |
-| 13 | API xem thông tin tài khoản | Bat buoc | High | 7, 8 | `2312682_HaLuyen_XemThongTinTaiKhoan` | `feat: them api xem thong tin tai khoan` | Chua lam |
-| 14 | API cập nhật thông tin tài khoản | Bat buoc | Medium | 13 | `2312682_HaLuyen_CapNhatThongTinTaiKhoan` | `feat: them api cap nhat thong tin tai khoan` | Chua lam |
-| 15 | Dịch vụ gửi email | Bat buoc | High | — | `2312682_HaLuyen_DichVuEmail` | `feat: them dich vu gui email` | Chua lam |
-| 16 | API xác nhận email | Bat buoc | High | 9, 15 | `2312682_HaLuyen_XacNhanEmail` | `feat: them api xac nhan email` | Chua lam |
-| 17 | API gửi lại email xác nhận | Bat buoc | Medium | 16 | `2312682_HaLuyen_GuiLaiEmailXacNhan` | `feat: them api gui lai email xac nhan` | Chua lam |
-| 18 | API quên mật khẩu | Bat buoc | Medium | 2, 7, 15 | `2312682_HaLuyen_QuenMatKhau` | `feat: them api quen mat khau` | Chua lam |
-| 19 | API đặt lại mật khẩu | Bat buoc | Medium | 18 | `2312682_HaLuyen_DatLaiMatKhau` | `feat: them api dat lai mat khau` | Chua lam |
-| 20 | API khoá/mở khoá tài khoản (Admin) | Bat buoc | High | 4, 8, 11 | `2312682_HaLuyen_KhoaTaiKhoan` | `feat: them api khoa va mo khoa tai khoan` | Chua lam |
-| 21 | Giới hạn tần suất API xác thực | Can thiet | Medium | 1, 10 | `2312682_HaLuyen_GioiHanTanSuatAuth` | `feat: gioi han tan suat cac api xac thuc` | Chua lam |
-| 22 | Kiểm thử luồng xác thực và phân quyền | Bat buoc | High | 9–21 | `2312682_HaLuyen_KiemThuXacThuc` | `test: kiem thu luong xac thuc va phan quyen` | Chua lam |
-| 23 | API đăng nhập Google | Mo rong | Low | 9, 10 | `2312682_HaLuyen_DangNhapGoogle` | `feat: them api dang nhap google` | Chua lam |
-| 24 | API đổi mật khẩu khi đã đăng nhập | Mo rong | Low | 13, 19 | `2312682_HaLuyen_DoiMatKhau` | `feat: them api doi mat khau` | Chua lam |
-| 25 | Gửi email qua Hangfire | Mo rong | Low | 15, Hangfire (chung) | `2312682_HaLuyen_EmailHangfire` | `feat: gui email xac thuc qua hangfire` | Chua lam |
-| 26 | API danh sách người dùng cho Admin | Mo rong | Low | 1, 8 | `2312682_HaLuyen_DanhSachNguoiDung` | `feat: them api danh sach nguoi dung cho admin` | Chua lam |
-| 27 | Dọn dẹp refresh token hết hạn | Mo rong | Low | 11, Hangfire (chung) | `2312682_HaLuyen_DonDepRefreshToken` | `feat: don dep refresh token het han` | Chua lam |
+| 1 | Chuẩn hoá xử lý lỗi và định dạng phản hồi API | Bat buoc | Critical | D7 | `2312682_HaLuyen_ChuanHoaPhanHoiApi` | `feat: chuan hoa xu ly loi va dinh dang phan hoi api` | Hoan thanh |
+| 2 | Pipeline CQRS (MediatR + FluentValidation) | Bat buoc | Critical | 1 | `2312682_HaLuyen_PipelineCqrs` | `feat: them pipeline cqrs voi mediatr va fluentvalidation` | Hoan thanh |
+| 3 | Tài liệu API OpenAPI + Scalar | Can thiet | Medium | 1 | `2312682_HaLuyen_TaiLieuApiScalar` | `feat: them tai lieu api openapi va scalar` | Hoan thanh |
+| 4 | Dữ liệu mẫu tài khoản Admin/Author cố định | Bat buoc | High | — | `2312682_HaLuyen_SeedTaiKhoanMau` | `feat: them du lieu mau tai khoan admin va author co dinh` | Hoan thanh |
+| 5 | Sửa ràng buộc `CreatedByIp` của RefreshToken | Bat buoc | High | — | `2312682_HaLuyen_SuaLoiRefreshTokenIp` | `fix: bat buoc ghi nhan ip khi tao refresh token` | Hoan thanh |
+| 6 | Dịch vụ tạo JWT Access Token và Refresh Token | Bat buoc | Critical | — | `2312682_HaLuyen_DichVuJwt` | `feat: them dich vu tao jwt access token va refresh token` | Hoan thanh |
+| 7 | IdentityService | Bat buoc | Critical | D7 | `2312682_HaLuyen_IdentityService` | `feat: them identity service xu ly nghiep vu tai khoan` | Hoan thanh |
+| 8 | Cấu hình Authentication/Authorization + `ICurrentUser` | Bat buoc | Critical | 1, 6 | `2312682_HaLuyen_CauHinhXacThuc` | `feat: cau hinh xac thuc jwt va phan quyen author admin` | Hoan thanh |
+| 9 | API đăng ký | Bat buoc | Critical | 2, 5, 6, 7, 8 | `2312682_HaLuyen_DangKy` | `feat: them api dang ky tai khoan` | Hoan thanh |
+| 10 | API đăng nhập | Bat buoc | Critical | 9 | `2312682_HaLuyen_DangNhap` | `feat: them api dang nhap` | Hoan thanh |
+| 11 | API làm mới token | Bat buoc | Critical | 10 | `2312682_HaLuyen_LamMoiToken` | `feat: them api lam moi token` | Hoan thanh |
+| 12 | API đăng xuất | Bat buoc | High | 10 | `2312682_HaLuyen_DangXuat` | `feat: them api dang xuat` | Hoan thanh |
+| 13 | API xem thông tin tài khoản | Bat buoc | High | 7, 8 | `2312682_HaLuyen_XemThongTinTaiKhoan` | `feat: them api xem thong tin tai khoan` | Hoan thanh |
+| 14 | API cập nhật thông tin tài khoản | Bat buoc | Medium | 13 | `2312682_HaLuyen_CapNhatThongTinTaiKhoan` | `feat: them api cap nhat thong tin tai khoan` | Hoan thanh |
+| 15 | Dịch vụ gửi email | Bat buoc | High | — | `2312682_HaLuyen_DichVuEmail` | `feat: them dich vu gui email` | Hoan thanh |
+| 16 | API xác nhận email | Bat buoc | High | 9, 15 | `2312682_HaLuyen_XacNhanEmail` | `feat: them api xac nhan email` | Hoan thanh |
+| 17 | API gửi lại email xác nhận | Bat buoc | Medium | 16 | `2312682_HaLuyen_GuiLaiEmailXacNhan` | `feat: them api gui lai email xac nhan` | Hoan thanh |
+| 18 | API quên mật khẩu | Bat buoc | Medium | 2, 7, 15 | `2312682_HaLuyen_QuenMatKhau` | `feat: them api quen mat khau` | Hoan thanh |
+| 19 | API đặt lại mật khẩu | Bat buoc | Medium | 18 | `2312682_HaLuyen_DatLaiMatKhau` | `feat: them api dat lai mat khau` | Hoan thanh |
+| 20 | API khoá/mở khoá tài khoản (Admin) | Bat buoc | High | 4, 8, 11 | `2312682_HaLuyen_KhoaTaiKhoan` | `feat: them api khoa va mo khoa tai khoan` | Hoan thanh |
+| 21 | Giới hạn tần suất API xác thực | Can thiet | Medium | 1, 10 | `2312682_HaLuyen_GioiHanTanSuatAuth` | `feat: gioi han tan suat cac api xac thuc` | Hoan thanh |
+| 22 | Kiểm thử luồng xác thực và phân quyền | Bat buoc | High | 9–21 | `2312682_HaLuyen_KiemThuXacThuc` | `test: kiem thu luong xac thuc va phan quyen` | Hoan thanh |
+| 23 | API đăng nhập Google | Mo rong | Low | 9, 10 | `2312682_HaLuyen_DangNhapGoogle` | `feat: them api dang nhap google` | Hoan thanh |
+| 24 | API đổi mật khẩu khi đã đăng nhập | Mo rong | Low | 13, 19 | `2312682_HaLuyen_DoiMatKhau` | `feat: them api doi mat khau` | Hoan thanh |
+| 25 | Gửi email qua Hangfire | Mo rong | Low | 15, Hangfire (chung) | `2312682_HaLuyen_EmailHangfire` | `feat: gui email xac thuc qua hangfire` | Hoan thanh |
+| 26 | API danh sách người dùng cho Admin | Mo rong | Low | 1, 8 | `2312682_HaLuyen_DanhSachNguoiDung` | `feat: them api danh sach nguoi dung cho admin` | Hoan thanh |
+| 27 | Dọn dẹp refresh token hết hạn | Mo rong | Low | 11, Hangfire (chung) | `2312682_HaLuyen_DonDepRefreshToken` | `feat: don dep refresh token het han` | Hoan thanh |
 
 **Tổng:** Bắt buộc 20 · Cần thiết 2 · Mở rộng 5.
 
@@ -338,42 +338,42 @@ flowchart TD
 
 Mục tiêu: cả nhóm có chung cách báo lỗi, validation và tài liệu API trước khi viết endpoint.
 
-- [ ] 1. Chuẩn hoá xử lý lỗi và định dạng phản hồi API
-- [ ] 2. Pipeline CQRS (MediatR + FluentValidation)
-- [ ] 3. Tài liệu API OpenAPI + Scalar
+- [x] 1. Chuẩn hoá xử lý lỗi và định dạng phản hồi API
+- [x] 2. Pipeline CQRS (MediatR + FluentValidation)
+- [x] 3. Tài liệu API OpenAPI + Scalar
 
 #### Phase 2 — Hạ tầng xác thực
 
 Mục tiêu: có đủ "công cụ" Auth trước khi viết API. Mỗi mục có thể unit test riêng.
 
-- [ ] 4. Dữ liệu mẫu tài khoản Admin/Author cố định
-- [ ] 5. Sửa ràng buộc `CreatedByIp`
-- [ ] 6. Dịch vụ JWT
-- [ ] 7. IdentityService
-- [ ] 8. Cấu hình Authentication/Authorization + `ICurrentUser`
+- [x] 4. Dữ liệu mẫu tài khoản Admin/Author cố định
+- [x] 5. Sửa ràng buộc `CreatedByIp`
+- [x] 6. Dịch vụ JWT
+- [x] 7. IdentityService
+- [x] 8. Cấu hình Authentication/Authorization + `ICurrentUser`
 
 #### Phase 3 — Luồng xác thực cốt lõi (kết quả bắt buộc cuối Lab 3)
 
-- [ ] 9. Đăng ký
-- [ ] 10. Đăng nhập
-- [ ] 11. Làm mới token
-- [ ] 12. Đăng xuất
+- [x] 9. Đăng ký
+- [x] 10. Đăng nhập
+- [x] 11. Làm mới token
+- [x] 12. Đăng xuất
 
 #### Phase 4 — Thông tin tài khoản, email và mật khẩu
 
-- [ ] 13. Xem thông tin tài khoản
-- [ ] 14. Cập nhật thông tin tài khoản
-- [ ] 15. Dịch vụ gửi email
-- [ ] 16. Xác nhận email
-- [ ] 17. Gửi lại email xác nhận
-- [ ] 18. Quên mật khẩu
-- [ ] 19. Đặt lại mật khẩu
+- [x] 13. Xem thông tin tài khoản
+- [x] 14. Cập nhật thông tin tài khoản
+- [x] 15. Dịch vụ gửi email
+- [x] 16. Xác nhận email
+- [x] 17. Gửi lại email xác nhận
+- [x] 18. Quên mật khẩu
+- [x] 19. Đặt lại mật khẩu
 
 #### Phase 5 — Quản trị, bảo mật và kiểm thử
 
-- [ ] 20. Khoá/mở khoá tài khoản (Admin)
-- [ ] 21. Giới hạn tần suất API xác thực
-- [ ] 22. Kiểm thử luồng xác thực và phân quyền
+- [x] 20. Khoá/mở khoá tài khoản (Admin)
+- [x] 21. Giới hạn tần suất API xác thực
+- [x] 22. Kiểm thử luồng xác thực và phân quyền
 
 #### Phase 6 — Mở rộng (nếu còn thời gian)
 
