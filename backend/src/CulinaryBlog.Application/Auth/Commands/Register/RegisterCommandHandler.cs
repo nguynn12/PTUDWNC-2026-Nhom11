@@ -4,6 +4,7 @@ using CulinaryBlog.Application.Common.Interfaces;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace CulinaryBlog.Application.Auth.Commands.Register;
 
@@ -11,6 +12,8 @@ namespace CulinaryBlog.Application.Auth.Commands.Register;
 /// SRS FR-AUTH-001: tạo tài khoản role Author và trả cặp token (endpoint trả 201).
 /// Email trùng → 409 <c>AUTH_EMAIL_EXISTS</c>; lỗi policy mật khẩu của Identity → 422
 /// <c>VALIDATION_ERROR</c> (ném FluentValidation.ValidationException giống ValidationBehavior).
+/// Sau khi lưu tài khoản sẽ gửi email xác nhận; lỗi gửi email chỉ ghi log, KHÔNG làm hỏng việc
+/// đăng ký (người dùng có thể yêu cầu gửi lại qua FR-AUTH-009).
 /// </summary>
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthResponseDto>
 {
@@ -23,17 +26,23 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
     private readonly IJwtService _jwtService;
     private readonly IRefreshTokenRepository _refreshTokens;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAccountEmailSender _accountEmailSender;
+    private readonly ILogger<RegisterCommandHandler> _logger;
 
     public RegisterCommandHandler(
         IIdentityService identityService,
         IJwtService jwtService,
         IRefreshTokenRepository refreshTokens,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IAccountEmailSender accountEmailSender,
+        ILogger<RegisterCommandHandler> logger)
     {
         _identityService = identityService;
         _jwtService = jwtService;
         _refreshTokens = refreshTokens;
         _unitOfWork = unitOfWork;
+        _accountEmailSender = accountEmailSender;
+        _logger = logger;
     }
 
     public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -64,6 +73,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
             CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        await SendConfirmationEmailAsync(user.Id, user.Email, user.DisplayName, cancellationToken);
+
         return new AuthResponseDto
         {
             AccessToken = accessToken,
@@ -71,5 +82,21 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
             ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
             User = user.ToUserDto(),
         };
+    }
+
+    private async Task SendConfirmationEmailAsync(string userId, string email, string displayName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var token = await _identityService.GenerateEmailConfirmationTokenAsync(userId);
+            if (token is not null)
+            {
+                await _accountEmailSender.SendEmailConfirmationAsync(userId, email, displayName, token, cancellationToken);
+            }
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.LogWarning(ex, "Không gửi được email xác nhận cho user {UserId}", userId);
+        }
     }
 }

@@ -47,10 +47,11 @@ public static class AuthEndpoints
             return Results.NoContent();
         });
 
+        // FR-AUTH-009: luôn 202 + message chung (không tiết lộ email có tồn tại hay không).
         group.MapPost("/email/resend", async (ResendConfirmationEmailCommand command, ISender sender) =>
         {
             await sender.Send(command);
-            return Results.NoContent();
+            return Results.Accepted(value: new { message = ResendConfirmationEmailCommandHandler.GenericMessage });
         });
 
         group.MapPost("/password/forgot", async (ForgotPasswordCommand command, ISender sender) =>

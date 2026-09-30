@@ -2,6 +2,7 @@ using CulinaryBlog.Application.Auth.Commands.Register;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Models;
 using FluentValidation;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace CulinaryBlog.UnitTests.Auth;
@@ -12,7 +13,8 @@ public sealed class RegisterCommandHandlerTests
     private static readonly RegisterCommand Command = new("an@example.com", "Passw0rd!", "Nguyễn An");
 
     private static RegisterCommandHandler CreateHandler(CreateUserResult result, FakeUnitOfWork unitOfWork) =>
-        new(new FakeIdentityService { CreateResult = result }, new FakeJwtService(), unitOfWork.Tokens, unitOfWork);
+        new(new FakeIdentityService { CreateResult = result }, new FakeJwtService(), unitOfWork.Tokens, unitOfWork,
+            new FakeAccountEmailSender(), NullLogger<RegisterCommandHandler>.Instance);
 
     [Fact]
     public async Task EmailDaTonTai_Tra409AuthEmailExists()
@@ -44,21 +46,43 @@ public sealed class RegisterCommandHandlerTests
         Assert.Equal("password", failure.PropertyName);
     }
 
+    private static FakeIdentityService IdentityWithNewUser() => new()
+    {
+        CreateResult = CreateUserResult.Success("user-1"),
+        Account = new UserAccount("user-1", "an@example.com", "Nguyễn An", null, null, ["Author"], false, true, DateTimeOffset.UtcNow),
+    };
+
     [Fact]
-    public async Task DangKyThanhCong_LuuRefreshTokenQuaUnitOfWork()
+    public async Task DangKyThanhCong_LuuRefreshTokenVaGuiEmailXacNhan()
     {
         var unitOfWork = new FakeUnitOfWork();
-        var identity = new FakeIdentityService
-        {
-            CreateResult = CreateUserResult.Success("user-1"),
-            Account = new UserAccount("user-1", "an@example.com", "Nguyễn An", null, null, ["Author"], false, true, DateTimeOffset.UtcNow),
-        };
-        var handler = new RegisterCommandHandler(identity, new FakeJwtService(), unitOfWork.Tokens, unitOfWork);
+        var emailSender = new FakeAccountEmailSender();
+        var handler = new RegisterCommandHandler(IdentityWithNewUser(), new FakeJwtService(), unitOfWork.Tokens, unitOfWork,
+            emailSender, NullLogger<RegisterCommandHandler>.Instance);
 
         var response = await handler.Handle(Command, TestContext.Current.CancellationToken);
 
         Assert.Contains("Author", response.User.Roles);
+        Assert.False(response.User.EmailConfirmed);
         Assert.Single(unitOfWork.Tokens.Tokens);
         Assert.Equal(1, unitOfWork.SaveChangesCount);
+
+        var sent = Assert.Single(emailSender.Sent);
+        Assert.Equal("user-1", sent.UserId);
+        Assert.Equal("an@example.com", sent.Email);
+        Assert.Equal("confirm-token", sent.Token);
+    }
+
+    [Fact]
+    public async Task GuiEmailLoi_VanDangKyThanhCong()
+    {
+        var unitOfWork = new FakeUnitOfWork();
+        var handler = new RegisterCommandHandler(IdentityWithNewUser(), new FakeJwtService(), unitOfWork.Tokens, unitOfWork,
+            new FakeAccountEmailSender { Fail = true }, NullLogger<RegisterCommandHandler>.Instance);
+
+        var response = await handler.Handle(Command, TestContext.Current.CancellationToken);
+
+        Assert.Equal("access-token", response.AccessToken);
+        Assert.Single(unitOfWork.Tokens.Tokens);
     }
 }

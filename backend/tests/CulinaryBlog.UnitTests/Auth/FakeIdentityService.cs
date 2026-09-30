@@ -37,9 +37,34 @@ internal sealed class FakeIdentityService : IIdentityService
 
     public Task<bool> ResetPasswordAsync(string email, string token, string newPassword) => throw new NotSupportedException();
 
-    public Task<string?> GenerateEmailConfirmationTokenAsync(string email) => throw new NotSupportedException();
+    /// <summary>Kết quả trả về của <see cref="ConfirmEmailAsync"/>.</summary>
+    public bool ConfirmEmailResult { get; set; } = true;
 
-    public Task<bool> ConfirmEmailAsync(string email, string token) => throw new NotSupportedException();
+    public Task<string?> GenerateEmailConfirmationTokenAsync(string userId) =>
+        Task.FromResult<string?>(Account is null ? null : "confirm-token");
+
+    public Task<bool> ConfirmEmailAsync(string userId, string token) => Task.FromResult(ConfirmEmailResult);
+}
+
+/// <summary>IAccountEmailSender giả lập — ghi lại các email xác nhận đã "gửi".</summary>
+internal sealed class FakeAccountEmailSender : IAccountEmailSender
+{
+    public List<(string UserId, string Email, string Token)> Sent { get; } = [];
+
+    /// <summary>Đặt true để giả lập máy chủ email lỗi.</summary>
+    public bool Fail { get; set; }
+
+    public Task SendEmailConfirmationAsync(
+        string userId, string email, string displayName, string token, CancellationToken cancellationToken = default)
+    {
+        if (Fail)
+        {
+            throw new InvalidOperationException("SMTP down");
+        }
+
+        Sent.Add((userId, email, token));
+        return Task.CompletedTask;
+    }
 }
 
 /// <summary>IJwtService giả lập — trả chuỗi cố định.</summary>

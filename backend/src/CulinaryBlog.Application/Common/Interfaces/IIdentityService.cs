@@ -27,6 +27,12 @@ public interface IIdentityService
     Task<bool> ToggleUserStatusAsync(string userId, bool isActive);
     Task<string?> GeneratePasswordResetTokenAsync(string email);
     Task<bool> ResetPasswordAsync(string email, string token, string newPassword);
-    Task<string?> GenerateEmailConfirmationTokenAsync(string email);
-    Task<bool> ConfirmEmailAsync(string email, string token);
+    /// <summary>Tạo token xác nhận email cho user (null nếu user không tồn tại).</summary>
+    Task<string?> GenerateEmailConfirmationTokenAsync(string userId);
+
+    /// <summary>
+    /// SRS FR-AUTH-008: xác nhận email theo <paramref name="userId"/> + token. Idempotent — email đã
+    /// xác nhận trước đó vẫn trả true. Trả false khi user không tồn tại hoặc token sai/hết hạn.
+    /// </summary>
+    Task<bool> ConfirmEmailAsync(string userId, string token);
 }

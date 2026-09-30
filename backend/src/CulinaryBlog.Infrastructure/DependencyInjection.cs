@@ -82,6 +82,8 @@ public static class DependencyInjection
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmailService, CulinaryBlog.Infrastructure.Services.MockEmailService>();
+        services.Configure<Services.ClientAppSettings>(configuration.GetSection(Services.ClientAppSettings.SectionName));
+        services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
 
         var jwtSettings = new JwtSettings();
         configuration.Bind(JwtSettings.SectionName, jwtSettings);

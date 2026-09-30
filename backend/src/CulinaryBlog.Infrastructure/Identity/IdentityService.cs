@@ -184,17 +184,21 @@ public class IdentityService : IIdentityService
         return true;
     }
 
-    public async Task<string?> GenerateEmailConfirmationTokenAsync(string email)
+    public async Task<string?> GenerateEmailConfirmationTokenAsync(string userId)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return null;
         return await _userManager.GenerateEmailConfirmationTokenAsync(user);
     }
 
-    public async Task<bool> ConfirmEmailAsync(string email, string token)
+    public async Task<bool> ConfirmEmailAsync(string userId, string token)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return false;
+
+        // Idempotent (FR-AUTH-008): bấm lại link xác nhận lần 2 không báo lỗi.
+        if (user.EmailConfirmed) return true;
+
         var result = await _userManager.ConfirmEmailAsync(user, token);
         return result.Succeeded;
     }
