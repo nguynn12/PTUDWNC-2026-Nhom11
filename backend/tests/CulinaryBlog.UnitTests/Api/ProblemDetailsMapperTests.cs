@@ -17,6 +17,7 @@ public sealed class ProblemDetailsMapperTests
     [InlineData(AppErrorKind.Conflict, 409)]
     [InlineData(AppErrorKind.Unauthorized, 401)]
     [InlineData(AppErrorKind.Forbidden, 403)]
+    [InlineData(AppErrorKind.Locked, 423)]
     public void StatusFor_TraDungHttpStatusTheoPhuLucA(AppErrorKind kind, int expectedStatus)
     {
         Assert.Equal(expectedStatus, ProblemDetailsMapper.StatusFor(kind));

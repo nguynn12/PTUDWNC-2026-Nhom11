@@ -73,6 +73,7 @@ public static class ProblemDetailsMapper
         AppErrorKind.Conflict => StatusCodes.Status409Conflict,
         AppErrorKind.Unauthorized => StatusCodes.Status401Unauthorized,
         AppErrorKind.Forbidden => StatusCodes.Status403Forbidden,
+        AppErrorKind.Locked => StatusCodes.Status423Locked,
         _ => StatusCodes.Status500InternalServerError,
     };
 
@@ -84,6 +85,7 @@ public static class ProblemDetailsMapper
         AppErrorKind.Conflict => "Xung đột dữ liệu",
         AppErrorKind.Unauthorized => "Xác thực không hợp lệ",
         AppErrorKind.Forbidden => "Không có quyền thực hiện",
+        AppErrorKind.Locked => "Tài khoản đang bị khoá tạm thời",
         _ => "Lỗi hệ thống",
     };
 }

@@ -23,4 +23,7 @@ public enum AppErrorKind
 
     /// <summary>Đã xác thực nhưng không đủ quyền (role, ownership, email chưa xác nhận) → 403.</summary>
     Forbidden,
+
+    /// <summary>Tài khoản đang bị khoá tạm thời (lockout) → 423.</summary>
+    Locked,
 }

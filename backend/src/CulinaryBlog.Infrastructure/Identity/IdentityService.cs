@@ -1,4 +1,5 @@
 using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Application.Common.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace CulinaryBlog.Infrastructure.Identity;
@@ -44,32 +45,50 @@ public class IdentityService : IIdentityService
         return (false, string.Join("; ", result.Errors.Select(e => e.Description)), string.Empty);
     }
 
-    public async Task<bool> CheckPasswordAsync(string email, string password)
+    public async Task<CredentialCheckResult> CheckCredentialsAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return false;
-        
-        return await _userManager.CheckPasswordAsync(user, password);
+        if (user == null)
+        {
+            return new CredentialCheckResult(CredentialCheckStatus.InvalidCredentials);
+        }
+
+        // 1. Đang bị khoá tạm → từ chối NGAY, không so mật khẩu (tránh dò mật khẩu trong lúc khoá).
+        if (await _userManager.IsLockedOutAsync(user))
+        {
+            return new CredentialCheckResult(CredentialCheckStatus.LockedOut, LockoutEnd: user.LockoutEnd);
+        }
+
+        // 2. Sai mật khẩu → tăng AccessFailedCount; lần sai thứ 5 Identity tự đặt LockoutEnd (15 phút).
+        if (!await _userManager.CheckPasswordAsync(user, password))
+        {
+            await _userManager.AccessFailedAsync(user);
+
+            return await _userManager.IsLockedOutAsync(user)
+                ? new CredentialCheckResult(CredentialCheckStatus.LockedOut, LockoutEnd: user.LockoutEnd)
+                : new CredentialCheckResult(CredentialCheckStatus.InvalidCredentials);
+        }
+
+        // 3. Mật khẩu đúng nhưng Admin đã vô hiệu hoá (kiểm tra SAU mật khẩu để không lộ trạng thái).
+        if (!user.IsActive)
+        {
+            return new CredentialCheckResult(CredentialCheckStatus.Disabled);
+        }
+
+        await _userManager.ResetAccessFailedCountAsync(user);
+        return new CredentialCheckResult(CredentialCheckStatus.Success, await ToAccountAsync(user));
     }
 
-    public async Task<(string Id, string Email, string DisplayName, IEnumerable<string> Roles, bool EmailConfirmed)?> GetUserDetailsByEmailAsync(string email)
+    public async Task<UserAccount?> GetUserDetailsByEmailAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return null;
-
-        var roles = await _userManager.GetRolesAsync(user);
-        
-        return (user.Id, user.Email!, user.DisplayName, roles, user.EmailConfirmed);
+        return user == null ? null : await ToAccountAsync(user);
     }
 
-    public async Task<(string Id, string Email, string DisplayName, IEnumerable<string> Roles, bool EmailConfirmed)?> GetUserDetailsByIdAsync(string userId)
+    public async Task<UserAccount?> GetUserDetailsByIdAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return null;
-
-        var roles = await _userManager.GetRolesAsync(user);
-        
-        return (user.Id, user.Email!, user.DisplayName, roles, user.EmailConfirmed);
+        return user == null ? null : await ToAccountAsync(user);
     }
 
     public async Task<bool> UpdateProfileAsync(string userId, string displayName, string? bio, string? avatarUrl)
@@ -130,5 +149,21 @@ public class IdentityService : IIdentityService
         if (user == null) return false;
         var result = await _userManager.ConfirmEmailAsync(user, token);
         return result.Succeeded;
+    }
+
+    private async Task<UserAccount> ToAccountAsync(ApplicationUser user)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new UserAccount(
+            user.Id,
+            user.Email ?? string.Empty,
+            user.DisplayName,
+            user.AvatarUrl,
+            user.Bio,
+            roles.ToList(),
+            user.EmailConfirmed,
+            user.IsActive,
+            user.CreatedAt);
     }
 }

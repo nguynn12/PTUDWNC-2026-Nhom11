@@ -5,6 +5,7 @@ using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Queries.GetProfile;
 
+/// <summary>SRS FR-AUTH-006 — tài khoản bị vô hiệu hoá không xem được hồ sơ dù access token còn hạn.</summary>
 public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, UserDto>
 {
     private readonly ICurrentUser _currentUser;
@@ -20,24 +21,20 @@ public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, UserDto>
     {
         if (string.IsNullOrEmpty(_currentUser.Id))
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "You are not authorized.");
+            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Bạn chưa đăng nhập.");
         }
 
-        var userDetails = await _identityService.GetUserDetailsByIdAsync(_currentUser.Id);
-        
-        if (userDetails == null)
+        var user = await _identityService.GetUserDetailsByIdAsync(_currentUser.Id);
+        if (user == null)
         {
-            throw new NotFoundException(ErrorCodes.AuthAccountDisabled, "User not found.");
+            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Tài khoản không còn tồn tại.");
         }
 
-        return new UserDto
+        if (!user.IsActive)
         {
-            Id = userDetails.Value.Id,
-            Email = userDetails.Value.Email,
-            DisplayName = userDetails.Value.DisplayName,
-            Roles = userDetails.Value.Roles,
-            EmailConfirmed = userDetails.Value.EmailConfirmed,
-            CreatedAt = DateTimeOffset.UtcNow // Placeholder, ideally fetch from DB
-        };
+            throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, "Tài khoản đã bị quản trị viên vô hiệu hoá.");
+        }
+
+        return user.ToUserDto();
     }
 }

@@ -27,6 +27,9 @@ public static class ErrorCodes
     public const string AuthRefreshTokenRevoked = "AUTH_REFRESH_TOKEN_REVOKED";
     public const string AuthGoogleTokenInvalid = "AUTH_GOOGLE_TOKEN_INVALID";
     public const string AuthAccountDisabled = "AUTH_ACCOUNT_DISABLED";
+
+    /// <summary>423 — khoá tạm sau 5 lần đăng nhập sai (FR-AUTH-002 A2). CHƯA có trong Phụ lục B — đề nghị bổ sung.</summary>
+    public const string AuthAccountLocked = "AUTH_ACCOUNT_LOCKED";
     public const string AuthEmailNotConfirmed = "AUTH_EMAIL_NOT_CONFIRMED";
 
     // ── Recipe ───────────────────────────────────────────────────────────────

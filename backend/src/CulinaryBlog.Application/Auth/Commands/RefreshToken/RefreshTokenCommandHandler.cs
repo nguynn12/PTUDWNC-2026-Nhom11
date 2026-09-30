@@ -1,16 +1,23 @@
 using System.Security.Cryptography;
 using System.Text;
 using CulinaryBlog.Application.Auth.Dtos;
+using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
-using CulinaryBlog.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CulinaryBlog.Application.Auth.Commands.RefreshToken;
 
+/// <summary>
+/// SRS FR-AUTH-004: token hợp lệ khi chưa hết hạn, chưa revoked VÀ user còn active.
+/// Dùng lại token đã revoke → thu hồi cả family (reuse detection).
+/// </summary>
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
 {
+    private const int RefreshTokenExpiryDays = 7;
+    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật qua ICurrentUser
+
     private readonly IApplicationDbContext _context;
     private readonly IJwtService _jwtService;
     private readonly IIdentityService _identityService;
@@ -32,7 +39,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         if (token == null)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Invalid refresh token.");
+            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Refresh token không hợp lệ.");
         }
 
         if (token.IsRevoked)
@@ -41,70 +48,63 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
             var familyTokens = await _context.RefreshTokens
                 .Where(rt => rt.FamilyId == token.FamilyId && rt.RevokedAt == null)
                 .ToListAsync(cancellationToken);
-            
+
             foreach (var familyToken in familyTokens)
             {
                 familyToken.Revoke("reuse-detected");
             }
-            
+
             await _context.SaveChangesAsync(cancellationToken);
-            
-            throw new UnauthorizedException(ErrorCodes.AuthRefreshTokenRevoked, "Refresh token has been revoked.");
+            throw new UnauthorizedException(ErrorCodes.AuthRefreshTokenRevoked, "Refresh token đã bị thu hồi.");
         }
 
         if (token.IsExpired)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthRefreshTokenExpired, "Refresh token has expired.");
+            throw new UnauthorizedException(ErrorCodes.AuthRefreshTokenExpired, "Refresh token đã hết hạn.");
+        }
+
+        // Kiểm tra user TRƯỚC khi xoay vòng token: tài khoản bị vô hiệu hoá không được cấp token mới.
+        var user = await _identityService.GetUserDetailsByIdAsync(token.UserId);
+        if (user == null)
+        {
+            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Tài khoản không còn tồn tại.");
+        }
+
+        if (!user.IsActive)
+        {
+            await RefreshTokenRevoker.RevokeAllActiveAsync(_context, user.Id, "account-disabled", cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, "Tài khoản đã bị quản trị viên vô hiệu hoá.");
         }
 
         // Token is valid, rotate it
         var (newTokenHash, newRawToken) = _jwtService.GenerateRefreshToken();
         var newToken = CulinaryBlog.Domain.Entities.RefreshToken.CreateRotated(
-            token.UserId, 
-            newTokenHash, 
-            token.FamilyId, 
-            7, 
-            "127.0.0.1"); // TODO: Use IHttpContextAccessor for IP
+            token.UserId,
+            newTokenHash,
+            token.FamilyId,
+            RefreshTokenExpiryDays,
+            ClientIp);
 
         token.Revoke("rotated", null, newTokenHash);
-
         _context.RefreshTokens.Add(newToken);
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        // Fetch user info for new access token
-        var userDetails = await _identityService.GetUserDetailsByIdAsync(token.UserId);
-        if (userDetails == null)
-        {
-             throw new UnauthorizedException(ErrorCodes.AuthInvalidCredentials, "User not found.");
-        }
-        
-        var accessToken = _jwtService.GenerateAccessToken(
-            userDetails.Value.Id, 
-            userDetails.Value.Email, 
-            userDetails.Value.Roles, 
-            userDetails.Value.EmailConfirmed);
+        var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Email, user.Roles, user.EmailConfirmed);
 
         return new AuthResponseDto
         {
             AccessToken = accessToken,
             RefreshToken = newRawToken,
             ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
-            User = new UserDto
-            {
-                Id = userDetails.Value.Id,
-                Email = userDetails.Value.Email,
-                DisplayName = userDetails.Value.DisplayName,
-                Roles = userDetails.Value.Roles,
-                EmailConfirmed = userDetails.Value.EmailConfirmed,
-                CreatedAt = DateTimeOffset.UtcNow
-            }
+            User = user.ToUserDto(),
         };
     }
 
-    private string ComputeTokenHash(string rawToken)
+    private static string ComputeTokenHash(string rawToken)
     {
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawToken));
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawToken));
         return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 }
