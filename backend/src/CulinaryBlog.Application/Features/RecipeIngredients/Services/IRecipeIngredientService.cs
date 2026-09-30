@@ -16,6 +16,14 @@ public interface IRecipeIngredientService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Lấy thông tin chi tiết một nguyên liệu theo ID.
+    /// </summary>
+    Task<RecipeIngredientDto> GetIngredientByIdAsync(
+        Guid recipeId,
+        Guid ingredientId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Thêm một nguyên liệu mới vào công thức.
     /// Kiểm tra quyền tác giả (Owner) hoặc Admin trước khi thêm.
     /// </summary>

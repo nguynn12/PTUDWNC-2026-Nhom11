@@ -30,6 +30,19 @@ public static class RecipeIngredientEndpoints
         .WithName("GetRecipeIngredients")
         .WithSummary("Lấy danh sách toàn bộ nguyên liệu của một công thức.");
 
+        // GET /api/v1/recipes/{recipeId}/ingredients/{ingredientId}
+        ingredients.MapGet("/{ingredientId:guid}", async (
+            Guid recipeId,
+            Guid ingredientId,
+            IRecipeIngredientService ingredientService,
+            CancellationToken ct) =>
+        {
+            var result = await ingredientService.GetIngredientByIdAsync(recipeId, ingredientId, ct);
+            return Results.Ok(ApiResponse<RecipeIngredientDto>.Success(result));
+        })
+        .WithName("GetRecipeIngredientById")
+        .WithSummary("Lấy thông tin chi tiết một nguyên liệu theo ID.");
+
         // POST /api/v1/recipes/{recipeId}/ingredients
         ingredients.MapPost("/", async (
             Guid recipeId,

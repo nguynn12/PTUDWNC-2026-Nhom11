@@ -44,6 +44,32 @@ public class RecipeIngredientService : IRecipeIngredientService
     }
 
     /// <inheritdoc />
+    public async Task<RecipeIngredientDto> GetIngredientByIdAsync(
+        Guid recipeId,
+        Guid ingredientId,
+        CancellationToken cancellationToken = default)
+    {
+        var recipeExists = await _context.Recipes
+            .AnyAsync(r => r.Id == recipeId, cancellationToken);
+
+        if (!recipeExists)
+        {
+            throw new NotFoundException(nameof(Recipe), recipeId);
+        }
+
+        var ingredient = await _context.RecipeIngredients
+            .AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == ingredientId && i.RecipeId == recipeId, cancellationToken);
+
+        if (ingredient == null)
+        {
+            throw new NotFoundException(nameof(RecipeIngredient), ingredientId);
+        }
+
+        return MapToDto(ingredient);
+    }
+
+    /// <inheritdoc />
     public async Task<RecipeIngredientDto> AddIngredientAsync(
         Guid recipeId,
         CreateRecipeIngredientRequest request,

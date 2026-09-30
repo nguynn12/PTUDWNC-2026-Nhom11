@@ -6,9 +6,11 @@ using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddApplication();
@@ -18,20 +20,39 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-// Tự động Migrate và Seed dữ liệu mẫu (User/Role/Recipe) ở môi trường Development
+// Cấu hình OpenAPI và giao diện kiểm thử tương tác Scalar UI (thay thế Swagger)
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
-    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-
-    if (dbContext.Database.IsRelational())
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
     {
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
-        await CategorySeeder.SeedAsync(dbContext);
-        await RecipeSeeder.SeedAsync(dbContext);
-        await RecipeDetailSeeder.SeedAsync(dbContext);
+        options.WithTitle("Culinary Blog API - Recipe Content & Media")
+               .WithTheme(ScalarTheme.Moon)
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
+
+    app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
+    app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+
+        if (dbContext.Database.IsRelational())
+        {
+            await initialiser.InitialiseAsync();
+            await initialiser.SeedAsync();
+            await CategorySeeder.SeedAsync(dbContext);
+            await RecipeSeeder.SeedAsync(dbContext);
+            await RecipeDetailSeeder.SeedAsync(dbContext);
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
     }
 }
 
