@@ -5,6 +5,7 @@ using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,9 @@ if (app.Environment.IsDevelopment())
         await RecipeSeeder.SeedAsync(dbContext);
         await RecipeDetailSeeder.SeedAsync(dbContext);
     }
+
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 var api = app.MapGroup("/api/v1");

@@ -86,7 +86,12 @@ public class ApplicationDbContextInitialiser(
         const int sampleUserCount = 15;
         const string samplePassword = "Passw0rd!23";
 
-        if (await context.Users.CountAsync() > 0)
+        // Tạo các tài khoản tĩnh dùng cho việc test hệ thống
+        await CreateUserIfNotExists("admin@culinaryblog.local", "Admin User", samplePassword, Roles.Admin, true);
+        await CreateUserIfNotExists("author@culinaryblog.local", "Author User", samplePassword, Roles.Author, true);
+        await CreateUserIfNotExists("author.unverified@culinaryblog.local", "Unverified Author", samplePassword, Roles.Author, false);
+
+        if (await context.Users.CountAsync() >= 18)
         {
             logger.LogInformation("AspNetUsers đã có dữ liệu — bỏ qua bước seed user mẫu.");
             return;
@@ -127,5 +132,24 @@ public class ApplicationDbContextInitialiser(
 
         logger.LogInformation("Đã seed {Count} user mẫu (role Author, mật khẩu mẫu: {Password}) bằng Bogus.",
             sampleUserCount, samplePassword);
+    }
+
+    private async Task CreateUserIfNotExists(string email, string displayName, string password, string role, bool emailConfirmed)
+    {
+        if (await userManager.FindByEmailAsync(email) == null)
+        {
+            var user = ApplicationUser.Create(email, displayName);
+            user.EmailConfirmed = emailConfirmed;
+            var result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, role);
+                logger.LogInformation("Đã seed tài khoản tĩnh {Email} ({Role})", email, role);
+            }
+            else
+            {
+                logger.LogWarning("Lỗi seed tài khoản tĩnh {Email}: {Errors}", email, string.Join("; ", result.Errors.Select(e => e.Description)));
+            }
+        }
     }
 }

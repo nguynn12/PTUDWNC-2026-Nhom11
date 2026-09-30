@@ -12,6 +12,8 @@ public static class DependencyInjection
     {
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
+        
+        services.AddOpenApi();
 
         // Mặc định Minimal API chỉ throw BadHttpRequestException ở Development, còn Production
         // trả 400 rỗng. Bật luôn để JSON/tham số sai cú pháp đi qua GlobalExceptionHandler và

@@ -38,7 +38,7 @@ public class RefreshToken
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public string? CreatedByIp { get; private set; }
+    public string CreatedByIp { get; private set; } = string.Empty;
 
     public string? RevokedByIp { get; private set; }
 
@@ -51,10 +51,11 @@ public class RefreshToken
 
     /// <summary>Bắt đầu một family MỚI (lần login đầu tiên của phiên) — FamilyId = Id của chính token này.</summary>
     public static RefreshToken CreateNewFamily(
-        string userId, string tokenHash, int expiryDays, string? createdByIp = null)
+        string userId, string tokenHash, int expiryDays, string createdByIp)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(tokenHash);
+        ArgumentException.ThrowIfNullOrWhiteSpace(createdByIp);
 
         var id = Guid.NewGuid();
         return new RefreshToken
@@ -71,10 +72,11 @@ public class RefreshToken
 
     /// <summary>Token kế tiếp trong CÙNG family — dùng khi rotation (FR-AUTH-004).</summary>
     public static RefreshToken CreateRotated(
-        string userId, string tokenHash, Guid familyId, int expiryDays, string? createdByIp = null)
+        string userId, string tokenHash, Guid familyId, int expiryDays, string createdByIp)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(tokenHash);
+        ArgumentException.ThrowIfNullOrWhiteSpace(createdByIp);
 
         return new RefreshToken
         {
