@@ -15,7 +15,7 @@ Ba nguyên tắc bắt buộc tuân thủ theo SRS.md và tài liệu kiến th�
 
 1. **Không tự chế bảng User/Role** — dùng **ASP.NET Core Identity** làm nền (bảng `AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, `AspNetUserLogins`, `AspNetUserClaims`, `AspNetUserTokens` sinh tự động bởi `IdentityDbContext`), chỉ mở rộng `ApplicationUser` với field nghiệp vụ riêng.
 2. **Không lưu raw refresh token** — chỉ lưu SHA-256 hash (`TokenHash`), theo đúng SRS 7.8.
-3. **Không dùng Repository/Unit of Work** — Handler dùng thẳng `IApplicationDbContext`/`UserManager<ApplicationUser>` (quy ước riêng của dự án, khác với ví dụ Repository/UoW trong giáo trình Chương 3 — xem `docs/references/Kien_Thuc_Nen_Tang_Bai_Giang.md` Phụ lục D).
+3. **Repository + Unit of Work** (cập nhật 30/09/2026 — yêu cầu tối thiểu Lab 3, nhóm trưởng đã đồng ý): interface `IRepository<T>`, `IRefreshTokenRepository`, `IUnitOfWork` đặt ở Domain (SRS 6.2), hiện thực ở `Infrastructure/Repositories`. Thao tác user vẫn đi qua `IIdentityService` (bọc `UserManager<ApplicationUser>`). Trước đây dự án dùng thẳng `IApplicationDbContext` — quy ước đó không còn áp dụng cho RefreshToken.
 
 ## 2. Sơ đồ quan hệ thực thể (ERD)
 

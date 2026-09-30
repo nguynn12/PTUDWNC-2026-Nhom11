@@ -7,12 +7,12 @@ namespace CulinaryBlog.UnitTests.Auth;
 
 /// <summary>
 /// SRS FR-AUTH-002 (A1 401, A2 423, A3 khoá sau 5 lần sai) và FR-AUTH-010 (tài khoản bị vô hiệu hoá).
-/// Các nhánh lỗi không chạm DbContext nên truyền null.
+/// Các nhánh lỗi không được ghi refresh token nào.
 /// </summary>
 public sealed class LoginCommandHandlerTests
 {
     private static LoginCommandHandler CreateHandler(CredentialCheckResult result) =>
-        new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), null!);
+        new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), new FakeUnitOfWork());
 
     private static readonly LoginCommand Command = new("author@culinaryblog.local", "Sai-mat-khau1!");
 

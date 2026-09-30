@@ -2,6 +2,7 @@ using CulinaryBlog.Application.Auth.Dtos;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
+using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Commands.Login;
@@ -20,13 +21,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
     private readonly IIdentityService _identityService;
     private readonly IJwtService _jwtService;
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public LoginCommandHandler(IIdentityService identityService, IJwtService jwtService, IApplicationDbContext context)
+    public LoginCommandHandler(IIdentityService identityService, IJwtService jwtService, IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
         _jwtService = jwtService;
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -51,9 +52,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
         var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Email, user.Roles, user.EmailConfirmed);
         var (tokenHash, rawToken) = _jwtService.GenerateRefreshToken();
 
-        _context.RefreshTokens.Add(CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(
-            user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp));
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.RefreshTokens.AddAsync(
+            CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp),
+            cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new AuthResponseDto
         {

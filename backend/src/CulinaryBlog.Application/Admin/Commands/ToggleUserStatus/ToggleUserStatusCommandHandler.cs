@@ -1,6 +1,7 @@
 using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Admin.Commands.ToggleUserStatus;
@@ -13,13 +14,13 @@ public class ToggleUserStatusCommandHandler : IRequestHandler<ToggleUserStatusCo
 {
     private readonly IIdentityService _identityService;
     private readonly ICurrentUser _currentUser;
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ToggleUserStatusCommandHandler(IIdentityService identityService, ICurrentUser currentUser, IApplicationDbContext context)
+    public ToggleUserStatusCommandHandler(IIdentityService identityService, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
         _currentUser = currentUser;
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(ToggleUserStatusCommand request, CancellationToken cancellationToken)
@@ -37,8 +38,8 @@ public class ToggleUserStatusCommandHandler : IRequestHandler<ToggleUserStatusCo
 
         if (!request.IsActive)
         {
-            await RefreshTokenRevoker.RevokeAllActiveAsync(_context, request.UserId, "admin-deactivated", cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await RefreshTokenRevoker.RevokeAllAsync(_unitOfWork.RefreshTokens, request.UserId, "admin-deactivated", cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

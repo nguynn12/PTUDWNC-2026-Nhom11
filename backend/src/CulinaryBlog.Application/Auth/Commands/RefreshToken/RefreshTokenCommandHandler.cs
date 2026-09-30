@@ -5,8 +5,8 @@ using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Exceptions;
+using CulinaryBlog.Domain.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CulinaryBlog.Application.Auth.Commands.RefreshToken;
 
@@ -19,13 +19,13 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
     private const int RefreshTokenExpiryDays = 7;
     private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật qua ICurrentUser
 
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly IIdentityService _identityService;
 
-    public RefreshTokenCommandHandler(IApplicationDbContext context, IJwtService jwtService, IIdentityService identityService)
+    public RefreshTokenCommandHandler(IUnitOfWork unitOfWork, IJwtService jwtService, IIdentityService identityService)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _jwtService = jwtService;
         _identityService = identityService;
     }
@@ -35,8 +35,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         // Hash the incoming raw token to query DB
         var tokenHash = ComputeTokenHash(request.RefreshToken);
 
-        var token = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, cancellationToken);
+        var token = await _unitOfWork.RefreshTokens.GetByTokenHashAsync(tokenHash, cancellationToken);
 
         if (token == null)
         {
@@ -46,16 +45,14 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         if (token.IsRevoked)
         {
             // Reuse detected: revoke the whole family
-            var familyTokens = await _context.RefreshTokens
-                .Where(rt => rt.FamilyId == token.FamilyId && rt.RevokedAt == null)
-                .ToListAsync(cancellationToken);
+            var familyTokens = await _unitOfWork.RefreshTokens.GetNotRevokedByFamilyIdAsync(token.FamilyId, cancellationToken);
 
             foreach (var familyToken in familyTokens)
             {
                 familyToken.Revoke("reuse-detected");
             }
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             throw new RefreshTokenRevokedException();
         }
 
@@ -71,17 +68,17 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         if (!user.IsActive)
         {
-            await RefreshTokenRevoker.RevokeAllActiveAsync(_context, user.Id, "account-disabled", cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await RefreshTokenRevoker.RevokeAllAsync(_unitOfWork.RefreshTokens, user.Id, "account-disabled", cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, "Tài khoản đã bị quản trị viên vô hiệu hoá.");
         }
 
         // Token is valid, rotate it
         var (newTokenHash, newRawToken) = _jwtService.GenerateRefreshToken();
         var newToken = token.Rotate(newTokenHash, RefreshTokenExpiryDays, ClientIp);
-        _context.RefreshTokens.Add(newToken);
+        await _unitOfWork.RefreshTokens.AddAsync(newToken, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Email, user.Roles, user.EmailConfirmed);
 

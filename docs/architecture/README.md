@@ -30,6 +30,8 @@ Mỗi module chịu trách nhiệm xuyên suốt từ giao diện đến test. T
 - Modular monolith, không dùng microservices trong phiên bản môn học.
 - PostgreSQL 16 là nguồn dữ liệu chính.
 - Entity Framework Core theo Code First.
+- Truy cập dữ liệu qua **Repository + Unit of Work** (yêu cầu Lab 3, nhóm trưởng đồng ý 30/09/2026): interface `IRepository<T>`, `I<Entity>Repository`, `IUnitOfWork` ở `Domain/Repositories`; hiện thực ở `Infrastructure/Repositories`. Mỗi thành viên thêm repository cho entity của module mình và khai báo property tương ứng trong `IUnitOfWork`.
+- Lỗi nghiệp vụ của entity dùng **domain exception** (`Domain/Exceptions`: `BusinessRuleViolationException` → 422, `EntityNotFoundException` → 404, `DomainConflictException` → 409, `InvalidTokenException` → 401); `GlobalExceptionHandler` chuyển thành RFC 7807.
 - Domain chỉ dùng .NET BCL, không có NuGet dependency (NFR-MAINT-004). `ApplicationUser` (kế thừa `IdentityUser`) đặt ở `Infrastructure/Identity`; entity trong Domain chỉ tham chiếu user qua `AuthorId`/`UserId`, lấy thông tin tác giả qua `IUserQueryService` — xem [`RESOLVED-CONFLICTS.md` D7](../decisions/RESOLVED-CONFLICTS.md).
 - API version qua prefix `/api/v1`.
 - Cấu hình local có giá trị development mặc định; secret thật không được commit.

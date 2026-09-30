@@ -1,39 +1,35 @@
 using System.Security.Cryptography;
 using System.Text;
-using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Domain.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CulinaryBlog.Application.Auth.Commands.Logout;
 
+/// <summary>SRS FR-AUTH-005 + RESOLVED-CONFLICTS D3: luôn thành công (204), kể cả token không tồn tại/đã thu hồi.</summary>
 public class LogoutCommandHandler : IRequestHandler<LogoutCommand>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public LogoutCommandHandler(IApplicationDbContext context)
+    public LogoutCommandHandler(IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         var tokenHash = ComputeTokenHash(request.RefreshToken);
+        var token = await _unitOfWork.RefreshTokens.GetByTokenHashAsync(tokenHash, cancellationToken);
 
-        var token = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, cancellationToken);
-
-        // SRS 7.8, FR-AUTH-005: Idempotent - return 204 even if token is invalid or already revoked
         if (token != null && !token.IsRevoked)
         {
             token.Revoke("logout");
-            await _context.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 
-    private string ComputeTokenHash(string rawToken)
+    private static string ComputeTokenHash(string rawToken)
     {
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawToken));
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawToken));
         return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 }

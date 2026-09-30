@@ -1,6 +1,7 @@
 using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Commands.ResetPassword;
@@ -12,12 +13,12 @@ namespace CulinaryBlog.Application.Auth.Commands.ResetPassword;
 public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand>
 {
     private readonly IIdentityService _identityService;
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ResetPasswordCommandHandler(IIdentityService identityService, IApplicationDbContext context)
+    public ResetPasswordCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
@@ -31,8 +32,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand>
         var user = await _identityService.GetUserDetailsByEmailAsync(request.Email);
         if (user != null)
         {
-            await RefreshTokenRevoker.RevokeAllActiveAsync(_context, user.Id, "password-reset", cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await RefreshTokenRevoker.RevokeAllAsync(_unitOfWork.RefreshTokens, user.Id, "password-reset", cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

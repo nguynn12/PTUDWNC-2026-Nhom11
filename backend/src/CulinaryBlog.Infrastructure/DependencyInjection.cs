@@ -1,7 +1,9 @@
 using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Domain.Repositories;
 using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
+using CulinaryBlog.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +29,10 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
+
+        // Repository + Unit of Work (Lab 3). Thành viên khác đăng ký repository của module mình tại đây.
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         // AddIdentityCore (không phải AddIdentity đầy đủ): API dùng JWT thuần, không cần

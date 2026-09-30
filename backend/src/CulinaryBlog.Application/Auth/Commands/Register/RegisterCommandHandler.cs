@@ -1,6 +1,7 @@
 using CulinaryBlog.Application.Auth.Dtos;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Commands.Register;
@@ -8,6 +9,7 @@ namespace CulinaryBlog.Application.Auth.Commands.Register;
 /// <summary>
 /// SRS FR-AUTH-001: tạo tài khoản role Author và trả cặp token (endpoint trả 201).
 /// Email trùng → 409 <c>AUTH_EMAIL_EXISTS</c>; lỗi policy mật khẩu của Identity → 422.
+/// Tạo user + lưu refresh token nằm trong CÙNG một transaction của Unit of Work.
 /// </summary>
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthResponseDto>
 {
@@ -18,48 +20,60 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 
     private readonly IIdentityService _identityService;
     private readonly IJwtService _jwtService;
-    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public RegisterCommandHandler(IIdentityService identityService, IJwtService jwtService, IApplicationDbContext context)
+    public RegisterCommandHandler(IIdentityService identityService, IJwtService jwtService, IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
         _jwtService = jwtService;
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var result = await _identityService.CreateUserAsync(
-            request.Email.Trim(),
-            request.Password,
-            request.DisplayName.Trim());
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        if (result.DuplicateEmail)
+        try
         {
-            throw new ConflictException(ErrorCodes.AuthEmailExists, EmailExistsMessage);
+            var result = await _identityService.CreateUserAsync(
+                request.Email.Trim(),
+                request.Password,
+                request.DisplayName.Trim());
+
+            if (result.DuplicateEmail)
+            {
+                throw new ConflictException(ErrorCodes.AuthEmailExists, EmailExistsMessage);
+            }
+
+            if (!result.Succeeded)
+            {
+                throw new ValidationFailedException(result.Errors);
+            }
+
+            var user = await _identityService.GetUserDetailsByIdAsync(result.UserId)
+                ?? throw new InvalidOperationException("Không đọc được tài khoản vừa tạo.");
+
+            var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Email, user.Roles, user.EmailConfirmed);
+            var (tokenHash, rawToken) = _jwtService.GenerateRefreshToken();
+
+            await _unitOfWork.RefreshTokens.AddAsync(
+                CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp),
+                cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = rawToken,
+                ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
+                User = user.ToUserDto(),
+            };
         }
-
-        if (!result.Succeeded)
+        catch
         {
-            throw new ValidationFailedException(result.Errors);
+            await _unitOfWork.RollbackTransactionAsync(CancellationToken.None);
+            throw;
         }
-
-        var user = await _identityService.GetUserDetailsByIdAsync(result.UserId)
-            ?? throw new InvalidOperationException("Không đọc được tài khoản vừa tạo.");
-
-        var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Email, user.Roles, user.EmailConfirmed);
-        var (tokenHash, rawToken) = _jwtService.GenerateRefreshToken();
-
-        _context.RefreshTokens.Add(CulinaryBlog.Domain.Entities.RefreshToken.CreateNewFamily(
-            user.Id, tokenHash, RefreshTokenExpiryDays, ClientIp));
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return new AuthResponseDto
-        {
-            AccessToken = accessToken,
-            RefreshToken = rawToken,
-            ExpiresIn = _jwtService.AccessTokenLifetimeSeconds,
-            User = user.ToUserDto(),
-        };
     }
 }
