@@ -42,7 +42,7 @@ internal sealed class FakeIdentityService : IIdentityService
         return Task.FromResult(Account is not null);
     }
 
-    public Task<bool> ToggleUserStatusAsync(string userId, bool isActive) => throw new NotSupportedException();
+    public Task<bool> ToggleUserStatusAsync(string userId, bool isActive) => Task.FromResult(Account is not null);
 
     public Task<string?> GeneratePasswordResetTokenAsync(string email) => throw new NotSupportedException();
 

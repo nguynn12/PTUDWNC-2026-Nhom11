@@ -14,6 +14,19 @@
 > `AuthExceptionHandler`. Các lớp `AppException`, `ProblemDetailsMapper`, `ValidationBehaviour`, `LoggingBehaviour`,
 > `ICurrentUser`, `PagedResult`/envelope và `Domain/Repositories` mô tả ở các mục bên dưới **không còn dùng**.
 
+> **Cập nhật 30/09/2026 — chốt phạm vi V1 (SRS mục 3.1 FR-AUTH-001..010, mục 8.1, NFR-SEC):**
+> - Đã bổ sung: gửi email xác nhận khi đăng ký; xác nhận email theo `userId` + `token` (idempotent);
+>   gửi lại email luôn trả 202 với message chung; `PATCH /auth/me` theo đúng ràng buộc FR-AUTH-007;
+>   rate limit 10 request/phút/IP (429 `RATE_LIMIT_EXCEEDED`); ghi IP thật vào refresh token; log cảnh
+>   báo khi refresh token bị dùng lại; claim `roles` trong access token; 401 phân biệt
+>   `AUTH_TOKEN_EXPIRED`/`AUTH_TOKEN_INVALID`; đăng nhập Google `POST /auth/google` (FR-AUTH-003).
+> - Đăng nhập Google xác minh ID token theo chuẩn OpenID Connect bằng thư viện Microsoft.IdentityModel
+>   (có sẵn cùng JwtBearer) thay vì package Google.Apis.Auth mà SRS gợi ý — kiểm tra đủ chữ ký, issuer,
+>   audience, hạn dùng, nonce. Cần cấu hình `GoogleAuth:ClientId`.
+> - Mục 24–27 (đổi mật khẩu, email qua Hangfire, danh sách user cho Admin, dọn refresh token) không có
+>   trong phạm vi V1 của SRS nên không làm. Quên/đặt lại mật khẩu giữ lại vì nằm trong phân công Lab 3.
+> - Kiểm thử thủ công toàn bộ luồng: `backend/src/CulinaryBlog.API/Auth.http`.
+
 ---
 
 ## Mục lục
@@ -332,12 +345,12 @@ flowchart TD
 | 19 | API đặt lại mật khẩu | Bat buoc | Medium | 18 | `2312682_HaLuyen_DatLaiMatKhau` | `feat: them api dat lai mat khau` | Hoan thanh |
 | 20 | API khoá/mở khoá tài khoản (Admin) | Bat buoc | High | 4, 8, 11 | `2312682_HaLuyen_KhoaTaiKhoan` | `feat: them api khoa va mo khoa tai khoan` | Hoan thanh |
 | 21 | Giới hạn tần suất API xác thực | Can thiet | Medium | 1, 10 | `2312682_HaLuyen_GioiHanTanSuatAuth` | `feat: gioi han tan suat cac api xac thuc` | Hoan thanh |
-| 22 | Kiểm thử luồng xác thực và phân quyền | Bat buoc | High | 9–21 | `2312682_HaLuyen_KiemThuXacThuc` | `test: kiem thu luong xac thuc va phan quyen` | Dang lam |
-| 23 | API đăng nhập Google | Mo rong | Low | 9, 10 | `2312682_HaLuyen_DangNhapGoogle` | `feat: them api dang nhap google` | Chua lam |
-| 24 | API đổi mật khẩu khi đã đăng nhập | Mo rong | Low | 13, 19 | `2312682_HaLuyen_DoiMatKhau` | `feat: them api doi mat khau` | Chua lam |
-| 25 | Gửi email qua Hangfire | Mo rong | Low | 15, Hangfire (chung) | `2312682_HaLuyen_EmailHangfire` | `feat: gui email xac thuc qua hangfire` | Chua lam |
-| 26 | API danh sách người dùng cho Admin | Mo rong | Low | 1, 8 | `2312682_HaLuyen_DanhSachNguoiDung` | `feat: them api danh sach nguoi dung cho admin` | Chua lam |
-| 27 | Dọn dẹp refresh token hết hạn | Mo rong | Low | 11, Hangfire (chung) | `2312682_HaLuyen_DonDepRefreshToken` | `feat: don dep refresh token het han` | Chua lam |
+| 22 | Kiểm thử luồng xác thực và phân quyền | Bat buoc | High | 9–21 | `2312682_HaLuyen_KiemThuXacThuc` | `test: kiem thu luong xac thuc va phan quyen` | Hoan thanh |
+| 23 | API đăng nhập Google | Mo rong | Low | 9, 10 | `2312682_HaLuyen_DangNhapGoogle` | `feat: them api dang nhap google` | Hoan thanh |
+| 24 | API đổi mật khẩu khi đã đăng nhập | Mo rong | Low | 13, 19 | `2312682_HaLuyen_DoiMatKhau` | `feat: them api doi mat khau` | Ngoai pham vi V1 |
+| 25 | Gửi email qua Hangfire | Mo rong | Low | 15, Hangfire (chung) | `2312682_HaLuyen_EmailHangfire` | `feat: gui email xac thuc qua hangfire` | Ngoai pham vi V1 |
+| 26 | API danh sách người dùng cho Admin | Mo rong | Low | 1, 8 | `2312682_HaLuyen_DanhSachNguoiDung` | `feat: them api danh sach nguoi dung cho admin` | Ngoai pham vi V1 |
+| 27 | Dọn dẹp refresh token hết hạn | Mo rong | Low | 11, Hangfire (chung) | `2312682_HaLuyen_DonDepRefreshToken` | `feat: don dep refresh token het han` | Ngoai pham vi V1 |
 
 **Tổng:** Bắt buộc 20 · Cần thiết 2 · Mở rộng 5.
 
