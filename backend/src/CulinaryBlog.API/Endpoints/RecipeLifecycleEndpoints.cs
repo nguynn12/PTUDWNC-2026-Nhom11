@@ -157,6 +157,67 @@ public static class RecipeLifecycleEndpoints
         .WithName("DeleteRecipe")
         .WithSummary("Xóa mềm công thức nấu ăn (Soft Delete). Hỗ trợ If-Match.");
 
+        // ── 3 API dành riêng cho Quản trị viên (Admin) theo FR-RCP-007 ───────────────
+        var adminRecipes = group.MapGroup("/admin/recipes");
+
+        // 8. Xem danh sách công thức trong thùng rác
+        adminRecipes.MapGet("/trash", async (
+            int page = 1,
+            int pageSize = 10,
+            ISender sender = null!,
+            CancellationToken cancellationToken = default) =>
+        {
+            var result = await sender.Send(
+                new CulinaryBlog.Application.Features.Recipes.Queries.GetTrashedRecipes.GetTrashedRecipesQuery(page, pageSize),
+                cancellationToken);
+
+            return Results.Ok(new
+            {
+                data = result.Items,
+                meta = new
+                {
+                    pageNumber = result.PageNumber,
+                    pageSize = result.PageSize,
+                    totalCount = result.TotalCount,
+                    totalPages = result.TotalPages,
+                    hasNextPage = result.HasNextPage,
+                    hasPreviousPage = result.HasPreviousPage
+                }
+            });
+        })
+        .WithName("GetTrashedRecipes")
+        .WithSummary("Admin xem danh sách công thức đã bị xóa mềm trong thùng rác.");
+
+        // 9. Khôi phục công thức từ thùng rác (trong thời hạn 30 ngày)
+        adminRecipes.MapPost("/{id:guid}/restore", async (
+            Guid id,
+            ISender sender,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await sender.Send(
+                new CulinaryBlog.Application.Features.Recipes.Commands.RestoreRecipe.RestoreRecipeCommand(id),
+                cancellationToken);
+
+            return Results.Ok(new { data = result });
+        })
+        .WithName("RestoreRecipe")
+        .WithSummary("Admin khôi phục công thức đã xóa mềm trong vòng 30 ngày.");
+
+        // 10. Xóa vĩnh viễn (xóa vật lý) công thức khỏi hệ thống
+        adminRecipes.MapDelete("/{id:guid}/purge", async (
+            Guid id,
+            ISender sender,
+            CancellationToken cancellationToken) =>
+        {
+            await sender.Send(
+                new CulinaryBlog.Application.Features.Recipes.Commands.PurgeRecipe.PurgeRecipeCommand(id),
+                cancellationToken);
+
+            return Results.NoContent();
+        })
+        .WithName("PurgeRecipe")
+        .WithSummary("Admin xóa vật lý vĩnh viễn một công thức đã xóa mềm.");
+
         return group;
     }
 }
