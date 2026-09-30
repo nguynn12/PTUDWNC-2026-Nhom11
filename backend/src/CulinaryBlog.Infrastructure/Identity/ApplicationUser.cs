@@ -1,11 +1,18 @@
+using CulinaryBlog.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace CulinaryBlog.Domain.Entities;
+namespace CulinaryBlog.Infrastructure.Identity;
 
 /// <summary>
 /// Tài khoản người dùng của hệ thống — mở rộng IdentityUser (ASP.NET Core Identity).
 /// Đối chiếu SRS.md mục 7.7 (mô hình dữ liệu) và mục 3.1 FR-AUTH-001..010.
 /// Khoá chính Id (string, độ dài 450) do Identity sinh tự động — không đổi tuỳ ý.
+///
+/// VỊ TRÍ: đặt ở Infrastructure (KHÔNG phải Domain) vì kế thừa IdentityUser của thư viện
+/// ASP.NET Core Identity — Domain phải thuần .NET BCL (NFR-MAINT-004). Entity trong Domain
+/// chỉ tham chiếu user qua khoá chuỗi (Recipe.AuthorId, RefreshToken.UserId), không có
+/// navigation tới class này. Tầng Application lấy thông tin user qua IUserQueryService.
+/// Xem docs/decisions/RESOLVED-CONFLICTS.md mục D7.
 /// </summary>
 public class ApplicationUser : IdentityUser
 {

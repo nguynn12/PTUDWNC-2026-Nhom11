@@ -1,0 +1,166 @@
+# Kiểm thử thủ công module Tài khoản & Xác thực (SRS FR-AUTH-001..010).
+# Mở bằng VS Code (extension REST Client) hoặc Visual Studio / Rider, chạy lần lượt từ trên xuống.
+# Yêu cầu: `docker compose up -d` (PostgreSQL) và `dotnet run --project src/CulinaryBlog.API`
+# ở môi trường Development (tự migrate + seed tài khoản mẫu, mật khẩu Passw0rd!23).
+
+@baseUrl = http://localhost:5000/api/v1
+@password = Passw0rd!23
+
+### FR-AUTH-001 — Đăng ký (201; lần chạy thứ 2 với cùng email → 409 AUTH_EMAIL_EXISTS)
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "tester.auth@example.com",
+  "password": "{{password}}",
+  "displayName": "Tester Auth"
+}
+
+### FR-AUTH-001 — Mật khẩu yếu → 422 VALIDATION_ERROR
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "weak@example.com",
+  "password": "123",
+  "displayName": "Weak"
+}
+
+### FR-AUTH-002 — Đăng nhập Author (200)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "author@culinaryblog.local",
+  "password": "{{password}}"
+}
+
+@accessToken = {{login.response.body.$.accessToken}}
+@refreshToken = {{login.response.body.$.refreshToken}}
+
+### FR-AUTH-002 — Sai mật khẩu → 401 AUTH_INVALID_CREDENTIALS (sai 5 lần liên tiếp → 423)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "author@culinaryblog.local",
+  "password": "Sai-mat-khau1!"
+}
+
+### FR-AUTH-006 — Xem hồ sơ (200)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+
+### FR-AUTH-006 — Không có token → 401 AUTH_TOKEN_INVALID
+GET {{baseUrl}}/auth/me
+
+### FR-AUTH-007 — Cập nhật hồ sơ (200; chỉ gửi field muốn đổi)
+PATCH {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "bio": "Thích nấu món Việt.",
+  "avatarUrl": "https://example.com/avatar.png"
+}
+
+### FR-AUTH-007 — avatarUrl sai → 422
+PATCH {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "avatarUrl": "khong-phai-url"
+}
+
+### FR-AUTH-004 — Làm mới token (200, trả refresh token mới)
+# @name refresh
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### FR-AUTH-004 — Dùng lại refresh token cũ → 401 AUTH_REFRESH_TOKEN_REVOKED (thu hồi cả family)
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### FR-AUTH-005 — Đăng xuất (204, không cần access token; gọi lại vẫn 204)
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh.response.body.$.refreshToken}}"
+}
+
+### FR-AUTH-009 — Gửi lại email xác nhận (luôn 202; xem link xác nhận trong log của API)
+POST {{baseUrl}}/auth/email/resend
+Content-Type: application/json
+
+{
+  "email": "author.unverified@culinaryblog.local"
+}
+
+### FR-AUTH-008 — Xác nhận email (204). Lấy userId/token từ link trong log, token đã URL-encode thì decode trước.
+POST {{baseUrl}}/auth/email/confirm
+Content-Type: application/json
+
+{
+  "userId": "<userId trong link>",
+  "token": "<token trong link>"
+}
+
+### FR-AUTH-003 — Đăng nhập Google (cần cấu hình GoogleAuth:ClientId; idToken lấy từ Google Identity Services)
+POST {{baseUrl}}/auth/google
+Content-Type: application/json
+
+{
+  "idToken": "<Google ID token>"
+}
+
+### FR-AUTH-010 — Đăng nhập Admin
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@culinaryblog.local",
+  "password": "{{password}}"
+}
+
+@adminToken = {{adminLogin.response.body.$.accessToken}}
+@targetUserId = {{register.response.body.$.user.id}}
+
+### FR-AUTH-010 — Admin vô hiệu hoá user (204; user bị thu hồi mọi refresh token)
+PATCH {{baseUrl}}/admin/users/{{targetUserId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+### FR-AUTH-010 — Author gọi API Admin → 403
+PATCH {{baseUrl}}/admin/users/{{targetUserId}}/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "isActive": true
+}
+
+### FR-AUTH-010 — Admin mở lại tài khoản (204)
+PATCH {{baseUrl}}/admin/users/{{targetUserId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": true
+}
