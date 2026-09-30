@@ -1,4 +1,5 @@
-using CulinaryBlog.Domain.Repositories;
+
+using CulinaryBlog.Application.Common.Interfaces;
 
 namespace CulinaryBlog.Application.Auth.Shared;
 

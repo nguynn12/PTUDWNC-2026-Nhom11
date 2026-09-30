@@ -1,7 +1,6 @@
 using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
-using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Commands.ResetPassword;
@@ -13,11 +12,16 @@ namespace CulinaryBlog.Application.Auth.Commands.ResetPassword;
 public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand>
 {
     private readonly IIdentityService _identityService;
+    private readonly IRefreshTokenRepository _refreshTokens;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ResetPasswordCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork)
+    public ResetPasswordCommandHandler(
+        IIdentityService identityService,
+        IRefreshTokenRepository refreshTokens,
+        IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
+        _refreshTokens = refreshTokens;
         _unitOfWork = unitOfWork;
     }
 
@@ -26,13 +30,13 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand>
         var result = await _identityService.ResetPasswordAsync(request.Email, request.Token, request.NewPassword);
         if (!result)
         {
-            throw new BusinessRuleException("AUTH_RESET_TOKEN_INVALID", "Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
+            throw new BusinessRuleValidationException("Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.", "AUTH_RESET_TOKEN_INVALID");
         }
 
         var user = await _identityService.GetUserDetailsByEmailAsync(request.Email);
         if (user != null)
         {
-            await RefreshTokenRevoker.RevokeAllAsync(_unitOfWork.RefreshTokens, user.Id, "password-reset", cancellationToken);
+            await RefreshTokenRevoker.RevokeAllAsync(_refreshTokens, user.Id, "password-reset", cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

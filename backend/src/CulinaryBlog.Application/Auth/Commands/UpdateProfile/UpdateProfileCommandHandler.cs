@@ -7,10 +7,10 @@ namespace CulinaryBlog.Application.Auth.Commands.UpdateProfile;
 
 public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, UserDto>
 {
-    private readonly ICurrentUser _currentUser;
+    private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
 
-    public UpdateProfileCommandHandler(ICurrentUser currentUser, IIdentityService identityService)
+    public UpdateProfileCommandHandler(ICurrentUserService currentUser, IIdentityService identityService)
     {
         _currentUser = currentUser;
         _identityService = identityService;
@@ -18,30 +18,30 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
 
     public async Task<UserDto> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(_currentUser.Id))
+        if (_currentUser.UserId is not { Length: > 0 } userId)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Bạn chưa đăng nhập.");
+            throw new UnauthorizedException("Bạn chưa đăng nhập.", ErrorCodes.AuthTokenInvalid);
         }
 
-        var current = await _identityService.GetUserDetailsByIdAsync(_currentUser.Id);
+        var current = await _identityService.GetUserDetailsByIdAsync(userId);
         if (current == null)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Tài khoản không còn tồn tại.");
+            throw new UnauthorizedException("Tài khoản không còn tồn tại.", ErrorCodes.AuthTokenInvalid);
         }
 
         if (!current.IsActive)
         {
-            throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, "Tài khoản đã bị quản trị viên vô hiệu hoá.");
+            throw new ForbiddenException("Tài khoản đã bị quản trị viên vô hiệu hoá.", ErrorCodes.AuthAccountDisabled);
         }
 
-        var result = await _identityService.UpdateProfileAsync(_currentUser.Id, request.DisplayName, request.Bio, request.AvatarUrl);
+        var result = await _identityService.UpdateProfileAsync(userId, request.DisplayName, request.Bio, request.AvatarUrl);
         if (!result)
         {
-            throw new BusinessRuleException(ErrorCodes.ValidationError, "Không cập nhật được hồ sơ.");
+            throw new BusinessRuleValidationException("Không cập nhật được hồ sơ.", ErrorCodes.ValidationError);
         }
 
-        var updated = await _identityService.GetUserDetailsByIdAsync(_currentUser.Id)
-            ?? throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Tài khoản không còn tồn tại.");
+        var updated = await _identityService.GetUserDetailsByIdAsync(userId)
+            ?? throw new UnauthorizedException("Tài khoản không còn tồn tại.", ErrorCodes.AuthTokenInvalid);
 
         return updated.ToUserDto();
     }

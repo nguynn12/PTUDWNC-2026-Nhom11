@@ -5,7 +5,6 @@ using CulinaryBlog.Application.Auth.Shared;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Exceptions;
-using CulinaryBlog.Domain.Repositories;
 using MediatR;
 
 namespace CulinaryBlog.Application.Auth.Commands.RefreshToken;
@@ -17,14 +16,20 @@ namespace CulinaryBlog.Application.Auth.Commands.RefreshToken;
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
 {
     private const int RefreshTokenExpiryDays = 7;
-    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật qua ICurrentUser
+    private const string ClientIp = "127.0.0.1"; // TODO: lấy IP thật từ HttpContext
 
+    private readonly IRefreshTokenRepository _refreshTokens;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly IIdentityService _identityService;
 
-    public RefreshTokenCommandHandler(IUnitOfWork unitOfWork, IJwtService jwtService, IIdentityService identityService)
+    public RefreshTokenCommandHandler(
+        IRefreshTokenRepository refreshTokens,
+        IUnitOfWork unitOfWork,
+        IJwtService jwtService,
+        IIdentityService identityService)
     {
+        _refreshTokens = refreshTokens;
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
         _identityService = identityService;
@@ -35,17 +40,17 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         // Hash the incoming raw token to query DB
         var tokenHash = ComputeTokenHash(request.RefreshToken);
 
-        var token = await _unitOfWork.RefreshTokens.GetByTokenHashAsync(tokenHash, cancellationToken);
+        var token = await _refreshTokens.GetByTokenHashAsync(tokenHash, cancellationToken);
 
         if (token == null)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Refresh token không hợp lệ.");
+            throw new UnauthorizedException("Refresh token không hợp lệ.", ErrorCodes.AuthTokenInvalid);
         }
 
         if (token.IsRevoked)
         {
             // Reuse detected: revoke the whole family
-            var familyTokens = await _unitOfWork.RefreshTokens.GetNotRevokedByFamilyIdAsync(token.FamilyId, cancellationToken);
+            var familyTokens = await _refreshTokens.GetNotRevokedByFamilyIdAsync(token.FamilyId, cancellationToken);
 
             foreach (var familyToken in familyTokens)
             {
@@ -63,20 +68,20 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         var user = await _identityService.GetUserDetailsByIdAsync(token.UserId);
         if (user == null)
         {
-            throw new UnauthorizedException(ErrorCodes.AuthTokenInvalid, "Tài khoản không còn tồn tại.");
+            throw new UnauthorizedException("Tài khoản không còn tồn tại.", ErrorCodes.AuthTokenInvalid);
         }
 
         if (!user.IsActive)
         {
-            await RefreshTokenRevoker.RevokeAllAsync(_unitOfWork.RefreshTokens, user.Id, "account-disabled", cancellationToken);
+            await RefreshTokenRevoker.RevokeAllAsync(_refreshTokens, user.Id, "account-disabled", cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            throw new ForbiddenException(ErrorCodes.AuthAccountDisabled, "Tài khoản đã bị quản trị viên vô hiệu hoá.");
+            throw new ForbiddenException("Tài khoản đã bị quản trị viên vô hiệu hoá.", ErrorCodes.AuthAccountDisabled);
         }
 
         // Token is valid, rotate it
         var (newTokenHash, newRawToken) = _jwtService.GenerateRefreshToken();
         var newToken = token.Rotate(newTokenHash, RefreshTokenExpiryDays, ClientIp);
-        await _unitOfWork.RefreshTokens.AddAsync(newToken, cancellationToken);
+        _refreshTokens.Add(newToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

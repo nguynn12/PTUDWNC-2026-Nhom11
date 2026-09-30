@@ -1,5 +1,5 @@
+using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
-using CulinaryBlog.Domain.Repositories;
 
 namespace CulinaryBlog.UnitTests.Auth;
 
@@ -11,11 +11,10 @@ internal sealed class FakeRefreshTokenRepository : IRefreshTokenRepository
     public Task<RefreshToken?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         Task.FromResult(Tokens.FirstOrDefault(token => token.Id == id));
 
-    public Task AddAsync(RefreshToken entity, CancellationToken cancellationToken = default)
-    {
-        Tokens.Add(entity);
-        return Task.CompletedTask;
-    }
+    public Task<List<RefreshToken>> GetAllAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(Tokens.ToList());
+
+    public void Add(RefreshToken entity) => Tokens.Add(entity);
 
     public void Update(RefreshToken entity)
     {
@@ -26,43 +25,26 @@ internal sealed class FakeRefreshTokenRepository : IRefreshTokenRepository
     public Task<RefreshToken?> GetByTokenHashAsync(string tokenHash, CancellationToken cancellationToken = default) =>
         Task.FromResult(Tokens.FirstOrDefault(token => token.TokenHash == tokenHash));
 
-    public Task<IReadOnlyList<RefreshToken>> GetNotRevokedByFamilyIdAsync(Guid familyId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<RefreshToken>>(Tokens.Where(token => token.FamilyId == familyId && !token.IsRevoked).ToList());
+    public Task<List<RefreshToken>> GetNotRevokedByFamilyIdAsync(Guid familyId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Tokens.Where(token => token.FamilyId == familyId && !token.IsRevoked).ToList());
 
-    public Task<IReadOnlyList<RefreshToken>> GetNotRevokedByUserIdAsync(string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<RefreshToken>>(Tokens.Where(token => token.UserId == userId && !token.IsRevoked).ToList());
+    public Task<List<RefreshToken>> GetNotRevokedByUserIdAsync(string userId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Tokens.Where(token => token.UserId == userId && !token.IsRevoked).ToList());
 }
 
-/// <summary>Unit of Work giả lập — đếm số lần SaveChanges và trạng thái transaction.</summary>
+/// <summary>
+/// Unit of Work giả lập — đếm số lần SaveChanges. Giữ sẵn một <see cref="FakeRefreshTokenRepository"/>
+/// (<see cref="Tokens"/>) để test truyền cùng lúc repository và unit of work vào handler.
+/// </summary>
 internal sealed class FakeUnitOfWork : IUnitOfWork
 {
     public FakeRefreshTokenRepository Tokens { get; } = new();
 
-    public IRefreshTokenRepository RefreshTokens => Tokens;
-
     public int SaveChangesCount { get; private set; }
-
-    public bool Committed { get; private set; }
-
-    public bool RolledBack { get; private set; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         SaveChangesCount++;
         return Task.FromResult(1);
-    }
-
-    public Task BeginTransactionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-    public Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        Committed = true;
-        return Task.CompletedTask;
-    }
-
-    public Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        RolledBack = true;
-        return Task.CompletedTask;
     }
 }

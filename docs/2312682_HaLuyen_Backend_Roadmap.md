@@ -5,6 +5,15 @@
 > **Ngày lập:** 23/09/2026
 > **Trạng thái code được khảo sát:** nhánh `2312682_LiengHotHaLuyen_Auth_backend` (commit `9d9b799`, đã gồm `develop` mới nhất `40ab20a`).
 
+> **Cập nhật 30/09/2026 — đồng bộ theo quy ước chung của nhóm (yêu cầu mới của giảng viên):**
+> phần nền tảng dùng chung được thay bằng đúng file của nhóm trưởng (nhánh Recipe-lifecycle), giống cách làm của Quân:
+> `IRepository<T>`/`IUnitOfWork`/`ICurrentUserService` (Application/Common/Interfaces), `EfRepository<T>`/`UnitOfWork`
+> (Infrastructure/Persistence), `DomainExceptions.cs`, `NotFound/Conflict/Forbidden/BusinessRuleValidationException`
+> (tham số `(message, errorCode)`), `ValidationBehavior` và `API/Middlewares/GlobalExceptionHandler`; MediatR 12.5.0.
+> Module Auth chỉ bổ sung `IRefreshTokenRepository`, `UnauthorizedException` (401), `LockedException` (423) và
+> `AuthExceptionHandler`. Các lớp `AppException`, `ProblemDetailsMapper`, `ValidationBehaviour`, `LoggingBehaviour`,
+> `ICurrentUser`, `PagedResult`/envelope và `Domain/Repositories` mô tả ở các mục bên dưới **không còn dùng**.
+
 ---
 
 ## Mục lục
@@ -323,12 +332,12 @@ flowchart TD
 | 19 | API đặt lại mật khẩu | Bat buoc | Medium | 18 | `2312682_HaLuyen_DatLaiMatKhau` | `feat: them api dat lai mat khau` | Hoan thanh |
 | 20 | API khoá/mở khoá tài khoản (Admin) | Bat buoc | High | 4, 8, 11 | `2312682_HaLuyen_KhoaTaiKhoan` | `feat: them api khoa va mo khoa tai khoan` | Hoan thanh |
 | 21 | Giới hạn tần suất API xác thực | Can thiet | Medium | 1, 10 | `2312682_HaLuyen_GioiHanTanSuatAuth` | `feat: gioi han tan suat cac api xac thuc` | Hoan thanh |
-| 22 | Kiểm thử luồng xác thực và phân quyền | Bat buoc | High | 9–21 | `2312682_HaLuyen_KiemThuXacThuc` | `test: kiem thu luong xac thuc va phan quyen` | Hoan thanh |
-| 23 | API đăng nhập Google | Mo rong | Low | 9, 10 | `2312682_HaLuyen_DangNhapGoogle` | `feat: them api dang nhap google` | Hoan thanh |
-| 24 | API đổi mật khẩu khi đã đăng nhập | Mo rong | Low | 13, 19 | `2312682_HaLuyen_DoiMatKhau` | `feat: them api doi mat khau` | Hoan thanh |
-| 25 | Gửi email qua Hangfire | Mo rong | Low | 15, Hangfire (chung) | `2312682_HaLuyen_EmailHangfire` | `feat: gui email xac thuc qua hangfire` | Hoan thanh |
-| 26 | API danh sách người dùng cho Admin | Mo rong | Low | 1, 8 | `2312682_HaLuyen_DanhSachNguoiDung` | `feat: them api danh sach nguoi dung cho admin` | Hoan thanh |
-| 27 | Dọn dẹp refresh token hết hạn | Mo rong | Low | 11, Hangfire (chung) | `2312682_HaLuyen_DonDepRefreshToken` | `feat: don dep refresh token het han` | Hoan thanh |
+| 22 | Kiểm thử luồng xác thực và phân quyền | Bat buoc | High | 9–21 | `2312682_HaLuyen_KiemThuXacThuc` | `test: kiem thu luong xac thuc va phan quyen` | Dang lam |
+| 23 | API đăng nhập Google | Mo rong | Low | 9, 10 | `2312682_HaLuyen_DangNhapGoogle` | `feat: them api dang nhap google` | Chua lam |
+| 24 | API đổi mật khẩu khi đã đăng nhập | Mo rong | Low | 13, 19 | `2312682_HaLuyen_DoiMatKhau` | `feat: them api doi mat khau` | Chua lam |
+| 25 | Gửi email qua Hangfire | Mo rong | Low | 15, Hangfire (chung) | `2312682_HaLuyen_EmailHangfire` | `feat: gui email xac thuc qua hangfire` | Chua lam |
+| 26 | API danh sách người dùng cho Admin | Mo rong | Low | 1, 8 | `2312682_HaLuyen_DanhSachNguoiDung` | `feat: them api danh sach nguoi dung cho admin` | Chua lam |
+| 27 | Dọn dẹp refresh token hết hạn | Mo rong | Low | 11, Hangfire (chung) | `2312682_HaLuyen_DonDepRefreshToken` | `feat: don dep refresh token het han` | Chua lam |
 
 **Tổng:** Bắt buộc 20 · Cần thiết 2 · Mở rộng 5.
 
