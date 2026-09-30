@@ -60,6 +60,42 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
   - `AuthorId` hợp lệ
 - Chạy `dotnet build` và đảm bảo project không có lỗi trước khi kết thúc Lab 2.
 
+## Phân công bài tập Lab - Buổi 3
+
+**Mục tiêu:** Triển khai các chức năng Backend chính dựa trên mô hình dữ liệu đã hoàn thành ở Buổi 2. Mỗi thành viên phụ trách một module xuyên suốt từ tầng `Application`, `Infrastructure` đến `API`. Cả nhóm phối hợp hoàn thiện các yêu cầu tối thiểu của Lab 3: Domain Exceptions, Repository, Unit of Work, và middleware xử lý lỗi toàn cục theo chuẩn RFC 7807 Problem Details.
+
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên | Nguyễn Phú Quý |
+|---|---|---|---|---|
+| **Module phụ trách** | **Tài khoản và xác thực** | **Category và Recipe Discovery** | **Recipe Lifecycle** | **Recipe Content và Media** |
+| **Command, Validator và Handler** | Tạo Command, Validator và Handler cho **Register**, **Login**, **Refresh Token**, **Logout** và xác thực Email | Tạo Command, Validator và Handler cho **Create, Update, Delete Category**; Query và Handler cho **Category List/Detail**, **Recipe List/Detail** và **Search** | Tạo Command, Validator và Handler cho **Create**, **Update**, **Publish**, **Unpublish**, **Archive**, **Unarchive** và **Delete Recipe** | Tạo Command, Validator và Handler cho **Add, Update, Delete Ingredient**; **Add, Update, Delete Recipe Step**; quản lý **Recipe Image** |
+| **Nghiệp vụ và truy vấn** | Cài đặt `IdentityService`; tạo JWT Access Token và quản lý Refresh Token; phân quyền `Author` và `Admin`; xử lý Forgot/Reset Password | Cài đặt phân trang (Pagination), lọc (Filter), sắp xếp (Sort) đa tiêu chí và PostgreSQL **Full-Text Search** cho Recipe qua `SearchVector` và trigger | Kiểm tra quyền sở hữu tác giả (`AuthorId`); xử lý quy tắc chuyển trạng thái vòng đời; slug bất biến sau xuất bản và lưu `RecipeSlugHistory`; kiểm soát concurrency bằng `xmin` và `If-Match` | Tích hợp **MinIO** lưu trữ file; quản lý metadata hình ảnh; ràng buộc ảnh chính (`IsPrimary`), thứ tự bước/ảnh (`OrderIndex`) và liên kết với Recipe |
+| **Minimal API endpoints** *(≥ 2 endpoints/TV)* | Đăng ký Minimal API endpoints cho Tài khoản & Xác thực (tối thiểu 2 endpoints: `Register` và `Login`) | Đăng ký Minimal API endpoints cho Category, Recipe List, Recipe Detail và Search (tối thiểu 2 endpoints) | Đăng ký Minimal API endpoints cho Recipe Lifecycle tại `/api/v1/recipes` (tối thiểu 2 endpoints: `Create`, `Update`, `Publish`, `Delete`...) | Đăng ký Minimal API endpoints cho Ingredient, Recipe Step và Recipe Image (tối thiểu 2 endpoints) |
+| **Kiểm tra chức năng & Unit Test** | Kiểm tra luồng Register → Login → JWT Access Token → Refresh Token → Authorization; kiểm tra token sai/hết hạn và tài khoản không hợp lệ | Kiểm tra Category CRUD, Recipe List/Detail, phân trang, lọc, sắp xếp và Full-Text Search bằng dữ liệu thực trong PostgreSQL | Kiểm tra các trường hợp Recipe không tồn tại (404), sai chủ sở hữu (403), sai trạng thái, vi phạm điều kiện publish (422) và concurrency conflict (409) | Kiểm tra thêm/sửa/xóa Ingredient, Step; upload hình ảnh lên MinIO và liên kết chính xác dữ liệu với Recipe |
+
+### Công việc chung của cả nhóm
+
+| Hạng mục | Công việc cần hoàn thành |
+|---|---|
+| **Tích hợp và cấu trúc** | Đồng bộ mã nguồn Database từ Buổi 2; thống nhất cấu trúc 4 tầng Clean Architecture (`Domain`, `Application`, `Infrastructure`, `API`); kiểm tra PostgreSQL sau khi tích hợp |
+| **Domain Exceptions** *(Yêu cầu tối thiểu)* | Cài đặt các lớp Domain Exceptions cần thiết trong project `Domain` (`DomainException`, `EntityNotFoundException`, `OwnershipViolationException`, `RecipeIncompletePublishException`,...); thống nhất exception cho lỗi nghiệp vụ và dữ liệu |
+| **Repository và Unit of Work** *(Yêu cầu tối thiểu)* | Khai báo interface `IRepository<T>`, `IUnitOfWork` trong `Application`; cài đặt generic `EfRepository<T>` và `UnitOfWork` trong `Infrastructure`; đăng ký DI; áp dụng cho toàn bộ thao tác ghi (Command), phía đọc (Query) dùng trực tiếp `IApplicationDbContext` theo CQRS |
+| **Middleware xử lý lỗi** *(Yêu cầu tối thiểu)* | Cài đặt `GlobalExceptionHandler` toàn cục trong `API` theo chuẩn RFC 7807 Problem Details (`application/problem+json`), ánh xạ mã lỗi theo SRS Phụ lục B (`RECIPE_NOT_FOUND`, `RECIPE_FORBIDDEN`, `RECIPE_PUBLISH_INCOMPLETE`, `RECIPE_CONCURRENCY_CONFLICT`, `VALIDATION_ERROR`,...); không để lộ stack trace hoặc thông tin nhạy cảm |
+| **Tích hợp Backend** | Thống nhất định dạng Request, Response và mã lỗi; cấu hình MediatR, FluentValidation pipeline (`ValidationBehavior`), ASP.NET Core Identity, JWT Authentication, MinIO và các package PostgreSQL/EF Core cần thiết |
+| **Kiểm thử và review** | Kiểm tra từng API bằng Swagger, HTTP Client hoặc Postman; viết bộ Unit Tests kiểm thử tự động cho các module; review chéo code trước khi merge vào `develop`; chạy `dotnet build` và `dotnet test` đảm bảo Backend hoàn toàn sạch lỗi |
+
+### Kết quả cần đạt cuối Buổi 3
+
+| Nhóm chức năng | Kết quả cần đạt |
+|---|---|
+| **Yêu cầu tối thiểu của Lab** | Hoàn thành các lớp Domain Exceptions; cài đặt và sử dụng Generic Repository & Unit of Work; mỗi thành viên có ít nhất 2 Minimal API endpoints; middleware toàn cục trả chuẩn RFC 7807 Problem Details |
+| **Tài khoản và phân quyền** | API Register, Login, Logout, Refresh Token hoạt động; JWT Access Token và Authorization theo role `Author`/`Admin` được bảo vệ chính xác |
+| **Category và Discovery** | API Category CRUD, Recipe List, Recipe Detail và Search hoạt động; phân trang, lọc đa tiêu chí, sắp xếp và PostgreSQL Full-Text Search hoạt động trên dữ liệu thật |
+| **Recipe Lifecycle** | API Create, Update, Publish, Unpublish, Archive, Unarchive, Soft Delete hoạt động; kiểm tra quyền tác giả, bất biến slug sau xuất bản, lưu `RecipeSlugHistory` và kiểm soát concurrency bằng `xmin`/`If-Match` |
+| **Recipe Content và Media** | API Ingredient, Recipe Step, Recipe Image hoạt động; chức năng upload file tích hợp thành công với MinIO |
+| **Tích hợp và build** | Toàn bộ API được kiểm thử; toàn bộ Backend build thành công (`0 Error`, `0 Warning`) và pass tất cả Unit Tests sau khi tích hợp |
+
 ## Công nghệ sử dụng
 
 - Backend: .NET 10 Minimal API, Entity Framework Core và PostgreSQL.
