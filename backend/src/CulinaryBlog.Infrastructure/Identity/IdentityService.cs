@@ -173,7 +173,15 @@ public class IdentityService : IIdentityService
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null) return false;
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
-        return result.Succeeded;
+        if (!result.Succeeded)
+        {
+            return false;
+        }
+
+        // Người dùng đã chứng minh sở hữu email → mở khoá tạm (nếu đang bị khoá do nhập sai).
+        await _userManager.SetLockoutEndDateAsync(user, null);
+        await _userManager.ResetAccessFailedCountAsync(user);
+        return true;
     }
 
     public async Task<string?> GenerateEmailConfirmationTokenAsync(string email)
