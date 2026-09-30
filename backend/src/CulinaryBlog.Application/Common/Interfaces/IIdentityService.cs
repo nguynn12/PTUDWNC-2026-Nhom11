@@ -21,6 +21,12 @@ public interface IIdentityService
     /// </summary>
     Task<CredentialCheckResult> CheckCredentialsAsync(string email, string password);
 
+    /// <summary>
+    /// SRS FR-AUTH-003: tìm user đã liên kết Google (provider key = <c>sub</c>); nếu chưa có thì
+    /// liên kết với user cùng email (chỉ khi Google báo email verified) hoặc tạo user mới role Author.
+    /// </summary>
+    Task<GoogleLoginResult> FindOrCreateGoogleUserAsync(GoogleUserInfo googleUser);
+
     Task<UserAccount?> GetUserDetailsByEmailAsync(string email);
     Task<UserAccount?> GetUserDetailsByIdAsync(string userId);
     /// <summary>Cập nhật hồ sơ (FR-AUTH-007); tham số null thì giữ nguyên giá trị cũ.</summary>

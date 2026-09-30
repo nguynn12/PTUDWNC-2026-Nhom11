@@ -18,6 +18,11 @@ internal sealed class FakeIdentityService : IIdentityService
     public Task<CreateUserResult> CreateUserAsync(string email, string password, string displayName) =>
         Task.FromResult(CreateResult);
 
+    public GoogleLoginResult? GoogleResult { get; set; }
+
+    public Task<GoogleLoginResult> FindOrCreateGoogleUserAsync(GoogleUserInfo googleUser) =>
+        Task.FromResult(GoogleResult ?? new GoogleLoginResult(GoogleLoginStatus.Success, Account));
+
     public Task<UserAccount?> GetUserDetailsByEmailAsync(string email) => Task.FromResult(Account);
 
     public Task<UserAccount?> GetUserDetailsByIdAsync(string userId) => Task.FromResult(Account);

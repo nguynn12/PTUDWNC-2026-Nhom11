@@ -86,6 +86,13 @@ public static class DependencyInjection
         services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
         services.AddScoped<IClientInfoService, Services.ClientInfoService>();
 
+        // FR-AUTH-003: xác minh Google ID token (singleton để cache public key của Google).
+        services.Configure<GoogleAuthSettings>(configuration.GetSection(GoogleAuthSettings.SectionName));
+        services.AddSingleton<IGoogleTokenValidator>(provider => new GoogleTokenValidator(
+            provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<GoogleAuthSettings>>(),
+            GoogleTokenValidator.CreateGoogleConfigurationManager(),
+            provider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<GoogleTokenValidator>>()));
+
         var jwtSettings = new JwtSettings();
         configuration.Bind(JwtSettings.SectionName, jwtSettings);
 

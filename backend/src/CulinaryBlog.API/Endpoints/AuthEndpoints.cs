@@ -1,4 +1,5 @@
 using CulinaryBlog.API.RateLimiting;
+using CulinaryBlog.Application.Auth.Commands.GoogleLogin;
 using CulinaryBlog.Application.Auth.Commands.Login;
 using CulinaryBlog.Application.Auth.Commands.Logout;
 using CulinaryBlog.Application.Auth.Commands.RefreshToken;
@@ -31,6 +32,13 @@ public static class AuthEndpoints
         });
 
         group.MapPost("/login", async (LoginCommand command, ISender sender) =>
+        {
+            var result = await sender.Send(command);
+            return Results.Ok(result);
+        });
+
+        // FR-AUTH-003: đăng nhập bằng Google ID token (Google Identity Services ở frontend).
+        group.MapPost("/google", async (GoogleLoginCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
             return Results.Ok(result);
