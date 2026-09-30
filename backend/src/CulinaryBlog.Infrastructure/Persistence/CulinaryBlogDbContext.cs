@@ -51,6 +51,11 @@ public sealed class CulinaryBlogDbContext(DbContextOptions<CulinaryBlogDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Kích hoạt các PostgreSQL Extensions phục vụ Full-Text Search và Fuzzy Search (mục 3.4 SRS)
+        modelBuilder.HasPostgresExtension("unaccent");
+        modelBuilder.HasPostgresExtension("pg_trgm");
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CulinaryBlogDbContext).Assembly);
     }
 }

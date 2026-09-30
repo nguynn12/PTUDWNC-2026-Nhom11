@@ -1,0 +1,14 @@
+namespace CulinaryBlog.Infrastructure.Persistence;
+
+using System.Threading;
+using System.Threading.Tasks;
+using CulinaryBlog.Application.Common.Interfaces;
+
+/// <summary>
+/// Cài đặt IUnitOfWork bằng CulinaryBlogDbContext.SaveChangesAsync.
+/// </summary>
+public sealed class UnitOfWork(CulinaryBlogDbContext context) : IUnitOfWork
+{
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => context.SaveChangesAsync(cancellationToken);
+}
