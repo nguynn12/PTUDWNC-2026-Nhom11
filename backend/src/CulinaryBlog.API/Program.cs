@@ -6,11 +6,13 @@ using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -33,6 +35,9 @@ if (app.Environment.IsDevelopment())
         await RecipeSeeder.SeedAsync(dbContext);
         await RecipeDetailSeeder.SeedAsync(dbContext);
     }
+
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 var api = app.MapGroup("/api/v1");
@@ -86,20 +91,8 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
     });
 });
 
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
-
-app.MapGet("/health/database", async (
-    CulinaryBlogDbContext dbContext,
-    CancellationToken cancellationToken) =>
-{
-    var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
-
-    return canConnect
-        ? Results.Ok(new { status = "Healthy", dependency = "PostgreSQL" })
-        : Results.Problem(
-            title: "Database is unavailable",
-            statusCode: StatusCodes.Status503ServiceUnavailable);
-});
+// Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live)
+app.MapHealthEndpoints();
 
 app.Run();
 
