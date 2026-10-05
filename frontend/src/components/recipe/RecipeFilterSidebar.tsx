@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
-import type { CategoryDto, RecipeDifficulty } from "@/types/api";
+import type { CategoryDto } from "@/types/api";
 
 interface RecipeFilterSidebarProps {
   categories: CategoryDto[];
@@ -21,14 +21,16 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
   const [minCalories, setMinCalories] = useState(searchParams.get("minCalories") || "");
   const [maxCalories, setMaxCalories] = useState(searchParams.get("maxCalories") || "");
 
-  // Đồng bộ lại khi query params trên URL thay đổi
-  useEffect(() => {
+  // Đồng bộ lại khi query params trên URL thay đổi (React render-time adjustment pattern)
+  const [prevParamsStr, setPrevParamsStr] = useState(searchParams.toString());
+  if (prevParamsStr !== searchParams.toString()) {
+    setPrevParamsStr(searchParams.toString());
     setCategoryId(searchParams.get("categoryId") || "");
     setDifficulty(searchParams.get("difficulty") || "");
     setMaxTotalTime(searchParams.get("maxTotalTime") || "");
     setMinCalories(searchParams.get("minCalories") || "");
     setMaxCalories(searchParams.get("maxCalories") || "");
-  }, [searchParams]);
+  }
 
   // Áp dụng bộ lọc
   const handleApplyFilter = (e?: React.FormEvent) => {
