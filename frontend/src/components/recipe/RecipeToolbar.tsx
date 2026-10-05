@@ -154,14 +154,6 @@ export function RecipeToolbar({
           </button>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (min-width: 901px) {
-          .mobile-filter-btn {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

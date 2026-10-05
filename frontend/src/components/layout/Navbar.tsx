@@ -197,23 +197,6 @@ export function Navbar() {
           })}
         </div>
       )}
-
-      {/* CSS Nhúng phục vụ hiển thị Responsive Nav */}
-      <style jsx>{`
-        @media (min-width: 860px) {
-          .desktop-nav {
-            display: flex !important;
-          }
-          .mobile-menu-btn {
-            display: none !important;
-          }
-        }
-        @media (max-width: 500px) {
-          .search-text {
-            display: none;
-          }
-        }
-      `}</style>
     </header>
   );
 }

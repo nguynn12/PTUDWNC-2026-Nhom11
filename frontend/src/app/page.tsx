@@ -295,14 +295,6 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-
-        <style jsx>{`
-          @media (min-width: 860px) {
-            .hero-grid {
-              grid-template-columns: 1.2fr 1fr !important;
-            }
-          }
-        `}</style>
       </section>
 
       {/* =====================================================================

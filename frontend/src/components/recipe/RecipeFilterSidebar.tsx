@@ -299,14 +299,6 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        @media (max-width: 900px) {
-          .filter-desktop-sidebar {
-            display: none !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
