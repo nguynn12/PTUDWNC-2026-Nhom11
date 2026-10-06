@@ -1,58 +1,74 @@
+namespace CulinaryBlog.Application.Common.Helpers;
+
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CulinaryBlog.Application.Common.Helpers;
-
 /// <summary>
-/// Tiện ích hỗ trợ chuẩn hóa chuỗi tiếng Việt thành đường dẫn URL-friendly (Slug).
+/// Tiện ích chuẩn hóa chuỗi và sinh slug URL-friendly từ tiêu đề tiếng Việt.
 /// </summary>
 public static partial class SlugHelper
 {
+    [GeneratedRegex(@"[^a-z0-9\s-]")]
+    private static partial Regex RemoveInvalidCharsRegex();
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex MultipleSpacesRegex();
+
+    [GeneratedRegex(@"-+")]
+    private static partial Regex MultipleHyphensRegex();
+
     /// <summary>
-    /// Tạo slug từ tiêu đề/tên tiếng Việt (bỏ dấu, chuyển chữ thường, thay khoảng trắng bằng gạch ngang).
+    /// Chuyển đổi một tiêu đề (bao gồm tiếng Việt có dấu) thành slug URL-friendly.
+    /// Ví dụ: "Phở Bò Hà Nội Đặc Biệt 2026!" => "pho-bo-ha-noi-dac-biet-2026"
     /// </summary>
-    /// <param name="input">Chuỗi văn bản cần tạo slug.</param>
-    /// <returns>Chuỗi slug chuẩn SEO.</returns>
-    public static string Generate(string input)
+    public static string GenerateSlug(string title)
     {
-        if (string.IsNullOrWhiteSpace(input))
+        if (string.IsNullOrWhiteSpace(title))
         {
             return string.Empty;
         }
 
-        // 1. Chuyển chữ 'đ'/'Đ' thành 'd' trước khi phân rã dấu
-        var text = input.Trim().Replace("đ", "d").Replace("Đ", "d");
+        var normalized = title.Trim().ToLowerInvariant();
 
-        // 2. Phân rã ký tự dấu Unicode (FormD)
-        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        // Xử lý ký tự 'đ' trong tiếng Việt
+        normalized = normalized.Replace("đ", "d");
+
+        // Loại bỏ dấu thanh tiếng Việt qua Unicode Normalization FormD
+        var decomposed = normalized.Normalize(NormalizationForm.FormD);
         var stringBuilder = new StringBuilder();
 
-        foreach (var c in normalizedString)
+        foreach (var ch in decomposed)
         {
-            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(ch);
             if (unicodeCategory != UnicodeCategory.NonSpacingMark)
             {
-                stringBuilder.Append(c);
+                stringBuilder.Append(ch);
             }
         }
 
-        // 3. Chuẩn hóa lại FormC và chuyển sang chữ thường
-        var cleanText = stringBuilder.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
+        var cleanString = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
 
-        // 4. Thay thế các ký tự không phải chữ cái và số bằng dấu gạch ngang
-        cleanText = InvalidCharsRegex().Replace(cleanText, "-");
+        // Loại bỏ các ký tự đặc biệt, chỉ giữ lại chữ cái, số, khoảng trắng và gạch ngang
+        cleanString = RemoveInvalidCharsRegex().Replace(cleanString, "");
 
-        // 5. Rút gọn nhiều dấu gạch ngang liên tiếp thành 1 dấu duy nhất
-        cleanText = MultipleHyphensRegex().Replace(cleanText, "-");
+        // Thay thế khoảng trắng bằng dấu gạch ngang
+        cleanString = MultipleSpacesRegex().Replace(cleanString, "-");
 
-        // 6. Cắt bỏ dấu gạch ngang ở đầu và cuối chuỗi
-        return cleanText.Trim('-');
+        // Loại bỏ các dấu gạch ngang trùng lặp liên tiếp
+        cleanString = MultipleHyphensRegex().Replace(cleanString, "-").Trim('-');
+
+        // Giới hạn độ dài slug tối đa 200 ký tự
+        if (cleanString.Length > 200)
+        {
+            cleanString = cleanString[..200].TrimEnd('-');
+        }
+
+        return cleanString;
     }
 
-    [GeneratedRegex(@"[^a-z0-9\s-]")]
-    private static partial Regex InvalidCharsRegex();
-
-    [GeneratedRegex(@"[\s-]+")]
-    private static partial Regex MultipleHyphensRegex();
+    /// <summary>
+    /// Alias tương thích ngược cho GenerateSlug.
+    /// </summary>
+    public static string Generate(string input) => GenerateSlug(input);
 }

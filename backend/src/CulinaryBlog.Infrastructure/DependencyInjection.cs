@@ -33,7 +33,6 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, Services.CurrentUserService>();
-
         // Repository riêng của module Auth (mở rộng IRepository<RefreshToken> dùng chung).
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 

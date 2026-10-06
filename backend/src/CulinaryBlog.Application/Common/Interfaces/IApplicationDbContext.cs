@@ -16,6 +16,11 @@ public interface IApplicationDbContext
     DbSet<Recipe> Recipes { get; }
 
     /// <summary>
+    /// Bảng lưu vết lịch sử các slug của công thức phục vụ SEO 301.
+    /// </summary>
+    DbSet<RecipeSlugHistory> RecipeSlugHistories { get; }
+
+    /// <summary>
     /// Query handler (phía đọc) dùng trực tiếp DbSet này theo CQRS.
     /// Command handler (phía ghi) dùng qua IRepository&lt;T&gt;/IUnitOfWork (xem
     /// CulinaryBlog.Application.Common.Interfaces.IRepository).

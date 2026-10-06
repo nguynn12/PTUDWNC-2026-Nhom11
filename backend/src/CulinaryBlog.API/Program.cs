@@ -55,6 +55,7 @@ app.MapAdminUserEndpoints();
 var api = app.MapGroup("/api/v1");
 api.MapCategoryEndpoints();
 api.MapRecipeEndpoints();
+api.MapRecipeLifecycleEndpoints();
 
 api.MapGet("/", () => Results.Ok(new
 {
@@ -107,6 +108,19 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 
 // Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live)
 app.MapHealthEndpoints();
+
+app.MapGet("/health/ready", async (
+    CulinaryBlogDbContext dbContext,
+    CancellationToken cancellationToken) =>
+{
+    var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+
+    return canConnect
+        ? Results.Ok(new { status = "Ready", checks = new { database = "Healthy" } })
+        : Results.Problem(
+            title: "Service is not ready to receive traffic",
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+});
 
 app.Run();
 

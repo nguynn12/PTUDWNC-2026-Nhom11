@@ -1,17 +1,44 @@
 namespace CulinaryBlog.Application.Common.Models;
 
 /// <summary>
-/// Mô hình đóng gói kết quả phân trang dùng nội bộ trong tầng Application theo SRS Chương 5.2/8.
-/// Presentation layer sẽ map sang response envelope: { "data": [...], "meta": { ... } }.
+/// Mô hình đóng gói kết quả phân trang dùng chung cho các API Query trong tầng Application.
 /// </summary>
 /// <typeparam name="T">Kiểu dữ liệu của phần tử trong danh sách.</typeparam>
 public class PagedResult<T>
 {
-    public IReadOnlyList<T> Items { get; init; } = Array.Empty<T>();
-    public int Page { get; init; }
-    public int PageSize { get; init; }
-    public int Total { get; init; }
+    public IReadOnlyList<T> Items { get; init; } = [];
+
+    private int _page = 1;
+    public int Page
+    {
+        get => _page;
+        init => _page = value;
+    }
+
+    public int PageNumber
+    {
+        get => _page;
+        init => _page = value;
+    }
+
+    public int PageSize { get; init; } = 10;
+
+    private int _total = 0;
+    public int Total
+    {
+        get => _total;
+        init => _total = value;
+    }
+
+    public int TotalCount
+    {
+        get => _total;
+        init => _total = value;
+    }
+
     public int TotalPages => PageSize > 0 ? (int)Math.Ceiling((double)Total / PageSize) : 0;
+    public bool HasNextPage => Page < TotalPages;
+    public bool HasPreviousPage => Page > 1;
 
     public PagedResult() { }
 
