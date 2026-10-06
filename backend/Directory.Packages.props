@@ -15,10 +15,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-    <!-- Dùng để seed dữ liệu ngẫu nhiên (ApplicationDbContextInitialiser) — phiên bản chưa
-         xác minh qua mạng (môi trường này không truy cập được nuget.org); nếu
-         `dotnet restore` báo lỗi resolve, chạy `dotnet add package Bogus` (không ghi version)
-         để lấy version mới nhất rồi cập nhật lại dòng này. -->
+    <!-- Dùng để seed dữ liệu ngẫu nhiên (ApplicationDbContextInitialiser) -->
     <PackageVersion Include="Bogus" Version="35.6.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.11" />

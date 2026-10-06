@@ -1,7 +1,7 @@
+namespace CulinaryBlog.Infrastructure.Persistence.Repositories;
+
 using CulinaryBlog.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
-namespace CulinaryBlog.Infrastructure.Persistence.Repositories;
 
 /// <summary>
 /// Cài đặt IRepository&lt;T&gt; bằng EF Core, dùng chung cho mọi entity
@@ -18,7 +18,12 @@ public sealed class EfRepository<T>(CulinaryBlogDbContext context) : IRepository
 
     public void Add(T entity) => context.Set<T>().Add(entity);
 
+    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+        => await context.Set<T>().AddAsync(entity, cancellationToken);
+
     public void Update(T entity) => context.Set<T>().Update(entity);
 
     public void Remove(T entity) => context.Set<T>().Remove(entity);
+
+    public void Delete(T entity) => context.Set<T>().Remove(entity);
 }

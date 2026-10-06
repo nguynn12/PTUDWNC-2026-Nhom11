@@ -2,7 +2,7 @@ namespace CulinaryBlog.Application.Common.Exceptions;
 
 /// <summary>
 /// Ngoại lệ đại diện cho trường hợp không tìm thấy tài nguyên (HTTP 404 Not Found).
-/// Phục vụ chuẩn hóa mã lỗi theo SRS Phụ lục B (ví dụ: RECIPE_NOT_FOUND).
+/// Phục vụ chuẩn hóa mã lỗi theo SRS Phụ lục B (ví dụ: RECIPE_NOT_FOUND, CATEGORY_NOT_FOUND).
 /// </summary>
 public class NotFoundException : Exception
 {

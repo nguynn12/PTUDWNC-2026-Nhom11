@@ -13,7 +13,11 @@ public interface IRepository<T> where T : class
 
     void Add(T entity);
 
+    Task AddAsync(T entity, CancellationToken cancellationToken = default);
+
     void Update(T entity);
 
     void Remove(T entity);
+
+    void Delete(T entity);
 }

@@ -1,6 +1,6 @@
-using CulinaryBlog.Application.Common.Interfaces;
-
 namespace CulinaryBlog.Infrastructure.Persistence;
+
+using CulinaryBlog.Application.Common.Interfaces;
 
 /// <summary>
 /// Cài đặt IUnitOfWork bằng CulinaryBlogDbContext.SaveChangesAsync.
