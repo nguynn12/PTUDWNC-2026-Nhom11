@@ -1,5 +1,5 @@
 using CulinaryBlog.Application.Common.Interfaces;
-using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
@@ -31,6 +31,11 @@ public static class DependencyInjection
 
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, Services.CurrentUserService>();
+
+        // Repository riêng của module Auth (mở rộng IRepository<RefreshToken> dùng chung).
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         // AddIdentityCore (không phải AddIdentity đầy đủ): API dùng JWT thuần, không cần
@@ -68,6 +73,37 @@ public static class DependencyInjection
         // Development — xem Program.cs). Xem ApplicationDbContextInitialiser để biết
         // phạm vi seed (Auth/User) và cách thành viên khác cắm seeder Category/Recipe.
         services.AddScoped<ApplicationDbContextInitialiser>();
+
+        // Tra cứu thông tin công khai của user (tên, ảnh tác giả) cho tầng Application —
+        // thay cho navigation Recipe.Author đã bỏ (RESOLVED-CONFLICTS.md mục D7).
+        services.AddScoped<IUserQueryService, UserQueryService>();
+
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IEmailService, CulinaryBlog.Infrastructure.Services.MockEmailService>();
+        services.Configure<Services.ClientAppSettings>(configuration.GetSection(Services.ClientAppSettings.SectionName));
+        services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
+        services.AddScoped<IClientInfoService, Services.ClientInfoService>();
+
+        // FR-AUTH-003: xác minh Google ID token (singleton để cache public key của Google).
+        services.Configure<GoogleAuthSettings>(configuration.GetSection(GoogleAuthSettings.SectionName));
+        services.AddSingleton<IGoogleTokenValidator>(provider => new GoogleTokenValidator(
+            provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<GoogleAuthSettings>>(),
+            GoogleTokenValidator.CreateGoogleConfigurationManager(),
+            provider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<GoogleTokenValidator>>()));
+
+        var jwtSettings = new JwtSettings();
+        configuration.Bind(JwtSettings.SectionName, jwtSettings);
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => JwtBearerSetup.Configure(options, jwtSettings));
+
+        services.AddAuthorization(AuthorizationPolicies.Configure);
 
         return services;
     }

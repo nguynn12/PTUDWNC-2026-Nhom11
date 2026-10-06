@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <!-- Chỉ để dùng IdentityUser<TKey>/IdentityRole<TKey> làm base class cho
-         ApplicationUser — package này KHÔNG kéo theo ASP.NET Core web framework. -->
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
-  </ItemGroup>
+  <!-- NFR-MAINT-004: Domain KHÔNG có PackageReference nào (chỉ .NET BCL).
+       ApplicationUser (kế thừa IdentityUser) nằm ở Infrastructure/Identity — xem
+       docs/decisions/RESOLVED-CONFLICTS.md mục D7. Test kiểm tra tự động:
+       tests/CulinaryBlog.UnitTests/Architecture/DomainLayerTests.cs -->
 </Project>

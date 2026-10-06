@@ -22,7 +22,7 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CulinaryBlog.Domain.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("CulinaryBlog.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(450)
@@ -514,9 +514,8 @@ namespace CulinaryBlog.Infrastructure.Migrations
                         .IsFixedLength();
 
                     b.Property<string>("RevocationReason")
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
-                        .HasColumnName("ReasonRevoked");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("timestamptz");
@@ -701,7 +700,7 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
             modelBuilder.Entity("CulinaryBlog.Domain.Entities.Recipe", b =>
                 {
-                    b.HasOne("CulinaryBlog.Domain.Entities.ApplicationUser", "Author")
+                    b.HasOne("CulinaryBlog.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -762,8 +761,6 @@ namespace CulinaryBlog.Infrastructure.Migrations
                                 .HasForeignKey("RecipeId");
                         });
 
-                    b.Navigation("Author");
-
                     b.Navigation("Category");
 
                     b.Navigation("Nutrition");
@@ -811,13 +808,11 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
             modelBuilder.Entity("CulinaryBlog.Domain.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("CulinaryBlog.Domain.Entities.ApplicationUser", "User")
+                    b.HasOne("CulinaryBlog.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -831,7 +826,7 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CulinaryBlog.Domain.Entities.ApplicationUser", null)
+                    b.HasOne("CulinaryBlog.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -840,7 +835,7 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CulinaryBlog.Domain.Entities.ApplicationUser", null)
+                    b.HasOne("CulinaryBlog.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -855,7 +850,7 @@ namespace CulinaryBlog.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CulinaryBlog.Domain.Entities.ApplicationUser", null)
+                    b.HasOne("CulinaryBlog.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -864,14 +859,14 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CulinaryBlog.Domain.Entities.ApplicationUser", null)
+                    b.HasOne("CulinaryBlog.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CulinaryBlog.Domain.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("CulinaryBlog.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("RefreshTokens");
                 });

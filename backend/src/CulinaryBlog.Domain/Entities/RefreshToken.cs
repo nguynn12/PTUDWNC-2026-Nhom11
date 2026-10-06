@@ -1,3 +1,5 @@
+using CulinaryBlog.Domain.Exceptions;
+
 namespace CulinaryBlog.Domain.Entities;
 
 /// <summary>
@@ -10,7 +12,10 @@ public class RefreshToken
 {
     public Guid Id { get; private set; }
 
-    /// <summary>FK tới AspNetUsers.Id (varchar(450)).</summary>
+    /// <summary>
+    /// FK tới AspNetUsers.Id (varchar(450)). Cố ý KHÔNG có navigation User — quan hệ được
+    /// cấu hình ở Infrastructure (ApplicationUserConfiguration), xem RESOLVED-CONFLICTS.md mục D7.
+    /// </summary>
     public string UserId { get; private set; } = string.Empty;
 
     /// <summary>
@@ -35,11 +40,9 @@ public class RefreshToken
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public string? CreatedByIp { get; private set; }
+    public string CreatedByIp { get; private set; } = string.Empty;
 
     public string? RevokedByIp { get; private set; }
-
-    public ApplicationUser? User { get; private set; }
 
     // ── Cờ suy ra — KHÔNG map thành cột DB (SRS 7.8: "IsRevoked là giá trị suy ra") ──
     public bool IsRevoked => RevokedAt is not null;
@@ -50,10 +53,11 @@ public class RefreshToken
 
     /// <summary>Bắt đầu một family MỚI (lần login đầu tiên của phiên) — FamilyId = Id của chính token này.</summary>
     public static RefreshToken CreateNewFamily(
-        string userId, string tokenHash, int expiryDays, string? createdByIp = null)
+        string userId, string tokenHash, int expiryDays, string createdByIp)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(tokenHash);
+        ArgumentException.ThrowIfNullOrWhiteSpace(createdByIp);
 
         var id = Guid.NewGuid();
         return new RefreshToken
@@ -70,10 +74,11 @@ public class RefreshToken
 
     /// <summary>Token kế tiếp trong CÙNG family — dùng khi rotation (FR-AUTH-004).</summary>
     public static RefreshToken CreateRotated(
-        string userId, string tokenHash, Guid familyId, int expiryDays, string? createdByIp = null)
+        string userId, string tokenHash, Guid familyId, int expiryDays, string createdByIp)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(tokenHash);
+        ArgumentException.ThrowIfNullOrWhiteSpace(createdByIp);
 
         return new RefreshToken
         {
@@ -85,6 +90,37 @@ public class RefreshToken
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedByIp = createdByIp,
         };
+    }
+
+    /// <summary>
+    /// Bảo đảm token còn dùng được để đổi token mới (FR-AUTH-004).
+    /// </summary>
+    /// <exception cref="RefreshTokenRevokedException">Token đã bị thu hồi.</exception>
+    /// <exception cref="RefreshTokenExpiredException">Token đã hết hạn.</exception>
+    public void EnsureUsable()
+    {
+        if (IsRevoked)
+        {
+            throw new RefreshTokenRevokedException();
+        }
+
+        if (IsExpired)
+        {
+            throw new RefreshTokenExpiredException();
+        }
+    }
+
+    /// <summary>
+    /// Token rotation (FR-AUTH-004): thu hồi token hiện tại (lý do "rotated", ghi hash token thay
+    /// thế) và trả về token kế tiếp trong CÙNG family.
+    /// </summary>
+    public RefreshToken Rotate(string newTokenHash, int expiryDays, string createdByIp)
+    {
+        EnsureUsable();
+
+        var next = CreateRotated(UserId, newTokenHash, FamilyId, expiryDays, createdByIp);
+        Revoke("rotated", createdByIp, newTokenHash);
+        return next;
     }
 
     /// <summary>Idempotent — gọi nhiều lần không lỗi (FR-AUTH-005: logout luôn trả 204).</summary>

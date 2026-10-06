@@ -15,7 +15,7 @@ Ba nguyên tắc bắt buộc tuân thủ theo SRS.md và tài liệu kiến th�
 
 1. **Không tự chế bảng User/Role** — dùng **ASP.NET Core Identity** làm nền (bảng `AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, `AspNetUserLogins`, `AspNetUserClaims`, `AspNetUserTokens` sinh tự động bởi `IdentityDbContext`), chỉ mở rộng `ApplicationUser` với field nghiệp vụ riêng.
 2. **Không lưu raw refresh token** — chỉ lưu SHA-256 hash (`TokenHash`), theo đúng SRS 7.8.
-3. **Không dùng Repository/Unit of Work** — Handler dùng thẳng `IApplicationDbContext`/`UserManager<ApplicationUser>` (quy ước riêng của dự án, khác với ví dụ Repository/UoW trong giáo trình Chương 3 — xem `docs/references/Kien_Thuc_Nen_Tang_Bai_Giang.md` Phụ lục D).
+3. **Repository + Unit of Work** (cập nhật 30/09/2026 — yêu cầu Lab 3, theo quy ước chung của nhóm): refresh token được đọc/ghi qua `IRefreshTokenRepository` (kế thừa `IRepository<RefreshToken>` dùng chung, đặt ở `Application/Common/Interfaces`, hiện thực ở `Infrastructure/Persistence/Repositories`) và lưu bằng `IUnitOfWork.SaveChangesAsync`. Thao tác user vẫn đi qua `IIdentityService` (bọc `UserManager<ApplicationUser>`).
 
 ## 2. Sơ đồ quan hệ thực thể (ERD)
 
@@ -144,8 +144,8 @@ Theo đúng FR-AUTH-001/002, cấu hình trong `AddInfrastructure()`:
 
 | File | Layer | Nội dung |
 |---|---|---|
-| `Domain/Entities/ApplicationUser.cs` | Domain | Entity mở rộng `IdentityUser`, factory `Create()`/`CreateFromGoogle()` |
-| `Domain/Entities/RefreshToken.cs` | Domain | Entity token rotation, factory `CreateNewFamily()`/`CreateRotated()`, `Revoke()` |
+| `Infrastructure/Identity/ApplicationUser.cs` | Infrastructure | Entity mở rộng `IdentityUser`, factory `Create()`/`CreateFromGoogle()` — chuyển từ Domain sang ngày 2026-09-23 (RESOLVED-CONFLICTS D7) |
+| `Domain/Entities/RefreshToken.cs` | Domain | Entity token rotation, factory `CreateNewFamily()`/`CreateRotated()`, `Revoke()` — chỉ giữ `UserId`, không navigation `User` (D7) |
 | `Domain/Constants/Roles.cs` | Domain | Hằng số `Admin`, `Author` |
 | `Domain/Constants/Policies.cs` | Domain | Hằng số `VerifiedAuthor` |
 | `Infrastructure/Persistence/Configurations/ApplicationUserConfiguration.cs` | Infrastructure | Fluent API cho field mở rộng |
@@ -154,7 +154,8 @@ Theo đúng FR-AUTH-001/002, cấu hình trong `AddInfrastructure()`:
 | `Infrastructure/Persistence/CulinaryBlogDbContext.cs` | Infrastructure | Đổi sang `IdentityDbContext<ApplicationUser, IdentityRole, string>` |
 | `Application/Common/Interfaces/IApplicationDbContext.cs` | Application | Thêm `DbSet<RefreshToken> RefreshTokens` |
 | `Infrastructure/DependencyInjection.cs` | Infrastructure | `AddIdentityCore` + policy mật khẩu/lockout |
-| `Directory.Packages.props`, 3 file `.csproj` | — | Thêm `Microsoft.Extensions.Identity.Stores`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `Microsoft.EntityFrameworkCore` |
+| `Directory.Packages.props`, 3 file `.csproj` | — | Thêm `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `Microsoft.EntityFrameworkCore`. Từ 2026-09-23 `Domain.csproj` không còn `Microsoft.Extensions.Identity.Stores` (D7) |
+| `Application/Common/Interfaces/IUserQueryService.cs`, `Infrastructure/Identity/UserQueryService.cs` | Application / Infrastructure | Lấy tên/ảnh tác giả theo danh sách `AuthorId` — thay cho navigation `Recipe.Author` (D7) |
 
 ## 7. Server database (Docker) — đã có sẵn trong repo
 
