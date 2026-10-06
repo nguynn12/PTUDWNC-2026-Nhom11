@@ -13,6 +13,7 @@ import {
   UsersIcon,
   AlertTriangleIcon,
   SparklesIcon,
+  EditIcon,
 } from '@/components/common/Icons';
 import { RecipeApi, ApiError } from '@/lib/api-client';
 import { RecipeSummaryDto } from '@/lib/types';
@@ -336,6 +337,16 @@ export default function MyRecipesLifecyclePage() {
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <div className="table-actions" style={{ justifyContent: 'flex-end' }}>
+                            {/* Nút Chỉnh sửa toàn diện (Wizard 4 bước của TV4) */}
+                            <Link
+                              href={`/dashboard/recipes/${recipe.id}/edit`}
+                              className="btn btn-secondary btn-sm"
+                              title="Chỉnh sửa toàn diện công thức (Nguyên liệu, Bước làm, Ảnh MinIO)"
+                            >
+                              <EditIcon size={14} />
+                              <span>Sửa</span>
+                            </Link>
+
                             {/* Nút Xuất bản (Dành cho Draft & Archived) */}
                             {(statusStr === 'DRAFT' || statusStr === '0') && (
                               <button

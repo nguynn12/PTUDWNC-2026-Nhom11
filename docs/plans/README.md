@@ -76,3 +76,6 @@ flowchart TD
 | **PLAN-02** | **Frontend UI: Trang Tổng quan Dashboard** | `/dashboard` Overview (CSR) | [Xem PLAN_02](./buoi4/PLAN_02_Dashboard_Author_Admin_UI.md) |
 | **PLAN-03** | **Frontend UI: Quản lý Bài viết & Vòng đời** | `/dashboard/recipes` My Recipes & Concurrency (CSR) | [Xem PLAN_03](./buoi4/PLAN_03_My_Recipes_Lifecycle_UI.md) |
 | **PLAN-04** | **Frontend UI: Quản trị Thùng rác Admin** | `/admin/recipes/trash` Trash, Restore, Purge (CSR) | [Xem PLAN_04](./buoi4/PLAN_04_Admin_Trash_Management_UI.md) |
+| **PLAN-05** | **Backend APIs (TV4): Nguyên liệu, Bước nấu, Ảnh MinIO & Scalar** | 10 Endpoints Chi tiết Công thức & Media + Scalar UI | [Xem PLAN_05](./buoi4/PLAN_05_TV4_Recipe_Content_Media_Backend_APIs.md) |
+| **PLAN-06** | **Frontend UI (TV4): Multi-step Wizard Tạo & Sửa Công thức** | `/dashboard/recipes/new` & `/dashboard/recipes/[id]/edit` (CSR) | [Xem PLAN_06](./buoi4/PLAN_06_TV4_Recipe_Wizard_Edit_Frontend_UI.md) |
+
