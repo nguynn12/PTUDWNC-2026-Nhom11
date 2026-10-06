@@ -11,11 +11,11 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<AuthExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddPresentation();
-builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -26,36 +26,62 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseRateLimiter();
 
-// Tự động Migrate và Seed dữ liệu mẫu (User/Role/Recipe) ở môi trường Development
+// Cấu hình OpenAPI và giao diện kiểm thử tương tác Scalar UI (thay thế Swagger)
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
-    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-
-    if (dbContext.Database.IsRelational())
-    {
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
-        await CategorySeeder.SeedAsync(dbContext);
-        await RecipeSeeder.SeedAsync(dbContext);
-        await RecipeDetailSeeder.SeedAsync(dbContext);
-    }
-
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("Culinary Blog API - PTUDWNC Nhom 11")
+               .WithTheme(ScalarTheme.Moon)
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
+
+    app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
+    app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+
+        if (dbContext.Database.IsRelational())
+        {
+            await initialiser.InitialiseAsync();
+            await initialiser.SeedAsync();
+            await CategorySeeder.SeedAsync(dbContext);
+            await RecipeSeeder.SeedAsync(dbContext);
+            await RecipeDetailSeeder.SeedAsync(dbContext);
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
+    }
 }
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
 app.MapAuthEndpoints();
 app.MapAdminUserEndpoints();
 
 var api = app.MapGroup("/api/v1");
+
+// 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
 api.MapCategoryEndpoints();
 api.MapRecipeEndpoints();
+
+// 3. Phân hệ Vòng đời công thức & Thùng rác (Thành viên 3)
 api.MapRecipeLifecycleEndpoints();
+
+// 4. Phân hệ Chi tiết công thức, Nguyên liệu, Bước làm & Hình ảnh (Thành viên 4)
+api.MapRecipeIngredientEndpoints();
+api.MapRecipeStepEndpoints();
+api.MapRecipeImageEndpoints();
 
 api.MapGet("/", () => Results.Ok(new
 {
@@ -106,7 +132,7 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
     });
 });
 
-// Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live)
+// Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live, /health/ready)
 app.MapHealthEndpoints();
 
 app.MapGet("/health/ready", async (

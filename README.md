@@ -62,76 +62,39 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 
 ## Phân công bài tập Lab - Buổi 3
 
-**Mục tiêu:** Hoàn thiện các chức năng Backend chính của hệ thống sau khi đã hoàn thành mô hình dữ liệu ở Buổi 2. Mỗi thành viên tiếp tục phụ trách module đã được phân công, triển khai từ tầng `Application`, `Infrastructure` đến `API`. Đồng thời hoàn thiện Repository, truy vấn dữ liệu và PostgreSQL Full-Text Search theo nội dung Lab 3.
+**Mục tiêu:** Triển khai các chức năng Backend chính dựa trên mô hình dữ liệu đã hoàn thành ở Buổi 2. Mỗi thành viên phụ trách một module xuyên suốt từ xử lý nghiệp vụ đến API. Cả nhóm phối hợp hoàn thiện Domain Exceptions, Repository, Unit of Work và middleware xử lý lỗi toàn cục.
 
-| Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên | Nguyễn Phú Quý |
-|---|---|---|---|
-| Hoàn thiện Backend cho **Tài khoản và xác thực**. | Hoàn thiện Backend cho **Category và Recipe Discovery**. | Hoàn thiện Backend cho **Recipe Lifecycle**. | Hoàn thiện Backend cho **Recipe Content và Media**. |
-| Tạo Command, Validator và Handler cho chức năng **Register**, **Login**, **Refresh Token**, **Logout** và xác thực Email. | Tạo Command, Validator và Handler cho các chức năng **Create, Update, Delete Category**. | Tạo Command, Validator và Handler cho **Create Recipe** và **Update Recipe**. | Tạo Command, Validator và Handler cho **Add, Update, Delete Ingredient**. |
-| Cài đặt các chức năng quản lý tài khoản còn lại theo SRS như Forgot/Reset Password và thông tin tài khoản. | Tạo Query và Handler cho **Category List**, **Category Detail** và các truy vấn Category cần thiết. | Tạo Command, Validator và Handler cho **Publish**, **Unpublish**, **Archive**, **Unarchive** và **Delete Recipe**. | Tạo Command, Validator và Handler cho **Add, Update, Delete Recipe Step**. |
-| Cài đặt `IdentityService` để xử lý các nghiệp vụ liên quan đến ASP.NET Core Identity. | Tạo Query và Handler cho **Recipe List** và **Recipe Detail**. | Cài đặt kiểm tra **quyền sở hữu Recipe** trước khi cho phép Author chỉnh sửa hoặc thay đổi trạng thái Recipe. | Tạo Command, Validator và Handler cho các chức năng quản lý **Recipe Image**. |
-| Cài đặt service tạo **JWT Access Token** và quản lý **Refresh Token**; xử lý phân quyền `Author` và `Admin`. | Cài đặt chức năng **phân trang, lọc và sắp xếp Recipe** theo Category, trạng thái và các tiêu chí được hỗ trợ. | Cài đặt các quy tắc chuyển trạng thái `Draft`, `Published`, `Archived` của Recipe theo SRS. | Cài đặt service lưu trữ file và tích hợp **MinIO** để upload hình ảnh Recipe. |
-| Tạo các Minimal API Endpoint cho Register, Login, Refresh Token, Logout và các chức năng Account được giao. | Cài đặt Repository/truy vấn đọc Recipe phục vụ Category và Recipe Discovery. | Cài đặt xử lý `RecipeSlugHistory` khi Slug của Recipe thay đổi theo quy tắc đã thống nhất. | Cài đặt logic quản lý metadata của hình ảnh và liên kết hình ảnh với Recipe. |
-| Cấu hình Authentication và Authorization cho các API yêu cầu đăng nhập hoặc Role cụ thể. | Cài đặt PostgreSQL **Full-Text Search** cho Recipe và sử dụng `SearchVector`/index đã thiết kế để thực hiện tìm kiếm. | Cài đặt kiểm soát cập nhật đồng thời Recipe bằng PostgreSQL `xmin` và ETag/`If-Match`. | Cài đặt các quy tắc liên quan đến ảnh chính (`IsPrimary`) và thứ tự hình ảnh (`OrderIndex`). |
-| Kiểm tra luồng **Register → Login → Access Token → Refresh Token → API có phân quyền**. | Tạo Minimal API Endpoint cho Category, Recipe List, Recipe Detail và Search. | Tạo Minimal API Endpoint cho Create, Update, Publish, Unpublish, Archive, Unarchive và Delete Recipe. | Tạo Minimal API Endpoint cho Ingredient, Step và Image. |
-| Kiểm tra các trường hợp sai token, token hết hạn, không đủ quyền và tài khoản không hợp lệ. | Kiểm tra Recipe List, Detail, Pagination, Filter, Sort và Full-Text Search bằng dữ liệu thật trong PostgreSQL. | Kiểm tra các trường hợp Recipe không tồn tại, sai chủ sở hữu, sai trạng thái và xảy ra concurrency conflict. | Kiểm tra thêm/sửa/xóa Ingredient, Step, upload ảnh và bảo đảm dữ liệu được liên kết đúng với Recipe. |
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến | Trần Quốc Quân | Tạ Nhật Nguyên | Nguyễn Phú Quý |
+|---|---|---|---|---|
+| **Module phụ trách** | Tài khoản và xác thực | Category và Recipe Discovery | Recipe Lifecycle | Recipe Content và Media |
+| **Command, Validator và Handler** | Register, Login, Refresh Token, Logout và xác thực Email | Create, Update, Delete Category; Category List, Category Detail, Recipe List, Recipe Detail và Search | Create, Update, Publish, Unpublish, Archive, Unarchive và Delete Recipe | Add, Update, Delete Ingredient; Add, Update, Delete Recipe Step; quản lý Recipe Image |
+| **Nghiệp vụ và truy vấn** | Cài đặt `IdentityService`; tạo JWT Access Token và quản lý Refresh Token | Cài đặt phân trang, lọc, sắp xếp và PostgreSQL Full-Text Search cho Recipe | Kiểm tra quyền sở hữu; xử lý quy tắc chuyển trạng thái; cập nhật `RecipeSlugHistory`; kiểm soát concurrency bằng `xmin` và ETag/`If-Match` | Tích hợp MinIO; quản lý ảnh chính `IsPrimary`, thứ tự `OrderIndex` và liên kết ảnh với Recipe |
+| **Minimal API endpoints** | Tạo endpoints cho chức năng tài khoản và xác thực. Tối thiểu 2 endpoints, gồm Register và Login | Tạo endpoints cho Category, Recipe List, Recipe Detail và Search. Tối thiểu 2 endpoints | Tạo endpoints cho Recipe Lifecycle. Tối thiểu 2 endpoints | Tạo endpoints cho Ingredient, Step và Image. Tối thiểu 2 endpoints |
+| **Kiểm tra chức năng** | Kiểm tra luồng Register → Login → Access Token → Refresh Token → API có phân quyền; kiểm tra token sai/hết hạn và tài khoản không hợp lệ | Kiểm tra Category, Recipe List/Detail, phân trang, lọc, sắp xếp và Full-Text Search bằng dữ liệu PostgreSQL | Kiểm tra Recipe không tồn tại, sai chủ sở hữu, sai trạng thái và concurrency conflict | Kiểm tra thêm/sửa/xóa Ingredient, Step; upload ảnh và liên kết dữ liệu với Recipe |
 
 ### Công việc chung của cả nhóm
 
-- Merge và đồng bộ toàn bộ mã nguồn Database của Buổi 2 vào nhánh `develop`.
-- Chạy Migration và kiểm tra database PostgreSQL sau khi tích hợp code của 4 thành viên.
-- Thống nhất cấu trúc code Backend theo các tầng:
-  - `Domain`
-  - `Application`
-  - `Infrastructure`
-  - `API`
-- Thống nhất cách tổ chức feature gồm:
-  - Command / Query
-  - Handler
-  - Validator
-  - DTO / Request / Response
-  - Repository / Service khi cần
-  - Minimal API Endpoint
-- Cài đặt và kiểm tra các package Backend cần sử dụng trong Buổi 3 như:
-  - MediatR
-  - FluentValidation
-  - ASP.NET Core Identity
-  - JWT Authentication
-  - MinIO
-  - các package hỗ trợ PostgreSQL/EF Core cần thiết.
-- Hoàn thiện đăng ký Dependency Injection cho các service, repository và thành phần Application/Infrastructure.
-- Cấu hình Authentication và Authorization dùng chung cho hệ thống.
-- Hoàn thiện Repository và các truy vấn dữ liệu phục vụ nội dung Lab 3.
-- Hoàn thiện PostgreSQL Full-Text Search và kiểm tra tìm kiếm trên dữ liệu Recipe thực tế.
-- Thống nhất định dạng Request, Response và lỗi trả về từ API.
-- Xử lý các lỗi cơ bản như:
-  - dữ liệu không hợp lệ;
-  - không tìm thấy dữ liệu;
-  - chưa đăng nhập;
-  - không đủ quyền;
-  - xung đột dữ liệu.
-- Kiểm tra từng API bằng Swagger, HTTP Client hoặc Postman trước khi merge.
-- Review code chéo giữa các thành viên trước khi merge vào `develop`.
-- Chạy `dotnet build` và đảm bảo Backend không có lỗi biên dịch sau khi merge.
+| Hạng mục | Công việc cần hoàn thành |
+|---|---|
+| **Tích hợp và cấu trúc** | Đồng bộ mã nguồn Database từ Buổi 2; thống nhất cấu trúc `Domain`, `Application`, `Infrastructure`, `API`; kiểm tra PostgreSQL sau khi tích hợp |
+| **Domain Exceptions** | Cài đặt các lớp Domain Exceptions cần thiết trong `Domain`; thống nhất exception cho lỗi nghiệp vụ và dữ liệu |
+| **Repository và Unit of Work** | Khai báo interface; cài đặt Repository và Unit of Work trong `Infrastructure`; đăng ký Dependency Injection; bảo đảm các thao tác cần tính nhất quán dùng transaction phù hợp |
+| **Middleware xử lý lỗi** | Tạo middleware toàn cục trong `API` để bắt exception, ánh xạ sang HTTP status code phù hợp và trả RFC 7807 Problem Details; không đưa stack trace hoặc thông tin nhạy cảm vào response |
+| **Tích hợp Backend** | Thống nhất định dạng Request, Response và mã lỗi; cấu hình MediatR, FluentValidation, ASP.NET Core Identity, JWT Authentication và các package EF Core/PostgreSQL cần thiết |
+| **Kiểm thử và review** | Kiểm tra API bằng Swagger, HTTP Client hoặc Postman; review chéo trước khi merge vào `develop`; chạy `dotnet build` và sửa lỗi sau tích hợp |
 
 ### Kết quả cần đạt cuối Buổi 3
 
-- API đăng ký, đăng nhập và xác thực hoạt động.
-- JWT Access Token và Refresh Token hoạt động.
-- Authorization theo `Author` / `Admin` hoạt động.
-- API quản lý Category hoạt động.
-- API Recipe List và Recipe Detail hoạt động.
-- Pagination, Filter và Sort Recipe hoạt động.
-- PostgreSQL Full-Text Search hoạt động.
-- API Create và Update Recipe hoạt động.
-- API Publish / Unpublish / Archive / Unarchive Recipe hoạt động.
-- Soft Delete Recipe hoạt động.
-- Kiểm tra quyền sở hữu Recipe hoạt động.
-- Kiểm soát concurrency của Recipe hoạt động.
-- API quản lý Ingredient hoạt động.
-- API quản lý Recipe Step hoạt động.
-- API quản lý Recipe Image và upload file hoạt động.
-- Các API chính được kiểm thử trước khi bắt đầu Frontend ở Buổi 4.
+| Nhóm chức năng | Kết quả cần đạt |
+|---|---|
+| **Yêu cầu tối thiểu của Lab** | Hoàn thành Domain Exceptions; Repository và Unit of Work; mỗi thành viên có ít nhất 2 API endpoints; middleware toàn cục trả RFC 7807 Problem Details |
+| **Tài khoản và phân quyền** | Register, Login, JWT Access Token, Refresh Token và Authorization theo `Author`/`Admin` hoạt động |
+| **Category và Discovery** | API Category, Recipe List, Recipe Detail và Search hoạt động; phân trang, lọc, sắp xếp và Full-Text Search được kiểm tra |
+| **Recipe Lifecycle** | Create, Update, Publish, Unpublish, Archive, Unarchive và Delete hoạt động; kiểm tra quyền sở hữu và concurrency |
+| **Recipe Content và Media** | API Ingredient, Recipe Step, Recipe Image hoạt động; upload file được tích hợp với MinIO |
+| **Tích hợp và build** | Các API chính được kiểm thử; toàn bộ Backend build thành công sau khi merge |
 
 ## Công nghệ sử dụng
 
