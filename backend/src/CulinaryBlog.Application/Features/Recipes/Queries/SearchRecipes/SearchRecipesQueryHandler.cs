@@ -19,13 +19,16 @@ using Microsoft.Extensions.Logging;
 public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, PagedResult<RecipeSummaryDto>>
 {
     private readonly IApplicationDbContext _dbContext;
+    private readonly IUserQueryService _userQueryService;
     private readonly ILogger<SearchRecipesQueryHandler> _logger;
 
     public SearchRecipesQueryHandler(
         IApplicationDbContext dbContext,
+        IUserQueryService userQueryService,
         ILogger<SearchRecipesQueryHandler> logger)
     {
         _dbContext = dbContext;
+        _userQueryService = userQueryService;
         _logger = logger;
     }
 
@@ -140,11 +143,22 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
                 CategoryName = r.Category != null ? r.Category.Name : null,
                 CategorySlug = r.Category != null ? r.Category.Slug : null,
                 AuthorId = r.AuthorId,
-                AuthorName = r.Author != null ? r.Author.DisplayName : null,
+                AuthorName = null,
                 PublishedAt = r.PublishedAt,
                 CreatedAt = r.CreatedAt
             })
             .ToListAsync(cancellationToken);
+
+        // Nạp thông tin tác giả từ IUserQueryService
+        var authorIds = items.Select(i => i.AuthorId).Distinct();
+        var authors = await _userQueryService.GetAuthorSummariesAsync(authorIds, cancellationToken);
+        foreach (var item in items)
+        {
+            if (authors.TryGetValue(item.AuthorId, out var author))
+            {
+                item.AuthorName = author.DisplayName;
+            }
+        }
 
         _logger.LogInformation("Tìm kiếm thành công: {Count}/{Total} công thức cho trang {Page}", items.Count, total, page);
 
@@ -161,39 +175,16 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
 
         return normalizedSortBy switch
         {
-            "totaltime" or "quickest" => isAsc
+            "publishedat" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
+            "cooktime" => isAsc ? query.OrderBy(r => r.CookTimeMinutes) : query.OrderByDescending(r => r.CookTimeMinutes),
+            "totaltime" => isAsc
                 ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
                 : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
-
-            "preptime" => isAsc
-                ? query.OrderBy(r => r.PrepTimeMinutes)
-                : query.OrderByDescending(r => r.PrepTimeMinutes),
-
-            "cooktime" => isAsc
-                ? query.OrderBy(r => r.CookTimeMinutes)
-                : query.OrderByDescending(r => r.CookTimeMinutes),
-
             "calories" => isAsc
-                ? query.OrderBy(r => r.Nutrition!.Calories)
-                : query.OrderByDescending(r => r.Nutrition!.Calories),
-
-            "title" => isAsc
-                ? query.OrderBy(r => r.Title)
-                : query.OrderByDescending(r => r.Title),
-
-            "servings" => isAsc
-                ? query.OrderBy(r => r.Servings)
-                : query.OrderByDescending(r => r.Servings),
-
-            "createdat" => isAsc
-                ? query.OrderBy(r => r.CreatedAt)
-                : query.OrderByDescending(r => r.CreatedAt),
-
-            "publishedat" or "newest" => isAsc
-                ? query.OrderBy(r => r.PublishedAt ?? r.CreatedAt)
-                : query.OrderByDescending(r => r.PublishedAt ?? r.CreatedAt),
-
-            _ => query
+                ? query.OrderBy(r => r.Nutrition != null ? r.Nutrition.Calories : 0)
+                : query.OrderByDescending(r => r.Nutrition != null ? r.Nutrition.Calories : 0),
+            "title" => isAsc ? query.OrderBy(r => r.Title) : query.OrderByDescending(r => r.Title),
+            _ => query // Mặc định giữ nguyên thứ tự ts_rank từ câu lệnh SQL FTS
         };
     }
 }

@@ -63,7 +63,7 @@ public sealed class AuthExceptionHandler(
         ),
         InvalidTokenException tokenEx => (
             StatusCodes.Status401Unauthorized,
-            tokenEx.ErrorCode,
+            tokenEx.ErrorCode ?? ErrorCodes.AuthTokenInvalid,
             "Unauthorized",
             tokenEx.Message
         ),

@@ -1,20 +1,6 @@
 namespace CulinaryBlog.Domain.Exceptions;
 
 /// <summary>
-/// Lớp cơ sở cho tất cả ngoại lệ nghiệp vụ thuộc tầng Domain.
-/// </summary>
-public abstract class DomainException(string message, string errorCode = "DOMAIN_ERROR") : Exception(message)
-{
-    public string ErrorCode { get; } = errorCode;
-}
-
-/// <summary>
-/// Ngoại lệ ném ra khi không tìm thấy thực thể trong Domain.
-/// </summary>
-public class EntityNotFoundException(string name, object key, string errorCode = "RECIPE_NOT_FOUND")
-    : DomainException($"Không tìm thấy thực thể \"{name}\" với mã định danh ({key}).", errorCode);
-
-/// <summary>
 /// Ngoại lệ ném ra khi vi phạm quyền sở hữu tài nguyên Domain (Author/Admin).
 /// </summary>
 public class OwnershipViolationException(string message = "Bạn không có quyền thực hiện thao tác trên tài nguyên này.", string errorCode = "RECIPE_FORBIDDEN")

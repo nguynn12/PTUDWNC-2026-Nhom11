@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
 
@@ -14,13 +15,29 @@ internal sealed class FakeRefreshTokenRepository : IRefreshTokenRepository
     public Task<List<RefreshToken>> GetAllAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult(Tokens.ToList());
 
+    public Task<IReadOnlyList<RefreshToken>> FindAsync(Expression<Func<RefreshToken, bool>> predicate, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<RefreshToken>>(Tokens.AsQueryable().Where(predicate).ToList());
+
+    public Task<bool> AnyAsync(Expression<Func<RefreshToken, bool>> predicate, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Tokens.AsQueryable().Any(predicate));
+
     public void Add(RefreshToken entity) => Tokens.Add(entity);
+
+    public Task AddAsync(RefreshToken entity, CancellationToken cancellationToken = default)
+    {
+        Tokens.Add(entity);
+        return Task.CompletedTask;
+    }
 
     public void Update(RefreshToken entity)
     {
     }
 
     public void Remove(RefreshToken entity) => Tokens.Remove(entity);
+
+    public void Delete(RefreshToken entity) => Tokens.Remove(entity);
+
+    public IQueryable<RefreshToken> Query() => Tokens.AsQueryable();
 
     public Task<RefreshToken?> GetByTokenHashAsync(string tokenHash, CancellationToken cancellationToken = default) =>
         Task.FromResult(Tokens.FirstOrDefault(token => token.TokenHash == tokenHash));
@@ -40,6 +57,14 @@ internal sealed class FakeUnitOfWork : IUnitOfWork
 {
     public FakeRefreshTokenRepository Tokens { get; } = new();
 
+    public IRepository<Recipe> Recipes => null!;
+
+    public IRecipeIngredientRepository RecipeIngredients => null!;
+
+    public IRecipeStepRepository RecipeSteps => null!;
+
+    public IRecipeImageRepository RecipeImages => null!;
+
     public int SaveChangesCount { get; private set; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -47,4 +72,15 @@ internal sealed class FakeUnitOfWork : IUnitOfWork
         SaveChangesCount++;
         return Task.FromResult(1);
     }
+
+    public Task BeginTransactionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+    public Task CommitTransactionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+    public Task RollbackTransactionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+    public void Dispose()
+    {
+    }
 }
+

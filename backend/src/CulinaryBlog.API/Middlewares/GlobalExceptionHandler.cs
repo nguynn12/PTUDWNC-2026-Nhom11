@@ -24,7 +24,7 @@ public sealed class GlobalExceptionHandler(
 
         var (statusCode, type, title, detail, errors) = exception switch
         {
-            ValidationException validationEx => (
+            FluentValidation.ValidationException validationEx => (
                 StatusCodes.Status422UnprocessableEntity,
                 "VALIDATION_ERROR",
                 "Unprocessable Entity",
@@ -38,30 +38,23 @@ public sealed class GlobalExceptionHandler(
             ),
             BusinessRuleValidationException businessRuleEx => (
                 StatusCodes.Status422UnprocessableEntity,
-                businessRuleEx.ErrorCode,
+                businessRuleEx.ErrorCode ?? "BUSINESS_RULE_VIOLATION",
                 "Unprocessable Entity",
                 businessRuleEx.Message,
                 null
             ),
             CulinaryBlog.Domain.Exceptions.RecipeIncompletePublishException publishEx => (
                 StatusCodes.Status422UnprocessableEntity,
-                publishEx.ErrorCode,
+                publishEx.ErrorCode ?? "RECIPE_PUBLISH_INCOMPLETE",
                 "Unprocessable Entity",
                 publishEx.Message,
                 null
             ),
             CulinaryBlog.Domain.Exceptions.OwnershipViolationException ownershipEx => (
                 StatusCodes.Status403Forbidden,
-                ownershipEx.ErrorCode,
+                ownershipEx.ErrorCode ?? "RECIPE_FORBIDDEN",
                 "Forbidden",
                 ownershipEx.Message,
-                null
-            ),
-            CulinaryBlog.Domain.Exceptions.DomainException domainEx => (
-                StatusCodes.Status400BadRequest,
-                domainEx.ErrorCode,
-                "Domain Rule Violation",
-                domainEx.Message,
                 null
             ),
             NotFoundException notFoundEx => (
@@ -69,6 +62,13 @@ public sealed class GlobalExceptionHandler(
                 string.IsNullOrWhiteSpace(notFoundEx.ErrorCode) ? "RESOURCE_NOT_FOUND" : notFoundEx.ErrorCode,
                 "Not Found",
                 notFoundEx.Message,
+                null
+            ),
+            CulinaryBlog.Domain.Exceptions.EntityNotFoundException entityNotFoundEx => (
+                StatusCodes.Status404NotFound,
+                string.IsNullOrWhiteSpace(entityNotFoundEx.ErrorCode) ? "RESOURCE_NOT_FOUND" : entityNotFoundEx.ErrorCode,
+                "Not Found",
+                entityNotFoundEx.Message,
                 null
             ),
             ForbiddenException forbiddenEx => (
@@ -90,6 +90,13 @@ public sealed class GlobalExceptionHandler(
                 "RECIPE_CONCURRENCY_CONFLICT",
                 "Conflict",
                 "Dữ liệu đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.",
+                null
+            ),
+            CulinaryBlog.Domain.Exceptions.DomainException domainEx => (
+                StatusCodes.Status400BadRequest,
+                domainEx.ErrorCode ?? "DOMAIN_ERROR",
+                "Domain Rule Violation",
+                domainEx.Message,
                 null
             ),
             _ => (

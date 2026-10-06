@@ -39,7 +39,7 @@ public sealed class RegisterCommandHandlerTests
         };
         var handler = CreateHandler(CreateUserResult.Failed(errors), new FakeUnitOfWork());
 
-        var ex = await Assert.ThrowsAsync<ValidationException>(
+        var ex = await Assert.ThrowsAsync<FluentValidation.ValidationException>(
             () => handler.Handle(Command, TestContext.Current.CancellationToken));
 
         var failure = Assert.Single(ex.Errors);

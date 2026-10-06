@@ -14,13 +14,16 @@ using Microsoft.Extensions.Logging;
 public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery, RecipeDetailDto?>
 {
     private readonly IApplicationDbContext _dbContext;
+    private readonly IUserQueryService _userQueryService;
     private readonly ILogger<GetRecipeBySlugQueryHandler> _logger;
 
     public GetRecipeBySlugQueryHandler(
         IApplicationDbContext dbContext,
+        IUserQueryService userQueryService,
         ILogger<GetRecipeBySlugQueryHandler> logger)
     {
         _dbContext = dbContext;
+        _userQueryService = userQueryService;
         _logger = logger;
     }
 
@@ -29,11 +32,10 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
         var slug = request.Slug.Trim().ToLowerInvariant();
         _logger.LogInformation("Truy vấn chi tiết Recipe theo Slug: '{Slug}'", slug);
 
-        // Eager load: Category, Author, Ingredients, Steps, Images (và Nutrition là owned entity)
+        // Eager load: Category, Ingredients, Steps, Images (và Nutrition là owned entity)
         var recipe = await _dbContext.Recipes
             .AsNoTracking()
             .Include(r => r.Category)
-            .Include(r => r.Author)
             .Include(r => r.Ingredients.Where(i => !i.IsDeleted))
             .Include(r => r.Steps.Where(s => !s.IsDeleted))
             .Include(r => r.Images.Where(img => !img.IsDeleted))
@@ -44,6 +46,9 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
             _logger.LogWarning("Không tìm thấy Recipe nào đang Published với Slug: '{Slug}'", slug);
             return null;
         }
+
+        var authors = await _userQueryService.GetAuthorSummariesAsync([recipe.AuthorId], cancellationToken);
+        var authorSummary = authors.TryGetValue(recipe.AuthorId, out var a) ? a : null;
 
         // Ánh xạ sang RecipeDetailDto
         return new RecipeDetailDto
@@ -71,12 +76,12 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
                 RecipeCount = 0,
                 CreatedAt = recipe.Category.CreatedAt
             },
-            Author = recipe.Author is null ? null : new RecipeAuthorDto
+            Author = authorSummary is null ? null : new RecipeAuthorDto
             {
-                Id = recipe.Author.Id,
-                DisplayName = recipe.Author.DisplayName,
-                UserName = recipe.Author.UserName,
-                AvatarUrl = recipe.Author.AvatarUrl
+                Id = authorSummary.Id,
+                DisplayName = authorSummary.DisplayName,
+                UserName = authorSummary.DisplayName,
+                AvatarUrl = authorSummary.AvatarUrl
             },
             Nutrition = recipe.Nutrition is null ? null : new RecipeNutritionDto
             {

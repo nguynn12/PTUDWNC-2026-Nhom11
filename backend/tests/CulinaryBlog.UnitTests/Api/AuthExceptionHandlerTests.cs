@@ -93,7 +93,7 @@ public sealed class AuthExceptionHandlerTests
     public async Task LoiMatKhauCuaIdentity_DoGlobalExceptionHandlerTra422TheoField()
     {
         var (status, body, handledByAuth) = await HandleAsync(
-            new ValidationException([new ValidationFailure("password", "Mật khẩu phải có ký tự đặc biệt.")]));
+            new FluentValidation.ValidationException([new ValidationFailure("password", "Mật khẩu phải có ký tự đặc biệt.")]));
 
         Assert.False(handledByAuth);
         Assert.Equal(StatusCodes.Status422UnprocessableEntity, status);

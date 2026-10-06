@@ -6,6 +6,6 @@ namespace CulinaryBlog.Domain.Exceptions;
 /// </summary>
 public class ConcurrencyConflictException : DomainException
 {
-    public ConcurrencyConflictException(string message = "Dữ liệu đã bị thay đổi bởi thao tác khác. Vui lòng tải lại và thử lại.")
-        : base(message) { }
+    public ConcurrencyConflictException(string message = "Dữ liệu đã bị thay đổi bởi thao tác khác. Vui lòng tải lại và thử lại.", string? errorCode = "CONFLICT_ERROR")
+        : base(message, errorCode) { }
 }
