@@ -73,7 +73,7 @@ export function useCreateCategory() {
   const queryClient = useQueryClient();
 
   return useMutation<CategoryDto, AppError, CreateCategoryRequest>({
-    mutationFn: (data) => createCategory(data),
+    mutationFn: (data: CreateCategoryRequest) => createCategory(data),
     onSuccess: () => {
       // Invalidate toàn bộ cache categories
       queryClient.invalidateQueries({ queryKey: categoryKeys.all });
@@ -92,8 +92,8 @@ export function useUpdateCategory() {
     AppError,
     { id: string; data: UpdateCategoryRequest }
   >({
-    mutationFn: ({ id, data }) => updateCategory(id, data),
-    onSuccess: (updatedCategory) => {
+    mutationFn: ({ id, data }: { id: string; data: UpdateCategoryRequest }) => updateCategory(id, data),
+    onSuccess: (updatedCategory: CategoryDto) => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.all });
       if (updatedCategory.slug) {
         queryClient.invalidateQueries({
@@ -112,9 +112,10 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
 
   return useMutation<void, AppError, string>({
-    mutationFn: (id) => deleteCategory(id),
+    mutationFn: (id: string) => deleteCategory(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.all });
     },
   });
 }
+

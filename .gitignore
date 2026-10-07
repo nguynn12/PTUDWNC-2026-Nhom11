@@ -47,8 +47,7 @@ tmp/
 # Docker overrides kept local
 docker-compose.override.yml
 
-# Personal lab reports & local task docs
-docs/Lab*.md
-docs/TASK_*.md
-docs/buoi*.md
+# Documentation
+docs/
+
 

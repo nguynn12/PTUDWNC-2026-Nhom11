@@ -6,6 +6,7 @@ import { useSearchRecipes } from "@/hooks/useRecipes";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { RecipeCardSkeleton } from "@/components/common/Skeleton";
 import { Pagination } from "@/components/common/Pagination";
+import type { RecipeSummaryDto } from "@/types/api";
 
 const trendingKeywords = [
   "Phở bò",
@@ -246,7 +247,7 @@ export function SearchClient() {
           </div>
 
           <div className="recipe-grid">
-            {recipes.map((recipe, idx) => (
+            {recipes.map((recipe: RecipeSummaryDto, idx: number) => (
               <RecipeCard key={recipe.id || recipe.slug} recipe={recipe} priority={idx < 3} />
             ))}
           </div>

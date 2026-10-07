@@ -30,14 +30,14 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error: unknown) => Promise.reject(error)
 );
 
 // ----------------------------------------------------------------------------
 // RESPONSE INTERCEPTOR: Unwrap envelope & Bóc tách RFC 7807 Problem Details
 // ----------------------------------------------------------------------------
 apiClient.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     // Trả về thẳng dữ liệu data (thường chứa { data, meta } theo chuẩn envelope)
     return response.data;
   },

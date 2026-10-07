@@ -13,15 +13,8 @@ import {
 } from '@/components/common/Icons';
 import { ToastProvider } from '@/components/common/Toast';
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-
-  const isNavActive = (href: string) => {
-    if (href === '/dashboard') {
-      return pathname === '/dashboard';
-    }
-    return pathname.startsWith(href);
-  };
 
   return (
     <ToastProvider>
@@ -34,47 +27,30 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
             <div>
               <div className="sidebar-brand-title">Culinary Blog</div>
-              <div className="sidebar-brand-subtitle">Studio & Quản trị</div>
+              <div className="sidebar-brand-subtitle">Admin Hub</div>
             </div>
           </div>
 
           <nav className="sidebar-nav">
-            <div className="sidebar-nav-heading">Tác giả (Author)</div>
+            <div className="sidebar-nav-heading">Quản trị Hệ thống</div>
             
             <Link
               href="/dashboard"
-              className={`sidebar-link ${pathname === '/dashboard' ? 'active' : ''}`}
+              className="sidebar-link"
             >
               <DashboardIcon size={18} />
-              <span>Tổng quan</span>
+              <span>Về Dashboard</span>
             </Link>
 
             <Link
               href="/dashboard/recipes"
-              className={`sidebar-link ${isNavActive('/dashboard/recipes') && !pathname.includes('/new') ? 'active' : ''}`}
+              className="sidebar-link"
             >
               <BookOpenIcon size={18} />
               <span>Bài viết của tôi</span>
             </Link>
 
-            <Link
-              href="/dashboard/recipes/new"
-              className={`sidebar-link ${pathname === '/dashboard/recipes/new' ? 'active' : ''}`}
-            >
-              <PlusCircleIcon size={18} />
-              <span>Tạo công thức mới</span>
-            </Link>
-
-            <div className="sidebar-nav-heading">Hệ thống & Admin</div>
-
-            <Link
-              href="/dashboard/categories"
-              className={`sidebar-link ${pathname.startsWith('/dashboard/categories') ? 'active' : ''}`}
-            >
-              <BookOpenIcon size={18} />
-              <span>Quản lý Danh mục</span>
-              <span className="sidebar-badge">Admin</span>
-            </Link>
+            <div className="sidebar-nav-heading">Thùng rác & Dọn dẹp</div>
 
             <Link
               href="/admin/recipes/trash"
@@ -85,16 +61,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <span className="sidebar-badge">Admin</span>
             </Link>
 
-            <div className="sidebar-nav-heading">Khám phá</div>
+            <div className="sidebar-nav-heading">Liên kết</div>
 
-            <Link href="/recipes" className="sidebar-link">
+            <Link href="/" className="sidebar-link" target="_blank">
               <ArrowUpRightIcon size={18} />
-              <span>Kho công thức</span>
-            </Link>
-
-            <Link href="/" className="sidebar-link">
-              <ArrowUpRightIcon size={18} />
-              <span>Xem trang web</span>
+              <span>Xem trang web chính</span>
             </Link>
           </nav>
 
