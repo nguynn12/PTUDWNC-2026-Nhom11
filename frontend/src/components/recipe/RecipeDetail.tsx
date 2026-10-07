@@ -169,7 +169,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
               {recipe.author?.displayName || recipe.author?.userName || "Chuyên gia Ẩm thực"}
             </div>
             {formattedDate && (
-              <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
+              <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }} suppressHydrationWarning>
                 Xuất bản: {formattedDate}
               </div>
             )}

@@ -52,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         <Providers>
           <Navbar />
           <main id="main-content">{children}</main>
