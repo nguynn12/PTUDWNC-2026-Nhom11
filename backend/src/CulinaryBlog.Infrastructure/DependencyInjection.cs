@@ -84,7 +84,6 @@ public static class DependencyInjection
         services.Configure<GoogleAuthSettings>(configuration.GetSection(GoogleAuthSettings.SectionName));
         services.AddSingleton<IGoogleTokenValidator>(provider => new GoogleTokenValidator(
             provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<GoogleAuthSettings>>(),
-            GoogleTokenValidator.CreateGoogleConfigurationManager(),
             provider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<GoogleTokenValidator>>()));
 
         var jwtSettings = new JwtSettings();

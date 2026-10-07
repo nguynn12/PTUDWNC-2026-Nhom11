@@ -1,15 +1,11 @@
-using System.Security.Cryptography;
 using CulinaryBlog.Application.Auth.Commands.GoogleLogin;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Infrastructure.Identity;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace CulinaryBlog.UnitTests.Auth;
@@ -97,58 +93,32 @@ public sealed class GoogleLoginTests
         Assert.Equal(100, IdentityService.BuildDisplayName(new GoogleUserInfo("sub", "a@gmail.com", true, new string('x', 150), null)).Length);
     }
 
-    // ── GoogleTokenValidator: token ký bằng khoá RSA giả lập thay cho public key của Google ──
+    // ── GoogleTokenValidator: thư viện Google (GoogleJsonWebSignature) được thay bằng delegate giả lập ──
 
-    private static readonly RsaSecurityKey SigningKey = new(RSA.Create(2048)) { KeyId = "test-key" };
-
-    private static GoogleTokenValidator Validator(string clientId = ClientId)
+    private static GoogleJsonWebSignature.Payload Payload(string? nonce = null, string? email = "an@gmail.com") => new()
     {
-        var configuration = new OpenIdConnectConfiguration();
-        configuration.SigningKeys.Add(SigningKey);
+        Subject = "google-sub-1",
+        Email = email,
+        EmailVerified = true,
+        Name = "Nguyễn An",
+        Picture = "https://lh3.googleusercontent.com/a/photo.jpg",
+        Nonce = nonce,
+    };
 
-        return new GoogleTokenValidator(
-            Options.Create(new GoogleAuthSettings { ClientId = clientId }),
-            new StaticConfigurationManager<OpenIdConnectConfiguration>(configuration),
-            NullLogger<GoogleTokenValidator>.Instance);
-    }
-
-    private static string CreateIdToken(
-        string audience = ClientId,
-        string issuer = "https://accounts.google.com",
-        DateTime? expires = null,
-        string? nonce = null,
-        SecurityKey? key = null)
-    {
-        var claims = new Dictionary<string, object>
-        {
-            ["sub"] = "google-sub-1",
-            ["email"] = "an@gmail.com",
-            ["email_verified"] = true,
-            ["name"] = "Nguyễn An",
-            ["picture"] = "https://lh3.googleusercontent.com/a/photo.jpg",
-        };
-        if (nonce is not null)
-        {
-            claims["nonce"] = nonce;
-        }
-
-        var expiresAt = expires ?? DateTime.UtcNow.AddMinutes(30);
-        return new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
-        {
-            Issuer = issuer,
-            Audience = audience,
-            Claims = claims,
-            IssuedAt = expiresAt.AddHours(-1),
-            NotBefore = expiresAt.AddHours(-1),
-            Expires = expiresAt,
-            SigningCredentials = new SigningCredentials(key ?? SigningKey, SecurityAlgorithms.RsaSha256),
-        });
-    }
+    private static GoogleTokenValidator Validator(GoogleTokenValidator.VerifyIdToken verify, string clientId = ClientId) =>
+        new(Options.Create(new GoogleAuthSettings { ClientId = clientId }), NullLogger<GoogleTokenValidator>.Instance, verify);
 
     [Fact]
-    public async Task Validator_TokenHopLe_DocDungThongTin()
+    public async Task Validator_TokenHopLe_DocDungThongTinVaKiemTraAudience()
     {
-        var info = await Validator().ValidateAsync(CreateIdToken(nonce: "n-1"), "n-1", TestContext.Current.CancellationToken);
+        GoogleJsonWebSignature.ValidationSettings? used = null;
+        var validator = Validator((_, settings) =>
+        {
+            used = settings;
+            return Task.FromResult(Payload(nonce: "n-1"));
+        });
+
+        var info = await validator.ValidateAsync("id-token", "n-1", TestContext.Current.CancellationToken);
 
         Assert.NotNull(info);
         Assert.Equal("google-sub-1", info.Subject);
@@ -156,44 +126,53 @@ public sealed class GoogleLoginTests
         Assert.True(info.EmailVerified);
         Assert.Equal("Nguyễn An", info.Name);
         Assert.Equal("https://lh3.googleusercontent.com/a/photo.jpg", info.PictureUrl);
+        Assert.NotNull(used);
+        Assert.Equal(new[] { ClientId }, used.Audience);
     }
 
     [Fact]
-    public async Task Validator_SaiAudience_TuChoi()
+    public async Task Validator_ThuVienGoogleTuChoi_TraNull()
     {
-        Assert.Null(await Validator().ValidateAsync(CreateIdToken(audience: "client-khac"), null, TestContext.Current.CancellationToken));
-    }
+        var validator = Validator((_, _) => throw new InvalidJwtException("JWT has expired."));
 
-    [Fact]
-    public async Task Validator_SaiIssuer_TuChoi()
-    {
-        Assert.Null(await Validator().ValidateAsync(CreateIdToken(issuer: "https://evil.example.com"), null, TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task Validator_HetHan_TuChoi()
-    {
-        Assert.Null(await Validator().ValidateAsync(
-            CreateIdToken(expires: DateTime.UtcNow.AddMinutes(-10)), null, TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task Validator_KyBangKhoaKhac_TuChoi()
-    {
-        var otherKey = new RsaSecurityKey(RSA.Create(2048)) { KeyId = "test-key" };
-
-        Assert.Null(await Validator().ValidateAsync(CreateIdToken(key: otherKey), null, TestContext.Current.CancellationToken));
+        Assert.Null(await validator.ValidateAsync("id-token", null, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task Validator_NonceKhongKhop_TuChoi()
     {
-        Assert.Null(await Validator().ValidateAsync(CreateIdToken(nonce: "n-1"), "n-2", TestContext.Current.CancellationToken));
+        var validator = Validator((_, _) => Task.FromResult(Payload(nonce: "n-1")));
+
+        Assert.Null(await validator.ValidateAsync("id-token", "n-2", TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task Validator_ChuaCauHinhClientId_TuChoi()
+    public async Task Validator_ClientGuiNonceNhungTokenKhongCo_TuChoi()
     {
-        Assert.Null(await Validator(clientId: "").ValidateAsync(CreateIdToken(), null, TestContext.Current.CancellationToken));
+        var validator = Validator((_, _) => Task.FromResult(Payload(nonce: null)));
+
+        Assert.Null(await validator.ValidateAsync("id-token", "n-1", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Validator_ThieuEmail_TuChoi()
+    {
+        var validator = Validator((_, _) => Task.FromResult(Payload(email: null)));
+
+        Assert.Null(await validator.ValidateAsync("id-token", null, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Validator_ChuaCauHinhClientId_KhongGoiGoogle()
+    {
+        var called = false;
+        var validator = Validator((_, _) =>
+        {
+            called = true;
+            return Task.FromResult(Payload());
+        }, clientId: "");
+
+        Assert.Null(await validator.ValidateAsync("id-token", null, TestContext.Current.CancellationToken));
+        Assert.False(called);
     }
 }

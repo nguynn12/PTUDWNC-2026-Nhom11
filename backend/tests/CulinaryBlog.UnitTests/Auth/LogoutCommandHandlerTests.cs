@@ -48,4 +48,21 @@ public sealed class LogoutCommandHandlerTests
 
         Assert.Equal(0, unitOfWork.SaveChangesCount);
     }
+
+    [Fact]
+    public async Task ThuHoiCaFamilyCuaPhien_KhongDungPhienKhac()
+    {
+        var unitOfWork = new FakeUnitOfWork();
+        var first = RefreshTokenEntity.CreateNewFamily("user-1", Hash("raw-1"), 7, "127.0.0.1");
+        var rotated = first.Rotate(Hash("raw-2"), 7, "127.0.0.1");
+        var otherDevice = RefreshTokenEntity.CreateNewFamily("user-1", Hash("raw-khac"), 7, "127.0.0.1");
+        unitOfWork.Tokens.Tokens.AddRange([first, rotated, otherDevice]);
+
+        // Gửi token cũ (đã xoay vòng) vẫn thu hồi token còn sống cùng family.
+        await new LogoutCommandHandler(unitOfWork.Tokens, unitOfWork).Handle(new LogoutCommand("raw-1"), TestContext.Current.CancellationToken);
+
+        Assert.True(rotated.IsRevoked);
+        Assert.Equal("logout", rotated.RevocationReason);
+        Assert.False(otherDevice.IsRevoked);
+    }
 }
