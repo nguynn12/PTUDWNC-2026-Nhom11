@@ -184,6 +184,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
                 alt={recipe.author?.displayName || recipe.author?.userName || "Tác giả"}
                 fill
                 sizes="26px"
+                unoptimized
                 style={{ objectFit: "cover" }}
               />
             </div>
