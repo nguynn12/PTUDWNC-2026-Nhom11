@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -56,7 +55,6 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <main id="main-content">{children}</main>
-          <Footer />
         </Providers>
       </body>
     </html>

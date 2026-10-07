@@ -102,7 +102,7 @@ export function Footer() {
             © 2026 <strong>Culinary Blog</strong>. Đồ án môn học Phát triển ứng dụng Web nâng cao (Nhóm 11).
           </div>
           <div>
-            Thực hiện bởi: <strong>Trần Quốc Quân</strong> (MSSV: 2312726 — Thành viên 2)
+            Nền tảng chia sẻ công thức và văn hóa ẩm thực.
           </div>
         </div>
       </div>

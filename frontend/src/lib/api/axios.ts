@@ -1,4 +1,4 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from "axios";
 import { AppError, type ApiProblemDetails } from "@/types/api";
 
 const isServer = typeof window === "undefined";
