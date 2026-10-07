@@ -137,7 +137,6 @@ export default async function CategoryDetailPage({ params, searchParams }: PageP
           <Pagination
             page={currentPage}
             totalPages={totalPages}
-            createPageUrl={(p) => `/categories/${slug}?page=${p}`}
           />
         </>
       ) : (

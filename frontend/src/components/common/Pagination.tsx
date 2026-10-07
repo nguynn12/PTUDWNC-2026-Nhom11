@@ -1,20 +1,30 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
   page: number;
   totalPages: number;
   onPageChange?: (page: number) => void;
-  createPageUrl?: (page: number) => string;
 }
 
 export function Pagination({
   page,
   totalPages,
   onPageChange,
-  createPageUrl,
 }: PaginationProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   if (totalPages <= 1) return null;
+
+  const getUrl = (targetPage: number) => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : "");
+    params.set("page", targetPage.toString());
+    return `${pathname}?${params.toString()}`;
+  };
 
   // Tính toán dải số trang hiển thị
   const getPageNumbers = () => {
@@ -77,25 +87,31 @@ export function Pagination({
       transition: "all var(--transition-fast)",
     };
 
-    if (createPageUrl && !isActive) {
+    if (isActive) {
       return (
-        <Link key={p} href={createPageUrl(p)} style={style}>
+        <span key={p} style={style} aria-current="page">
           {p}
-        </Link>
+        </span>
+      );
+    }
+
+    if (onPageChange) {
+      return (
+        <button
+          key={p}
+          type="button"
+          onClick={() => onPageChange(p)}
+          style={style}
+        >
+          {p}
+        </button>
       );
     }
 
     return (
-      <button
-        key={p}
-        type="button"
-        disabled={isActive}
-        onClick={() => onPageChange?.(p)}
-        style={style}
-        aria-current={isActive ? "page" : undefined}
-      >
+      <Link key={p} href={getUrl(p)} style={style}>
         {p}
-      </button>
+      </Link>
     );
   };
 
@@ -115,19 +131,11 @@ export function Pagination({
       }}
     >
       {/* Nút Trước */}
-      {createPageUrl && hasPrev ? (
-        <Link
-          href={createPageUrl(page - 1)}
-          className="btn btn-outline btn-sm"
-          style={{ height: "38px" }}
-        >
-          ← Trước
-        </Link>
-      ) : (
+      {onPageChange ? (
         <button
           type="button"
           disabled={!hasPrev}
-          onClick={() => onPageChange?.(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           className="btn btn-outline btn-sm"
           style={{
             height: "38px",
@@ -137,25 +145,38 @@ export function Pagination({
         >
           ← Trước
         </button>
+      ) : hasPrev ? (
+        <Link
+          href={getUrl(page - 1)}
+          className="btn btn-outline btn-sm"
+          style={{ height: "38px" }}
+        >
+          ← Trước
+        </Link>
+      ) : (
+        <span
+          className="btn btn-outline btn-sm"
+          style={{
+            height: "38px",
+            opacity: 0.4,
+            cursor: "not-allowed",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          ← Trước
+        </span>
       )}
 
       {/* Danh sách các trang */}
       {getPageNumbers().map((p, idx) => renderPageItem(p, idx))}
 
       {/* Nút Sau */}
-      {createPageUrl && hasNext ? (
-        <Link
-          href={createPageUrl(page + 1)}
-          className="btn btn-outline btn-sm"
-          style={{ height: "38px" }}
-        >
-          Sau →
-        </Link>
-      ) : (
+      {onPageChange ? (
         <button
           type="button"
           disabled={!hasNext}
-          onClick={() => onPageChange?.(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           className="btn btn-outline btn-sm"
           style={{
             height: "38px",
@@ -165,7 +186,29 @@ export function Pagination({
         >
           Sau →
         </button>
+      ) : hasNext ? (
+        <Link
+          href={getUrl(page + 1)}
+          className="btn btn-outline btn-sm"
+          style={{ height: "38px" }}
+        >
+          Sau →
+        </Link>
+      ) : (
+        <span
+          className="btn btn-outline btn-sm"
+          style={{
+            height: "38px",
+            opacity: 0.4,
+            cursor: "not-allowed",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          Sau →
+        </span>
       )}
     </nav>
   );
 }
+

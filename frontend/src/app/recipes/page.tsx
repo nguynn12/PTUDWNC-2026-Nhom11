@@ -71,7 +71,7 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
     categories = catRes || [];
 
     if (recRes.meta) {
-      totalCount = recRes.meta.totalCount || recipes.length;
+      totalCount = recRes.meta.total || recRes.meta.totalCount || recipes.length;
       totalPages = recRes.meta.totalPages || 1;
     } else {
       totalCount = recipes.length;
@@ -80,20 +80,6 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
     recipes = [];
     categories = [];
   }
-
-  // Hàm tạo link phân trang bảo toàn toàn bộ bộ lọc
-  const createPageUrl = (targetPage: number) => {
-    const p = new URLSearchParams();
-    p.set("page", targetPage.toString());
-    if (categoryId) p.set("categoryId", categoryId);
-    if (difficulty) p.set("difficulty", difficulty.toString());
-    if (maxTotalTime) p.set("maxTotalTime", maxTotalTime.toString());
-    if (minCalories) p.set("minCalories", minCalories.toString());
-    if (maxCalories) p.set("maxCalories", maxCalories.toString());
-    if (sortBy) p.set("sortBy", sortBy);
-    if (sortOrder) p.set("sortOrder", sortOrder);
-    return `/recipes?${p.toString()}`;
-  };
 
   return (
     <div className="container section">
@@ -153,7 +139,6 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
               <Pagination
                 page={page}
                 totalPages={totalPages}
-                createPageUrl={createPageUrl}
               />
             </>
           ) : (
