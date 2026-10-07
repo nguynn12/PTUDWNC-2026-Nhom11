@@ -1,4 +1,22 @@
-import { ProblemDetails, RecipeSummaryDto, PaginatedList, DashboardMetrics } from './types';
+import {
+  ProblemDetails,
+  RecipeSummaryDto,
+  PaginatedList,
+  DashboardMetrics,
+  CategoryOptionDto,
+  RecipeIngredientDto,
+  CreateRecipeIngredientRequest,
+  UpdateRecipeIngredientRequest,
+  RecipeStepDto,
+  CreateRecipeStepRequest,
+  UpdateRecipeStepRequest,
+  ReorderRecipeStepsRequest,
+  RecipeImageDto,
+  UpdateRecipeImageRequest,
+  CreateRecipePayload,
+  UpdateRecipePayload,
+  RecipeFullDetailDto,
+} from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000/api/v1';
 
@@ -98,7 +116,7 @@ export async function fetchApi<T>(
 }
 
 // ==========================================
-// CÁC HÀM GỌI API THEO BẢN PHÂN CÔNG TV3
+// CÁC HÀM GỌI API THEO BẢN PHÂN CÔNG TV3 & TV4
 // ==========================================
 
 export const RecipeApi = {
@@ -209,11 +227,260 @@ export const RecipeApi = {
       };
     }
   },
+
+  // =========================================================
+  // PHẦN CỦA THÀNH VIÊN 4 (2312731 - NGUYỄN PHÚ QUÝ):
+  // WIZARD TẠO/SỬA CÔNG THỨC & 10 API NGUYÊN LIỆU, BƯỚC NẤU, ẢNH MINIO
+  // =========================================================
+
+  // Lấy danh sách Danh mục (Categories)
+  async getCategories(): Promise<CategoryOptionDto[]> {
+    try {
+      return await fetchApi<CategoryOptionDto[]>('/categories');
+    } catch {
+      return mockCategories;
+    }
+  },
+
+  // Lấy chi tiết đầy đủ công thức (kèm Ingredients, Steps, Images, Nutrition, xmin)
+  async getRecipeFullDetail(id: string): Promise<RecipeFullDetailDto> {
+    try {
+      return await fetchApi<RecipeFullDetailDto>(`/recipes/${id}`);
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return getMockRecipeFullDetail(id);
+    }
+  },
+
+  // Tạo mới thông tin chung của công thức (Bước 1 Wizard)
+  async createRecipe(payload: CreateRecipePayload): Promise<RecipeSummaryDto> {
+    try {
+      return await fetchApi<RecipeSummaryDto>('/recipes', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return createMockRecipe(payload);
+    }
+  },
+
+  // Cập nhật thông tin chung của công thức kèm Concurrency Token If-Match: "{xmin}"
+  async updateRecipe(
+    id: string,
+    payload: UpdateRecipePayload,
+    xmin?: string | number | null
+  ): Promise<RecipeSummaryDto> {
+    try {
+      return await fetchApi<RecipeSummaryDto>(`/recipes/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+        ifMatch: xmin,
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return updateMockRecipe(id, payload, xmin);
+    }
+  },
+
+  // --- [API 1/10 TV4] POST /api/v1/recipes/{id}/ingredients ---
+  async addIngredient(
+    recipeId: string,
+    request: CreateRecipeIngredientRequest
+  ): Promise<RecipeIngredientDto> {
+    try {
+      return await fetchApi<RecipeIngredientDto>(`/recipes/${recipeId}/ingredients`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return addMockIngredient(recipeId, request);
+    }
+  },
+
+  // --- [API 2/10 TV4] PUT /api/v1/recipes/{id}/ingredients/{ingredientId} ---
+  async updateIngredient(
+    recipeId: string,
+    ingredientId: string,
+    request: UpdateRecipeIngredientRequest
+  ): Promise<RecipeIngredientDto> {
+    try {
+      return await fetchApi<RecipeIngredientDto>(
+        `/recipes/${recipeId}/ingredients/${ingredientId}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(request),
+        }
+      );
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return updateMockIngredient(recipeId, ingredientId, request);
+    }
+  },
+
+  // --- [API 3/10 TV4] DELETE /api/v1/recipes/{id}/ingredients/{ingredientId} ---
+  async deleteIngredient(recipeId: string, ingredientId: string): Promise<void> {
+    try {
+      await fetchApi<void>(`/recipes/${recipeId}/ingredients/${ingredientId}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      deleteMockIngredient(recipeId, ingredientId);
+    }
+  },
+
+  // --- [API 4/10 TV4] POST /api/v1/recipes/{id}/steps ---
+  async addStep(recipeId: string, request: CreateRecipeStepRequest): Promise<RecipeStepDto> {
+    try {
+      return await fetchApi<RecipeStepDto>(`/recipes/${recipeId}/steps`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return addMockStep(recipeId, request);
+    }
+  },
+
+  // --- [API 5/10 TV4] PUT /api/v1/recipes/{id}/steps/{stepId} ---
+  async updateStep(
+    recipeId: string,
+    stepId: string,
+    request: UpdateRecipeStepRequest
+  ): Promise<RecipeStepDto> {
+    try {
+      return await fetchApi<RecipeStepDto>(`/recipes/${recipeId}/steps/${stepId}`, {
+        method: 'PUT',
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return updateMockStep(recipeId, stepId, request);
+    }
+  },
+
+  // --- [API 6/10 TV4] PUT /api/v1/recipes/{id}/steps/reorder ---
+  async reorderSteps(
+    recipeId: string,
+    request: ReorderRecipeStepsRequest
+  ): Promise<RecipeStepDto[]> {
+    try {
+      return await fetchApi<RecipeStepDto[]>(`/recipes/${recipeId}/steps/reorder`, {
+        method: 'PUT',
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return reorderMockSteps(recipeId, request.stepIds);
+    }
+  },
+
+  // --- [API 7/10 TV4] DELETE /api/v1/recipes/{id}/steps/{stepId} ---
+  async deleteStep(recipeId: string, stepId: string): Promise<void> {
+    try {
+      await fetchApi<void>(`/recipes/${recipeId}/steps/${stepId}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      deleteMockStep(recipeId, stepId);
+    }
+  },
+
+  // --- [API 8/10 TV4] POST /api/v1/recipes/{id}/images (Multipart Form-Data lên MinIO) ---
+  async uploadImage(
+    recipeId: string,
+    file: File,
+    altText?: string | null,
+    isPrimary = false
+  ): Promise<RecipeImageDto> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (altText && altText.trim()) {
+      formData.append('altText', altText.trim());
+    }
+    formData.append('isPrimary', isPrimary ? 'true' : 'false');
+
+    try {
+      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images`, {
+        method: 'POST',
+        body: formData,
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return uploadMockImage(recipeId, file, altText ?? null, isPrimary);
+    }
+  },
+
+  // --- [API 9/10 TV4] PATCH /api/v1/recipes/{id}/images/{imageId} ---
+  async updateImage(
+    recipeId: string,
+    imageId: string,
+    request: UpdateRecipeImageRequest
+  ): Promise<RecipeImageDto> {
+    try {
+      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      return updateMockImage(recipeId, imageId, request);
+    }
+  },
+
+  // --- [API 10/10 TV4] DELETE /api/v1/recipes/{id}/images/{imageId} ---
+  async deleteImage(recipeId: string, imageId: string): Promise<void> {
+    try {
+      await fetchApi<void>(`/recipes/${recipeId}/images/${imageId}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== 0) {
+        throw error;
+      }
+      deleteMockImage(recipeId, imageId);
+    }
+  },
 };
 
 // ==========================================
 // DỮ LIỆU MẪU DỰ PHÒNG (MOCK FALLBACK)
 // ==========================================
+
+const mockCategories: CategoryOptionDto[] = [
+  { id: 'c1', name: 'Món nước', slug: 'mon-nuoc' },
+  { id: 'c2', name: 'Món ăn nhanh', slug: 'mon-an-nhanh' },
+  { id: 'c3', name: 'Món chính', slug: 'mon-chinh' },
+  { id: 'c4', name: 'Khai vị', slug: 'khai-vi' },
+  { id: 'c5', name: 'Tráng miệng', slug: 'trang-mieng' },
+];
 
 const mockRecipesStorage: RecipeSummaryDto[] = [
   {
@@ -292,6 +559,100 @@ const mockRecipesStorage: RecipeSummaryDto[] = [
     xmin: '10248',
   },
 ];
+
+// Lưu trữ nguyên liệu, bước làm, hình ảnh theo từng recipeId trong bộ nhớ giả lập
+const mockIngredientsMap: Record<string, RecipeIngredientDto[]> = {
+  'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d': [
+    {
+      id: 'ing-1',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      name: 'Xương ống bò tươi',
+      quantity: 1.5,
+      unit: 'kg',
+      notes: 'Chặt khúc, ngâm nước muối loãng 30 phút',
+      orderIndex: 1,
+    },
+    {
+      id: 'ing-2',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      name: 'Thịt thăn bò mềm',
+      quantity: 500,
+      unit: 'g',
+      notes: 'Thái lát mỏng ngang thớ',
+      orderIndex: 2,
+    },
+    {
+      id: 'ing-3',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      name: 'Bánh phở tươi',
+      quantity: 800,
+      unit: 'g',
+      notes: 'Trần sơ qua nước sôi trước khi ăn',
+      orderIndex: 3,
+    },
+    {
+      id: 'ing-4',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      name: 'Muối hầm, tiêu sọ, hành ngò',
+      quantity: null,
+      unit: null,
+      notes: 'Gia vị vừa đủ theo khẩu vị gia đình',
+      orderIndex: 4,
+    },
+  ],
+};
+
+const mockStepsMap: Record<string, RecipeStepDto[]> = {
+  'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d': [
+    {
+      id: 'step-1',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      stepNumber: 1,
+      title: 'Sơ chế & chần xương bò',
+      description: 'Rửa sạch xương ống bò, cho vào nồi nước lạnh đun sôi khoảng 5 phút cùng chút gừng đập dập để khử mùi hôi, sau đó vớt ra rửa lại bằng nước ấm.',
+      durationMinutes: 15,
+    },
+    {
+      id: 'step-2',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      stepNumber: 2,
+      title: 'Nướng gia vị & ninh nước dùng',
+      description: 'Nướng thơm hành tím, gừng, thảo quả, hoa hồi và thanh quế. Cho vào túi vải thả cùng xương ống bò, ninh lửa nhỏ liu riu và thường xuyên hớt bọt.',
+      durationMinutes: 150,
+    },
+    {
+      id: 'step-3',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      stepNumber: 3,
+      title: 'Trình bày & thưởng thức',
+      description: 'Chần bánh phở vào bát, xếp thịt bò thái mỏng, hành lá và rau mùi lên trên. Chan nước dùng đang sôi sục để làm chín tái thịt bò và thưởng thức ngay.',
+      durationMinutes: 10,
+    },
+  ],
+};
+
+const mockImagesMap: Record<string, RecipeImageDto[]> = {
+  'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d': [
+    {
+      id: 'img-1',
+      imageId: 'img-1',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      originalUrl: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=900&q=80',
+      altText: 'Tô phở bò truyền thống Hà Nội nóng hổi',
+      isPrimary: true,
+      orderIndex: 0,
+    },
+    {
+      id: 'img-2',
+      imageId: 'img-2',
+      recipeId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      originalUrl: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=900&q=80',
+      altText: 'Nguyên liệu thảo mộc nấu nước dùng phở',
+      isPrimary: false,
+      orderIndex: 1,
+    },
+  ],
+};
 
 const mockTrashStorage: RecipeSummaryDto[] = [
   {
@@ -384,3 +745,312 @@ function getMockTrashList(page = 1, pageSize = 10): PaginatedList<RecipeSummaryD
     hasNextPage: page < totalPages,
   };
 }
+
+function getMockRecipeFullDetail(id: string): RecipeFullDetailDto {
+  const found = mockRecipesStorage.find(r => r.id === id) || mockRecipesStorage[0];
+  const recipeId = found.id;
+
+  if (!mockIngredientsMap[recipeId]) {
+    mockIngredientsMap[recipeId] = [
+      {
+        id: `ing-default-${recipeId}`,
+        recipeId,
+        name: 'Nguyên liệu chính tươi ngon',
+        quantity: 500,
+        unit: 'g',
+        notes: 'Sơ chế sạch để ráo',
+        orderIndex: 1,
+      },
+    ];
+  }
+
+  if (!mockStepsMap[recipeId]) {
+    mockStepsMap[recipeId] = [
+      {
+        id: `step-default-${recipeId}`,
+        recipeId,
+        stepNumber: 1,
+        title: 'Sơ chế nguyên liệu',
+        description: 'Rửa sạch nguyên liệu và ướp gia vị trong 20 phút cho thấm đều.',
+        durationMinutes: 20,
+      },
+    ];
+  }
+
+  if (!mockImagesMap[recipeId]) {
+    const imgId = `img-default-${recipeId}`;
+    mockImagesMap[recipeId] = [
+      {
+        id: imgId,
+        imageId: imgId,
+        recipeId,
+        originalUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80',
+        altText: found.title,
+        isPrimary: true,
+        orderIndex: 0,
+      },
+    ];
+  }
+
+  return {
+    ...found,
+    nutrition: {
+      calories: 520,
+      protein: 32,
+      fat: 18,
+      carbohydrates: 58,
+      fiber: 4.5,
+      sodium: 680,
+    },
+    ingredients: [...mockIngredientsMap[recipeId]].sort((a, b) => a.orderIndex - b.orderIndex),
+    steps: [...mockStepsMap[recipeId]].sort((a, b) => a.stepNumber - b.stepNumber),
+    images: [...mockImagesMap[recipeId]].sort((a, b) => a.orderIndex - b.orderIndex),
+  };
+}
+
+function createMockRecipe(payload: CreateRecipePayload): RecipeSummaryDto {
+  const id = `rec-${Date.now()}`;
+  const cat = mockCategories.find(c => c.id === payload.categoryId) || mockCategories[0];
+  const newRecipe: RecipeSummaryDto = {
+    id,
+    title: payload.title,
+    slug: payload.title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, ''),
+    description: payload.description,
+    prepTimeMinutes: payload.prepTimeMinutes,
+    cookTimeMinutes: payload.cookTimeMinutes,
+    servings: payload.servings,
+    difficulty: payload.difficulty,
+    status: 'Draft',
+    categoryId: cat.id,
+    categoryName: cat.name,
+    authorId: 'user-4',
+    authorName: 'Nguyễn Phú Quý (TV4)',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    xmin: String(Math.floor(10000 + Math.random() * 90000)),
+  };
+  mockRecipesStorage.unshift(newRecipe);
+  mockIngredientsMap[id] = [];
+  mockStepsMap[id] = [];
+  mockImagesMap[id] = [];
+  return newRecipe;
+}
+
+function updateMockRecipe(
+  id: string,
+  payload: UpdateRecipePayload,
+  xmin?: string | number | null
+): RecipeSummaryDto {
+  const idx = mockRecipesStorage.findIndex(r => r.id === id);
+  if (idx === -1) {
+    throw new ApiError(404, 'Không tìm thấy công thức cần cập nhật.');
+  }
+
+  const current = mockRecipesStorage[idx];
+  if (xmin && current.xmin && String(xmin) !== String(current.xmin)) {
+    throw new ApiError(409, 'Xung đột dữ liệu: Công thức đã bị thay đổi bởi một phiên làm việc khác.', {
+      type: 'RECIPE_CONCURRENCY_CONFLICT',
+      title: 'Concurrency Conflict',
+      status: 409,
+      detail: `Token If-Match "${xmin}" không khớp với phiên bản hiện tại "${current.xmin}".`,
+    });
+  }
+
+  const cat = mockCategories.find(c => c.id === payload.categoryId);
+  const updated: RecipeSummaryDto = {
+    ...current,
+    title: payload.title,
+    description: payload.description,
+    prepTimeMinutes: payload.prepTimeMinutes,
+    cookTimeMinutes: payload.cookTimeMinutes,
+    servings: payload.servings,
+    difficulty: payload.difficulty,
+    categoryId: payload.categoryId ?? current.categoryId,
+    categoryName: cat ? cat.name : current.categoryName,
+    updatedAt: new Date().toISOString(),
+    xmin: String(Number(current.xmin || 10000) + 1),
+  };
+  mockRecipesStorage[idx] = updated;
+  return updated;
+}
+
+function addMockIngredient(
+  recipeId: string,
+  request: CreateRecipeIngredientRequest
+): RecipeIngredientDto {
+  const list = mockIngredientsMap[recipeId] || [];
+  const nextOrder =
+    request.orderIndex && request.orderIndex > 0
+      ? request.orderIndex
+      : list.length > 0
+        ? Math.max(...list.map(i => i.orderIndex)) + 1
+        : 1;
+  const item: RecipeIngredientDto = {
+    id: `ing-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    recipeId,
+    name: request.name,
+    quantity: request.quantity ?? null,
+    unit: request.unit ?? null,
+    notes: request.notes ?? null,
+    orderIndex: nextOrder,
+  };
+  mockIngredientsMap[recipeId] = [...list, item];
+  return item;
+}
+
+function updateMockIngredient(
+  recipeId: string,
+  ingredientId: string,
+  request: UpdateRecipeIngredientRequest
+): RecipeIngredientDto {
+  const list = mockIngredientsMap[recipeId] || [];
+  const idx = list.findIndex(i => i.id === ingredientId);
+  const updated: RecipeIngredientDto = {
+    id: ingredientId,
+    recipeId,
+    name: request.name,
+    quantity: request.quantity ?? null,
+    unit: request.unit ?? null,
+    notes: request.notes ?? null,
+    orderIndex: request.orderIndex,
+  };
+  if (idx >= 0) {
+    list[idx] = updated;
+  } else {
+    list.push(updated);
+  }
+  mockIngredientsMap[recipeId] = [...list];
+  return updated;
+}
+
+function deleteMockIngredient(recipeId: string, ingredientId: string): void {
+  const list = mockIngredientsMap[recipeId] || [];
+  mockIngredientsMap[recipeId] = list.filter(i => i.id !== ingredientId);
+}
+
+function addMockStep(recipeId: string, request: CreateRecipeStepRequest): RecipeStepDto {
+  const list = mockStepsMap[recipeId] || [];
+  const stepNumber = request.stepNumber && request.stepNumber > 0 ? request.stepNumber : list.length + 1;
+  const item: RecipeStepDto = {
+    id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    recipeId,
+    stepNumber,
+    title: request.title ?? `Bước ${stepNumber}`,
+    description: request.description,
+    durationMinutes: request.durationMinutes ?? null,
+    imageUrl: request.imageUrl ?? null,
+  };
+  mockStepsMap[recipeId] = [...list, item].sort((a, b) => a.stepNumber - b.stepNumber);
+  return item;
+}
+
+function updateMockStep(
+  recipeId: string,
+  stepId: string,
+  request: UpdateRecipeStepRequest
+): RecipeStepDto {
+  const list = mockStepsMap[recipeId] || [];
+  const idx = list.findIndex(s => s.id === stepId);
+  const existingStepNumber = idx >= 0 ? list[idx].stepNumber : list.length + 1;
+  const updated: RecipeStepDto = {
+    id: stepId,
+    recipeId,
+    stepNumber: existingStepNumber,
+    title: request.title ?? `Bước ${existingStepNumber}`,
+    description: request.description,
+    durationMinutes: request.durationMinutes ?? null,
+    imageUrl: request.imageUrl ?? null,
+  };
+  if (idx >= 0) {
+    list[idx] = updated;
+  } else {
+    list.push(updated);
+  }
+  mockStepsMap[recipeId] = [...list].sort((a, b) => a.stepNumber - b.stepNumber);
+  return updated;
+}
+
+function reorderMockSteps(recipeId: string, stepIds: string[]): RecipeStepDto[] {
+  const list = mockStepsMap[recipeId] || [];
+  const reordered: RecipeStepDto[] = [];
+  stepIds.forEach((id, idx) => {
+    const found = list.find(s => s.id === id);
+    if (found) {
+      reordered.push({ ...found, stepNumber: idx + 1 });
+    }
+  });
+  mockStepsMap[recipeId] = reordered;
+  return reordered;
+}
+
+function deleteMockStep(recipeId: string, stepId: string): void {
+  const list = (mockStepsMap[recipeId] || []).filter(s => s.id !== stepId);
+  mockStepsMap[recipeId] = list
+    .sort((a, b) => a.stepNumber - b.stepNumber)
+    .map((s, idx) => ({ ...s, stepNumber: idx + 1 }));
+}
+
+function uploadMockImage(
+  recipeId: string,
+  file: File,
+  altText: string | null,
+  isPrimary: boolean
+): RecipeImageDto {
+  const list = mockImagesMap[recipeId] || [];
+  const shouldBePrimary = isPrimary || list.length === 0;
+  const updatedList = shouldBePrimary ? list.map(img => ({ ...img, isPrimary: false })) : [...list];
+  const objectUrl = typeof URL !== 'undefined' && URL.createObjectURL ? URL.createObjectURL(file) : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
+  const genId = `img-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+  const newImg: RecipeImageDto = {
+    id: genId,
+    imageId: genId,
+    recipeId,
+    originalUrl: objectUrl,
+    altText: altText || file.name,
+    isPrimary: shouldBePrimary,
+    orderIndex: updatedList.length,
+  };
+  mockImagesMap[recipeId] = [...updatedList, newImg];
+  return newImg;
+}
+
+function updateMockImage(
+  recipeId: string,
+  imageId: string,
+  request: UpdateRecipeImageRequest
+): RecipeImageDto {
+  let list = mockImagesMap[recipeId] || [];
+  if (request.isPrimary) {
+    list = list.map(img => ({ ...img, isPrimary: img.id === imageId }));
+  }
+  const idx = list.findIndex(img => img.id === imageId);
+  if (idx >= 0) {
+    list[idx] = {
+      ...list[idx],
+      altText: request.altText !== undefined ? request.altText : list[idx].altText,
+      isPrimary: request.isPrimary !== undefined && request.isPrimary !== null ? request.isPrimary : list[idx].isPrimary,
+      orderIndex: request.orderIndex !== undefined && request.orderIndex !== null ? request.orderIndex : list[idx].orderIndex,
+    };
+    mockImagesMap[recipeId] = [...list].sort((a, b) => a.orderIndex - b.orderIndex);
+    return list[idx];
+  }
+  throw new ApiError(404, 'Không tìm thấy hình ảnh.');
+}
+
+function deleteMockImage(recipeId: string, imageId: string): void {
+  const list = mockImagesMap[recipeId] || [];
+  const target = list.find(i => i.id === imageId);
+  const remaining = list.filter(i => i.id !== imageId);
+  if (target?.isPrimary && remaining.length > 0) {
+    remaining[0] = { ...remaining[0], isPrimary: true };
+  }
+  mockImagesMap[recipeId] = remaining;
+}
+
+
