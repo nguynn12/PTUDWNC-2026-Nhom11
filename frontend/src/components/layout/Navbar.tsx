@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
+import { UserMenu } from "@/components/layout/UserMenu";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -144,6 +145,9 @@ export function Navbar() {
           >
             🔍 <span className="search-text">Tìm kiếm</span>
           </Link>
+
+          {/* Tài khoản: nút Đăng nhập hoặc menu người dùng (module Auth) */}
+          <UserMenu />
 
           {/* Nút Hamburger menu Mobile */}
           <button
