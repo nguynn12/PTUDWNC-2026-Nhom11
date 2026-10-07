@@ -61,7 +61,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 
         if (!result.Succeeded)
         {
-            throw new ValidationException(result.Errors.SelectMany(
+            throw new FluentValidation.ValidationException(result.Errors.SelectMany(
                 pair => pair.Value.Select(message => new ValidationFailure(pair.Key, message))));
         }
 

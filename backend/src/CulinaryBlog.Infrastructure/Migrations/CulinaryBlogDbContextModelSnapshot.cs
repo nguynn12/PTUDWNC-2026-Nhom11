@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 
 #nullable disable
 
@@ -20,6 +21,8 @@ namespace CulinaryBlog.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "unaccent");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("CulinaryBlog.Infrastructure.Identity.ApplicationUser", b =>
@@ -215,6 +218,9 @@ namespace CulinaryBlog.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("timestamptz");
 
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .HasColumnType("tsvector");
+
                     b.Property<int>("Servings")
                         .HasColumnType("integer");
 
@@ -246,6 +252,11 @@ namespace CulinaryBlog.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId")
                         .HasDatabaseName("IDX_Recipe_AuthorId");
+
+                    b.HasIndex("SearchVector")
+                        .HasDatabaseName("IX_Recipes_SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.HasIndex("Slug")
                         .IsUnique()

@@ -1,7 +1,8 @@
+namespace CulinaryBlog.Infrastructure.Persistence.Repositories;
+
+using System.Linq.Expressions;
 using CulinaryBlog.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
-namespace CulinaryBlog.Infrastructure.Persistence.Repositories;
 
 /// <summary>
 /// Cài đặt IRepository&lt;T&gt; bằng EF Core, dùng chung cho mọi entity
@@ -16,9 +17,22 @@ public sealed class EfRepository<T>(CulinaryBlogDbContext context) : IRepository
     public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
         => await context.Set<T>().ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        => await context.Set<T>().Where(predicate).ToListAsync(cancellationToken);
+
+    public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        => await context.Set<T>().AnyAsync(predicate, cancellationToken);
+
     public void Add(T entity) => context.Set<T>().Add(entity);
+
+    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+        => await context.Set<T>().AddAsync(entity, cancellationToken);
 
     public void Update(T entity) => context.Set<T>().Update(entity);
 
     public void Remove(T entity) => context.Set<T>().Remove(entity);
+
+    public void Delete(T entity) => context.Set<T>().Remove(entity);
+
+    public IQueryable<T> Query() => context.Set<T>().AsQueryable();
 }

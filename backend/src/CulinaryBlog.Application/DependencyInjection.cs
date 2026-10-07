@@ -1,4 +1,7 @@
 using CulinaryBlog.Application.Common.Behaviors;
+using CulinaryBlog.Application.Features.RecipeImages.Services;
+using CulinaryBlog.Application.Features.RecipeIngredients.Services;
+using CulinaryBlog.Application.Features.RecipeSteps.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +22,10 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly);
 
+        services.AddScoped<IRecipeIngredientService, RecipeIngredientService>();
+        services.AddScoped<IRecipeStepService, RecipeStepService>();
+        services.AddScoped<IRecipeImageService, RecipeImageService>();
+
         return services;
     }
 }
-
