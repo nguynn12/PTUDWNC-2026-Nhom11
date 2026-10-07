@@ -10,9 +10,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query-devtools": "^5.104.1",
+    "axios": "^1.20.0",
     "next": "16.1.6",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -27,4 +31,3 @@
     "npm": ">=10.0.0"
   }
 }
-

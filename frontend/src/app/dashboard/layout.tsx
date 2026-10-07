@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             
             <Link
               href="/dashboard"
-              className={`sidebar-link ${isNavActive('/dashboard') && pathname === '/dashboard' ? 'active' : ''}`}
+              className={`sidebar-link ${pathname === '/dashboard' ? 'active' : ''}`}
             >
               <DashboardIcon size={18} />
               <span>Tổng quan</span>
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
             <Link
               href="/dashboard/recipes"
-              className={`sidebar-link ${isNavActive('/dashboard/recipes') ? 'active' : ''}`}
+              className={`sidebar-link ${isNavActive('/dashboard/recipes') && !pathname.includes('/new') ? 'active' : ''}`}
             >
               <BookOpenIcon size={18} />
               <span>Bài viết của tôi</span>
@@ -59,13 +59,22 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
             <Link
               href="/dashboard/recipes/new"
-              className="sidebar-link"
+              className={`sidebar-link ${pathname === '/dashboard/recipes/new' ? 'active' : ''}`}
             >
               <PlusCircleIcon size={18} />
               <span>Tạo công thức mới</span>
             </Link>
 
-            <div className="sidebar-nav-heading">Hệ thống (Admin)</div>
+            <div className="sidebar-nav-heading">Hệ thống & Admin</div>
+
+            <Link
+              href="/dashboard/categories"
+              className={`sidebar-link ${pathname.startsWith('/dashboard/categories') ? 'active' : ''}`}
+            >
+              <BookOpenIcon size={18} />
+              <span>Quản lý Danh mục</span>
+              <span className="sidebar-badge">Admin</span>
+            </Link>
 
             <Link
               href="/admin/recipes/trash"
@@ -76,11 +85,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <span className="sidebar-badge">Admin</span>
             </Link>
 
-            <div className="sidebar-nav-heading">Liên kết</div>
+            <div className="sidebar-nav-heading">Khám phá</div>
 
-            <Link href="/" className="sidebar-link" target="_blank">
+            <Link href="/recipes" className="sidebar-link">
               <ArrowUpRightIcon size={18} />
-              <span>Xem trang web chính</span>
+              <span>Kho công thức</span>
+            </Link>
+
+            <Link href="/" className="sidebar-link">
+              <ArrowUpRightIcon size={18} />
+              <span>Xem trang web</span>
             </Link>
           </nav>
 
