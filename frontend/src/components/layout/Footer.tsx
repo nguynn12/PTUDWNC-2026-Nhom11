@@ -83,28 +83,6 @@ export function Footer() {
             </a>
           </div>
         </div>
-
-        {/* PHẦN CUỐI CHÂN TRANG */}
-        <div
-          style={{
-            paddingTop: "24px",
-            borderTop: "1px solid var(--border-subtle)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "12px",
-            fontSize: "0.82rem",
-            color: "var(--text-muted)",
-          }}
-        >
-          <div>
-            © 2026 <strong>Culinary Blog</strong>. Đồ án môn học Phát triển ứng dụng Web nâng cao (Nhóm 11).
-          </div>
-          <div>
-            Thực hiện bởi: <strong>Trần Quốc Quân</strong> (MSSV: 2312726 — Thành viên 2)
-          </div>
-        </div>
       </div>
     </footer>
   );
