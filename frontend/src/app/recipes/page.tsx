@@ -71,7 +71,7 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
     categories = catRes || [];
 
     if (recRes.meta) {
-      totalCount = recRes.meta.total || recRes.meta.totalCount || recipes.length;
+      totalCount = recRes.meta.totalCount || recipes.length;
       totalPages = recRes.meta.totalPages || 1;
     } else {
       totalCount = recipes.length;

@@ -1,4 +1,4 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
 import { AppError, type ApiProblemDetails } from "@/types/api";
 
 const isServer = typeof window === "undefined";
@@ -37,7 +37,7 @@ apiClient.interceptors.request.use(
 // RESPONSE INTERCEPTOR: Unwrap envelope & Bóc tách RFC 7807 Problem Details
 // ----------------------------------------------------------------------------
 apiClient.interceptors.response.use(
-  (response: any) => {
+  (response: AxiosResponse) => {
     // Trả về thẳng dữ liệu data (thường chứa { data, meta } theo chuẩn envelope)
     return response.data;
   },

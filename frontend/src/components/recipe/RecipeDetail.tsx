@@ -161,6 +161,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
               alt={recipe.author?.displayName || recipe.author?.userName || "Tác giả"}
               fill
               sizes="44px"
+              unoptimized
               style={{ objectFit: "cover" }}
             />
           </div>
