@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+
 /* ==========================================================================
    CULINARY BLOG — DESIGN SYSTEM & TOKENS
    Phiên bản: 1.0.0
@@ -901,8 +903,6 @@ p {
    CULINARY BLOG DESIGN SYSTEM - MODERN & PREMIUM AESTHETICS
    Phân hệ: Recipe Lifecycle & Dashboard (TV3 - Tạ Nhật Nguyên)
    ========================================================= */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
 
 :root {
   /* Brand Palette - Ấm áp phong cách ẩm thực */

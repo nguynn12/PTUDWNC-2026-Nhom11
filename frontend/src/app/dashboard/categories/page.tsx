@@ -9,7 +9,7 @@ import {
   useUpdateCategory,
   useDeleteCategory,
 } from "@/hooks/useCategories";
-import type { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest } from "@/types/api";
+import type { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest, AppError } from "@/types/api";
 
 // ----------------------------------------------------------------------------
 // HELPER: Slugify tiếng Việt chuẩn SEO (Preview thời gian thực)
@@ -86,8 +86,8 @@ export default function AdminCategoriesPage() {
 
   // Thống kê Metrics
   const totalCategories = categories.length;
-  const activeCategoriesWithRecipes = categories.filter((c) => c.recipeCount > 0).length;
-  const totalRecipesLinked = categories.reduce((sum, c) => sum + c.recipeCount, 0);
+  const activeCategoriesWithRecipes = categories.filter((c: CategoryDto) => c.recipeCount > 0).length;
+  const totalRecipesLinked = categories.reduce((sum: number, c: CategoryDto) => sum + c.recipeCount, 0);
 
   return (
     <div className="container">
@@ -561,10 +561,10 @@ function CreateCategoryModal({
     };
 
     createMutation.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: (data: CategoryDto) => {
         onSuccess(data);
       },
-      onError: (err) => {
+      onError: (err: AppError) => {
         onError(err.detail || err.message || "Tạo danh mục thất bại.");
       },
     });
@@ -757,10 +757,10 @@ function EditCategoryModal({
     updateMutation.mutate(
       { id: category.id, data: payload },
       {
-        onSuccess: (data) => {
+        onSuccess: (data: CategoryDto) => {
           onSuccess(data);
         },
-        onError: (err) => {
+        onError: (err: AppError) => {
           onError(err.detail || err.message || "Cập nhật danh mục thất bại.");
         },
       }
@@ -956,7 +956,7 @@ function DeleteCategoryModal({
       onSuccess: () => {
         onSuccess();
       },
-      onError: (err) => {
+      onError: (err: AppError) => {
         if (err.status === 409 || err.errorCode === "CATEGORY_HAS_RECIPES") {
           onError("Không thể xóa danh mục vì vẫn còn công thức liên kết (Quy tắc FR-CAT-005).");
         } else {
