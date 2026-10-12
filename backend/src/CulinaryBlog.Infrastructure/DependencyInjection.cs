@@ -1,6 +1,7 @@
 using CulinaryBlog.Application.Common.Interfaces;
-using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Persistence;
+using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
@@ -31,19 +32,19 @@ public static class DependencyInjection
             provider.GetRequiredService<CulinaryBlogDbContext>());
 
         // ── Repository và Unit of Work (Yêu cầu chung Lab 3) ─────────────────────
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IRecipeIngredientRepository, RecipeIngredientRepository>();
         services.AddScoped<IRecipeStepRepository, RecipeStepRepository>();
         services.AddScoped<IRecipeImageRepository, RecipeImageRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         // ── Dịch vụ lưu trữ tệp tin (Thành viên 4) ───────────────────────────────
         services.AddScoped<IFileStorageService, FileStorageService>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
-        // AddIdentityCore (không phải AddIdentity đầy đủ): API dùng JWT thuần, không cần
-        // SignInManager/cookie auth scheme của MVC. Chính sách mật khẩu & lockout theo
-        // SRS.md FR-AUTH-001/002.
         services.AddDataProtection();
 
         services
@@ -63,19 +64,40 @@ public static class DependencyInjection
 
                 // Email duy nhất, case-insensitive — FR-AUTH-001
                 options.User.RequireUniqueEmail = true;
-
-                // KHÔNG bật RequireConfirmedEmail ở đây: FR-AUTH-002 cho phép login dù
-                // email chưa xác nhận; việc chặn chỉ áp dụng khi Publish Recipe, xử lý
-                // riêng qua policy "VerifiedAuthor" (Domain.Constants.Policies).
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<CulinaryBlogDbContext>()
-            .AddDefaultTokenProviders(); // Cần cho FR-AUTH-008/009 (token xác nhận email)
+            .AddDefaultTokenProviders();
 
-        // Áp dụng migration + seed dữ liệu mẫu lúc khởi động (chỉ gọi ở môi trường
-        // Development — xem Program.cs). Xem ApplicationDbContextInitialiser để biết
-        // phạm vi seed (Auth/User) và cách thành viên khác cắm seeder Category/Recipe.
         services.AddScoped<ApplicationDbContextInitialiser>();
+        services.AddScoped<IUserQueryService, UserQueryService>();
+
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IEmailService, CulinaryBlog.Infrastructure.Services.MockEmailService>();
+        services.Configure<Services.ClientAppSettings>(configuration.GetSection(Services.ClientAppSettings.SectionName));
+        services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
+        services.AddScoped<IClientInfoService, Services.ClientInfoService>();
+
+        // FR-AUTH-003: xác minh Google ID token
+        services.Configure<GoogleAuthSettings>(configuration.GetSection(GoogleAuthSettings.SectionName));
+        services.AddSingleton<IGoogleTokenValidator>(provider => new GoogleTokenValidator(
+            provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<GoogleAuthSettings>>(),
+            GoogleTokenValidator.CreateGoogleConfigurationManager(),
+            provider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<GoogleTokenValidator>>()));
+
+        var jwtSettings = new JwtSettings();
+        configuration.Bind(JwtSettings.SectionName, jwtSettings);
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => JwtBearerSetup.Configure(options, jwtSettings));
+
+        services.AddAuthorization(AuthorizationPolicies.Configure);
 
         return services;
     }

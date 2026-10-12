@@ -5,8 +5,10 @@ namespace CulinaryBlog.Domain.Exceptions;
 /// </summary>
 public class EntityNotFoundException : DomainException
 {
-    public EntityNotFoundException(string entityName, object key)
-        : base($"Thực thể '{entityName}' với khóa '{key}' không tồn tại hoặc đã bị xóa.") { }
+    public EntityNotFoundException(string entityName, object key, string? errorCode = "RECIPE_NOT_FOUND")
+        : base($"Không tìm thấy thực thể \"{entityName}\" với mã định danh ({key}).", errorCode) { }
 
-    public EntityNotFoundException(string message) : base(message) { }
+    public EntityNotFoundException(string message) : base(message, "RECIPE_NOT_FOUND") { }
+
+    public EntityNotFoundException(string message, string? errorCode) : base(message, errorCode) { }
 }

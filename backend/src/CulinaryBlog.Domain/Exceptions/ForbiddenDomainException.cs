@@ -5,6 +5,6 @@ namespace CulinaryBlog.Domain.Exceptions;
 /// </summary>
 public class ForbiddenDomainException : DomainException
 {
-    public ForbiddenDomainException(string message = "Bạn không có quyền thực hiện thao tác trên tài nguyên này.")
-        : base(message) { }
+    public ForbiddenDomainException(string message = "Bạn không có quyền thực hiện thao tác trên tài nguyên này.", string? errorCode = "FORBIDDEN")
+        : base(message, errorCode) { }
 }

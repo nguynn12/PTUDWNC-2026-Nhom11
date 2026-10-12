@@ -47,3 +47,7 @@ tmp/
 # Docker overrides kept local
 docker-compose.override.yml
 
+# Documentation
+docs/
+
+

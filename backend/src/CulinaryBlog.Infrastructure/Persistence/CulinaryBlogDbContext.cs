@@ -1,5 +1,6 @@
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,21 @@ public sealed class CulinaryBlogDbContext(DbContextOptions<CulinaryBlogDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        var isNpgsql = Database.ProviderName != null && Database.ProviderName.Contains("Npgsql", StringComparison.OrdinalIgnoreCase);
+
+        if (isNpgsql)
+        {
+            // Kích hoạt các PostgreSQL Extensions phục vụ Full-Text Search và Fuzzy Search (mục 3.4 SRS)
+            modelBuilder.HasPostgresExtension("unaccent");
+            modelBuilder.HasPostgresExtension("pg_trgm");
+        }
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CulinaryBlogDbContext).Assembly);
+
+        if (!isNpgsql)
+        {
+            modelBuilder.Entity<Recipe>().Ignore("SearchVector");
+        }
     }
 }

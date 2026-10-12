@@ -1,0 +1,141 @@
+namespace CulinaryBlog.API.Endpoints;
+
+using CulinaryBlog.API.Common.Models;
+using CulinaryBlog.Application.Common.Exceptions;
+using CulinaryBlog.Application.Features.Recipes.DTOs;
+using CulinaryBlog.Application.Features.Recipes.Queries.GetRecipeBySlug;
+using CulinaryBlog.Application.Features.Recipes.Queries.GetRecipes;
+using CulinaryBlog.Application.Features.Recipes.Queries.SearchRecipes;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+
+using CulinaryBlog.Domain.Enums;
+
+/// <summary>
+/// Minimal API Endpoints phục vụ tra cứu, xem và tìm kiếm công thức nấu ăn theo FR-RCP-001, FR-RCP-002 và FR-SRCH-001.
+/// </summary>
+public static class RecipeEndpoints
+{
+    public static RouteGroupBuilder MapRecipeEndpoints(this IEndpointRouteBuilder routes)
+    {
+        var group = routes.MapGroup("/recipes")
+            .WithTags("Recipes");
+
+        // FR-RCP-001: Duyệt danh sách công thức phân trang, lọc đa tiêu chí và sắp xếp linh hoạt (Public)
+        group.MapGet("", async (
+            int? page,
+            int? pageSize,
+            Guid? categoryId,
+            RecipeDifficulty? difficulty,
+            int? maxPrepTime,
+            int? maxCookTime,
+            int? maxTotalTime,
+            decimal? minCalories,
+            decimal? maxCalories,
+            string? sortBy,
+            string? sortOrder,
+            ISender sender,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetRecipesQuery(
+                Page: page ?? 1,
+                PageSize: pageSize ?? 12,
+                CategoryId: categoryId,
+                Difficulty: difficulty,
+                MaxPrepTime: maxPrepTime,
+                MaxCookTime: maxCookTime,
+                MaxTotalTime: maxTotalTime,
+                MinCalories: minCalories,
+                MaxCalories: maxCalories,
+                SortBy: sortBy,
+                SortOrder: sortOrder);
+
+            var result = await sender.Send(query, cancellationToken);
+
+            var meta = new
+            {
+                page = result.Page,
+                pageSize = result.PageSize,
+                total = result.Total,
+                totalPages = result.TotalPages
+            };
+
+            return Results.Ok(new ApiResponse<IReadOnlyList<RecipeSummaryDto>>(result.Items, meta));
+        })
+        .WithName("GetRecipes")
+        .WithSummary("Duyệt danh sách công thức nấu ăn")
+        .WithDescription("Trả về danh sách công thức đã xuất bản (Published), hỗ trợ phân trang, lọc đa tiêu chí (độ khó, thời gian, calo) và sắp xếp linh hoạt (FR-RCP-001).")
+        .Produces<ApiResponse<IReadOnlyList<RecipeSummaryDto>>>(StatusCodes.Status200OK);
+
+        // FR-SRCH-001: Tìm kiếm toàn văn công thức nấu ăn (Full-Text Search) (Public)
+        group.MapGet("/search", async (
+            string? q,
+            int? page,
+            int? pageSize,
+            Guid? categoryId,
+            RecipeDifficulty? difficulty,
+            int? maxPrepTime,
+            int? maxCookTime,
+            int? maxTotalTime,
+            decimal? minCalories,
+            decimal? maxCalories,
+            string? sortBy,
+            string? sortOrder,
+            ISender sender,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new SearchRecipesQuery(
+                Q: q ?? string.Empty,
+                Page: page ?? 1,
+                PageSize: pageSize ?? 12,
+                CategoryId: categoryId,
+                Difficulty: difficulty,
+                MaxPrepTime: maxPrepTime,
+                MaxCookTime: maxCookTime,
+                MaxTotalTime: maxTotalTime,
+                MinCalories: minCalories,
+                MaxCalories: maxCalories,
+                SortBy: sortBy ?? "relevance",
+                SortOrder: sortOrder ?? "desc");
+
+            var result = await sender.Send(query, cancellationToken);
+
+            var meta = new
+            {
+                page = result.Page,
+                pageSize = result.PageSize,
+                total = result.Total,
+                totalPages = result.TotalPages
+            };
+
+            return Results.Ok(new ApiResponse<IReadOnlyList<RecipeSummaryDto>>(result.Items, meta));
+        })
+        .WithName("SearchRecipes")
+        .WithSummary("Tìm kiếm toàn văn công thức nấu ăn")
+        .WithDescription("Tìm kiếm công thức nấu ăn theo từ khóa toàn văn (PostgreSQL tsvector, unaccent, relevance ranking) kết hợp bộ lọc và phân trang (FR-SRCH-001).")
+        .Produces<ApiResponse<IReadOnlyList<RecipeSummaryDto>>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        // FR-RCP-002: Xem chi tiết công thức nấu ăn theo Slug (Public)
+        group.MapGet("/{slug}", async (string slug, ISender sender, CancellationToken cancellationToken) =>
+        {
+            var recipe = await sender.Send(new GetRecipeBySlugQuery(slug), cancellationToken);
+
+            if (recipe is null)
+            {
+                throw new NotFoundException($"Không tìm thấy công thức nấu ăn với đường dẫn '{slug}'.", "RECIPE_NOT_FOUND");
+            }
+
+            return Results.Ok(new ApiResponse<RecipeDetailDto>(recipe));
+        })
+        .WithName("GetRecipeBySlug")
+        .WithSummary("Xem chi tiết công thức nấu ăn theo Slug")
+        .WithDescription("Trả về đầy đủ thông tin chi tiết của công thức bao gồm nguyên liệu, các bước nấu, ảnh và dinh dưỡng (FR-RCP-002).")
+        .Produces<ApiResponse<RecipeDetailDto>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
+        return group;
+    }
+}

@@ -29,7 +29,7 @@ public class DomainExceptionTests
     public void BusinessRuleValidationException_ShouldStorePropertyName_AndInheritFromDomainException()
     {
         // Act
-        var ex = new BusinessRuleValidationException("Quantity", "Định lượng phải lớn hơn 0.");
+        var ex = new CulinaryBlog.Domain.Exceptions.BusinessRuleValidationException("Quantity", "Định lượng phải lớn hơn 0.");
 
         // Assert
         Assert.IsAssignableFrom<DomainException>(ex);
@@ -64,7 +64,7 @@ public class DomainExceptionTests
     {
         // Assert: Đảm bảo cầu nối nhất quán giữa Domain và Application
         Assert.IsAssignableFrom<EntityNotFoundException>(new NotFoundException("Item", Guid.NewGuid()));
-        Assert.IsAssignableFrom<BusinessRuleValidationException>(new ValidationException("Field", "Error"));
+        Assert.IsAssignableFrom<CulinaryBlog.Domain.Exceptions.BusinessRuleValidationException>(new ValidationException("Field", "Error"));
         Assert.IsAssignableFrom<ForbiddenDomainException>(new ForbiddenException());
         Assert.IsAssignableFrom<ConcurrencyConflictException>(new ConflictException("Conflict"));
     }

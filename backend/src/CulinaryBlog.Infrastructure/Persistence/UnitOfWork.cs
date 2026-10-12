@@ -2,6 +2,7 @@ namespace CulinaryBlog.Infrastructure.Persistence;
 
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -23,7 +24,7 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
     }
 
-    public IRepository<Recipe> Recipes => _recipes ??= new Repository<Recipe>(_context);
+    public IRepository<Recipe> Recipes => _recipes ??= new EfRepository<Recipe>(_context);
     public IRecipeIngredientRepository RecipeIngredients => _recipeIngredients ??= new RecipeIngredientRepository(_context);
     public IRecipeStepRepository RecipeSteps => _recipeSteps ??= new RecipeStepRepository(_context);
     public IRecipeImageRepository RecipeImages => _recipeImages ??= new RecipeImageRepository(_context);

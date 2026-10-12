@@ -1,5 +1,6 @@
+using CulinaryBlog.API;
 using CulinaryBlog.API.Endpoints;
-using CulinaryBlog.API.Infrastructure;
+using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.Application;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -12,13 +13,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<AuthExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddPresentation();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+// Exception → RFC 7807 Problem Details (AuthExceptionHandler + GlobalExceptionHandler)
 app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.UseRateLimiter();
 
 // Cấu hình OpenAPI và giao diện kiểm thử tương tác Scalar UI (thay thế Swagger)
 if (app.Environment.IsDevelopment())
@@ -26,7 +32,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
-        options.WithTitle("Culinary Blog API - Recipe Content & Media")
+        options.WithTitle("Culinary Blog API - PTUDWNC Nhom 11")
                .WithTheme(ScalarTheme.Moon)
                .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
@@ -56,24 +62,32 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+// 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
+app.MapAuthEndpoints();
+app.MapAdminUserEndpoints();
+
 var api = app.MapGroup("/api/v1");
+
+// 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
+api.MapCategoryEndpoints();
+api.MapRecipeEndpoints();
+
+// 3. Phân hệ Vòng đời công thức & Thùng rác (Thành viên 3)
+api.MapRecipeLifecycleEndpoints();
+
+// 4. Phân hệ Chi tiết công thức, Nguyên liệu, Bước làm & Hình ảnh (Thành viên 4)
+api.MapRecipeIngredientEndpoints();
+api.MapRecipeStepEndpoints();
+api.MapRecipeImageEndpoints();
+
 api.MapGet("/", () => Results.Ok(new
 {
     name = "Culinary Blog API",
     version = "v1"
 }));
-
-// Đăng ký các endpoints của phân hệ Recipe Content và Media (Thành viên 4)
-api.MapRecipeIngredientEndpoints();
-api.MapRecipeStepEndpoints();
-api.MapRecipeImageEndpoints();
-
-api.MapGet("/recipes", async (CulinaryBlogDbContext dbContext) =>
-{
-    var count = await dbContext.Recipes.CountAsync();
-    var sample = await dbContext.Recipes.Take(10).ToListAsync();
-    return Results.Ok(new { total = count, sample });
-});
 
 api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 {
@@ -86,7 +100,6 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 
     var sampleWithRelations = await dbContext.Recipes
         .Include(r => r.Category)
-        .Include(r => r.Author)
         .Include(r => r.Ingredients)
         .Include(r => r.Steps)
         .Include(r => r.Images)
@@ -97,7 +110,10 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
             r.Title,
             r.Slug,
             Category = r.Category != null ? new { r.Category.Id, r.Category.Name } : null,
-            Author = r.Author != null ? new { r.Author.Id, r.Author.DisplayName, r.Author.Email } : null,
+            Author = dbContext.Users
+                .Where(u => u.Id == r.AuthorId)
+                .Select(u => new { u.Id, u.DisplayName, u.Email })
+                .FirstOrDefault(),
             IngredientsCount = r.Ingredients.Count,
             StepsCount = r.Steps.Count,
             ImagesCount = r.Images.Count
@@ -116,18 +132,19 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
     });
 });
 
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
+// Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live, /health/ready)
+app.MapHealthEndpoints();
 
-app.MapGet("/health/database", async (
+app.MapGet("/health/ready", async (
     CulinaryBlogDbContext dbContext,
     CancellationToken cancellationToken) =>
 {
     var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
 
     return canConnect
-        ? Results.Ok(new { status = "Healthy", dependency = "PostgreSQL" })
+        ? Results.Ok(new { status = "Ready", checks = new { database = "Healthy" } })
         : Results.Problem(
-            title: "Database is unavailable",
+            title: "Service is not ready to receive traffic",
             statusCode: StatusCodes.Status503ServiceUnavailable);
 });
 

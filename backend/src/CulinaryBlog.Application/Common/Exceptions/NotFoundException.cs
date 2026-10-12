@@ -3,13 +3,19 @@ namespace CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Domain.Exceptions;
 
 /// <summary>
-/// Ngoại lệ ném ra khi không tìm thấy tài nguyên yêu cầu (HTTP 404 Not Found).
-/// Kế thừa EntityNotFoundException từ Domain Layer để đảm bảo tính nhất quán kiến trúc.
+/// Ngoại lệ đại diện cho trường hợp không tìm thấy tài nguyên (HTTP 404 Not Found).
+/// Phục vụ chuẩn hóa mã lỗi theo SRS Phụ lục B (ví dụ: RECIPE_NOT_FOUND, CATEGORY_NOT_FOUND).
 /// </summary>
 public class NotFoundException : EntityNotFoundException
 {
-    public NotFoundException(string message) : base(message) { }
+    public NotFoundException(string message, string errorCode = "RESOURCE_NOT_FOUND")
+        : base(message, errorCode)
+    {
+    }
 
-    public NotFoundException(string name, object key)
-        : base(name, key) { }
+    public NotFoundException(string name, object key, string errorCode = "RESOURCE_NOT_FOUND")
+        : base(name, key, errorCode)
+    {
+    }
 }
+

@@ -1,0 +1,148 @@
+@baseUrl = http://localhost:5000
+@recipeId = a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+@ingredientId = 11111111-2222-3333-4444-555555555555
+@stepId1 = 22222222-3333-4444-5555-666666666661
+@stepId2 = 22222222-3333-4444-5555-666666666662
+@imageId = 33333333-4444-5555-6666-777777777777
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.demo
+
+### =========================================================================
+### KIỂM THỬ SCALAR API REFERENCE & OPENAPI v1
+### Thành viên 4: Nguyễn Phú Quý (MSSV: 2312731)
+### =========================================================================
+
+### 0. Kiểm tra tài liệu OpenAPI JSON (nạp cho Scalar UI tại /scalar/v1)
+GET {{baseUrl}}/openapi/v1.json
+Accept: application/json
+
+### =========================================================================
+### NHÓM 1: QUẢN LÝ NGUYÊN LIỆU & ĐỊNH LƯỢNG (3 API ENDPOINTS)
+### =========================================================================
+
+### [API 1/10] POST /api/v1/recipes/{id}/ingredients - Thêm nguyên liệu định lượng số thực (Decimal)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "Xương ống bò tươi",
+  "quantity": 1.5,
+  "unit": "kg",
+  "notes": "Chặt khúc, ngâm nước muối loãng 30 phút",
+  "sortOrder": 1
+}
+
+### [API 1b/10] POST /api/v1/recipes/{id}/ingredients - Thêm gia vị "vừa đủ" (Quantity & Unit = null theo Quyết định E1, E2)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "Muối hầm, tiêu sọ, hành ngò",
+  "quantity": null,
+  "unit": null,
+  "notes": "Gia vị nêm nếm vừa đủ theo khẩu vị",
+  "sortOrder": 2
+}
+
+### [API 2/10] PUT /api/v1/recipes/{id}/ingredients/{ingredientId} - Cập nhật nguyên liệu
+PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients/{{ingredientId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "Thịt thăn bò mềm loại 1",
+  "quantity": 650,
+  "unit": "g",
+  "notes": "Thái lát mỏng ngang thớ, để ngăn mát",
+  "sortOrder": 1
+}
+
+### [API 3/10] DELETE /api/v1/recipes/{id}/ingredients/{ingredientId} - Xóa nguyên liệu
+DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients/{{ingredientId}}
+Authorization: Bearer {{jwtToken}}
+
+### =========================================================================
+### NHÓM 2: QUẢN LÝ CÁC BƯỚC CHẾ BIẾN & REORDER (4 API ENDPOINTS)
+### =========================================================================
+
+### [API 4/10] POST /api/v1/recipes/{id}/steps - Thêm bước thực hiện mới kèm hẹn giờ (DurationMinutes)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "stepNumber": 1,
+  "title": "Sơ chế & chần xương bò khử mùi",
+  "instruction": "Cho xương bò vào nồi nước lạnh, đun sôi 5 phút cùng gừng đập dập rồi rửa sạch lại bằng nước ấm.",
+  "durationMinutes": 15,
+  "imageUrl": null
+}
+
+### [API 5/10] PUT /api/v1/recipes/{id}/steps/{stepId} - Cập nhật nội dung bước thực hiện
+PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/{{stepId1}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "stepNumber": 1,
+  "title": "Sơ chế kỹ & chần xương bò với gừng nướng",
+  "instruction": "Đun sôi xương ống bò trong 7 phút với gừng nướng và muối hạt để nước dùng trong vắt.",
+  "durationMinutes": 20,
+  "imageUrl": null
+}
+
+### [API 6/10] PUT /api/v1/recipes/{id}/steps/reorder - Sắp xếp lại thứ tự các bước trong 1 Transaction nguyên tử
+PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/reorder
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "stepIds": [
+    "{{stepId2}}",
+    "{{stepId1}}"
+  ]
+}
+
+### [API 7/10] DELETE /api/v1/recipes/{id}/steps/{stepId} - Xóa bước làm và tự động đánh lại số thứ tự 1..N
+DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/{{stepId1}}
+Authorization: Bearer {{jwtToken}}
+
+### =========================================================================
+### NHÓM 3: QUẢN LÝ HÌNH ẢNH & MINIO STORAGE (3 API ENDPOINTS)
+### =========================================================================
+
+### [API 8/10] POST /api/v1/recipes/{id}/images - Upload ảnh lên MinIO (Multipart/form-data, <= 5MB, JPEG/PNG/WebP/AVIF)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{jwtToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Tô phở bò truyền thống Hà Nội nóng hổi
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="isPrimary"
+
+true
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="pho-bo-ha-noi.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
+
+### [API 9/10] PATCH /api/v1/recipes/{id}/images/{imageId} - Cập nhật AltText, thứ tự và đặt làm Ảnh chính (IsPrimary)
+PATCH {{baseUrl}}/api/v1/recipes/{{recipeId}}/images/{{imageId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "altText": "Ảnh đại diện chính: Tô phở bò tái chín chuẩn vị Hà Nội",
+  "isPrimary": true,
+  "sortOrder": 0
+}
+
+### [API 10/10] DELETE /api/v1/recipes/{id}/images/{imageId} - Xóa hình ảnh khỏi công thức và MinIO Storage
+DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/images/{{imageId}}
+Authorization: Bearer {{jwtToken}}

@@ -1,12 +1,21 @@
 namespace CulinaryBlog.Domain.Exceptions;
 
 /// <summary>
-/// Lớp ngoại lệ cơ sở cho toàn bộ ngoại lệ nghiệp vụ của tầng Domain.
-/// Tuân thủ nguyên tắc Clean Architecture: Domain độc lập và định nghĩa các lỗi quy tắc cốt lõi.
+/// Ngoại lệ cơ sở cho các lỗi vi phạm quy tắc nghiệp vụ trong tầng Domain.
 /// </summary>
 public abstract class DomainException : Exception
 {
-    protected DomainException(string message) : base(message) { }
+    public string? ErrorCode { get; }
 
-    protected DomainException(string message, Exception innerException) : base(message, innerException) { }
+    protected DomainException(string message, string? errorCode = "DOMAIN_ERROR")
+        : base(message)
+    {
+        ErrorCode = errorCode;
+    }
+
+    protected DomainException(string message, Exception innerException, string? errorCode = "DOMAIN_ERROR")
+        : base(message, innerException)
+    {
+        ErrorCode = errorCode;
+    }
 }
