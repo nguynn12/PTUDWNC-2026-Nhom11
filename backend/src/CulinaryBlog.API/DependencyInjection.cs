@@ -21,12 +21,25 @@ public static class DependencyInjection
         // trả 400 MALFORMED_REQUEST thống nhất ở mọi môi trường (RESOLVED-CONFLICTS C3).
         services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
-        // NFR-SEC: 10 request/phút/IP cho nhóm endpoint /api/v1/auth (AuthEndpoints dùng policy này).
+        // Cấu hình Rate Limiting:
+        // - Auth policy: 10 request/phút/IP (SRS NFR-SEC)
+        // - Upload policy: 5 request/phút/IP cho tác vụ tải ảnh công thức (Lab 5 - TV4)
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            options.OnRejected = AuthRateLimiting.OnRejectedAsync;
+            options.OnRejected = async (context, token) =>
+            {
+                if (context.HttpContext.Request.Path.Value?.Contains("/images", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    await UploadRateLimiting.OnRejectedAsync(context, token);
+                }
+                else
+                {
+                    await AuthRateLimiting.OnRejectedAsync(context, token);
+                }
+            };
             options.AddPolicy(AuthRateLimiting.PolicyName, AuthRateLimiting.GetPartition);
+            options.AddPolicy(UploadRateLimiting.PolicyName, UploadRateLimiting.GetPartition);
         });
 
         return services;
