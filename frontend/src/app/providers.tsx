@@ -2,7 +2,9 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { AuthToastHost } from "@/components/auth/AuthToastHost";
+import { startSession } from "@/lib/auth/session";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -23,9 +25,13 @@ export function Providers({ children }: ProvidersProps) {
       })
   );
 
+  // Module Auth (FR-AUTH-004): khôi phục phiên từ refresh token, tự làm mới token, đồng bộ đăng xuất giữa các tab.
+  useEffect(() => startSession(), []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <AuthToastHost />
       <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
     </QueryClientProvider>
   );
