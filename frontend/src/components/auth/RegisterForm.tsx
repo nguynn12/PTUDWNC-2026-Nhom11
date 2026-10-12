@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { ApiError } from "@/lib/auth/errors";
-import type { UserDto } from "@/lib/auth/types";
+import type { UserDto } from "@/types/auth";
 import { register as registerAccount } from "@/lib/auth/session";
 import { registerSchema, type RegisterValues } from "@/lib/validators/auth";
 import { useAuthUIStore } from "@/store/useAuthUIStore";
