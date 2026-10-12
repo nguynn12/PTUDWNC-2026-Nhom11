@@ -6,6 +6,7 @@ using CulinaryBlog.Application.Features.Categories.Commands.UpdateCategory;
 using CulinaryBlog.Application.Features.Categories.DTOs;
 using CulinaryBlog.Application.Features.Categories.Queries.GetCategories;
 using CulinaryBlog.Application.Features.Categories.Queries.GetCategoryBySlug;
+using CulinaryBlog.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -65,10 +66,13 @@ public static class CategoryEndpoints
                 $"/api/v1/categories/{created.Slug}",
                 new ApiResponse<CategoryDto>(created));
         })
+        .RequireAuthorization(Roles.Admin)
         .WithName("CreateCategory")
         .WithSummary("Tạo danh mục mới (Admin)")
         .WithDescription("Tạo danh mục mới, tự động sinh slug tiếng Việt chuẩn SEO (FR-CAT-003).")
         .Produces<ApiResponse<CategoryDto>>(StatusCodes.Status201Created)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status409Conflict)
         .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
@@ -86,10 +90,13 @@ public static class CategoryEndpoints
 
             return Results.Ok(new ApiResponse<CategoryDto>(updated));
         })
+        .RequireAuthorization(Roles.Admin)
         .WithName("UpdateCategory")
         .WithSummary("Cập nhật danh mục (Admin)")
         .WithDescription("Cập nhật tên, mô tả, ảnh, thứ tự. Slug giữ nguyên bất biến theo SRS C7 (FR-CAT-004).")
         .Produces<ApiResponse<CategoryDto>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status409Conflict)
         .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
@@ -102,10 +109,13 @@ public static class CategoryEndpoints
 
             return Results.NoContent();
         })
+        .RequireAuthorization(Roles.Admin)
         .WithName("DeleteCategory")
         .WithSummary("Xóa danh mục (Admin)")
         .WithDescription("Xóa mềm danh mục nếu không còn công thức nào liên kết. Chặn xóa 409 nếu còn Recipe (FR-CAT-005).")
         .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status409Conflict);
 
