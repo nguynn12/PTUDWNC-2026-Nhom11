@@ -116,7 +116,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
           }}
         >
           <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-            ⏱️ {recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 30} phút
+            ⏱️ {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0)) || 30} phút
           </span>
           {recipe.calories && (
             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>

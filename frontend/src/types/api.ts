@@ -7,7 +7,8 @@
 // ENUMS & CONSTANTS
 // ----------------------------------------------------------------------------
 export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
-export type RecipeStatus = "Draft" | "Published" | "Archived";
+export type DifficultyLevel = RecipeDifficulty;
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | number;
 
 // ----------------------------------------------------------------------------
 // COMMON RESPONSE & PAGINATION
@@ -17,6 +18,20 @@ export interface PaginationMeta {
   pageSize: number;
   totalCount: number;
   totalPages: number;
+  pageIndex?: number;
+  total?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+}
+
+export interface PaginatedList<T> {
+  items: T[];
+  pageIndex?: number;
+  page?: number;
+  totalPages: number;
+  totalCount: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
 
 export interface ApiResponse<T> {
@@ -32,6 +47,8 @@ export interface ApiProblemDetails {
   instance?: string;
   errors?: Record<string, string[]>;
 }
+
+export type ProblemDetails = ApiProblemDetails;
 
 export class AppError extends Error {
   status: number;
@@ -102,27 +119,46 @@ export interface RecipeAuthorDto {
 
 export interface RecipeIngredientDto {
   id: string;
+  recipeId?: string;
   name: string;
-  quantity: number;
-  unit: string;
+  quantity?: number | null;
+  unit?: string | null;
   notes?: string | null;
-  sortOrder: number;
+  sortOrder?: number;
+  orderIndex?: number;
+  createdAt?: string;
+  updatedAt?: string | null;
 }
 
 export interface RecipeStepDto {
   id: string;
+  recipeId?: string;
   stepNumber: number;
   title?: string | null;
   description: string;
   imageUrl?: string | null;
   timerMinutes?: number | null;
+  durationMinutes?: number | null;
+  orderIndex?: number;
+  sortOrder?: number;
+  createdAt?: string;
+  updatedAt?: string | null;
 }
 
 export interface RecipeImageDto {
   id: string;
-  imageUrl: string;
+  recipeId?: string;
+  imageId?: string;
+  imageUrl?: string;
+  originalUrl?: string;
+  mediumUrl?: string | null;
+  thumbnailUrl?: string | null;
+  altText?: string | null;
   isPrimary: boolean;
-  displayOrder: number;
+  displayOrder?: number;
+  orderIndex?: number;
+  createdAt?: string;
+  updatedAt?: string | null;
 }
 
 export interface RecipeNutritionDto {
@@ -133,7 +169,13 @@ export interface RecipeNutritionDto {
   fiberGrams?: number | null;
   sodiumMilligrams?: number | null;
   sugarGrams?: number | null;
-  source?: string | null;
+  source?: string | number | null;
+  // Aliases đồng bộ với form TV3 & TV4
+  fat?: number | null;
+  carbohydrates?: number | null;
+  protein?: number | null;
+  fiber?: number | null;
+  sodium?: number | null;
 }
 
 export interface RecipeSummaryDto {
@@ -141,19 +183,29 @@ export interface RecipeSummaryDto {
   title: string;
   slug: string;
   description: string;
-  prepTime: number;
-  cookTime: number;
-  totalTime: number;
+  prepTime?: number;
+  cookTime?: number;
+  totalTime?: number;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
   servings: number;
   difficulty: RecipeDifficulty;
   primaryImageUrl?: string | null;
   categoryId: string;
-  categoryName: string;
-  categorySlug: string;
-  author: RecipeAuthorDto;
+  categoryName?: string | null;
+  categorySlug?: string | null;
+  author?: RecipeAuthorDto | null;
+  authorId?: string;
+  authorName?: string | null;
+  status?: RecipeStatus;
   calories?: number | null;
   publishedAt?: string | null;
   createdAt: string;
+  updatedAt?: string | null;
+  xmin?: string | number | null; // Concurrency token phục vụ If-Match
+  isDeleted?: boolean;
+  deletedAt?: string | null;
+  nutrition?: RecipeNutritionDto | null;
 }
 
 export interface RecipeDetailDto {
@@ -161,17 +213,19 @@ export interface RecipeDetailDto {
   title: string;
   slug: string;
   description: string;
-  prepTime: number;
-  cookTime: number;
-  totalTime: number;
+  prepTime?: number;
+  cookTime?: number;
+  totalTime?: number;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
   servings: number;
   difficulty: RecipeDifficulty;
   status: RecipeStatus;
   primaryImageUrl?: string | null;
   categoryId: string;
-  categoryName: string;
-  categorySlug: string;
-  author: RecipeAuthorDto;
+  categoryName?: string | null;
+  categorySlug?: string | null;
+  author?: RecipeAuthorDto | null;
   nutrition?: RecipeNutritionDto | null;
   ingredients: RecipeIngredientDto[];
   steps: RecipeStepDto[];
@@ -180,6 +234,21 @@ export interface RecipeDetailDto {
   createdAt: string;
   updatedAt?: string | null;
   rowVersion?: string;
+  xmin?: string | number | null;
+}
+
+export interface RecipeFullDetailDto extends RecipeDetailDto {
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
+  xmin?: string | number | null;
+}
+
+export interface DashboardMetrics {
+  totalRecipes: number;
+  publishedCount: number;
+  draftCount: number;
+  archivedCount: number;
+  trashCount: number;
 }
 
 // ----------------------------------------------------------------------------
