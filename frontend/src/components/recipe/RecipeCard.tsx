@@ -8,7 +8,7 @@ interface RecipeCardProps {
   priority?: boolean;
 }
 
-function getDifficultyLabel(diff: RecipeDifficulty): { label: string; className: string } {
+function getDifficultyLabel(diff: RecipeDifficulty | number): { label: string; className: string } {
   if (diff === "Easy" || diff === 0) return { label: "Dễ", className: "badge-easy" };
   if (diff === "Hard" || diff === 2) return { label: "Khó", className: "badge-hard" };
   return { label: "Vừa", className: "badge-medium" };
@@ -116,7 +116,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
           }}
         >
           <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-            ⏱️ {recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 30} phút
+            ⏱️ {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0)) || 30} phút
           </span>
           {recipe.calories && (
             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>

@@ -7,7 +7,7 @@
 // ENUMS & CONSTANTS
 // ----------------------------------------------------------------------------
 export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
-export type RecipeStatus = "Draft" | "Published" | "Archived";
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted";
 
 // ----------------------------------------------------------------------------
 // COMMON RESPONSE & PAGINATION
@@ -133,7 +133,13 @@ export interface RecipeNutritionDto {
   fiberGrams?: number | null;
   sodiumMilligrams?: number | null;
   sugarGrams?: number | null;
-  source?: string | null;
+  source?: string | number | null;
+  // Aliases tương thích ngược với RecipeWizardEditor và lib/types
+  protein?: number | null;
+  carbohydrates?: number | null;
+  fat?: number | null;
+  fiber?: number | null;
+  sodium?: number | null;
 }
 
 export interface RecipeSummaryDto {
@@ -141,19 +147,29 @@ export interface RecipeSummaryDto {
   title: string;
   slug: string;
   description: string;
-  prepTime: number;
-  cookTime: number;
-  totalTime: number;
+  prepTime?: number;
+  cookTime?: number;
+  totalTime?: number;
   servings: number;
-  difficulty: RecipeDifficulty;
+  difficulty: RecipeDifficulty | number;
+  status?: RecipeStatus | number;
   primaryImageUrl?: string | null;
   categoryId: string;
-  categoryName: string;
-  categorySlug: string;
-  author: RecipeAuthorDto;
+  categoryName?: string | null;
+  categorySlug?: string;
+  author?: RecipeAuthorDto;
+  authorId?: string;
+  authorName?: string | null;
   calories?: number | null;
   publishedAt?: string | null;
   createdAt: string;
+  updatedAt?: string | null;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
+  xmin?: string | number | null;
+  isDeleted?: boolean;
+  deletedAt?: string | null;
+  nutrition?: RecipeNutritionDto | null;
 }
 
 export interface RecipeDetailDto {
