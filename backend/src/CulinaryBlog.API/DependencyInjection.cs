@@ -21,12 +21,13 @@ public static class DependencyInjection
         // trả 400 MALFORMED_REQUEST thống nhất ở mọi môi trường (RESOLVED-CONFLICTS C3).
         services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
-        // NFR-SEC: 10 request/phút/IP cho nhóm endpoint /api/v1/auth (AuthEndpoints dùng policy này).
+        // NFR-SEC: Rate Limiter cho Auth (10 req/phút) và Chung cho /api/v1 (100 req/phút/IP).
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            options.OnRejected = AuthRateLimiting.OnRejectedAsync;
+            options.OnRejected = GeneralRateLimiting.OnRejectedAsync;
             options.AddPolicy(AuthRateLimiting.PolicyName, AuthRateLimiting.GetPartition);
+            options.AddPolicy(GeneralRateLimiting.PolicyName, GeneralRateLimiting.GetPartition);
         });
 
         return services;

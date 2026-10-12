@@ -69,7 +69,13 @@ app.UseAuthorization();
 app.MapAuthEndpoints();
 app.MapAdminUserEndpoints();
 
-var api = app.MapGroup("/api/v1");
+var api = app.MapGroup("/api/v1")
+    .RequireRateLimiting(CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PolicyName)
+    .AddEndpointFilter(async (context, next) =>
+    {
+        context.HttpContext.Response.Headers["X-RateLimit-Limit"] = CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PermitLimit.ToString();
+        return await next(context);
+    });
 
 // 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
 api.MapCategoryEndpoints();
