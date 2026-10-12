@@ -1,7 +1,10 @@
 using CulinaryBlog.API;
+using CulinaryBlog.API.Configuration;
 using CulinaryBlog.API.Endpoints;
 using CulinaryBlog.API.Middlewares;
+using CulinaryBlog.API.OpenApi;
 using CulinaryBlog.Application;
+using CulinaryBlog.Domain.Constants;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
@@ -11,7 +14,10 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+// Lab 5 (TV1): tài liệu OpenAPI có Bearer JWT, API versioning theo URL, CORS allowlist cho frontend.
+builder.Services.AddCulinaryOpenApi();
+builder.Services.AddCulinaryApiVersioning();
+builder.Services.AddFrontendCors(builder.Configuration, builder.Environment);
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<AuthExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -20,6 +26,10 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// CORS đặt đầu pipeline: preflight OPTIONS trả ngay (không tính rate limit) và header CORS
+// vẫn có trên response lỗi (401/429/500) để trình duyệt đọc được Problem Details.
+app.UseCors(CorsSetup.PolicyName);
 
 // Exception → RFC 7807 Problem Details (AuthExceptionHandler + GlobalExceptionHandler)
 app.UseExceptionHandler();
@@ -34,7 +44,10 @@ if (app.Environment.IsDevelopment())
     {
         options.WithTitle("Culinary Blog API - PTUDWNC Nhom 11")
                .WithTheme(ScalarTheme.Moon)
-               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+               // Ô "Authentication" của Scalar dùng scheme Bearer; token được nhớ khi tải lại trang.
+               .AddPreferredSecuritySchemes([OpenApiSetup.BearerSchemeName])
+               .EnablePersistentAuthentication();
     });
 
     app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
@@ -65,11 +78,12 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
-app.MapAuthEndpoints();
-app.MapAdminUserEndpoints();
+// Nhóm /api/v1 có phiên bản (Asp.Versioning, SRS 5.2). Các module gắn endpoint vào nhóm này.
+var api = app.MapVersionedApi();
 
-var api = app.MapGroup("/api/v1");
+// 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
+api.MapAuthEndpoints();
+api.MapAdminUserEndpoints();
 
 // 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
 api.MapCategoryEndpoints();
@@ -89,6 +103,7 @@ api.MapGet("/", () => Results.Ok(new
     version = "v1"
 }));
 
+// Tổng quan dữ liệu (có email người dùng) => chỉ Admin được xem.
 api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 {
     var usersCount = await dbContext.Users.CountAsync();
@@ -130,7 +145,9 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
         totalImages = imagesCount,
         sampleWithRelations
     });
-});
+})
+.WithTags("System")
+.RequireAuthorization(Roles.Admin);
 
 // Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live, /health/ready)
 app.MapHealthEndpoints();

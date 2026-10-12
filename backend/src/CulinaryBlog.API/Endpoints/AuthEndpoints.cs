@@ -20,7 +20,8 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/v1/auth")
+        // Gắn vào nhóm /api/v{version} (Program.cs) nên đường dẫn thực tế là /api/v1/auth.
+        var group = app.MapGroup("/auth")
             .WithTags("Auth")
             .RequireRateLimiting(AuthRateLimiting.PolicyName);
 
