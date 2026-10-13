@@ -10,11 +10,26 @@ public static class DependencyInjection
     /// Đăng ký các thành phần của tầng Presentation (SRS 6.2: AddApplication, AddInfrastructure,
     /// AddPresentation).
     /// </summary>
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         // ProblemDetails + GlobalExceptionHandler/AuthExceptionHandler được đăng ký ở Program.cs
         // (theo quy ước chung của nhóm); ICurrentUserService đăng ký ở Infrastructure.
         services.AddOpenApi();
+
+        // Cấu hình CORS cho phép origin từ Frontend (mặc định http://localhost:3000)
+        var clientOrigin = configuration.GetValue<string>("ClientApp:BaseUrl") ?? "http://localhost:3000";
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.WithOrigins(clientOrigin)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
 
         // Mặc định Minimal API chỉ throw BadHttpRequestException ở Development, còn Production
         // trả 400 rỗng. Bật luôn để JSON/tham số sai cú pháp đi qua AuthExceptionHandler và

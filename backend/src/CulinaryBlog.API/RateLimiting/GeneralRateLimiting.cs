@@ -28,8 +28,16 @@ public static class GeneralRateLimiting
                 AutoReplenishment = true,
             });
 
-    public static string ClientKey(HttpContext httpContext) =>
-        httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    public static string ClientKey(HttpContext httpContext)
+    {
+        if (httpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor) &&
+            !string.IsNullOrWhiteSpace(forwardedFor))
+        {
+            return forwardedFor.ToString().Split(',')[0].Trim();
+        }
+
+        return httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    }
 
     /// <summary>Xử lý khi request bị từ chối do vượt ngưỡng Rate Limit (HTTP 429).</summary>
     public static async ValueTask OnRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)

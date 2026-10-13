@@ -15,7 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<AuthExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddPresentation();
+builder.Services.AddPresentation(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -24,6 +24,7 @@ var app = builder.Build();
 // Exception → RFC 7807 Problem Details (AuthExceptionHandler + GlobalExceptionHandler)
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseCors();
 app.UseRateLimiter();
 
 // Cấu hình OpenAPI và giao diện kiểm thử tương tác Scalar UI (thay thế Swagger)
