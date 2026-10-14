@@ -33,21 +33,8 @@ export interface ApiProblemDetails {
   errors?: Record<string, string[]>;
 }
 
-export class AppError extends Error {
-  status: number;
-  errorCode: string;
-  detail: string;
-  validationErrors?: Record<string, string[]>;
-
-  constructor(problem: ApiProblemDetails) {
-    super(problem.detail || problem.title || "Đã xảy ra lỗi không xác định.");
-    this.name = "AppError";
-    this.status = problem.status || 500;
-    this.errorCode = problem.type || "UNKNOWN_ERROR";
-    this.detail = problem.detail || "";
-    this.validationErrors = problem.errors;
-  }
-}
+/** Lỗi API dùng chung, định nghĩa ở lib/errors.ts (Buổi 6). */
+export { AppError } from "@/lib/errors";
 
 // ----------------------------------------------------------------------------
 // CATEGORY DTOS (FR-CAT-001 -> FR-CAT-005)

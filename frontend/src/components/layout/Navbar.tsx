@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUIStore } from "@/store/useUIStore";
+import { useUIStore } from "@/store/ui-store";
 import { UserMenu } from "@/components/layout/UserMenu";
 
 export function Navbar() {

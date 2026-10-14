@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore } from "@/store/auth-store";
 import styles from "@/styles/auth.module.css";
 
 /** Bảo vệ route phía client (SRS 5.1: /profile, /dashboard/* bắt buộc đăng nhập). */

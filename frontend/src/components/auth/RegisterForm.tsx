@@ -6,11 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import type { ApiError } from "@/lib/auth/errors";
+import type { AppError } from "@/lib/errors";
 import type { UserDto } from "@/types/auth";
 import { register as registerAccount } from "@/lib/auth/session";
 import { registerSchema, type RegisterValues } from "@/lib/validators/auth";
-import { useAuthUIStore } from "@/store/useAuthUIStore";
+import { useAuthUIStore } from "@/store/auth-ui-store";
 import styles from "@/styles/auth.module.css";
 import { Field } from "./Field";
 
@@ -28,7 +28,7 @@ export function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterValues>({ resolver: zodResolver(registerSchema) });
 
-  const mutation = useMutation<UserDto, ApiError, RegisterValues>({
+  const mutation = useMutation<UserDto, AppError, RegisterValues>({
     mutationFn: (v) => registerAccount({ email: v.email, password: v.password, displayName: v.displayName }),
     // FR-AUTH-001: backend trả cặp token ngay khi đăng ký nên người dùng vào thẳng trang hồ sơ.
     onSuccess: () => {

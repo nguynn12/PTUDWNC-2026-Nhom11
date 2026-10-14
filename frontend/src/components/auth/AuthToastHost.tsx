@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAuthUIStore } from "@/store/useAuthUIStore";
+import { useAuthUIStore } from "@/store/auth-ui-store";
 import styles from "@/styles/user-menu.module.css";
 
 export function AuthToastHost() {

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ApiError, DEFAULT_ERROR_MESSAGE } from "@/lib/auth/errors";
+import { AppError, DEFAULT_ERROR_MESSAGE } from "@/lib/errors";
 import { login, loginWithGoogle } from "@/lib/auth/session";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore } from "@/store/auth-store";
 import { safeCallbackUrl } from "@/lib/auth/utils";
 import { loginSchema, type LoginValues } from "@/lib/validators/auth";
 import styles from "@/styles/auth.module.css";
@@ -15,7 +15,7 @@ import { Field } from "./Field";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 
 function errorMessage(error: unknown): string {
-  return error instanceof ApiError ? error.message : DEFAULT_ERROR_MESSAGE;
+  return error instanceof AppError ? error.message : DEFAULT_ERROR_MESSAGE;
 }
 
 export function LoginForm() {

@@ -5,12 +5,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { authApi } from "@/lib/auth/api";
-import type { ApiError } from "@/lib/auth/errors";
+import type { AppError } from "@/lib/errors";
 import type { UserDto } from "@/types/auth";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore } from "@/store/auth-store";
 import { initialsOf } from "@/lib/auth/utils";
 import { profileSchema, type ProfileValues } from "@/lib/validators/auth";
-import { useAuthUIStore } from "@/store/useAuthUIStore";
+import { useAuthUIStore } from "@/store/auth-ui-store";
 import styles from "@/styles/auth.module.css";
 import { Field } from "./Field";
 
@@ -21,7 +21,7 @@ export function ProfileForm() {
   const showToast = useAuthUIStore((s) => s.showToast);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const meQuery = useQuery<UserDto, ApiError>({
+  const meQuery = useQuery<UserDto, AppError>({
     queryKey: ["me"],
     queryFn: authApi.me,
     enabled: status === "authenticated",
@@ -40,7 +40,7 @@ export function ProfileForm() {
       : undefined,
   });
 
-  const saveMutation = useMutation<UserDto, ApiError, ProfileValues>({
+  const saveMutation = useMutation<UserDto, AppError, ProfileValues>({
     // Backend: field null = giữ nguyên giá trị cũ (không xóa được ảnh qua endpoint này).
     mutationFn: (v) =>
       authApi.updateProfile({ displayName: v.displayName, avatarUrl: v.avatarUrl || null, bio: v.bio }),
@@ -52,7 +52,7 @@ export function ProfileForm() {
     onError: (error) => setServerError(error.message),
   });
 
-  const resendMutation = useMutation<{ message: string }, ApiError, string>({
+  const resendMutation = useMutation<{ message: string }, AppError, string>({
     mutationFn: (email) => authApi.resendConfirmation(email),
     onSuccess: (r) => showToast("success", r.message),
     onError: (error) => showToast("error", error.message),

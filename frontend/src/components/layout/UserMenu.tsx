@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { logout } from "@/lib/auth/session";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore } from "@/store/auth-store";
 import { initialsOf } from "@/lib/auth/utils";
-import { useAuthUIStore } from "@/store/useAuthUIStore";
+import { useAuthUIStore } from "@/store/auth-ui-store";
 import styles from "@/styles/user-menu.module.css";
 
 export function UserMenu() {

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { authApi } from "@/lib/auth/api";
-import type { ApiError } from "@/lib/auth/errors";
+import type { AppError } from "@/lib/errors";
 import { refreshSession } from "@/lib/auth/session";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore } from "@/store/auth-store";
 import styles from "@/styles/auth.module.css";
 
 export function ConfirmEmail() {
@@ -17,7 +17,7 @@ export function ConfirmEmail() {
   const started = useRef(false);
   const queryClient = useQueryClient();
 
-  const { mutate, isPending, isSuccess, isError, error } = useMutation<void, ApiError, void>({
+  const { mutate, isPending, isSuccess, isError, error } = useMutation<void, AppError, void>({
     mutationFn: () => authApi.confirmEmail(userId!, token!),
     // Đang đăng nhập: lấy token mới để claim email_verified = true (chính sách VerifiedAuthor).
     onSuccess: async () => {

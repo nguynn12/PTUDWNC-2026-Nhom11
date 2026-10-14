@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useUIStore } from "@/store/useUIStore";
+import { useUIStore } from "@/store/ui-store";
 import type { CategoryDto } from "@/types/api";
 
 interface RecipeFilterSidebarProps {
