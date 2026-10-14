@@ -3,6 +3,8 @@ import {
   RecipeSummaryDto,
   PaginatedList,
   DashboardMetrics,
+} from './types';
+import type {
   CategoryOptionDto,
   RecipeIngredientDto,
   CreateRecipeIngredientRequest,
@@ -16,7 +18,7 @@ import {
   CreateRecipePayload,
   UpdateRecipePayload,
   RecipeFullDetailDto,
-} from './types';
+} from '@/types/recipe-content';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000/api/v1';
 
@@ -941,7 +943,7 @@ function addMockStep(recipeId: string, request: CreateRecipeStepRequest): Recipe
     recipeId,
     stepNumber,
     title: request.title ?? `Bước ${stepNumber}`,
-    description: request.description,
+    description: request.description ?? request.instruction ?? '',
     durationMinutes: request.durationMinutes ?? null,
     imageUrl: request.imageUrl ?? null,
   };
@@ -962,7 +964,7 @@ function updateMockStep(
     recipeId,
     stepNumber: existingStepNumber,
     title: request.title ?? `Bước ${existingStepNumber}`,
-    description: request.description,
+    description: request.description ?? request.instruction ?? '',
     durationMinutes: request.durationMinutes ?? null,
     imageUrl: request.imageUrl ?? null,
   };
