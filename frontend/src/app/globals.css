@@ -1,5 +1,6 @@
-@import "tailwindcss";
+/* Google Fonts phai dung truoc moi @import khac: Tailwind bung @import "tailwindcss" thanh rule CSS. */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
