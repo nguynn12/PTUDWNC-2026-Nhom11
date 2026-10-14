@@ -184,11 +184,15 @@ export interface RecipeFullDetailDto {
   description: string;
   prepTimeMinutes: number;
   cookTimeMinutes: number;
+  prepTime?: number;
+  cookTime?: number;
+  totalTime?: number;
   servings: number;
   difficulty: RecipeDifficulty | number;
   status: RecipeStatus | number;
   categoryId: string;
   categoryName?: string | null;
+  categorySlug?: string | null;
   authorId?: string;
   authorName?: string | null;
   author?: RecipeAuthorDto;
