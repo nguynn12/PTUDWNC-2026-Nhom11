@@ -1,7 +1,7 @@
 'use client';
 
 import React, { use } from 'react';
-import { RecipeWizardEditor } from '@/components/recipes/RecipeWizardEditor';
+import { RecipeWizardEditor } from '@/components/recipe/RecipeWizardEditor';
 
 interface EditRecipePageProps {
   params: Promise<{ id: string }>;

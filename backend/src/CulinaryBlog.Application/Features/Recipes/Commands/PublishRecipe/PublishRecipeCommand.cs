@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 /// <summary>
 /// Command xuất bản công thức nấu ăn (Draft -> Published).
 /// </summary>
-public record PublishRecipeCommand(Guid Id) : IRequest<RecipeResponseDto>;
+public record PublishRecipeCommand(Guid Id, uint? ConcurrencyToken = null) : IRequest<RecipeResponseDto>;
 
 /// <summary>
 /// Handler xử lý xuất bản công thức.
@@ -35,12 +35,30 @@ public sealed class PublishRecipeCommandHandler(
             throw new NotFoundException("Recipe", request.Id, "RECIPE_NOT_FOUND");
         }
 
-        // Kiểm tra quyền sở hữu
-        if (!string.IsNullOrWhiteSpace(currentUserService.UserId) &&
-            !currentUserService.IsAdmin &&
+        // 1. Kiểm tra xác thực và quyền sở hữu (bắt buộc có UserId, không cho phép ẩn danh)
+        if (string.IsNullOrWhiteSpace(currentUserService.UserId))
+        {
+            throw new UnauthorizedException("Vui lòng đăng nhập để xuất bản công thức.", "AUTH_UNAUTHORIZED");
+        }
+
+        if (!currentUserService.IsAdmin &&
             !string.Equals(recipe.AuthorId, currentUserService.UserId, StringComparison.OrdinalIgnoreCase))
         {
             throw new ForbiddenException("Bạn không có quyền xuất bản công thức này.", "RECIPE_FORBIDDEN");
+        }
+
+        // 2. Kiểm tra Concurrency Token qua xmin
+        if (request.ConcurrencyToken.HasValue)
+        {
+            var currentXmin = await dbContext.Recipes
+                .Where(r => r.Id == recipe.Id)
+                .Select(r => EF.Property<uint>(r, "xmin"))
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (currentXmin != 0 && request.ConcurrencyToken.Value != currentXmin)
+            {
+                throw new ConflictException("Dữ liệu công thức đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.", "RECIPE_CONCURRENCY_CONFLICT");
+            }
         }
 
         // Kiểm tra trạng thái hiện tại
@@ -77,6 +95,11 @@ public sealed class PublishRecipeCommandHandler(
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var updatedXmin = await dbContext.Recipes
+            .Where(r => r.Id == recipe.Id)
+            .Select(r => EF.Property<uint>(r, "xmin"))
+            .FirstOrDefaultAsync(cancellationToken);
+
         return new RecipeResponseDto
         {
             Id = recipe.Id,
@@ -92,7 +115,8 @@ public sealed class PublishRecipeCommandHandler(
             AuthorId = recipe.AuthorId,
             PublishedAt = recipe.PublishedAt,
             CreatedAt = recipe.CreatedAt,
-            UpdatedAt = recipe.UpdatedAt
+            UpdatedAt = recipe.UpdatedAt,
+            ConcurrencyToken = updatedXmin
         };
     }
 }

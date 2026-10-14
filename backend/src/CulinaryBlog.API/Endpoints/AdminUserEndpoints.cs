@@ -11,7 +11,8 @@ public static class AdminUserEndpoints
 {
     public static void MapAdminUserEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/v1/admin/users").WithTags("Admin Users").RequireAuthorization("Admin");
+        // Gắn vào nhóm /api/v{version} (Program.cs) nên đường dẫn thực tế là /api/v1/admin/users.
+        var group = app.MapGroup("/admin/users").WithTags("Admin Users").RequireAuthorization("Admin");
 
         group.MapPatch("/{id}/status", async (string id, [FromBody] ToggleUserStatusRequest request, ISender sender) =>
         {

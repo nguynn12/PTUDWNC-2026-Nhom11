@@ -4,14 +4,14 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { RecipeApi, ApiError } from '@/lib/api-client';
-import {
+import type {
   CategoryOptionDto,
   DifficultyLevel,
   RecipeIngredientDto,
   RecipeStepDto,
   RecipeImageDto,
   RecipeNutritionDto,
-} from '@/lib/types';
+} from '@/types/recipe-content';
 import { useToast } from '@/components/common/Toast';
 import { ConflictDialog } from '@/components/common/ConflictDialog';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
@@ -153,8 +153,8 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               ? 'Hard'
               : 'Medium'
         );
-        setPrepTimeMinutes(detail.prepTimeMinutes);
-        setCookTimeMinutes(detail.cookTimeMinutes);
+        setPrepTimeMinutes(detail.prepTimeMinutes ?? detail.prepTime ?? 15);
+        setCookTimeMinutes(detail.cookTimeMinutes ?? detail.cookTime ?? 30);
         setServings(detail.servings);
         setXmin(detail.xmin ?? null);
         setRecipeStatus(String(detail.status || 'Draft'));
@@ -388,7 +388,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
   const handleSelectEditStep = (step: RecipeStepDto) => {
     setEditingStepId(step.id);
-    setStepTitle(step.title);
+    setStepTitle(step.title ?? '');
     setStepInstruction(step.description);
     setStepDuration(
       step.durationMinutes !== null && step.durationMinutes !== undefined

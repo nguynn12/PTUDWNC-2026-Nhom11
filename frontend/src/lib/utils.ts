@@ -1,27 +1,12 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 /**
  * Hàm tiện ích dùng chung (Buổi 6).
- * Khi cài shadcn (`npx shadcn init`), giữ lại các hàm format bên dưới và để `cn()` của shadcn
- * (clsx + tailwind-merge) thay cho bản đơn giản này; chữ ký giống nhau nên không phải sửa chỗ gọi.
+ * `cn()` do shadcn tạo: ghép className có điều kiện và gộp class Tailwind trùng (clsx + tailwind-merge).
  */
-
-type ClassDictionary = Record<string, boolean | null | undefined>;
-export type ClassValue = string | number | null | undefined | false | ClassDictionary | ClassValue[];
-
-/** Ghép className có điều kiện: cn("btn", isActive && "active", { disabled }). */
-export function cn(...inputs: ClassValue[]): string {
-  const classes: string[] = [];
-  const visit = (value: ClassValue) => {
-    if (!value) return;
-    if (typeof value === "string" || typeof value === "number") {
-      classes.push(String(value));
-    } else if (Array.isArray(value)) {
-      value.forEach(visit);
-    } else {
-      for (const [name, enabled] of Object.entries(value)) if (enabled) classes.push(name);
-    }
-  };
-  inputs.forEach(visit);
-  return classes.join(" ");
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 const LOCALE = "vi-VN";

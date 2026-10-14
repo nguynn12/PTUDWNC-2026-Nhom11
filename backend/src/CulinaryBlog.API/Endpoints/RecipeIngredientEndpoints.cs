@@ -56,6 +56,7 @@ public static class RecipeIngredientEndpoints
             var result = await ingredientService.AddIngredientAsync(recipeId, request, userId, isAdmin, ct);
             return Results.Created($"/api/v1/recipes/{recipeId}/ingredients", ApiResponse<RecipeIngredientDto>.Success(result));
         })
+        .RequireAuthorization()
         .WithName("AddRecipeIngredient")
         .WithSummary("Thêm nguyên liệu mới vào công thức nấu ăn.");
 
@@ -73,6 +74,7 @@ public static class RecipeIngredientEndpoints
             var result = await ingredientService.UpdateIngredientAsync(recipeId, ingredientId, request, userId, isAdmin, ct);
             return Results.Ok(ApiResponse<RecipeIngredientDto>.Success(result));
         })
+        .RequireAuthorization()
         .WithName("UpdateRecipeIngredient")
         .WithSummary("Cập nhật thông tin chi tiết một nguyên liệu trong công thức.");
 
@@ -89,6 +91,7 @@ public static class RecipeIngredientEndpoints
             await ingredientService.DeleteIngredientAsync(recipeId, ingredientId, userId, isAdmin, ct);
             return Results.NoContent();
         })
+        .RequireAuthorization()
         .WithName("DeleteRecipeIngredient")
         .WithSummary("Xóa mềm một nguyên liệu khỏi công thức nấu ăn.");
 

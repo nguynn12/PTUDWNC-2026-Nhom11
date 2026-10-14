@@ -32,7 +32,7 @@ public class ToggleUserStatusCommandHandler : IRequestHandler<ToggleUserStatusCo
     {
         if (_currentUser.UserId == request.UserId && !request.IsActive)
         {
-            throw new BusinessRuleValidationException("Admin không thể tự vô hiệu hoá tài khoản của chính mình.", "AUTH_CANNOT_DEACTIVATE_SELF");
+            throw new BusinessRuleValidationException("Admin không thể tự vô hiệu hoá tài khoản của chính mình.", ErrorCodes.ValidationError);
         }
 
         var result = await _identityService.ToggleUserStatusAsync(request.UserId, request.IsActive);
