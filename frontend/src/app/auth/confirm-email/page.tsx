@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ConfirmEmail } from "@/components/auth/ConfirmEmail";
 
-export const metadata: Metadata = { title: "Xác nhận email | Culinary Blog" };
+export const metadata: Metadata = { title: "Xác nhận email" };
 
 export default function ConfirmEmailPage() {
   return (

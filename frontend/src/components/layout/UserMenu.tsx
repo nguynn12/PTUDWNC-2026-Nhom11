@@ -4,15 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { logout } from "@/lib/auth/session";
-import { useAuthStore } from "@/store/auth-store";
-import { initialsOf } from "@/lib/auth/utils";
+import { useAuthStatus, useCurrentUser } from "@/store/auth-store";
 import { useAuthUIStore } from "@/store/auth-ui-store";
 import styles from "@/styles/user-menu.module.css";
+import { UserAvatar } from "@/components/auth/UserAvatar";
 
 export function UserMenu() {
   const router = useRouter();
-  const status = useAuthStore((s) => s.status);
-  const user = useAuthStore((s) => s.user);
+  const status = useAuthStatus();
+  const user = useCurrentUser();
   const open = useAuthUIStore((s) => s.userMenuOpen);
   const setOpen = useAuthUIStore((s) => s.setUserMenuOpen);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -38,8 +38,14 @@ export function UserMenu() {
 
   if (status !== "authenticated" || !user) {
     return (
-      <Link href="/auth/login" className={`btn btn-primary btn-sm ${styles.loginLink}`}>
-        Đăng nhập
+      <Link href="/auth/login" className={`btn btn-primary btn-sm ${styles.loginLink}`} aria-label="Đăng nhập">
+        <svg className={styles.loginIcon} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"
+          />
+        </svg>
+        <span className={styles.loginText}>Đăng nhập</span>
       </Link>
     );
   }
@@ -53,12 +59,7 @@ export function UserMenu() {
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        {user.avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className={styles.avatar} src={user.avatarUrl} alt="" />
-        ) : (
-          <span className={styles.avatar}>{initialsOf(user.displayName)}</span>
-        )}
+        <UserAvatar name={user.displayName} src={user.avatarUrl} size="sm" />
         <span className={styles.name}>{user.displayName}</span>
       </button>
 

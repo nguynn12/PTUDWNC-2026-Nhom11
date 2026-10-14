@@ -1,8 +1,8 @@
-.loginLink { white-space: nowrap; }
+.loginLink { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.loginIcon { display: none; }
 .menuWrap { position: relative; }
 .trigger { display: flex; align-items: center; gap: 8px; background: none; border: 0; cursor: pointer; font: inherit; padding: 4px 8px; border-radius: var(--radius-md); color: var(--text-primary); }
 .trigger:hover { background: var(--bg-surface-alt); }
-.avatar { width: 32px; height: 32px; border-radius: var(--radius-full); object-fit: cover; background: var(--primary-light); color: var(--primary-dark); display: grid; place-items: center; font-size: 0.8125rem; font-weight: 700; }
 .name { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 0.875rem; }
 .menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 200px; background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 6px; display: flex; flex-direction: column; z-index: 60; }
 .menuItem { text-align: left; padding: 8px 10px; border: 0; background: none; border-radius: var(--radius-sm); font: inherit; font-size: 0.875rem; color: var(--text-primary); text-decoration: none; cursor: pointer; }
@@ -11,3 +11,8 @@
 .toastSuccess { background: var(--secondary); }
 .toastError { background: var(--danger); }
 @media (max-width: 640px) { .name { display: none; } }
+/* Màn hình hẹp: chỉ hiện biểu tượng để header không bị tràn ngang. */
+@media (max-width: 480px) {
+  .loginText { display: none; }
+  .loginIcon { display: inline-block; width: 18px; height: 18px; flex: none; }
+}

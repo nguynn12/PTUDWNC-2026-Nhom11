@@ -2,12 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStatus } from "@/store/auth-store";
 import styles from "@/styles/auth.module.css";
+import { AuthLoading } from "./AuthLoading";
 
 /** Bảo vệ route phía client (SRS 5.1: /profile, /dashboard/* bắt buộc đăng nhập). */
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const status = useAuthStore((s) => s.status);
+  const status = useAuthStatus();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -19,9 +20,9 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   if (status !== "authenticated") {
     return (
-      <main className={styles.page}>
-        <p>Đang kiểm tra phiên đăng nhập...</p>
-      </main>
+      <section className={styles.page}>
+        <AuthLoading message="Đang kiểm tra phiên đăng nhập..." />
+      </section>
     );
   }
   return <>{children}</>;

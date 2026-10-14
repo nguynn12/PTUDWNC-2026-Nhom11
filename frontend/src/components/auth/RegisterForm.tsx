@@ -6,15 +6,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import type { AppError } from "@/lib/errors";
-import type { UserDto } from "@/types/auth";
+import { applyFieldErrors, type AppError } from "@/lib/errors";
 import { register as registerAccount } from "@/lib/auth/session";
 import { registerSchema, type RegisterValues } from "@/lib/validators/auth";
 import { useAuthUIStore } from "@/store/auth-ui-store";
-import styles from "@/styles/auth.module.css";
+import type { UserDto } from "@/types/auth";
+import { AuthCard } from "./AuthCard";
 import { Field } from "./Field";
+import { FormAlert } from "./FormAlert";
+import { PasswordField } from "./PasswordField";
+import { SubmitButton } from "./SubmitButton";
 
-const FIELDS = ["displayName", "email", "password"] as const;
+const SERVER_FIELDS = ["displayName", "email", "password"] as const;
+const PASSWORD_HINT = "Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt.";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -37,19 +41,11 @@ export function RegisterForm() {
     },
     onError: (error) => {
       if (error.code === "AUTH_EMAIL_EXISTS") {
-        setError("email", { message: error.message });
+        setError("email", { type: "server", message: error.message });
         return;
       }
-      // 422: backend trả errors { email: [...], password: [...] } -> gắn vào từng ô.
-      let mapped = false;
-      for (const field of FIELDS) {
-        const messages = error.fieldErrors[field];
-        if (messages?.length) {
-          setError(field, { message: messages[0] });
-          mapped = true;
-        }
-      }
-      if (!mapped) setServerError(error.message);
+      // 422: gắn lỗi từng trường; không gắn được thì hiện thông báo chung.
+      if (!applyFieldErrors(error, SERVER_FIELDS, setError)) setServerError(error.message);
     },
   });
 
@@ -59,43 +55,37 @@ export function RegisterForm() {
   });
 
   return (
-    <main className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Tạo tài khoản</h1>
-        <p className={styles.subtitle}>Tham gia cộng đồng chia sẻ công thức nấu ăn.</p>
-
-        {serverError && (
-          <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-            {serverError}
-          </div>
-        )}
-
-        <form onSubmit={onSubmit} noValidate>
-          <Field label="Tên hiển thị" autoComplete="name" error={errors.displayName} {...register("displayName")} />
-          <Field label="Email" type="email" autoComplete="email" error={errors.email} {...register("email")} />
-          <Field
-            label="Mật khẩu"
-            type="password"
-            autoComplete="new-password"
-            error={errors.password}
-            {...register("password")}
-          />
-          <Field
-            label="Nhập lại mật khẩu"
-            type="password"
-            autoComplete="new-password"
-            error={errors.confirmPassword}
-            {...register("confirmPassword")}
-          />
-          <button type="submit" className={styles.button} disabled={mutation.isPending}>
-            {mutation.isPending ? "Đang tạo tài khoản..." : "Đăng ký"}
-          </button>
-        </form>
-
-        <p className={styles.footer}>
+    <AuthCard
+      title="Tạo tài khoản"
+      subtitle="Tham gia cộng đồng chia sẻ công thức nấu ăn."
+      footer={
+        <>
           Đã có tài khoản? <Link href="/auth/login">Đăng nhập</Link>
-        </p>
-      </div>
-    </main>
+        </>
+      }
+    >
+      {serverError && <FormAlert>{serverError}</FormAlert>}
+
+      <form onSubmit={onSubmit} noValidate>
+        <Field label="Tên hiển thị" autoComplete="name" error={errors.displayName} {...register("displayName")} />
+        <Field label="Email" type="email" autoComplete="email" error={errors.email} {...register("email")} />
+        <PasswordField
+          label="Mật khẩu"
+          autoComplete="new-password"
+          hint={PASSWORD_HINT}
+          error={errors.password}
+          {...register("password")}
+        />
+        <PasswordField
+          label="Nhập lại mật khẩu"
+          autoComplete="new-password"
+          error={errors.confirmPassword}
+          {...register("confirmPassword")}
+        />
+        <SubmitButton loading={mutation.isPending} loadingText="Đang tạo tài khoản...">
+          Đăng ký
+        </SubmitButton>
+      </form>
+    </AuthCard>
   );
 }
