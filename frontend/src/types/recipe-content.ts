@@ -4,7 +4,7 @@
 // Khớp backend /api/v1/recipes/{id}/ingredients, /steps, /images (SRS FR-RCP-008..010, FR-FILE-001..002)
 // ============================================================================
 
-import type { ApiProblemDetails } from "./api";
+import type { ApiProblemDetails, RecipeAuthorDto } from "./api";
 
 // ----------------------------------------------------------------------------
 // ENUMS & ĐỘ KHÓ / TRẠNG THÁI CÔNG THỨC
@@ -189,8 +189,9 @@ export interface RecipeFullDetailDto {
   status: RecipeStatus | number;
   categoryId: string;
   categoryName?: string | null;
-  authorId: string;
+  authorId?: string;
   authorName?: string | null;
+  author?: RecipeAuthorDto;
   publishedAt?: string | null;
   createdAt: string;
   updatedAt?: string | null;
