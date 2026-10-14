@@ -4,16 +4,151 @@
 @stepId1 = 22222222-3333-4444-5555-666666666661
 @stepId2 = 22222222-3333-4444-5555-666666666662
 @imageId = 33333333-4444-5555-6666-777777777777
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.demo
+@authorToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.authorDemoToken
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.adminDemoToken
+@strangerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.strangerDemoToken
 
 ### =========================================================================
-### KIỂM THỬ SCALAR API REFERENCE & OPENAPI v1
-### Thành viên 4: Nguyễn Phú Quý (MSSV: 2312731)
+### KIỂM THỬ TÀI LIỆU API & OPENAPI v1 / SCALAR UI
+### Thành viên 4: Nguyễn Phú Quý (MSSV: 2312731) - Phân hệ Recipe Content & Media
 ### =========================================================================
 
-### 0. Kiểm tra tài liệu OpenAPI JSON (nạp cho Scalar UI tại /scalar/v1)
+### 0. Kiểm tra tài liệu OpenAPI JSON (phục vụ Scalar UI tại /scalar/v1)
 GET {{baseUrl}}/openapi/v1.json
 Accept: application/json
+
+### =========================================================================
+### PHẦN BẢO MẬT LAB 5: AUTHENTICATION & AUTHORIZATION (401 / 403 / 200)
+### =========================================================================
+
+### [SEC-01] Chặn 401 Unauthorized khi thêm nguyên liệu mà KHÔNG gửi Bearer Token
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients
+Content-Type: application/json
+
+{
+  "name": "Muối tiêu",
+  "quantity": 5,
+  "unit": "g"
+}
+
+### [SEC-02] Chặn 403 Forbidden khi user lạ (không phải tác giả recipe, không phải Admin) cố ý sửa bước làm
+PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/{{stepId1}}
+Authorization: Bearer {{strangerToken}}
+Content-Type: application/json
+
+{
+  "title": "Hack bước làm",
+  "instruction": "Cố tình thay đổi dữ liệu của người khác mà không có quyền",
+  "durationMinutes": 10
+}
+
+### [SEC-03] Chặn 401 Unauthorized khi xóa hình ảnh mà KHÔNG gửi token
+DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/images/{{imageId}}
+
+### =========================================================================
+### PHẦN BẢO MẬT LAB 5: RATE LIMITING UPLOAD (5 REQUEST / PHÚT / IP)
+### Gửi liên tiếp 6 request tải ảnh: 5 request đầu được duyệt, request thứ 6 nhận 429
+### =========================================================================
+
+### [RATE-01] Upload ảnh lần 1 (Hợp lệ, đếm 1/5)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{authorToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Ảnh minh họa 1
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="isPrimary"
+
+true
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="photo-1.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
+
+### [RATE-02] Upload ảnh lần 2 (Hợp lệ, đếm 2/5)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{authorToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Ảnh minh họa 2
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="photo-2.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
+
+### [RATE-03] Upload ảnh lần 3 (Hợp lệ, đếm 3/5)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{authorToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Ảnh minh họa 3
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="photo-3.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
+
+### [RATE-04] Upload ảnh lần 4 (Hợp lệ, đếm 4/5)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{authorToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Ảnh minh họa 4
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="photo-4.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
+
+### [RATE-05] Upload ảnh lần 5 (Hợp lệ, đếm 5/5)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{authorToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Ảnh minh họa 5
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="photo-5.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
+
+### [RATE-06] Upload ảnh lần 6 (VƯỢT GIỚI HẠN: Trả về HTTP 429 kèm Header Retry-After và Problem Details)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
+Authorization: Bearer {{authorToken}}
+Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
+
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="altText"
+
+Ảnh minh họa 6 - Vượt rate limit
+------CulinaryBlogBoundary
+Content-Disposition: form-data; name="file"; filename="photo-6.webp"
+Content-Type: image/webp
+
+RIFFxxxxWEBPVP8 
+------CulinaryBlogBoundary--
 
 ### =========================================================================
 ### NHÓM 1: QUẢN LÝ NGUYÊN LIỆU & ĐỊNH LƯỢNG (3 API ENDPOINTS)
@@ -21,7 +156,7 @@ Accept: application/json
 
 ### [API 1/10] POST /api/v1/recipes/{id}/ingredients - Thêm nguyên liệu định lượng số thực (Decimal)
 POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -32,9 +167,9 @@ Content-Type: application/json
   "sortOrder": 1
 }
 
-### [API 1b/10] POST /api/v1/recipes/{id}/ingredients - Thêm gia vị "vừa đủ" (Quantity & Unit = null theo Quyết định E1, E2)
+### [API 1b/10] POST /api/v1/recipes/{id}/ingredients - Thêm gia vị "vừa đủ" (Quantity & Unit = null)
 POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -47,7 +182,7 @@ Content-Type: application/json
 
 ### [API 2/10] PUT /api/v1/recipes/{id}/ingredients/{ingredientId} - Cập nhật nguyên liệu
 PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients/{{ingredientId}}
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -58,9 +193,12 @@ Content-Type: application/json
   "sortOrder": 1
 }
 
-### [API 3/10] DELETE /api/v1/recipes/{id}/ingredients/{ingredientId} - Xóa nguyên liệu
+### [API 3/10] DELETE /api/v1/recipes/{id}/ingredients/{ingredientId} - Xóa nguyên liệu (Soft Delete)
 DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients/{{ingredientId}}
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
+
+### GET /api/v1/recipes/{id}/ingredients - Đọc danh sách nguyên liệu (Public Read)
+GET {{baseUrl}}/api/v1/recipes/{{recipeId}}/ingredients
 
 ### =========================================================================
 ### NHÓM 2: QUẢN LÝ CÁC BƯỚC CHẾ BIẾN & REORDER (4 API ENDPOINTS)
@@ -68,7 +206,7 @@ Authorization: Bearer {{jwtToken}}
 
 ### [API 4/10] POST /api/v1/recipes/{id}/steps - Thêm bước thực hiện mới kèm hẹn giờ (DurationMinutes)
 POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -81,7 +219,7 @@ Content-Type: application/json
 
 ### [API 5/10] PUT /api/v1/recipes/{id}/steps/{stepId} - Cập nhật nội dung bước thực hiện
 PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/{{stepId1}}
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -94,7 +232,7 @@ Content-Type: application/json
 
 ### [API 6/10] PUT /api/v1/recipes/{id}/steps/reorder - Sắp xếp lại thứ tự các bước trong 1 Transaction nguyên tử
 PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/reorder
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -106,15 +244,18 @@ Content-Type: application/json
 
 ### [API 7/10] DELETE /api/v1/recipes/{id}/steps/{stepId} - Xóa bước làm và tự động đánh lại số thứ tự 1..N
 DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps/{{stepId1}}
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
+
+### GET /api/v1/recipes/{id}/steps - Đọc danh sách các bước thực hiện (Public Read)
+GET {{baseUrl}}/api/v1/recipes/{{recipeId}}/steps
 
 ### =========================================================================
-### NHÓM 3: QUẢN LÝ HÌNH ẢNH & MINIO STORAGE (3 API ENDPOINTS)
+### NHÓM 3: QUẢN LÝ HÌNH ẢNH & MEDIA STORAGE (3 API ENDPOINTS)
 ### =========================================================================
 
-### [API 8/10] POST /api/v1/recipes/{id}/images - Upload ảnh lên MinIO (Multipart/form-data, <= 5MB, JPEG/PNG/WebP/AVIF)
+### [API 8/10] POST /api/v1/recipes/{id}/images - Upload ảnh lên Storage (Multipart/form-data, <= 5MB, JPEG/PNG/WebP/AVIF)
 POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/images
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: multipart/form-data; boundary=----CulinaryBlogBoundary
 
 ------CulinaryBlogBoundary
@@ -134,7 +275,7 @@ RIFFxxxxWEBPVP8
 
 ### [API 9/10] PATCH /api/v1/recipes/{id}/images/{imageId} - Cập nhật AltText, thứ tự và đặt làm Ảnh chính (IsPrimary)
 PATCH {{baseUrl}}/api/v1/recipes/{{recipeId}}/images/{{imageId}}
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
 Content-Type: application/json
 
 {
@@ -143,6 +284,9 @@ Content-Type: application/json
   "sortOrder": 0
 }
 
-### [API 10/10] DELETE /api/v1/recipes/{id}/images/{imageId} - Xóa hình ảnh khỏi công thức và MinIO Storage
+### [API 10/10] DELETE /api/v1/recipes/{id}/images/{imageId} - Xóa hình ảnh khỏi công thức và File Storage
 DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/images/{{imageId}}
-Authorization: Bearer {{jwtToken}}
+Authorization: Bearer {{authorToken}}
+
+### GET /api/v1/recipes/{id}/images - Đọc danh sách hình ảnh của công thức (Public Read)
+GET {{baseUrl}}/api/v1/recipes/{{recipeId}}/images

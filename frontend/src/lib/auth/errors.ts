@@ -1,12 +1,7 @@
 import type { AxiosError } from "axios";
+import type { AuthProblemDetails as ProblemDetails } from "@/types/auth";
 
-export interface ProblemDetails {
-  type?: string;
-  title?: string;
-  status?: number;
-  detail?: string;
-  errors?: Record<string, string[]>;
-}
+export type { ProblemDetails };
 
 export class ApiError extends Error {
   constructor(

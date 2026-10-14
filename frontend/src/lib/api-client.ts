@@ -1,8 +1,11 @@
 import {
   ProblemDetails,
   RecipeSummaryDto,
+  RecipeStatus,
   PaginatedList,
   DashboardMetrics,
+} from './types';
+import type {
   CategoryOptionDto,
   RecipeIngredientDto,
   CreateRecipeIngredientRequest,
@@ -16,7 +19,7 @@ import {
   CreateRecipePayload,
   UpdateRecipePayload,
   RecipeFullDetailDto,
-} from './types';
+} from '@/types/recipe-content';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000/api/v1';
 
@@ -703,7 +706,7 @@ function getMockRecipesList(params: {
 
   if (params.status !== undefined && params.status !== '') {
     const s = params.status.toString().toLowerCase();
-    filtered = filtered.filter(r => r.status.toString().toLowerCase() === s);
+    filtered = filtered.filter(r => (r.status ?? '').toString().toLowerCase() === s);
   }
 
   if (params.search) {
@@ -794,6 +797,19 @@ function getMockRecipeFullDetail(id: string): RecipeFullDetailDto {
 
   return {
     ...found,
+    status: (found.status || 'Draft') as RecipeStatus,
+    categoryName: found.categoryName || 'Món chính',
+    categorySlug: found.categorySlug || 'mon-chinh',
+    prepTime: found.prepTime ?? found.prepTimeMinutes ?? 15,
+    cookTime: found.cookTime ?? found.cookTimeMinutes ?? 30,
+    totalTime: found.totalTime ?? ((found.prepTimeMinutes || 15) + (found.cookTimeMinutes || 30)),
+    prepTimeMinutes: found.prepTimeMinutes ?? found.prepTime ?? 15,
+    cookTimeMinutes: found.cookTimeMinutes ?? found.cookTime ?? 30,
+    author: found.author || {
+      id: found.authorId || 'author-1',
+      userName: found.authorName || 'Bếp Trưởng',
+      displayName: found.authorName || 'Bếp Trưởng',
+    },
     nutrition: {
       calories: 520,
       protein: 32,
@@ -802,9 +818,9 @@ function getMockRecipeFullDetail(id: string): RecipeFullDetailDto {
       fiber: 4.5,
       sodium: 680,
     },
-    ingredients: [...mockIngredientsMap[recipeId]].sort((a, b) => a.orderIndex - b.orderIndex),
+    ingredients: [...mockIngredientsMap[recipeId]].sort((a, b) => (a.orderIndex ?? a.sortOrder ?? 0) - (b.orderIndex ?? b.sortOrder ?? 0)),
     steps: [...mockStepsMap[recipeId]].sort((a, b) => a.stepNumber - b.stepNumber),
-    images: [...mockImagesMap[recipeId]].sort((a, b) => a.orderIndex - b.orderIndex),
+    images: [...mockImagesMap[recipeId]].sort((a, b) => (a.orderIndex ?? a.displayOrder ?? 0) - (b.orderIndex ?? b.displayOrder ?? 0)),
   };
 }
 
@@ -888,7 +904,7 @@ function addMockIngredient(
     request.orderIndex && request.orderIndex > 0
       ? request.orderIndex
       : list.length > 0
-        ? Math.max(...list.map(i => i.orderIndex)) + 1
+        ? Math.max(...list.map(i => i.orderIndex ?? i.sortOrder ?? 0)) + 1
         : 1;
   const item: RecipeIngredientDto = {
     id: `ing-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -941,7 +957,7 @@ function addMockStep(recipeId: string, request: CreateRecipeStepRequest): Recipe
     recipeId,
     stepNumber,
     title: request.title ?? `Bước ${stepNumber}`,
-    description: request.description,
+    description: request.description ?? request.instruction ?? '',
     durationMinutes: request.durationMinutes ?? null,
     imageUrl: request.imageUrl ?? null,
   };
@@ -962,7 +978,7 @@ function updateMockStep(
     recipeId,
     stepNumber: existingStepNumber,
     title: request.title ?? `Bước ${existingStepNumber}`,
-    description: request.description,
+    description: request.description ?? request.instruction ?? '',
     durationMinutes: request.durationMinutes ?? null,
     imageUrl: request.imageUrl ?? null,
   };
@@ -1037,7 +1053,7 @@ function updateMockImage(
       isPrimary: request.isPrimary !== undefined && request.isPrimary !== null ? request.isPrimary : list[idx].isPrimary,
       orderIndex: request.orderIndex !== undefined && request.orderIndex !== null ? request.orderIndex : list[idx].orderIndex,
     };
-    mockImagesMap[recipeId] = [...list].sort((a, b) => a.orderIndex - b.orderIndex);
+    mockImagesMap[recipeId] = [...list].sort((a, b) => (a.orderIndex ?? a.displayOrder ?? 0) - (b.orderIndex ?? b.displayOrder ?? 0));
     return list[idx];
   }
   throw new ApiError(404, 'Không tìm thấy hình ảnh.');

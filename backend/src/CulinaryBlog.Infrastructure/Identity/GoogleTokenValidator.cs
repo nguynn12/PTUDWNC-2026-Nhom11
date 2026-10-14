@@ -1,50 +1,39 @@
-using System.Security.Claims;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CulinaryBlog.Infrastructure.Identity;
 
 /// <summary>
-/// Xác minh Google ID token theo chuẩn OpenID Connect (FR-AUTH-003): chữ ký bằng public key công bố
-/// tại discovery document của Google (tự tải và cache, tự làm mới khi Google xoay key), issuer
-/// <c>accounts.google.com</c>, audience = <see cref="GoogleAuthSettings.ClientId"/>, hạn dùng và
-/// nonce (nếu client gửi kèm). Dùng thư viện Microsoft.IdentityModel sẵn có của JwtBearer nên không
-/// cần thêm package mới.
+/// Xác minh Google ID token bằng thư viện Google chính thức (SRS FR-AUTH-003, RESOLVED-CONFLICTS D2):
+/// <see cref="GoogleJsonWebSignature.ValidateAsync(string, GoogleJsonWebSignature.ValidationSettings)"/>
+/// kiểm tra chữ ký (public key Google, tự cache và làm mới), issuer <c>accounts.google.com</c>,
+/// audience = <see cref="GoogleAuthSettings.ClientId"/> và hạn dùng. Nonce do lớp này đối chiếu thêm.
 /// </summary>
 public sealed class GoogleTokenValidator : IGoogleTokenValidator
 {
-    public const string DiscoveryUrl = "https://accounts.google.com/.well-known/openid-configuration";
+    /// <summary>Điểm thay thế cho unit test; mặc định gọi thẳng thư viện Google.</summary>
+    public delegate Task<GoogleJsonWebSignature.Payload> VerifyIdToken(
+        string idToken, GoogleJsonWebSignature.ValidationSettings settings);
 
-    private static readonly string[] ValidIssuers = ["https://accounts.google.com", "accounts.google.com"];
+    private static readonly TimeSpan ClockTolerance = TimeSpan.FromMinutes(1);
 
     private readonly GoogleAuthSettings _settings;
-    private readonly IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
     private readonly ILogger<GoogleTokenValidator> _logger;
-    private readonly JsonWebTokenHandler _tokenHandler = new() { MapInboundClaims = false };
+    private readonly VerifyIdToken _verify;
 
     public GoogleTokenValidator(
         IOptions<GoogleAuthSettings> settings,
-        IConfigurationManager<OpenIdConnectConfiguration> configurationManager,
-        ILogger<GoogleTokenValidator> logger)
+        ILogger<GoogleTokenValidator> logger,
+        VerifyIdToken? verify = null)
     {
         ArgumentNullException.ThrowIfNull(settings);
         _settings = settings.Value;
-        _configurationManager = configurationManager;
         _logger = logger;
+        _verify = verify ?? new VerifyIdToken(GoogleJsonWebSignature.ValidateAsync);
     }
-
-    /// <summary>Configuration manager đọc discovery document + JWKS của Google (cache mặc định 12 giờ).</summary>
-    public static IConfigurationManager<OpenIdConnectConfiguration> CreateGoogleConfigurationManager() =>
-        new ConfigurationManager<OpenIdConnectConfiguration>(
-            DiscoveryUrl,
-            new OpenIdConnectConfigurationRetriever(),
-            new HttpDocumentRetriever { RequireHttps = true });
 
     public async Task<GoogleUserInfo?> ValidateAsync(string idToken, string? nonce, CancellationToken cancellationToken = default)
     {
@@ -59,54 +48,36 @@ public sealed class GoogleTokenValidator : IGoogleTokenValidator
             return null;
         }
 
-        var configuration = await _configurationManager.GetConfigurationAsync(cancellationToken);
-
-        var result = await _tokenHandler.ValidateTokenAsync(idToken, new TokenValidationParameters
+        var validationSettings = new GoogleJsonWebSignature.ValidationSettings
         {
-            ValidateIssuer = true,
-            ValidIssuers = ValidIssuers,
-            ValidateAudience = true,
-            ValidAudience = _settings.ClientId,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKeys = configuration.SigningKeys,
-            ClockSkew = TimeSpan.FromMinutes(1),
-        });
+            Audience = [_settings.ClientId],
+            IssuedAtClockTolerance = ClockTolerance,
+            ExpirationTimeClockTolerance = ClockTolerance,
+        };
 
-        if (!result.IsValid)
+        GoogleJsonWebSignature.Payload payload;
+        try
         {
-            if (result.Exception is SecurityTokenSignatureKeyNotFoundException)
-            {
-                // Google vừa xoay key: lần sau tải lại JWKS.
-                _configurationManager.RequestRefresh();
-            }
-
-            _logger.LogInformation(result.Exception, "Google ID token không hợp lệ.");
+            payload = await _verify(idToken, validationSettings).WaitAsync(cancellationToken);
+        }
+        catch (InvalidJwtException ex)
+        {
+            _logger.LogInformation(ex, "Google ID token không hợp lệ.");
             return null;
         }
 
-        var claims = result.ClaimsIdentity;
-        var subject = claims.FindFirst("sub")?.Value;
-        var email = claims.FindFirst("email")?.Value;
-        if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(payload.Subject) || string.IsNullOrWhiteSpace(payload.Email))
         {
             return null;
         }
 
-        if (!string.IsNullOrEmpty(nonce) && !string.Equals(claims.FindFirst("nonce")?.Value, nonce, StringComparison.Ordinal))
+        // Client gửi nonce (frontend sinh khi khởi tạo Google Identity Services) thì token phải mang đúng nonce đó.
+        if (!string.IsNullOrEmpty(nonce) && !string.Equals(payload.Nonce, nonce, StringComparison.Ordinal))
         {
             _logger.LogWarning("Google ID token có nonce không khớp.");
             return null;
         }
 
-        return new GoogleUserInfo(
-            subject,
-            email,
-            IsTrue(claims.FindFirst("email_verified")),
-            claims.FindFirst("name")?.Value,
-            claims.FindFirst("picture")?.Value);
+        return new GoogleUserInfo(payload.Subject, payload.Email, payload.EmailVerified, payload.Name, payload.Picture);
     }
-
-    private static bool IsTrue(Claim? claim) =>
-        claim is not null && bool.TryParse(claim.Value, out var value) && value;
 }

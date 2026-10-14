@@ -65,7 +65,7 @@ export default function MyRecipesLifecyclePage() {
   // Lọc bài viết theo Tab và Tìm kiếm
   const filteredRecipes = useMemo(() => {
     return recipes.filter(item => {
-      const s = item.status.toString().toUpperCase();
+      const s = (item.status ?? 'DRAFT').toString().toUpperCase();
       let matchTab = true;
       if (activeFilter === 'DRAFT') matchTab = s === 'DRAFT' || s === '0';
       else if (activeFilter === 'PUBLISHED') matchTab = s === 'PUBLISHED' || s === '1';
@@ -228,19 +228,19 @@ export default function MyRecipesLifecyclePage() {
               onClick={() => setActiveFilter('PUBLISHED')}
               className={`tab-btn ${activeFilter === 'PUBLISHED' ? 'active' : ''}`}
             >
-              Đã xuất bản ({recipes.filter(r => r.status.toString().toUpperCase() === 'PUBLISHED' || r.status === 1).length})
+              Đã xuất bản ({recipes.filter(r => (r.status ?? '').toString().toUpperCase() === 'PUBLISHED' || r.status === 1).length})
             </button>
             <button
               onClick={() => setActiveFilter('DRAFT')}
               className={`tab-btn ${activeFilter === 'DRAFT' ? 'active' : ''}`}
             >
-              Bản nháp ({recipes.filter(r => r.status.toString().toUpperCase() === 'DRAFT' || r.status === 0).length})
+              Bản nháp ({recipes.filter(r => (r.status ?? '').toString().toUpperCase() === 'DRAFT' || r.status === 0).length})
             </button>
             <button
               onClick={() => setActiveFilter('ARCHIVED')}
               className={`tab-btn ${activeFilter === 'ARCHIVED' ? 'active' : ''}`}
             >
-              Đã lưu trữ ({recipes.filter(r => r.status.toString().toUpperCase() === 'ARCHIVED' || r.status === 2).length})
+              Đã lưu trữ ({recipes.filter(r => (r.status ?? '').toString().toUpperCase() === 'ARCHIVED' || r.status === 2).length})
             </button>
           </div>
 
@@ -292,7 +292,7 @@ export default function MyRecipesLifecyclePage() {
                   </tr>
                 ) : (
                   filteredRecipes.map(recipe => {
-                    const statusStr = recipe.status.toString().toUpperCase();
+                    const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
                     const isBusy = actionInProgress === recipe.id;
 
                     return (
@@ -308,12 +308,12 @@ export default function MyRecipesLifecyclePage() {
                             {recipe.categoryName || 'Món ngon'}
                           </span>
                         </td>
-                        <td>{renderStatusBadge(recipe.status)}</td>
+                        <td>{renderStatusBadge(recipe.status || 'Draft')}</td>
                         <td>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               <ClockIcon size={13} />
-                              {recipe.prepTimeMinutes + recipe.cookTimeMinutes} phút (Nấu {recipe.cookTimeMinutes}p)
+                              {(recipe.prepTimeMinutes ?? recipe.prepTime ?? 0) + (recipe.cookTimeMinutes ?? recipe.cookTime ?? 0)} phút (Nấu {recipe.cookTimeMinutes ?? recipe.cookTime ?? 0}p)
                             </span>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               <UsersIcon size={13} />

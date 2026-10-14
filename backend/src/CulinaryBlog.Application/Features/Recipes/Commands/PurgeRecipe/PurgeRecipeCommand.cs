@@ -26,8 +26,13 @@ public sealed class PurgeRecipeCommandHandler(
         PurgeRecipeCommand request,
         CancellationToken cancellationToken)
     {
-        // 1. Kiểm tra quyền Quản trị viên (Admin)
-        if (!string.IsNullOrWhiteSpace(currentUserService.UserId) && !currentUserService.IsAdmin)
+        // 1. Kiểm tra xác thực và quyền Quản trị viên (Admin)
+        if (string.IsNullOrWhiteSpace(currentUserService.UserId))
+        {
+            throw new UnauthorizedException("Vui lòng đăng nhập để xóa vĩnh viễn công thức.", "AUTH_UNAUTHORIZED");
+        }
+
+        if (!currentUserService.IsAdmin)
         {
             throw new ForbiddenException("Chỉ Quản trị viên mới có quyền xóa vĩnh viễn công thức.", "RECIPE_FORBIDDEN");
         }

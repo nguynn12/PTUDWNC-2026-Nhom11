@@ -38,7 +38,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
 
   // Sắp xếp nguyên liệu theo sortOrder
   const sortedIngredients = [...(recipe.ingredients || [])].sort(
-    (a, b) => a.sortOrder - b.sortOrder
+    (a, b) => (a.sortOrder ?? a.orderIndex ?? 0) - (b.sortOrder ?? b.orderIndex ?? 0)
   );
 
   // Sắp xếp các bước theo stepNumber
@@ -59,8 +59,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
     },
     datePublished: recipe.publishedAt,
     prepTime: `PT${recipe.prepTime || 15}M`,
-    cookTime: `PT${recipe.cookTime || 30}M`,
-    totalTime: `PT${recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 45}M`,
+    totalTime: `PT${recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 15) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 30)) || 45}M`,
     recipeYield: `${recipe.servings || 4} khẩu phần`,
     recipeCategory: recipe.categoryName,
     recipeIngredient: sortedIngredients.map(
@@ -230,7 +229,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Tổng thời gian</div>
           <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--primary)", marginTop: "4px" }}>
-            {recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 45} phút
+            {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 15) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 30)) || 45} phút
           </div>
         </div>
         <div style={{ textAlign: "center" }}>

@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { setAuthToken } from "@/lib/api-client";
-import type { AuthResponseDto, UserDto } from "./types";
+import type { AuthResponseDto, AuthStatus, UserDto } from "@/types/auth";
 
-export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
+export type { AuthStatus } from "@/types/auth";
 
 /** Refresh token (SRS 5.2: gửi trong body, không dùng cookie) lưu ở localStorage để giữ đăng nhập khi tải lại trang. */
 const REFRESH_TOKEN_KEY = "cb.refreshToken";

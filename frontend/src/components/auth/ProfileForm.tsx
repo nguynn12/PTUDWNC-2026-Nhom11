@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { authApi } from "@/lib/auth/api";
 import type { ApiError } from "@/lib/auth/errors";
-import type { UserDto } from "@/lib/auth/types";
+import type { UserDto } from "@/types/auth";
 import { useAuthStore } from "@/lib/auth/store";
 import { initialsOf } from "@/lib/auth/utils";
 import { profileSchema, type ProfileValues } from "@/lib/validators/auth";

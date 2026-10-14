@@ -32,7 +32,7 @@ public sealed class CreateRecipeCommandHandler(
 
         if (string.IsNullOrWhiteSpace(authorId))
         {
-            throw new ForbiddenException("Không thể xác định tác giả. Vui lòng đăng nhập trước khi tạo công thức.", "RECIPE_FORBIDDEN");
+            throw new UnauthorizedException("Vui lòng đăng nhập trước khi tạo công thức.", "AUTH_UNAUTHORIZED");
         }
 
         // 2. Kiểm tra danh mục món ăn có tồn tại hay không

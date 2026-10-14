@@ -25,8 +25,13 @@ public sealed class GetTrashedRecipesQueryHandler(
         GetTrashedRecipesQuery request,
         CancellationToken cancellationToken)
     {
-        // Kiểm tra quyền Admin (nếu có context user đăng nhập)
-        if (!string.IsNullOrWhiteSpace(currentUserService.UserId) && !currentUserService.IsAdmin)
+        // Kiểm tra xác thực và quyền Quản trị viên (Admin)
+        if (string.IsNullOrWhiteSpace(currentUserService.UserId))
+        {
+            throw new UnauthorizedException("Vui lòng đăng nhập để xem thùng rác.", "AUTH_UNAUTHORIZED");
+        }
+
+        if (!currentUserService.IsAdmin)
         {
             throw new ForbiddenException("Chỉ Quản trị viên mới có quyền xem thùng rác.", "RECIPE_FORBIDDEN");
         }

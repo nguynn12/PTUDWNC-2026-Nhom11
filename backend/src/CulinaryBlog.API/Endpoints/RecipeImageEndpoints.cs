@@ -1,6 +1,7 @@
 namespace CulinaryBlog.API.Endpoints;
 
 using System.Security.Claims;
+using CulinaryBlog.API.RateLimiting;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Application.Features.RecipeImages.DTOs;
@@ -65,6 +66,8 @@ public static class RecipeImageEndpoints
             return Results.Created($"/api/v1/recipes/{recipeId}/images", ApiResponse<RecipeImageDto>.Success(result));
         })
         .DisableAntiforgery()
+        .RequireAuthorization()
+        .RequireRateLimiting(UploadRateLimiting.PolicyName)
         .WithName("UploadRecipeImage")
         .WithSummary("Tải lên hình ảnh minh họa mới cho công thức (Multipart Form-Data).");
 
@@ -82,6 +85,7 @@ public static class RecipeImageEndpoints
             var result = await imageService.UpdateImageAsync(recipeId, imageId, request, userId, isAdmin, ct);
             return Results.Ok(ApiResponse<RecipeImageDto>.Success(result));
         })
+        .RequireAuthorization()
         .WithName("UpdateRecipeImage")
         .WithSummary("Cập nhật metadata hoặc đặt ảnh chính (IsPrimary) cho công thức.");
 
@@ -98,6 +102,7 @@ public static class RecipeImageEndpoints
             await imageService.DeleteImageAsync(recipeId, imageId, userId, isAdmin, ct);
             return Results.NoContent();
         })
+        .RequireAuthorization()
         .WithName("DeleteRecipeImage")
         .WithSummary("Xóa một hình ảnh minh họa khỏi công thức nấu ăn.");
 
