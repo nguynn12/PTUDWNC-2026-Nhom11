@@ -4,7 +4,7 @@ import styles from "@/styles/auth.module.css";
 interface UserAvatarProps {
   name: string | null | undefined;
   src?: string | null;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 /** Ảnh đại diện; chưa có ảnh thì hiện chữ cái đầu của tên. */
