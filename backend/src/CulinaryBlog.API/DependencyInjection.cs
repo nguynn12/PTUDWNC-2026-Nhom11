@@ -36,13 +36,31 @@ public static class DependencyInjection
         // trả 400 MALFORMED_REQUEST thống nhất ở mọi môi trường (RESOLVED-CONFLICTS C3).
         services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
-        // NFR-SEC: Rate Limiter cho Auth (10 req/phút) và Chung cho /api/v1 (100 req/phút/IP).
+        // Cấu hình Rate Limiting (Lab 5):
+        // - Auth policy: 10 request/phút/IP (SRS NFR-SEC)
+        // - General policy: 100 request/phút/IP (SRS NFR-SEC & Lab 5)
+        // - Upload policy: 5 request/phút/IP cho tác vụ tải ảnh công thức (Lab 5 - TV4)
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            options.OnRejected = GeneralRateLimiting.OnRejectedAsync;
+            options.OnRejected = async (context, token) =>
+            {
+                if (context.HttpContext.Request.Path.Value?.Contains("/images", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    await UploadRateLimiting.OnRejectedAsync(context, token);
+                }
+                else if (context.HttpContext.Request.Path.Value?.Contains("/auth", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    await AuthRateLimiting.OnRejectedAsync(context, token);
+                }
+                else
+                {
+                    await GeneralRateLimiting.OnRejectedAsync(context, token);
+                }
+            };
             options.AddPolicy(AuthRateLimiting.PolicyName, AuthRateLimiting.GetPartition);
             options.AddPolicy(GeneralRateLimiting.PolicyName, GeneralRateLimiting.GetPartition);
+            options.AddPolicy(UploadRateLimiting.PolicyName, UploadRateLimiting.GetPartition);
         });
 
         return services;
