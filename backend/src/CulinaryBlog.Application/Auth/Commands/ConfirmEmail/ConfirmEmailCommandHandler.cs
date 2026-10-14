@@ -25,7 +25,7 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand>
 
         if (!confirmed)
         {
-            throw new BusinessRuleValidationException(InvalidTokenMessage, "AUTH_CONFIRMATION_TOKEN_INVALID");
+            throw new BusinessRuleValidationException(InvalidTokenMessage, ErrorCodes.ValidationError);
         }
     }
 }
