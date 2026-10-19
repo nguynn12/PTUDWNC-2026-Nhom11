@@ -14,7 +14,6 @@ import {
   X,
 } from "lucide-react";
 import { Container } from "@/components/common/Container";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
@@ -23,7 +22,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetClose,
 } from "@/components/ui/sheet";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { cn } from "@/lib/utils";
