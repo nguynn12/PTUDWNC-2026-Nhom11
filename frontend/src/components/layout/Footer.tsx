@@ -1,89 +1,182 @@
 import React from "react";
 import Link from "next/link";
+import { ChefHat, ExternalLink, Heart, Code2 } from "lucide-react";
+import { Container } from "@/components/common/Container";
 
 export function Footer() {
+  const currentYear = 2026;
+
   return (
-    <footer
-      style={{
-        backgroundColor: "var(--bg-surface)",
-        borderTop: "1px solid var(--border-subtle)",
-        paddingTop: "48px",
-        paddingBottom: "32px",
-        marginTop: "auto",
-      }}
-    >
-      <div className="container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "36px",
-            marginBottom: "36px",
-          }}
-        >
-          {/* CỘT 1: THÔNG TIN THƯƠNG HIỆU */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "1.5rem" }}>🍳</span>
-              <span
-                style={{
-                  fontSize: "1.2rem",
-                  fontWeight: 800,
-                  letterSpacing: "-0.02em",
-                  color: "var(--text-primary)",
-                }}
-              >
-                Culinary<span style={{ color: "var(--primary)" }}>Blog</span>
+    <footer className="mt-auto w-full border-t border-border/70 bg-card/40 backdrop-blur-xs">
+      <Container className="py-12 lg:py-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
+          {/* CỘT 1: THƯƠNG HIỆU & SỨ MỆNH */}
+          <div className="space-y-4">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                <ChefHat className="h-5 w-5" />
+              </div>
+              <span className="font-serif text-xl font-bold tracking-tight text-foreground">
+                Culinary<span className="text-primary">Blog</span>
               </span>
-            </div>
-            <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Không gian chia sẻ và khám phá nghệ thuật ẩm thực. Nơi lưu giữ những công thức nấu ăn chuẩn vị và truyền cảm hứng vào bếp mỗi ngày.
+            </Link>
+
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Không gian khám phá và sẻ chia nghệ thuật ẩm thực. Nơi hội tụ các
+              công thức nấu ăn chuẩn vị, định lượng khoa học và truyền cảm hứng
+              vào bếp mỗi ngày.
             </p>
+
+            <div className="flex items-center gap-3 pt-1 text-muted-foreground">
+              <a
+                href="https://github.com/nguynn12/PTUDWNC-2026-Nhom11"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs hover:text-foreground transition-colors"
+                aria-label="GitHub Repository dự án"
+              >
+                <Code2 className="h-4 w-4" />
+                <span>Mã nguồn dự án</span>
+              </a>
+            </div>
           </div>
 
-          {/* CỘT 2: ĐIỀU HƯỚNG NHANH */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <h4 style={{ fontSize: "0.95rem", color: "var(--text-primary)", fontWeight: 700 }}>
+          {/* CỘT 2: KHÁM PHÁ CÔNG THỨC */}
+          <div className="space-y-3">
+            <h4 className="font-serif text-base font-semibold text-foreground">
               Khám Phá
             </h4>
-            <Link href="/recipes" style={{ fontSize: "0.88rem", color: "var(--text-secondary)" }}>
-              Duyệt công thức mới
-            </Link>
-            <Link href="/categories" style={{ fontSize: "0.88rem", color: "var(--text-secondary)" }}>
-              Danh mục món ăn
-            </Link>
-            <Link href="/search" style={{ fontSize: "0.88rem", color: "var(--text-secondary)" }}>
-              Tìm kiếm toàn văn bản
-            </Link>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link
+                  href="/recipes"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Công thức nấu ăn mới nhất
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/categories"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Danh mục món ăn phong phú
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/search"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Tìm kiếm toàn văn bản (FTS)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/categories/mon-chinh"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Món chính gia đình
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/categories/an-chay-thuc-duong"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Ăn chay & thực dưỡng thanh tịnh
+                </Link>
+              </li>
+            </ul>
           </div>
 
-          {/* CỘT 3: QUẢN TRỊ & HẠ TẦNG */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <h4 style={{ fontSize: "0.95rem", color: "var(--text-primary)", fontWeight: 700 }}>
+          {/* CỘT 3: HỆ THỐNG & QUẢN TRỊ */}
+          <div className="space-y-3">
+            <h4 className="font-serif text-base font-semibold text-foreground">
               Quản Trị & Hệ Thống
             </h4>
-            <Link href="/dashboard/categories" style={{ fontSize: "0.88rem", color: "var(--text-secondary)" }}>
-              Quản trị Danh mục (Admin)
-            </Link>
-            <a
-              href="http://localhost:5000/scalar/v1"
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: "0.88rem", color: "var(--primary)", fontWeight: 600 }}
-            >
-              Scalar API Reference ↗
-            </a>
-            <a
-              href="http://localhost:5000/health"
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: "0.88rem", color: "var(--secondary)", fontWeight: 600 }}
-            >
-              Kiểm tra Health Checks ↗
-            </a>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link
+                  href="/dashboard/categories"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Quản trị Danh mục (Admin)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard"
+                  className="hover:text-primary transition-colors inline-block"
+                >
+                  Bảng điều khiển tác giả
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="http://localhost:5000/scalar/v1"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-primary hover:underline font-medium"
+                >
+                  <span>Scalar API Reference</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="http://localhost:5000/health"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-secondary hover:underline font-medium"
+                >
+                  <span>Kiểm tra Health Checks</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* CỘT 4: THÔNG TIN DỰ ÁN */}
+          <div className="space-y-3">
+            <h4 className="font-serif text-base font-semibold text-foreground">
+              Công Nghệ & Đồ Án
+            </h4>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Dự án môn học{" "}
+              <strong className="text-foreground font-medium">
+                Phát triển Ứng dụng Web Nâng cao
+              </strong>{" "}
+              — Học kỳ I, Năm học 2026.
+            </p>
+            <div className="rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground space-y-1 border border-border/50">
+              <p>
+                <span className="font-semibold text-foreground">Kiến trúc:</span>{" "}
+                Clean Architecture + Next.js App Router
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Giao diện:</span>{" "}
+                Tailwind CSS v4 + shadcn/ui
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Nhóm thực hiện:</span>{" "}
+                Nhóm 11
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* THANH BẢN QUYỀN CUỐI TRANG */}
+        <div className="mt-12 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <p>© {currentYear} Culinary Blog. Bản quyền thuộc về Nhóm 11 - PTUDWNC.</p>
+
+          <p className="flex items-center gap-1">
+            <span>Thiết kế và phát triển với</span>
+            <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500" />
+            <span>chuẩn WCAG 2.1 AA</span>
+          </p>
+        </div>
+      </Container>
     </footer>
   );
 }
