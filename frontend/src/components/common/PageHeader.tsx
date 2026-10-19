@@ -13,8 +13,10 @@ export interface PageHeaderProps {
   title: string;
   description?: string;
   eyebrow?: string;
+  badge?: string;
   breadcrumbs?: BreadcrumbItem[];
   children?: React.ReactNode;
+  actions?: React.ReactNode;
   align?: "left" | "center";
   className?: string;
 }
@@ -23,12 +25,16 @@ export function PageHeader({
   title,
   description,
   eyebrow,
+  badge,
   breadcrumbs,
   children,
+  actions,
   align = "left",
   className,
 }: PageHeaderProps) {
   const isCentered = align === "center";
+  const displayEyebrow = eyebrow || badge;
+  const actionContent = actions || children;
 
   return (
     <div
@@ -94,10 +100,10 @@ export function PageHeader({
         )}
       >
         <div className={cn("space-y-2", isCentered ? "mx-auto max-w-2xl" : "max-w-3xl")}>
-          {eyebrow && (
+          {displayEyebrow && (
             <div>
               <Badge variant="secondary" className="mb-2 font-medium">
-                {eyebrow}
+                {displayEyebrow}
               </Badge>
             </div>
           )}
@@ -114,14 +120,14 @@ export function PageHeader({
         </div>
 
         {/* ACTIONS SLOT */}
-        {children && (
+        {actionContent && (
           <div
             className={cn(
               "flex flex-wrap items-center gap-2 pt-2 sm:pt-0 shrink-0",
               isCentered && "justify-center"
             )}
           >
-            {children}
+            {actionContent}
           </div>
         )}
       </div>

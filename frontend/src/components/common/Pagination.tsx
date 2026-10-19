@@ -3,17 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PaginationProps {
   page: number;
   totalPages: number;
   onPageChange?: (page: number) => void;
+  className?: string;
 }
 
 export function Pagination({
   page,
   totalPages,
   onPageChange,
+  className,
 }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -55,41 +59,25 @@ export function Pagination({
       return (
         <span
           key={`ellipsis-${index}`}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "36px",
-            height: "36px",
-            color: "var(--text-muted)",
-          }}
+          className="flex h-9 w-9 items-center justify-center text-muted-foreground"
+          aria-hidden="true"
         >
-          ...
+          <MoreHorizontal className="h-4 w-4" />
         </span>
       );
     }
 
     const isActive = p === page;
-    const style: React.CSSProperties = {
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      minWidth: "38px",
-      height: "38px",
-      padding: "0 8px",
-      borderRadius: "var(--radius-md)",
-      fontWeight: 600,
-      fontSize: "0.9rem",
-      backgroundColor: isActive ? "var(--primary)" : "var(--bg-surface)",
-      color: isActive ? "var(--text-inverse)" : "var(--text-primary)",
-      border: `1px solid ${isActive ? "var(--primary)" : "var(--border-default)"}`,
-      cursor: isActive ? "default" : "pointer",
-      transition: "all var(--transition-fast)",
-    };
+    const baseClass = cn(
+      "inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition-colors",
+      isActive
+        ? "bg-primary text-primary-foreground shadow-sm pointer-events-none"
+        : "text-foreground hover:bg-muted hover:text-foreground border border-transparent hover:border-border"
+    );
 
     if (isActive) {
       return (
-        <span key={p} style={style} aria-current="page">
+        <span key={p} className={baseClass} aria-current="page">
           {p}
         </span>
       );
@@ -101,7 +89,7 @@ export function Pagination({
           key={p}
           type="button"
           onClick={() => onPageChange(p)}
-          style={style}
+          className={baseClass}
         >
           {p}
         </button>
@@ -109,7 +97,7 @@ export function Pagination({
     }
 
     return (
-      <Link key={p} href={getUrl(p)} style={style}>
+      <Link key={p} href={getUrl(p)} className={baseClass}>
         {p}
       </Link>
     );
@@ -118,17 +106,15 @@ export function Pagination({
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
 
+  const btnNavClass =
+    "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-input bg-background px-3 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground";
+  const btnDisabledClass =
+    "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border/50 bg-background/50 px-3 text-sm font-medium text-muted-foreground opacity-50 cursor-not-allowed";
+
   return (
     <nav
       aria-label="Điều hướng phân trang"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "6px",
-        marginTop: "40px",
-        flexWrap: "wrap",
-      }}
+      className={cn("flex items-center justify-center gap-1.5 pt-8 pb-4 flex-wrap", className)}
     >
       {/* Nút Trước */}
       {onPageChange ? (
@@ -136,40 +122,32 @@ export function Pagination({
           type="button"
           disabled={!hasPrev}
           onClick={() => onPageChange(page - 1)}
-          className="btn btn-outline btn-sm"
-          style={{
-            height: "38px",
-            opacity: hasPrev ? 1 : 0.4,
-            cursor: hasPrev ? "pointer" : "not-allowed",
-          }}
+          className={hasPrev ? btnNavClass : btnDisabledClass}
+          aria-label="Về trang trước"
         >
-          ← Trước
+          <ChevronLeft className="h-4 w-4" />
+          <span className="hidden sm:inline">Trước</span>
         </button>
       ) : hasPrev ? (
         <Link
           href={getUrl(page - 1)}
-          className="btn btn-outline btn-sm"
-          style={{ height: "38px" }}
+          className={btnNavClass}
+          aria-label="Về trang trước"
         >
-          ← Trước
+          <ChevronLeft className="h-4 w-4" />
+          <span className="hidden sm:inline">Trước</span>
         </Link>
       ) : (
-        <span
-          className="btn btn-outline btn-sm"
-          style={{
-            height: "38px",
-            opacity: 0.4,
-            cursor: "not-allowed",
-            display: "inline-flex",
-            alignItems: "center",
-          }}
-        >
-          ← Trước
+        <span className={btnDisabledClass} aria-hidden="true">
+          <ChevronLeft className="h-4 w-4" />
+          <span className="hidden sm:inline">Trước</span>
         </span>
       )}
 
-      {/* Danh sách các trang */}
-      {getPageNumbers().map((p, idx) => renderPageItem(p, idx))}
+      {/* Danh sách các số trang */}
+      <div className="flex items-center gap-1">
+        {getPageNumbers().map((p, idx) => renderPageItem(p, idx))}
+      </div>
 
       {/* Nút Sau */}
       {onPageChange ? (
@@ -177,38 +155,27 @@ export function Pagination({
           type="button"
           disabled={!hasNext}
           onClick={() => onPageChange(page + 1)}
-          className="btn btn-outline btn-sm"
-          style={{
-            height: "38px",
-            opacity: hasNext ? 1 : 0.4,
-            cursor: hasNext ? "pointer" : "not-allowed",
-          }}
+          className={hasNext ? btnNavClass : btnDisabledClass}
+          aria-label="Tới trang sau"
         >
-          Sau →
+          <span className="hidden sm:inline">Sau</span>
+          <ChevronRight className="h-4 w-4" />
         </button>
       ) : hasNext ? (
         <Link
           href={getUrl(page + 1)}
-          className="btn btn-outline btn-sm"
-          style={{ height: "38px" }}
+          className={btnNavClass}
+          aria-label="Tới trang sau"
         >
-          Sau →
+          <span className="hidden sm:inline">Sau</span>
+          <ChevronRight className="h-4 w-4" />
         </Link>
       ) : (
-        <span
-          className="btn btn-outline btn-sm"
-          style={{
-            height: "38px",
-            opacity: 0.4,
-            cursor: "not-allowed",
-            display: "inline-flex",
-            alignItems: "center",
-          }}
-        >
-          Sau →
+        <span className={btnDisabledClass} aria-hidden="true">
+          <span className="hidden sm:inline">Sau</span>
+          <ChevronRight className="h-4 w-4" />
         </span>
       )}
     </nav>
   );
 }
-

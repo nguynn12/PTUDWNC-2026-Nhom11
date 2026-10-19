@@ -3,12 +3,62 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
 import {
   useCategories,
   useCreateCategory,
   useUpdateCategory,
   useDeleteCategory,
 } from "@/hooks/useCategories";
+import { Container } from "@/components/common/Container";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import {
+  FolderPlus,
+  Search,
+  X,
+  ExternalLink,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+  FolderKanban,
+  UtensilsCrossed,
+  Link2,
+  RotateCw,
+  Lock,
+  Loader2,
+  Utensils,
+} from "lucide-react";
 import type { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest, AppError } from "@/types/api";
 
 // ----------------------------------------------------------------------------
@@ -41,21 +91,6 @@ export default function AdminCategoriesPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryDto | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<CategoryDto | null>(null);
-
-  // Local State: Toast Notifications
-  const [toast, setToast] = useState<{
-    id: number;
-    message: string;
-    type: "success" | "error" | "info";
-  } | null>(null);
-
-  const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
-    const id = Date.now();
-    setToast({ id, message, type });
-    setTimeout(() => {
-      setToast((current) => (current?.id === id ? null : current));
-    }, 4000);
-  };
 
   // Lọc và Sắp xếp Danh mục trên Client
   const filteredCategories = useMemo(() => {
@@ -90,448 +125,366 @@ export default function AdminCategoriesPage() {
   const totalRecipesLinked = categories.reduce((sum: number, c: CategoryDto) => sum + c.recipeCount, 0);
 
   return (
-    <div className="container">
-      {/* Toast Notification */}
-      {toast && (
-        <div className="toast-container">
-          <div className={`toast-item toast-${toast.type}`}>
-            <span>
-              {toast.type === "success" && "✅"}
-              {toast.type === "error" && "⚠️"}
-              {toast.type === "info" && "ℹ️"}
-            </span>
-            <span>{toast.message}</span>
-            <button
-              onClick={() => setToast(null)}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "inherit",
-                cursor: "pointer",
-                marginLeft: "auto",
-                fontWeight: "bold",
-              }}
-              aria-label="Đóng thông báo"
+    <div className="py-8 sm:py-12 bg-background min-h-screen">
+      <Container>
+        {/* Header & Tiêu đề trang */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+            <Link href="/" className="hover:text-primary transition-colors">
+              Trang chủ
+            </Link>
+            <span>/</span>
+            <span>Bảng điều khiển</span>
+            <span>/</span>
+            <span className="text-primary font-medium">Quản lý Danh mục</span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-serif">
+                Quản Trị Danh Mục Món Ăn
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Quản lý danh sách, cấu hình thứ tự hiển thị và duy trì các chuyên mục ẩm thực (FR-CAT-001 đến FR-CAT-005).
+              </p>
+            </div>
+            <Button
+              onClick={() => setIsCreateOpen(true)}
+              className="gap-2 shrink-0 rounded-xl"
             >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Header & Tiêu đề trang */}
-      <div style={{ marginBottom: "28px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-          <Link href="/" style={{ color: "var(--text-tertiary)", fontSize: "0.85rem", textDecoration: "none" }}>
-            Trang chủ
-          </Link>
-          <span style={{ color: "var(--text-tertiary)", fontSize: "0.85rem" }}>/</span>
-          <span style={{ color: "var(--text-tertiary)", fontSize: "0.85rem" }}>Bảng điều khiển</span>
-          <span style={{ color: "var(--text-tertiary)", fontSize: "0.85rem" }}>/</span>
-          <span style={{ color: "var(--primary)", fontSize: "0.85rem", fontWeight: 600 }}>Quản lý Danh mục</span>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
-          <div>
-            <h1 style={{ fontSize: "1.85rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "4px" }}>
-              Quản trị Danh mục Món ăn
-            </h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
-              Quản lý danh sách, cấu hình thứ tự hiển thị và duy trì các chuyên mục ẩm thực (FR-CAT-001 đến FR-CAT-005).
-            </p>
-          </div>
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="btn btn-primary"
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: 600 }}
-          >
-            <span>➕</span>
-            <span>Thêm danh mục mới</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="metrics-grid">
-        <div className="metric-card">
-          <div className="metric-icon-box" style={{ backgroundColor: "hsla(24, 80%, 50%, 0.12)", color: "var(--primary)" }}>
-            📁
-          </div>
-          <div>
-            <div className="metric-value">{totalCategories}</div>
-            <div className="metric-label">Tổng số danh mục</div>
+              <FolderPlus className="w-4 h-4" />
+              <span>Thêm danh mục mới</span>
+            </Button>
           </div>
         </div>
 
-        <div className="metric-card">
-          <div className="metric-icon-box" style={{ backgroundColor: "hsla(145, 60%, 45%, 0.12)", color: "var(--success)" }}>
-            🍲
-          </div>
-          <div>
-            <div className="metric-value">{activeCategoriesWithRecipes}</div>
-            <div className="metric-label">Danh mục có bài viết</div>
-          </div>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <Card className="border border-border/80 shadow-xs">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <FolderKanban className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">{totalCategories}</div>
+                <div className="text-xs text-muted-foreground font-medium">Tổng số danh mục</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-border/80 shadow-xs">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+                <UtensilsCrossed className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">{activeCategoriesWithRecipes}</div>
+                <div className="text-xs text-muted-foreground font-medium">Danh mục có bài viết</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-border/80 shadow-xs">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-500 flex items-center justify-center shrink-0">
+                <Link2 className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">{totalRecipesLinked}</div>
+                <div className="text-xs text-muted-foreground font-medium">Tổng liên kết công thức</div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="metric-card">
-          <div className="metric-icon-box" style={{ backgroundColor: "hsla(210, 80%, 55%, 0.12)", color: "#2563eb" }}>
-            🔗
-          </div>
-          <div>
-            <div className="metric-value">{totalRecipesLinked}</div>
-            <div className="metric-label">Tổng liên kết công thức</div>
-          </div>
-        </div>
-      </div>
+        {/* Toolbar: Tìm kiếm & Sắp xếp */}
+        <Card className="border border-border/80 shadow-xs mb-6">
+          <CardContent className="p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+              <Input
+                type="text"
+                placeholder="Lọc nhanh danh mục theo tên hoặc slug..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 pr-8 h-10 rounded-lg text-sm"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
+                  aria-label="Xóa bộ lọc"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
 
-      {/* Toolbar: Tìm kiếm & Sắp xếp */}
-      <div className="admin-toolbar">
-        <div style={{ position: "relative", flex: 1, maxWidth: "420px" }}>
-          <span
-            style={{
-              position: "absolute",
-              left: "14px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-tertiary)",
-              pointerEvents: "none",
-            }}
-          >
-            🔍
-          </span>
-          <input
-            type="text"
-            className="input-search"
-            placeholder="Lọc nhanh danh mục theo tên hoặc slug..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ paddingLeft: "42px", height: "42px", fontSize: "0.9rem" }}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              style={{
-                position: "absolute",
-                right: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "transparent",
-                border: "none",
-                color: "var(--text-tertiary)",
-                cursor: "pointer",
-              }}
-            >
-              ✕
-            </button>
-          )}
-        </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Label htmlFor="sortSelect" className="text-xs text-muted-foreground whitespace-nowrap">
+                Sắp xếp theo:
+              </Label>
+              <select
+                id="sortSelect"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as "orderIndex" | "name" | "recipeCount")}
+                className="h-10 rounded-lg border border-input bg-background px-3 py-1 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="orderIndex">Thứ tự hiển thị (Mặc định)</option>
+                <option value="name">Tên danh mục (A - Z)</option>
+                <option value="recipeCount">Số lượng công thức (Nhiều nhất)</option>
+              </select>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <label htmlFor="sortSelect" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: 600 }}>
-            Sắp xếp theo:
-          </label>
-          <select
-            id="sortSelect"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as "orderIndex" | "name" | "recipeCount")}
-            className="input-select"
-            style={{ height: "42px", minWidth: "180px", fontSize: "0.9rem" }}
-          >
-            <option value="orderIndex">Thứ tự hiển thị (Mặc định)</option>
-            <option value="name">Tên danh mục (A - Z)</option>
-            <option value="recipeCount">Số lượng công thức (Nhiều nhất)</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Main Data Table */}
-      {isLoading ? (
-        <div className="admin-table-container" style={{ padding: "32px", textAlign: "center" }}>
-          <div className="skeleton" style={{ height: "48px", marginBottom: "16px" }} />
-          <div className="skeleton" style={{ height: "48px", marginBottom: "16px" }} />
-          <div className="skeleton" style={{ height: "48px", marginBottom: "16px" }} />
-          <div className="skeleton" style={{ height: "48px" }} />
-        </div>
-      ) : isError ? (
-        <div
-          className="admin-table-container"
-          style={{ padding: "48px 24px", textAlign: "center", color: "var(--danger)" }}
-        >
-          <div style={{ fontSize: "2.5rem", marginBottom: "12px" }}>⚠️</div>
-          <h3 style={{ marginBottom: "8px" }}>Không thể nạp dữ liệu danh mục</h3>
-          <p style={{ color: "var(--text-secondary)", marginBottom: "20px" }}>
-            {error?.detail || error?.message || "Đã xảy ra sự cố khi kết nối tới máy chủ API."}
-          </p>
-          <button onClick={() => refetch()} className="btn btn-outline btn-sm">
-            🔄 Tải lại dữ liệu
-          </button>
-        </div>
-      ) : filteredCategories.length === 0 ? (
-        <div
-          className="admin-table-container"
-          style={{ padding: "64px 24px", textAlign: "center" }}
-        >
-          <div style={{ fontSize: "3rem", marginBottom: "16px" }}>📁</div>
-          <h3 style={{ marginBottom: "8px", color: "var(--text-primary)" }}>
-            {searchTerm ? "Không tìm thấy danh mục phù hợp" : "Chưa có danh mục nào"}
-          </h3>
-          <p style={{ color: "var(--text-secondary)", marginBottom: "24px" }}>
-            {searchTerm
-              ? `Không có kết quả nào khớp với từ khóa "${searchTerm}". Vui lòng thử từ khóa khác.`
-              : "Bắt đầu thiết lập hệ thống chuyên mục ẩm thực bằng cách tạo danh mục đầu tiên."}
-          </p>
-          {searchTerm ? (
-            <button onClick={() => setSearchTerm("")} className="btn btn-outline btn-sm">
-              Xóa bộ lọc tìm kiếm
-            </button>
-          ) : (
-            <button onClick={() => setIsCreateOpen(true)} className="btn btn-primary btn-sm">
-              ➕ Tạo danh mục đầu tiên
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="admin-table-container">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ width: "70px", textAlign: "center" }}>Ảnh</th>
-                <th>Tên danh mục</th>
-                <th>Đường dẫn (Slug)</th>
-                <th style={{ width: "100px", textAlign: "center" }}>Thứ tự</th>
-                <th style={{ width: "120px", textAlign: "center" }}>Công thức</th>
-                <th style={{ width: "160px", textAlign: "right" }}>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCategories.map((cat) => (
-                <tr key={cat.id}>
-                  {/* Thumbnail */}
-                  <td style={{ textAlign: "center" }}>
-                    <div
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "var(--radius-md)",
-                        overflow: "hidden",
-                        backgroundColor: "var(--bg-surface-alt)",
-                        margin: "0 auto",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        position: "relative",
-                      }}
-                    >
-                      {cat.imageUrl ? (
-                        <Image
-                          src={cat.imageUrl}
-                          alt={cat.name}
-                          fill
-                          sizes="44px"
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <span style={{ fontSize: "1.25rem" }}>🍽️</span>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Tên & Mô tả */}
-                  <td>
-                    <div style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
-                      {cat.name}
-                    </div>
-                    {cat.description ? (
-                      <div
-                        style={{
-                          fontSize: "0.825rem",
-                          color: "var(--text-secondary)",
-                          maxWidth: "360px",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {cat.description}
+        {/* Main Data Table */}
+        {isLoading ? (
+          <Card className="border border-border/80 shadow-xs p-8 text-center">
+            <div className="flex flex-col items-center justify-center gap-3 py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Đang tải danh sách danh mục...</p>
+            </div>
+          </Card>
+        ) : isError ? (
+          <Card className="border border-destructive/30 shadow-xs p-8 text-center bg-destructive/5">
+            <div className="flex flex-col items-center justify-center gap-3 py-6">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Không thể nạp dữ liệu danh mục</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                {error?.detail || error?.message || "Đã xảy ra sự cố khi kết nối tới máy chủ API."}
+              </p>
+              <Button onClick={() => refetch()} variant="outline" size="sm" className="gap-2 mt-2">
+                <RotateCw className="w-4 h-4" />
+                Tải lại dữ liệu
+              </Button>
+            </div>
+          </Card>
+        ) : filteredCategories.length === 0 ? (
+          <Card className="border border-dashed border-border p-12 text-center">
+            <div className="flex flex-col items-center justify-center gap-3 py-4">
+              <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                <FolderKanban className="w-7 h-7" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">
+                {searchTerm ? "Không tìm thấy danh mục phù hợp" : "Chưa có danh mục nào"}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                {searchTerm
+                  ? `Không có kết quả nào khớp với từ khóa "${searchTerm}". Vui lòng thử từ khóa khác.`
+                  : "Bắt đầu thiết lập hệ thống chuyên mục ẩm thực bằng cách tạo danh mục đầu tiên."}
+              </p>
+              {searchTerm ? (
+                <Button onClick={() => setSearchTerm("")} variant="outline" size="sm">
+                  Xóa bộ lọc tìm kiếm
+                </Button>
+              ) : (
+                <Button onClick={() => setIsCreateOpen(true)} size="sm" className="gap-2">
+                  <FolderPlus className="w-4 h-4" />
+                  Tạo danh mục đầu tiên
+                </Button>
+              )}
+            </div>
+          </Card>
+        ) : (
+          <Card className="border border-border/80 shadow-xs overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[70px] text-center">Ảnh</TableHead>
+                  <TableHead>Tên danh mục</TableHead>
+                  <TableHead>Đường dẫn (Slug)</TableHead>
+                  <TableHead className="w-[100px] text-center">Thứ tự</TableHead>
+                  <TableHead className="w-[120px] text-center">Công thức</TableHead>
+                  <TableHead className="w-[160px] text-right">Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCategories.map((cat) => (
+                  <TableRow key={cat.id}>
+                    {/* Thumbnail */}
+                    <TableCell className="text-center">
+                      <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-muted border border-border/60 mx-auto flex items-center justify-center">
+                        {cat.imageUrl ? (
+                          <Image
+                            src={cat.imageUrl}
+                            alt={cat.name}
+                            fill
+                            sizes="44px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <Utensils className="w-5 h-5 text-muted-foreground" />
+                        )}
                       </div>
-                    ) : (
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-tertiary)", fontStyle: "italic" }}>
-                        Chưa có mô tả
-                      </span>
-                    )}
-                  </td>
+                    </TableCell>
 
-                  {/* Slug */}
-                  <td>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                      <code
-                        style={{
-                          fontSize: "0.825rem",
-                          backgroundColor: "var(--bg-surface-alt)",
-                          padding: "2px 8px",
-                          borderRadius: "var(--radius-sm)",
-                          color: "var(--primary)",
-                          fontFamily: "monospace",
-                        }}
+                    {/* Tên & Mô tả */}
+                    <TableCell>
+                      <div className="font-semibold text-foreground text-sm">
+                        {cat.name}
+                      </div>
+                      {cat.description ? (
+                        <div className="text-xs text-muted-foreground line-clamp-1 max-w-[340px] mt-0.5">
+                          {cat.description}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">
+                          Chưa có mô tả
+                        </span>
+                      )}
+                    </TableCell>
+
+                    {/* Slug */}
+                    <TableCell>
+                      <div className="inline-flex items-center gap-1.5">
+                        <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono text-primary font-medium">
+                          {cat.slug}
+                        </code>
+                        <Link
+                          href={`/categories/${cat.slug}`}
+                          target="_blank"
+                          title="Xem trang công khai"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </TableCell>
+
+                    {/* Thứ tự hiển thị */}
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className="font-mono text-xs font-semibold">
+                        {cat.orderIndex}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Số bài viết */}
+                    <TableCell className="text-center">
+                      <Badge
+                        variant={cat.recipeCount > 0 ? "secondary" : "outline"}
+                        className={
+                          cat.recipeCount > 0
+                            ? "bg-secondary/15 text-secondary font-semibold"
+                            : "text-muted-foreground"
+                        }
                       >
-                        {cat.slug}
-                      </code>
-                      <Link
-                        href={`/categories/${cat.slug}`}
-                        target="_blank"
-                        title="Xem trang công khai"
-                        style={{
-                          color: "var(--text-tertiary)",
-                          textDecoration: "none",
-                          fontSize: "0.85rem",
-                        }}
-                      >
-                        ↗
-                      </Link>
-                    </div>
-                  </td>
+                        {cat.recipeCount} bài
+                      </Badge>
+                    </TableCell>
 
-                  {/* Thứ tự hiển thị */}
-                  <td style={{ textAlign: "center" }}>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        padding: "2px 8px",
-                        backgroundColor: "var(--bg-surface-alt)",
-                        borderRadius: "var(--radius-sm)",
-                        fontWeight: 600,
-                        fontSize: "0.85rem",
-                      }}
-                    >
-                      {cat.orderIndex}
-                    </span>
-                  </td>
+                    {/* Actions */}
+                    <TableCell className="text-right whitespace-nowrap">
+                      <div className="inline-flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditingCategory(cat)}
+                          className="h-8 px-2.5 text-xs gap-1"
+                          title="Chỉnh sửa thông tin danh mục (FR-CAT-004)"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                          <span>Sửa</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDeletingCategory(cat)}
+                          className="h-8 px-2.5 text-xs gap-1 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
+                          title="Xóa danh mục (FR-CAT-005)"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Xóa</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        )}
 
-                  {/* Số bài viết */}
-                  <td style={{ textAlign: "center" }}>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "4px",
-                        padding: "4px 10px",
-                        borderRadius: "var(--radius-full)",
-                        fontSize: "0.8rem",
-                        fontWeight: 700,
-                        backgroundColor:
-                          cat.recipeCount > 0 ? "hsla(145, 60%, 45%, 0.12)" : "var(--bg-surface-alt)",
-                        color: cat.recipeCount > 0 ? "var(--success)" : "var(--text-tertiary)",
-                      }}
-                    >
-                      {cat.recipeCount} bài
-                    </span>
-                  </td>
-
-                  {/* Actions */}
-                  <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                      <button
-                        onClick={() => setEditingCategory(cat)}
-                        className="btn btn-outline btn-sm"
-                        style={{ padding: "6px 12px", fontSize: "0.8rem" }}
-                        title="Chỉnh sửa thông tin danh mục (FR-CAT-004)"
-                      >
-                        ✏️ Sửa
-                      </button>
-                      <button
-                        onClick={() => setDeletingCategory(cat)}
-                        className="btn btn-outline btn-sm"
-                        style={{
-                          padding: "6px 12px",
-                          fontSize: "0.8rem",
-                          color: "var(--danger)",
-                          borderColor: "hsla(0, 70%, 55%, 0.3)",
-                        }}
-                        title="Xóa danh mục (FR-CAT-005)"
-                      >
-                        🗑️ Xóa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* ====================================================================
-          MODAL 1: THÊM MỚI DANH MỤC (CreateCategoryModal)
-          ==================================================================== */}
-      {isCreateOpen && (
-        <CreateCategoryModal
-          onClose={() => setIsCreateOpen(false)}
+        {/* ====================================================================
+            MODAL 1: THÊM MỚI DANH MỤC (CreateCategoryModal)
+            ==================================================================== */}
+        <CreateCategoryDialog
+          open={isCreateOpen}
+          onOpenChange={setIsCreateOpen}
           onSuccess={(newCat) => {
             setIsCreateOpen(false);
-            showToast(`Đã tạo thành công danh mục "${newCat.name}"!`, "success");
+            toast.success(`Đã tạo thành công danh mục "${newCat.name}"!`);
           }}
           onError={(msg) => {
-            showToast(msg, "error");
+            toast.error(msg);
           }}
           createMutation={createMutation}
         />
-      )}
 
-      {/* ====================================================================
-          MODAL 2: CHỈNH SỬA DANH MỤC (EditCategoryModal)
-          ==================================================================== */}
-      {editingCategory && (
-        <EditCategoryModal
-          category={editingCategory}
-          onClose={() => setEditingCategory(null)}
-          onSuccess={(updatedCat) => {
-            setEditingCategory(null);
-            showToast(`Đã cập nhật danh mục "${updatedCat.name}"!`, "success");
-          }}
-          onError={(msg) => {
-            showToast(msg, "error");
-          }}
-          updateMutation={updateMutation}
-        />
-      )}
+        {/* ====================================================================
+            MODAL 2: CHỈNH SỬA DANH MỤC (EditCategoryModal)
+            ==================================================================== */}
+        {editingCategory && (
+          <EditCategoryDialog
+            category={editingCategory}
+            open={!!editingCategory}
+            onOpenChange={(open) => !open && setEditingCategory(null)}
+            onSuccess={(updatedCat) => {
+              setEditingCategory(null);
+              toast.success(`Đã cập nhật danh mục "${updatedCat.name}"!`);
+            }}
+            onError={(msg) => {
+              toast.error(msg);
+            }}
+            updateMutation={updateMutation}
+          />
+        )}
 
-      {/* ====================================================================
-          MODAL 3: XÓA AN TOÀN DANH MỤC (DeleteCategoryModal)
-          ==================================================================== */}
-      {deletingCategory && (
-        <DeleteCategoryModal
-          category={deletingCategory}
-          onClose={() => setDeletingCategory(null)}
-          onSuccess={() => {
-            const name = deletingCategory.name;
-            setDeletingCategory(null);
-            showToast(`Đã xóa danh mục "${name}" thành công!`, "success");
-          }}
-          onError={(msg) => {
-            showToast(msg, "error");
-          }}
-          deleteMutation={deleteMutation}
-        />
-      )}
+        {/* ====================================================================
+            MODAL 3: XÓA AN TOÀN DANH MỤC (DeleteCategoryModal)
+            ==================================================================== */}
+        {deletingCategory && (
+          <DeleteCategoryAlertDialog
+            category={deletingCategory}
+            open={!!deletingCategory}
+            onOpenChange={(open) => !open && setDeletingCategory(null)}
+            onSuccess={() => {
+              const name = deletingCategory.name;
+              setDeletingCategory(null);
+              toast.success(`Đã xóa danh mục "${name}" thành công!`);
+            }}
+            onError={(msg) => {
+              toast.error(msg);
+            }}
+            deleteMutation={deleteMutation}
+          />
+        )}
+      </Container>
     </div>
   );
 }
 
 // ============================================================================
-// SUB-COMPONENT: CreateCategoryModal
+// DIALOG: CreateCategoryDialog
 // ============================================================================
-interface CreateCategoryModalProps {
-  onClose: () => void;
+interface CreateCategoryDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: (created: CategoryDto) => void;
   onError: (errorMessage: string) => void;
   createMutation: ReturnType<typeof useCreateCategory>;
 }
 
-function CreateCategoryModal({
-  onClose,
+function CreateCategoryDialog({
+  open,
+  onOpenChange,
   onSuccess,
   onError,
   createMutation,
-}: CreateCategoryModalProps) {
+}: CreateCategoryDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -562,6 +515,10 @@ function CreateCategoryModal({
 
     createMutation.mutate(payload, {
       onSuccess: (data: CategoryDto) => {
+        setName("");
+        setDescription("");
+        setImageUrl("");
+        setOrderIndex(0);
         onSuccess(data);
       },
       onError: (err: AppError) => {
@@ -571,163 +528,150 @@ function CreateCategoryModal({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Thêm Danh Mục Mới</h2>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Đóng">
-            ✕
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold font-serif">Thêm Danh Mục Mới</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Tạo mới chuyên mục ẩm thực theo đặc tả FR-CAT-001.
+          </DialogDescription>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {clientError && (
-              <div
-                style={{
-                  padding: "10px 14px",
-                  backgroundColor: "hsla(0, 70%, 55%, 0.12)",
-                  color: "var(--danger)",
-                  borderRadius: "var(--radius-sm)",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                }}
-              >
-                ⚠️ {clientError}
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          {clientError && (
+            <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{clientError}</span>
+            </div>
+          )}
+
+          {/* Tên danh mục */}
+          <div className="space-y-1.5">
+            <Label htmlFor="create-name" className="text-xs font-semibold">
+              Tên danh mục <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="create-name"
+              placeholder="VD: Món Tráng Miệng, Hải Sản Tươi..."
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={50}
+              required
+              autoFocus
+            />
+            {/* Preview Slug */}
+            <div className="text-xs text-muted-foreground">
+              Slug SEO dự kiến:{" "}
+              <code className="text-primary font-mono font-medium">
+                {slugPreview || "..."}
+              </code>
+            </div>
+          </div>
+
+          {/* Mô tả */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="create-desc" className="text-xs font-semibold">
+                Mô tả giới thiệu
+              </Label>
+              <span className="text-[11px] text-muted-foreground">{description.length}/500</span>
+            </div>
+            <Textarea
+              id="create-desc"
+              rows={3}
+              placeholder="Mô tả tóm tắt nội dung các công thức trong danh mục..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              maxLength={500}
+            />
+          </div>
+
+          {/* Ảnh đại diện URL */}
+          <div className="space-y-1.5">
+            <Label htmlFor="create-image" className="text-xs font-semibold">
+              Đường dẫn hình ảnh (Image URL)
+            </Label>
+            <Input
+              id="create-image"
+              type="url"
+              placeholder="https://images.unsplash.com/... hoặc MinIO URL"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+            />
+            {imageUrl && (
+              <div className="flex items-center gap-2 pt-1">
+                <span className="text-xs text-muted-foreground">Xem trước:</span>
+                <div className="relative w-8 h-8 rounded-md overflow-hidden border border-border">
+                  <Image src={imageUrl} alt="Preview" fill sizes="32px" className="object-cover" />
+                </div>
               </div>
             )}
+          </div>
 
-            {/* Tên danh mục */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Tên danh mục <span style={{ color: "var(--danger)" }}>*</span>
-              </label>
-              <input
-                type="text"
-                className="input-search"
-                style={{ height: "42px", fontSize: "0.95rem" }}
-                placeholder="VD: Món Tráng Miệng, Hải Sản Tươi..."
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                maxLength={50}
-                required
-                autoFocus
-              />
-              {/* Preview Slug */}
-              <div style={{ marginTop: "6px", fontSize: "0.8rem", color: "var(--text-tertiary)" }}>
-                Slug SEO dự kiến:{" "}
-                <code style={{ color: "var(--primary)", fontWeight: 600 }}>
-                  {slugPreview || "..."}
-                </code>
-              </div>
-            </div>
-
-            {/* Mô tả */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Mô tả giới thiệu
-              </label>
-              <textarea
-                className="input-search"
-                style={{ height: "80px", padding: "10px 14px", resize: "vertical", fontSize: "0.9rem" }}
-                placeholder="Mô tả tóm tắt nội dung các công thức trong danh mục..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={500}
-              />
-              <div style={{ textAlign: "right", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-                {description.length}/500 ký tự
-              </div>
-            </div>
-
-            {/* Ảnh đại diện URL */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Đường dẫn hình ảnh (Image URL)
-              </label>
-              <input
-                type="url"
-                className="input-search"
-                style={{ height: "42px", fontSize: "0.9rem" }}
-                placeholder="https://images.unsplash.com/... hoặc MinIO S3 URL"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-              />
-              {imageUrl && (
-                <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Xem trước:</span>
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "var(--radius-sm)",
-                      overflow: "hidden",
-                      position: "relative",
-                    }}
-                  >
-                    <Image src={imageUrl} alt="Preview" fill sizes="36px" style={{ objectFit: "cover" }} />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Thứ tự hiển thị */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Thứ tự sắp xếp (Order Index)
-              </label>
-              <input
+          {/* Thứ tự hiển thị */}
+          <div className="space-y-1.5">
+            <Label htmlFor="create-order" className="text-xs font-semibold">
+              Thứ tự sắp xếp (Order Index)
+            </Label>
+            <div className="flex items-center gap-3">
+              <Input
+                id="create-order"
                 type="number"
-                className="input-search"
-                style={{ height: "42px", width: "120px", fontSize: "0.95rem" }}
+                className="w-28 font-mono"
                 value={orderIndex}
                 onChange={(e) => setOrderIndex(parseInt(e.target.value, 10) || 0)}
                 min={0}
                 max={9999}
               />
-              <span style={{ marginLeft: "10px", fontSize: "0.8rem", color: "var(--text-tertiary)" }}>
+              <span className="text-xs text-muted-foreground">
                 Số nhỏ hơn sẽ được ưu tiên hiển thị trước.
               </span>
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn btn-outline btn-sm">
+          <DialogFooter className="pt-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Hủy bỏ
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={createMutation.isPending}
-              className="btn btn-primary btn-sm"
-              style={{ minWidth: "120px" }}
+              className="gap-2"
             >
-              {createMutation.isPending ? "Đang xử lý..." : "➕ Tạo danh mục"}
-            </button>
-          </div>
+              {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              <span>{createMutation.isPending ? "Đang xử lý..." : "Tạo danh mục"}</span>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 // ============================================================================
-// SUB-COMPONENT: EditCategoryModal (SRS C7: Slug bất biến)
+// DIALOG: EditCategoryDialog (SRS C7: Slug bất biến)
 // ============================================================================
-interface EditCategoryModalProps {
+interface EditCategoryDialogProps {
   category: CategoryDto;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: (updated: CategoryDto) => void;
   onError: (errorMessage: string) => void;
   updateMutation: ReturnType<typeof useUpdateCategory>;
 }
 
-function EditCategoryModal({
+function EditCategoryDialog({
   category,
-  onClose,
+  open,
+  onOpenChange,
   onSuccess,
   onError,
   updateMutation,
-}: EditCategoryModalProps) {
+}: EditCategoryDialogProps) {
   const [name, setName] = useState(category.name);
   const [description, setDescription] = useState(category.description || "");
   const [imageUrl, setImageUrl] = useState(category.imageUrl || "");
@@ -768,187 +712,157 @@ function EditCategoryModal({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Chỉnh Sửa Danh Mục</h2>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Đóng">
-            ✕
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold font-serif">Chỉnh Sửa Danh Mục</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Cập nhật thông tin danh mục theo FR-CAT-004.
+          </DialogDescription>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {clientError && (
-              <div
-                style={{
-                  padding: "10px 14px",
-                  backgroundColor: "hsla(0, 70%, 55%, 0.12)",
-                  color: "var(--danger)",
-                  borderRadius: "var(--radius-sm)",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                }}
-              >
-                ⚠️ {clientError}
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          {clientError && (
+            <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-xs font-semibold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{clientError}</span>
+            </div>
+          )}
+
+          {/* Slug (Read-only C7) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="edit-slug" className="text-xs font-semibold">
+                Đường dẫn cố định (Slug)
+              </Label>
+              <Badge variant="outline" className="text-[11px] gap-1 text-primary border-primary/30">
+                <Lock className="w-3 h-3" />
+                Bất biến (SRS C7)
+              </Badge>
+            </div>
+            <Input
+              id="edit-slug"
+              value={category.slug}
+              readOnly
+              disabled
+              className="font-mono bg-muted text-muted-foreground cursor-not-allowed"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Slug được giữ nguyên bất biến khi đổi tên để bảo toàn liên kết công khai và chỉ mục SEO.
+            </p>
+          </div>
+
+          {/* Tên danh mục */}
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-name" className="text-xs font-semibold">
+              Tên danh mục <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="edit-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={50}
+              required
+            />
+          </div>
+
+          {/* Mô tả */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="edit-desc" className="text-xs font-semibold">
+                Mô tả giới thiệu
+              </Label>
+              <span className="text-[11px] text-muted-foreground">{description.length}/500</span>
+            </div>
+            <Textarea
+              id="edit-desc"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              maxLength={500}
+            />
+          </div>
+
+          {/* Ảnh đại diện URL */}
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-image" className="text-xs font-semibold">
+              Đường dẫn hình ảnh (Image URL)
+            </Label>
+            <Input
+              id="edit-image"
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+            />
+            {imageUrl && (
+              <div className="flex items-center gap-2 pt-1">
+                <span className="text-xs text-muted-foreground">Xem trước:</span>
+                <div className="relative w-8 h-8 rounded-md overflow-hidden border border-border">
+                  <Image src={imageUrl} alt="Preview" fill sizes="32px" className="object-cover" />
+                </div>
               </div>
             )}
-
-            {/* Slug (Read-only C7) */}
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: "0.875rem" }}>
-                  Đường dẫn cố định (Slug)
-                </label>
-                <span
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "var(--primary)",
-                    backgroundColor: "hsla(24, 80%, 50%, 0.1)",
-                    padding: "2px 6px",
-                    borderRadius: "var(--radius-sm)",
-                    fontWeight: 600,
-                  }}
-                >
-                  🔒 Bất biến (SRS C7)
-                </span>
-              </div>
-              <input
-                type="text"
-                className="input-search"
-                style={{
-                  height: "42px",
-                  fontSize: "0.9rem",
-                  backgroundColor: "var(--bg-surface-alt)",
-                  color: "var(--text-tertiary)",
-                  cursor: "not-allowed",
-                }}
-                value={category.slug}
-                readOnly
-                disabled
-              />
-              <div style={{ marginTop: "4px", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-                Slug được giữ nguyên bất biến khi đổi tên để bảo toàn liên kết công khai và chỉ mục SEO.
-              </div>
-            </div>
-
-            {/* Tên danh mục */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Tên danh mục <span style={{ color: "var(--danger)" }}>*</span>
-              </label>
-              <input
-                type="text"
-                className="input-search"
-                style={{ height: "42px", fontSize: "0.95rem" }}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                maxLength={50}
-                required
-              />
-            </div>
-
-            {/* Mô tả */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Mô tả giới thiệu
-              </label>
-              <textarea
-                className="input-search"
-                style={{ height: "80px", padding: "10px 14px", resize: "vertical", fontSize: "0.9rem" }}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={500}
-              />
-              <div style={{ textAlign: "right", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-                {description.length}/500 ký tự
-              </div>
-            </div>
-
-            {/* Ảnh đại diện URL */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Đường dẫn hình ảnh (Image URL)
-              </label>
-              <input
-                type="url"
-                className="input-search"
-                style={{ height: "42px", fontSize: "0.9rem" }}
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-              />
-              {imageUrl && (
-                <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Xem trước:</span>
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "var(--radius-sm)",
-                      overflow: "hidden",
-                      position: "relative",
-                    }}
-                  >
-                    <Image src={imageUrl} alt="Preview" fill sizes="36px" style={{ objectFit: "cover" }} />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Thứ tự hiển thị */}
-            <div>
-              <label className="form-label" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "0.875rem" }}>
-                Thứ tự sắp xếp (Order Index)
-              </label>
-              <input
-                type="number"
-                className="input-search"
-                style={{ height: "42px", width: "120px", fontSize: "0.95rem" }}
-                value={orderIndex}
-                onChange={(e) => setOrderIndex(parseInt(e.target.value, 10) || 0)}
-                min={0}
-                max={9999}
-              />
-            </div>
           </div>
 
-          <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn btn-outline btn-sm">
+          {/* Thứ tự hiển thị */}
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-order" className="text-xs font-semibold">
+              Thứ tự sắp xếp (Order Index)
+            </Label>
+            <Input
+              id="edit-order"
+              type="number"
+              className="w-28 font-mono"
+              value={orderIndex}
+              onChange={(e) => setOrderIndex(parseInt(e.target.value, 10) || 0)}
+              min={0}
+              max={9999}
+            />
+          </div>
+
+          <DialogFooter className="pt-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Hủy bỏ
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={updateMutation.isPending}
-              className="btn btn-primary btn-sm"
-              style={{ minWidth: "120px" }}
+              className="gap-2"
             >
-              {updateMutation.isPending ? "Đang lưu..." : "💾 Lưu thay đổi"}
-            </button>
-          </div>
+              {updateMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              <span>{updateMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}</span>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 // ============================================================================
-// SUB-COMPONENT: DeleteCategoryModal (FR-CAT-005 Ràng buộc toàn vẹn)
+// ALERT DIALOG: DeleteCategoryAlertDialog (FR-CAT-005 Ràng buộc toàn vẹn)
 // ============================================================================
-interface DeleteCategoryModalProps {
+interface DeleteCategoryAlertDialogProps {
   category: CategoryDto;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
   onError: (errorMessage: string) => void;
   deleteMutation: ReturnType<typeof useDeleteCategory>;
 }
 
-function DeleteCategoryModal({
+function DeleteCategoryAlertDialog({
   category,
-  onClose,
+  open,
+  onOpenChange,
   onSuccess,
   onError,
   deleteMutation,
-}: DeleteCategoryModalProps) {
+}: DeleteCategoryAlertDialogProps) {
   const hasRecipes = category.recipeCount > 0;
 
   const handleDelete = () => {
@@ -967,67 +881,50 @@ function DeleteCategoryModal({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "480px" }}>
-        <div className="modal-header">
-          <h2 className="modal-title" style={{ color: "var(--danger)" }}>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-lg font-bold text-destructive flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 shrink-0" />
             Xác Nhận Xóa Danh Mục
-          </h2>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Đóng">
-            ✕
-          </button>
-        </div>
-
-        <div className="modal-body">
-          <p style={{ color: "var(--text-primary)", marginBottom: "16px", fontSize: "0.95rem" }}>
-            Bạn có chắc chắn muốn xóa danh mục <strong>&ldquo;{category.name}&rdquo;</strong> (<code>{category.slug}</code>)?
-          </p>
-
-          {hasRecipes ? (
-            <div
-              style={{
-                padding: "14px 16px",
-                backgroundColor: "hsla(0, 70%, 55%, 0.12)",
-                border: "1px solid hsla(0, 70%, 55%, 0.3)",
-                borderRadius: "var(--radius-md)",
-                color: "var(--danger)",
-                fontSize: "0.875rem",
-                lineHeight: 1.5,
-              }}
-            >
-              <div style={{ fontWeight: 700, marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>⚠️ Chặn xóa theo quy tắc hệ thống (FR-CAT-005)</span>
-              </div>
-              Danh mục này hiện đang có <strong>{category.recipeCount} công thức nấu ăn</strong> liên kết. Hệ thống không cho phép xóa danh mục khi chưa chuyển các công thức này sang danh mục khác.
-            </div>
-          ) : (
-            <p style={{ fontSize: "0.85rem", color: "var(--text-tertiary)" }}>
-              Hành động này sẽ thực hiện xóa mềm (Soft-delete) danh mục khỏi hệ thống.
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-sm space-y-3 pt-2 text-foreground">
+            <p>
+              Bạn có chắc chắn muốn xóa danh mục <strong>&ldquo;{category.name}&rdquo;</strong> (
+              <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">{category.slug}</code>)?
             </p>
-          )}
-        </div>
 
-        <div className="modal-footer">
-          <button type="button" onClick={onClose} className="btn btn-outline btn-sm">
+            {hasRecipes ? (
+              <div className="p-3.5 bg-destructive/10 border border-destructive/20 rounded-lg text-xs leading-relaxed text-destructive space-y-1">
+                <div className="font-bold flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4" />
+                  Chặn xóa theo quy tắc hệ thống (FR-CAT-005)
+                </div>
+                <p>
+                  Danh mục này hiện đang có <strong>{category.recipeCount} công thức nấu ăn</strong> liên kết. Hệ thống không cho phép xóa danh mục khi chưa chuyển các công thức này sang danh mục khác.
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Hành động này sẽ thực hiện xóa mềm (Soft-delete) danh mục khỏi hệ thống.
+              </p>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>
             Hủy bỏ
-          </button>
-          <button
-            type="button"
+          </AlertDialogCancel>
+          <AlertDialogAction
             disabled={hasRecipes || deleteMutation.isPending}
             onClick={handleDelete}
-            className="btn btn-sm"
-            style={{
-              backgroundColor: hasRecipes ? "var(--bg-surface-alt)" : "var(--danger)",
-              color: hasRecipes ? "var(--text-tertiary)" : "#ffffff",
-              cursor: hasRecipes ? "not-allowed" : "pointer",
-              minWidth: "120px",
-              fontWeight: 600,
-            }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {deleteMutation.isPending ? "Đang xóa..." : "🗑️ Xác nhận xóa"}
-          </button>
-        </div>
-      </div>
-    </div>
+            {deleteMutation.isPending ? "Đang xóa..." : "Xác nhận xóa"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

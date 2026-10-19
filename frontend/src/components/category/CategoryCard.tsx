@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { CategoryDto } from "@/types/api";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface CategoryCardProps {
   category: CategoryDto;
@@ -16,64 +18,40 @@ export function CategoryCard({ category }: CategoryCardProps) {
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="card"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px 16px",
-        textAlign: "center",
-        gap: "12px",
-        height: "100%",
-        textDecoration: "none",
-        backgroundColor: "var(--bg-surface)",
-      }}
+      className="group block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
     >
-      <div
-        style={{
-          position: "relative",
-          width: "68px",
-          height: "68px",
-          borderRadius: "var(--radius-full)",
-          overflow: "hidden",
-          border: "2px solid var(--primary-light)",
-          boxShadow: "var(--shadow-sm)",
-          backgroundColor: "var(--primary-light)",
-          flexShrink: 0,
-        }}
-      >
-        <Image
-          src={fallbackImage}
-          alt={category.name}
-          fill
-          sizes="68px"
-          style={{ objectFit: "cover" }}
-        />
-      </div>
+      <Card className="h-full flex flex-col items-center p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md bg-card">
+        {/* Khung ảnh đại diện danh mục */}
+        <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-primary/20 bg-muted shadow-xs shrink-0 mb-3.5 transition-transform duration-300 group-hover:scale-105 group-hover:border-primary/50">
+          <Image
+            src={fallbackImage}
+            alt={category.name}
+            fill
+            sizes="(max-width: 640px) 72px, 80px"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
-        <h3
-          style={{
-            fontSize: "1rem",
-            fontWeight: 700,
-            color: "var(--text-primary)",
-            lineHeight: 1.3,
-          }}
-          className="line-clamp-1"
-        >
-          {category.name}
-        </h3>
-        <span
-          className="badge badge-neutral"
-          style={{
-            alignSelf: "center",
-            fontSize: "0.75rem",
-            padding: "2px 8px",
-          }}
-        >
-          {category.recipeCount || 0} công thức
-        </span>
-      </div>
+        {/* Thông tin danh mục */}
+        <div className="flex flex-col items-center gap-1.5 w-full">
+          <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-snug">
+            {category.name}
+          </h3>
+
+          {category.description && (
+            <p className="text-xs text-muted-foreground line-clamp-1 px-1">
+              {category.description}
+            </p>
+          )}
+
+          <Badge
+            variant="secondary"
+            className="mt-1 text-xs font-medium text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+          >
+            {category.recipeCount || 0} công thức
+          </Badge>
+        </div>
+      </Card>
     </Link>
   );
 }

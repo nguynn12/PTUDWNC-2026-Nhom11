@@ -6,9 +6,14 @@ import { getCategoryBySlug } from "@/lib/api/categories";
 import { getRecipes } from "@/lib/api/recipes";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Pagination } from "@/components/common/Pagination";
+import { Container } from "@/components/common/Container";
+import { PageHeader } from "@/components/common/PageHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { UtensilsCrossed } from "lucide-react";
 import type { CategoryDetailDto, RecipeSummaryDto } from "@/types/api";
 
-// ISR 600 giây (10 phút) theo đặc tả SRS Mục 5.1 (Dòng 1788)
+// ISR 600 giây (10 phút) theo đặc tả SRS Mục 5.1
 export const revalidate = 600;
 
 interface PageProps {
@@ -66,7 +71,6 @@ export default async function CategoryDetailPage({ params, searchParams }: PageP
       }
     }
   } catch {
-    // Nếu gặp lỗi kết nối hoặc slug không tồn tại
     category = null;
   }
 
@@ -75,92 +79,67 @@ export default async function CategoryDetailPage({ params, searchParams }: PageP
     notFound();
   }
 
+  const recipeCountDisplay = totalCount || category.recipeCount || 0;
+
   return (
-    <div className="container section">
-      {/* Breadcrumb */}
-      <nav
-        aria-label="Breadcrumb"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "0.88rem",
-          color: "var(--text-muted)",
-          marginBottom: "24px",
-          flexWrap: "wrap",
-        }}
-      >
-        <Link href="/" style={{ color: "var(--text-secondary)" }}>Trang chủ</Link>
-        <span>/</span>
-        <Link href="/categories" style={{ color: "var(--text-secondary)" }}>Danh mục</Link>
-        <span>/</span>
-        <span style={{ color: "var(--primary)", fontWeight: 600 }}>{category.name}</span>
-      </nav>
+    <div className="py-8 sm:py-12">
+      <Container>
+        {/* Header danh mục */}
+        <PageHeader
+          breadcrumbs={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Danh mục", href: "/categories" },
+            { label: category.name },
+          ]}
+          badge="Chuyên mục ẩm thực"
+          title={category.name}
+          description={category.description || `Khám phá các công thức nấu món ${category.name} đặc sắc nhất.`}
+          actions={
+            <Badge variant="outline" className="text-sm font-medium px-3.5 py-1.5 border-primary/30 text-primary bg-primary/5">
+              {recipeCountDisplay} công thức đã xuất bản
+            </Badge>
+          }
+        />
 
-      {/* Header Danh mục */}
-      <header
-        style={{
-          backgroundColor: "var(--bg-surface)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: "var(--radius-xl)",
-          padding: "36px 32px",
-          boxShadow: "var(--shadow-sm)",
-          marginBottom: "40px",
-        }}
-      >
-        <span className="eyebrow">Chuyên mục ẩm thực</span>
-        <h1 style={{ fontSize: "clamp(2rem, 3.5vw + 1rem, 2.75rem)", marginBottom: "12px" }}>
-          {category.name}
-        </h1>
-        {category.description && (
-          <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", maxWidth: "68ch", margin: "0 0 16px" }}>
-            {category.description}
-          </p>
-        )}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span className="badge badge-category" style={{ fontSize: "0.85rem", padding: "4px 12px" }}>
-            {totalCount || category.recipeCount || 0} công thức đã xuất bản
-          </span>
+        {/* Lưới danh sách công thức thuộc danh mục */}
+        <div className="mt-10">
+          {recipes.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recipes.map((recipe, idx) => (
+                  <RecipeCard key={recipe.id || recipe.slug} recipe={recipe} priority={idx < 3} />
+                ))}
+              </div>
+
+              {/* Phân trang */}
+              <Pagination
+                page={currentPage}
+                totalPages={totalPages}
+              />
+            </>
+          ) : (
+            <div className="text-center py-16 px-6 rounded-2xl border-2 border-dashed border-border bg-card max-w-xl mx-auto">
+              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                <UtensilsCrossed className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">
+                Chưa có công thức nào trong danh mục này
+              </h3>
+              <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
+                Các đầu bếp của Culinary Blog đang chuẩn bị những món ngon mới. Bạn vui lòng quay lại sau nhé!
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <Button asChild variant="default">
+                  <Link href="/recipes">Duyệt các công thức khác</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/categories">Tất cả danh mục</Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      </header>
-
-      {/* Lưới danh sách công thức thuộc danh mục */}
-      {recipes.length > 0 ? (
-        <>
-          <div className="recipe-grid">
-            {recipes.map((recipe, idx) => (
-              <RecipeCard key={recipe.id || recipe.slug} recipe={recipe} priority={idx < 3} />
-            ))}
-          </div>
-
-          {/* Phân trang */}
-          <Pagination
-            page={currentPage}
-            totalPages={totalPages}
-          />
-        </>
-      ) : (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "64px 20px",
-            backgroundColor: "var(--bg-surface)",
-            borderRadius: "var(--radius-lg)",
-            border: "1px dashed var(--border-default)",
-          }}
-        >
-          <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🍲</div>
-          <h3 style={{ fontSize: "1.3rem", marginBottom: "8px", color: "var(--text-primary)" }}>
-            Chưa có công thức nào trong danh mục này
-          </h3>
-          <p style={{ color: "var(--text-muted)", maxWidth: "450px", margin: "0 auto 24px" }}>
-            Các đầu bếp của Culinary Blog đang chuẩn bị những món ngon mới. Bạn vui lòng quay lại sau nhé!
-          </p>
-          <Link href="/recipes" className="btn btn-primary">
-            Duyệt các công thức khác →
-          </Link>
-        </div>
-      )}
+      </Container>
     </div>
   );
 }

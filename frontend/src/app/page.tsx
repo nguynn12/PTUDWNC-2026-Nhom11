@@ -5,6 +5,11 @@ import { getCategories } from "@/lib/api/categories";
 import { getRecipes } from "@/lib/api/recipes";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
+import { Container } from "@/components/common/Container";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Sparkles, Utensils, Search, ArrowRight, Clock, Salad, Zap } from "lucide-react";
 import type { CategoryDto, RecipeSummaryDto } from "@/types/api";
 
 // Cấu hình ISR: Tự động tái sinh trang tĩnh ngầm định sau mỗi 3600 giây (1 giờ)
@@ -101,43 +106,43 @@ const fallbackRecipes: RecipeSummaryDto[] = [
     categoryId: "cat-2",
     categoryName: "Món Chính",
     categorySlug: "mon-chinh",
-    calories: 450,
+    calories: 460,
     author: { id: "a1", userName: "quanquan", displayName: "Trần Quốc Quân" },
     createdAt: new Date().toISOString(),
   },
   {
     id: "rec-3",
-    title: "Salad Ức Gà Nướng Bơ Quả Mediterranean",
-    slug: "salad-uc-ga-nuong-bo-qua",
-    description: "Bữa ăn giàu đạm thanh mát, sốt dầu ô liu giấm táo chuẩn chế độ dinh dưỡng lành mạnh.",
-    prepTime: 20,
-    cookTime: 10,
-    totalTime: 30,
+    title: "Salad Ức Gà Sốt Mè Rang Thanh Mát",
+    slug: "salad-uc-ga-sot-me-rang",
+    description: "Ức gà áp chảo xé sợi trộn cùng xà lách giòn rụm, cà chua bi và sốt mè rang béo ngậy.",
+    prepTime: 10,
+    cookTime: 15,
+    totalTime: 25,
     servings: 2,
     difficulty: "Easy",
     primaryImageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
     categoryId: "cat-1",
     categoryName: "Món Khai Vị",
     categorySlug: "mon-khai-vi",
-    calories: 380,
+    calories: 320,
     author: { id: "a1", userName: "quanquan", displayName: "Trần Quốc Quân" },
     createdAt: new Date().toISOString(),
   },
   {
     id: "rec-4",
-    title: "Bò Kho Bánh Mì Nước Cốt Dừa Chuẩn Vị Nam Bộ",
-    slug: "bo-kho-banh-mi-nuoc-cot-dua",
-    description: "Bò nạm mềm nhừ đậm đà, nước sốt sánh vàng óng ánh thơm ngát hoa hồi và sả tươi.",
-    prepTime: 25,
+    title: "Bò Kho Nước Dừa Sả Ớt Ăn Kèm Bánh Mì",
+    slug: "bo-kho-nuoc-dua-sa-ot",
+    description: "Nạm bò mềm nhừ thấm đượm gia vị cà ri và nước dừa tươi ngọt béo, thơm nồng mùi sả quế.",
+    prepTime: 20,
     cookTime: 60,
-    totalTime: 85,
+    totalTime: 80,
     servings: 6,
     difficulty: "Medium",
     primaryImageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
     categoryId: "cat-2",
     categoryName: "Món Chính",
     categorySlug: "mon-chinh",
-    calories: 610,
+    calories: 580,
     author: { id: "a1", userName: "quanquan", displayName: "Trần Quốc Quân" },
     createdAt: new Date().toISOString(),
   },
@@ -145,7 +150,7 @@ const fallbackRecipes: RecipeSummaryDto[] = [
     id: "rec-5",
     title: "Bánh Mousse Xoài Chanh Leo Mịn Màng",
     slug: "banh-mousse-xoai-chanh-leo",
-    description: "Vị chua ngọt thanh khiết hòa quyện cùng lớp kem tươi béo ngậy tan chảy nơi đầu lưỡi.",
+    description: "Lớp kem mousse chua ngọt thanh nhẹ từ xoài cát tươi và chanh leo, tan ngay nơi đầu lưỡi.",
     prepTime: 40,
     cookTime: 0,
     totalTime: 40,
@@ -198,209 +203,211 @@ export default async function HomePage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {/* =====================================================================
           1. HERO BANNER ẤM CÚNG & NỔI BẬT
           ===================================================================== */}
-      <section
-        style={{
-          position: "relative",
-          background: "linear-gradient(135deg, #fff7ed 0%, #fbf9f6 50%, #fef3c7 100%)",
-          borderBottom: "1px solid var(--border-subtle)",
-          paddingTop: "64px",
-          paddingBottom: "80px",
-          overflow: "hidden",
-        }}
-      >
-        <div className="container">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr",
-              gap: "40px",
-              alignItems: "center",
-            }}
-            className="hero-grid"
-          >
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-amber-500/10 via-background to-orange-500/5 py-16 sm:py-20 lg:py-24">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Cột chữ Hero */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <span className="eyebrow">
-                ✨ Kho tàng công thức nấu ăn tuyển chọn
-              </span>
+            <div className="flex flex-col gap-6 lg:col-span-7">
+              <div className="inline-flex items-center gap-2">
+                <Badge variant="outline" className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary border-primary/30 bg-primary/10 gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Kho tàng công thức nấu ăn tuyển chọn
+                </Badge>
+              </div>
 
-              <h1 style={{ fontSize: "clamp(2.4rem, 4.5vw + 1rem, 3.8rem)", lineHeight: 1.15 }}>
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.15]">
                 Nghệ Thuật Ẩm Thực &amp;{" "}
-                <span style={{ color: "var(--primary)" }}>Hương Vị Đích Thực</span>
+                <span className="text-primary italic">Hương Vị Đích Thực</span>
               </h1>
 
-              <p style={{ fontSize: "1.15rem", color: "var(--text-secondary)", lineHeight: 1.65, maxWidth: "58ch" }}>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
                 Khám phá hàng ngàn công thức nấu ăn chuẩn vị từ các đầu bếp tài hoa. Từng bước làm tỉ mỉ, định lượng nguyên liệu chính xác và thông tin dinh dưỡng minh bạch.
               </p>
 
               {/* Nút Call To Action */}
-              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", marginTop: "8px" }}>
-                <Link href="/recipes" className="btn btn-primary btn-lg">
-                  🍲 Khám phá công thức
-                </Link>
-                <Link href="/search" className="btn btn-outline btn-lg">
-                  🔍 Tìm kiếm theo nguyên liệu
-                </Link>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <Button asChild size="lg" className="rounded-xl font-medium shadow-sm gap-2">
+                  <Link href="/recipes">
+                    <Utensils className="w-4 h-4" />
+                    Khám phá công thức
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="rounded-xl font-medium gap-2">
+                  <Link href="/search">
+                    <Search className="w-4 h-4" />
+                    Tìm theo nguyên liệu
+                  </Link>
+                </Button>
               </div>
 
               {/* Thống kê nhanh */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: "32px",
-                  paddingTop: "24px",
-                  borderTop: "1px solid var(--border-subtle)",
-                  marginTop: "12px",
-                }}
-              >
+              <div className="grid grid-cols-3 gap-6 pt-6 border-t border-border/60 mt-2 max-w-lg">
                 <div>
-                  <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--primary)" }}>100+</div>
-                  <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>Công thức chuẩn vị</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-primary font-serif">100+</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">Công thức chuẩn vị</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--secondary)" }}>100%</div>
-                  <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>Dinh dưỡng minh bạch</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-secondary font-serif">100%</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">Dinh dưỡng minh bạch</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--accent-amber)" }}>20+</div>
-                  <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>Danh mục phong phú</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-500 font-serif">20+</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">Danh mục phong phú</div>
                 </div>
               </div>
             </div>
 
             {/* Cột ảnh minh họa Hero */}
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                paddingTop: "75%",
-                borderRadius: "var(--radius-xl)",
-                overflow: "hidden",
-                boxShadow: "var(--shadow-lg)",
-                border: "4px solid #ffffff",
-              }}
-            >
-              <Image
-                src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=85"
-                alt="Không gian bếp ẩm thực ấm cúng"
-                fill
-                priority
-                sizes="(max-width: 860px) 100vw, 500px"
-                style={{ objectFit: "cover" }}
-              />
+            <div className="lg:col-span-5 relative">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border-4 border-card bg-muted">
+                <Image
+                  src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=85"
+                  alt="Không gian bếp ẩm thực ấm cúng"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 500px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-4 -left-4 hidden sm:flex items-center gap-3 bg-card/95 backdrop-blur-md p-3.5 rounded-xl border border-border shadow-lg">
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Utensils className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-foreground">Ẩm thực đa sắc màu</div>
+                  <div className="text-[11px] text-muted-foreground">Truyền cảm hứng mỗi bữa ăn</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* =====================================================================
           2. KHỐI DANH MỤC MÓN ĂN NỔI BẬT (FEATURED CATEGORIES)
           ===================================================================== */}
-      <section className="section" style={{ backgroundColor: "var(--bg-main)" }}>
-        <div className="container">
-          <div className="section-header section-header-row">
+      <section className="py-14 sm:py-18 bg-background">
+        <Container>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="eyebrow">Khám phá theo chủ đề</span>
-              <h2>Danh Mục Món Ăn Nổi Bật</h2>
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                Khám phá theo chủ đề
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mt-1">
+                Danh Mục Món Ăn Nổi Bật
+              </h2>
             </div>
-            <Link
-              href="/categories"
-              className="btn btn-ghost"
-              style={{ fontWeight: 700, color: "var(--primary)" }}
-            >
-              Xem tất cả danh mục →
-            </Link>
+            <Button asChild variant="ghost" className="text-primary hover:text-primary gap-1 self-start sm:self-auto p-0 hover:bg-transparent">
+              <Link href="/categories" className="inline-flex items-center gap-1 font-semibold">
+                Xem tất cả danh mục <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </div>
 
-          <div className="category-grid">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {categories.map((cat) => (
               <CategoryCard key={cat.id || cat.slug} category={cat} />
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* =====================================================================
           3. KHỐI CÔNG THỨC MỚI NHẤT (RECENT RECIPES)
           ===================================================================== */}
-      <section
-        className="section"
-        style={{
-          backgroundColor: "var(--bg-surface)",
-          borderTop: "1px solid var(--border-subtle)",
-          borderBottom: "1px solid var(--border-subtle)",
-        }}
-      >
-        <div className="container">
-          <div className="section-header section-header-row">
+      <section className="py-14 sm:py-18 border-y border-border/60 bg-muted/30">
+        <Container>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="eyebrow">Cập nhật mỗi ngày</span>
-              <h2>Công Thức Mới Nhất</h2>
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                Cập nhật mỗi ngày
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mt-1">
+                Công Thức Mới Nhất
+              </h2>
             </div>
-            <Link
-              href="/recipes"
-              className="btn btn-ghost"
-              style={{ fontWeight: 700, color: "var(--primary)" }}
-            >
-              Duyệt toàn bộ kho công thức →
-            </Link>
+            <Button asChild variant="ghost" className="text-primary hover:text-primary gap-1 self-start sm:self-auto p-0 hover:bg-transparent">
+              <Link href="/recipes" className="inline-flex items-center gap-1 font-semibold">
+                Duyệt toàn bộ kho công thức <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </div>
 
-          <div className="recipe-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {recipes.map((rec, idx) => (
               <RecipeCard key={rec.id || rec.slug} recipe={rec} priority={idx < 3} />
             ))}
           </div>
 
-          <div style={{ textAlign: "center", marginTop: "48px" }}>
-            <Link href="/recipes" className="btn btn-primary btn-lg">
-              Xem thêm các công thức khác →
-            </Link>
+          <div className="text-center mt-12">
+            <Button asChild size="lg" className="rounded-xl font-medium shadow-sm gap-2">
+              <Link href="/recipes">
+                Xem thêm các công thức khác <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* =====================================================================
-          4. KHỐI TIÊU CHUẨN CHẤT LƯỢNG
+          4. KHỐI TIÊU CHUẨN CHẤT LƯỢNG (FEATURES)
           ===================================================================== */}
-      <section className="section" style={{ backgroundColor: "var(--bg-surface-alt)" }}>
-        <div className="container">
-          <div style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto 48px" }}>
-            <span className="eyebrow">Tại sao chọn Culinary Blog</span>
-            <h2>Nâng Tầm Kỹ Năng Nấu Nướng</h2>
-            <p>Mang đến trải nghiệm vào bếp dễ dàng, hứng khởi và chuẩn chỉnh dinh dưỡng.</p>
+      <section className="py-16 sm:py-20 bg-background">
+        <Container>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+              Tại sao chọn Culinary Blog
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mt-1 mb-3">
+              Nâng Tầm Kỹ Năng Nấu Nướng
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Mang đến trải nghiệm vào bếp dễ dàng, hứng khởi và chuẩn chỉnh dinh dưỡng cho mọi gia đình.
+            </p>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: "24px",
-            }}
-          >
-            <div className="card" style={{ padding: "28px", textAlign: "center" }}>
-              <div style={{ fontSize: "2.4rem", marginBottom: "12px" }}>⏱️</div>
-              <h3 style={{ fontSize: "1.2rem", marginBottom: "8px" }}>Định Lượng Chuẩn Xác</h3>
-              <p style={{ fontSize: "0.9rem" }}>Thời gian chuẩn bị, thời gian nấu và tỷ lệ gia vị được kiểm chứng kỹ lưỡng.</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="border border-border/80 shadow-xs hover:shadow-md transition-shadow">
+              <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-5">
+                  <Clock className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">Định Lượng Chuẩn Xác</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Thời gian chuẩn bị, thời gian nấu và tỷ lệ gia vị được kiểm chứng kỹ lưỡng từ các chuyên gia.
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="card" style={{ padding: "28px", textAlign: "center" }}>
-              <div style={{ fontSize: "2.4rem", marginBottom: "12px" }}>🥗</div>
-              <h3 style={{ fontSize: "1.2rem", marginBottom: "8px" }}>Dinh Dưỡng Rõ Ràng</h3>
-              <p style={{ fontSize: "0.9rem" }}>Bảng dinh dưỡng chi tiết về calo, chất béo, đạm và carbs hỗ trợ ăn uống khoa học.</p>
-            </div>
+            <Card className="border border-border/80 shadow-xs hover:shadow-md transition-shadow">
+              <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center mb-5">
+                  <Salad className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">Dinh Dưỡng Rõ Ràng</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Bảng dinh dưỡng chi tiết về calo, chất béo, đạm và carbs hỗ trợ ăn uống khoa học và lành mạnh.
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="card" style={{ padding: "28px", textAlign: "center" }}>
-              <div style={{ fontSize: "2.4rem", marginBottom: "12px" }}>🔍</div>
-              <h3 style={{ fontSize: "1.2rem", marginBottom: "8px" }}>Tìm Kiếm Toàn Văn Bản</h3>
-              <p style={{ fontSize: "0.9rem" }}>Hỗ trợ tìm kiếm tiếng Việt thông minh có dấu hoặc không dấu với tốc độ phản hồi tính bằng mili-giây.</p>
-            </div>
+            <Card className="border border-border/80 shadow-xs hover:shadow-md transition-shadow">
+              <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-500 flex items-center justify-center mb-5">
+                  <Zap className="w-7 h-7" />
+                </div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">Tìm Kiếm Toàn Văn Bản</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Hỗ trợ tìm kiếm tiếng Việt thông minh có dấu hoặc không dấu với tốc độ phản hồi tính bằng mili-giây.
+                </p>
+              </CardContent>
+            </Card>
           </div>
-        </div>
+        </Container>
       </section>
     </div>
   );
