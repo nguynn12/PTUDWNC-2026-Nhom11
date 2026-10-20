@@ -45,7 +45,7 @@ export function ErrorState({
         className
       )}
     >
-      <CardContent className="flex flex-col items-center text-center p-8 gap-5">
+      <CardContent className="flex flex-col items-center text-center p-4 sm:p-8 gap-4 sm:gap-5">
         <div className="relative">
           <div className="absolute -inset-2 rounded-full bg-destructive/15 animate-ping duration-1000" />
           <div className="relative rounded-full bg-destructive/10 p-4 text-destructive border border-destructive/20 shadow-sm">

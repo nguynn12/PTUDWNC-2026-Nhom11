@@ -41,7 +41,7 @@ export function EmptyState({
         className
       )}
     >
-      <CardContent className="flex flex-col items-center justify-center p-10 gap-5">
+      <CardContent className="flex flex-col items-center justify-center p-6 sm:p-10 gap-4 sm:gap-5">
         <div className="rounded-3xl bg-primary/10 p-5 text-primary border border-primary/20 shadow-sm transition-transform duration-300 hover:scale-105">
           {icon ?? <UtensilsCrossed className="w-10 h-10" aria-hidden="true" />}
         </div>
