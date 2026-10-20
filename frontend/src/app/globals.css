@@ -1,4 +1,3 @@
-/* Google Fonts phai dung truoc moi @import khac: Tailwind bung @import "tailwindcss" thanh rule CSS. */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -143,105 +142,109 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* ==========================================================================
-   RESET & BASE STYLES
-   ========================================================================== */
+/* Reset và kiểu mặc định của thẻ HTML đặt trong @layer base: nếu để ngoài layer, chúng thắng mọi
+   utility của Tailwind (p-*, m-*, text-*...) làm các component shadcn mất khoảng cách và cỡ chữ. */
+@layer base {
+  /* ==========================================================================
+     RESET & BASE STYLES
+     ========================================================================== */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  line-height: 1.6;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-main {
-  flex: 1;
-}
+  main {
+    flex: 1;
+  }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
 
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
 
-button {
-  cursor: pointer;
-  background: none;
-  border: none;
-}
+  button {
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
 
-/* Focus outline chuẩn Accessibility WCAG 2.1 AA */
-:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 3px;
-}
+  /* Focus outline chuẩn Accessibility WCAG 2.1 AA */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
 
-/* ==========================================================================
-   TYPOGRAPHY
-   ========================================================================== */
+  /* ==========================================================================
+     TYPOGRAPHY
+     ========================================================================== */
 
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-primary);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.015em;
-}
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
 
-h1 {
-  font-size: clamp(2rem, 4vw + 1rem, 3.25rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-}
+  h1 {
+    font-size: clamp(2rem, 4vw + 1rem, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
 
-h2 {
-  font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
-}
+  h2 {
+    font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
+  }
 
-h3 {
-  font-size: 1.35rem;
-}
+  h3 {
+    font-size: 1.35rem;
+  }
 
-h4 {
-  font-size: 1.15rem;
-}
+  h4 {
+    font-size: 1.15rem;
+  }
 
-p {
-  color: var(--text-secondary);
+  p {
+    color: var(--text-secondary);
+  }
 }
 
 .eyebrow {
