@@ -46,6 +46,13 @@ Mọi lỗi từ `apiClient` là `AppError` (`src/lib/errors.ts`) gồm `status`
 - Đọc store bằng selector để tránh render thừa: `useAuthStore((s) => s.user)` hoặc selector có sẵn (`useCurrentUser()`, `useAuthStatus()`, `useHasRole("Admin")`). Không gọi `useAuthStore()` không có selector.
 - Trạng thái đăng nhập chỉ đọc từ `src/store/auth-store.ts`; access token nằm trong bộ nhớ, không đọc/ghi `localStorage` trực tiếp.
 
+## Giao diện (shadcn/ui)
+
+- Dùng component có sẵn trong `src/components/ui` (Button, Card, Input, Label, Alert, Avatar, Badge, DropdownMenu...) và class Tailwind; không tạo thêm CSS module mới.
+- Ghép className bằng `cn()` trong `src/lib/utils.ts` để class truyền vào ghi đè được class mặc định.
+- Kiểu mặc định của thẻ HTML trong `globals.css` nằm trong `@layer base`, nên utility Tailwind luôn ghi đè được.
+- Ví dụ module Xác thực: `components/auth` (Field, PasswordField, FormAlert, SubmitButton, UserAvatar, RoleBadge) và `components/layout/UserMenu.tsx` (DropdownMenu + Avatar).
+
 ## Tiện ích dùng chung
 
 `src/lib/utils.ts`: `cn()` ghép className, `formatDate()` (dd/MM/yyyy, giờ Việt Nam), `formatDuration()` (80 → "1 giờ 20 phút"), `formatNumber()` (1.234.567), `buildQueryString()` (bỏ qua giá trị rỗng).
