@@ -5,11 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { getErrorMessage, isAppError } from '@/lib/errors';
 
 export interface ErrorStateProps {
+  /** Đối tượng lỗi tùy chọn (AppError, AxiosError, Error thông thường). */
+  error?: unknown;
   /** Tiêu đề lỗi chính. Mặc định là 'Đã xảy ra lỗi'. */
   title?: string;
-  /** Thông điệp chi tiết mô tả lỗi. */
+  /** Thông điệp chi tiết mô tả lỗi. Nếu không truyền sẽ tự động giải mã qua getErrorMessage(error). */
   message?: string;
   /** Mã lỗi hệ thống chuẩn hóa (RFC 7807 hoặc mã nghiệp vụ, ví dụ: RATE_LIMIT_EXCEEDED, FORBIDDEN). */
   errorCode?: string;
@@ -25,17 +28,27 @@ export interface ErrorStateProps {
 
 /**
  * Component ErrorState hiển thị lỗi thân thiện theo chuẩn RFC 7807 (Lab 6 - TV3).
- * Tránh hoàn toàn hiện tượng sập màn hình trắng khi API backend hoặc kết nối mạng gặp sự cố.
+ * Tích hợp hàm giải mã getErrorMessage() hiển thị thông báo tiếng Việt trực quan,
+ * tránh hoàn toàn hiện tượng sập màn hình trắng khi API backend hoặc kết nối mạng gặp sự cố.
  */
 export function ErrorState({
+  error,
   title = 'Đã xảy ra lỗi',
-  message = 'Không thể tải được nội dung vào lúc này. Vui lòng kiểm tra kết nối mạng và thử lại.',
+  message,
   errorCode,
   onRetry,
   retryLabel = 'Thử lại',
   showBackHome = true,
   className,
 }: ErrorStateProps) {
+  const displayMessage =
+    message ??
+    (error
+      ? getErrorMessage(error)
+      : 'Không thể tải được nội dung vào lúc này. Vui lòng kiểm tra kết nối mạng và thử lại.');
+
+  const displayCode =
+    errorCode ?? (isAppError(error) ? error.code : undefined);
   return (
     <Card
       role="alert"
@@ -58,14 +71,14 @@ export function ErrorState({
             <h3 className="text-xl font-bold tracking-tight text-foreground">
               {title}
             </h3>
-            {errorCode && (
+            {displayCode && (
               <Badge variant="outline" className="border-destructive/40 text-destructive font-mono text-xs">
-                {errorCode}
+                {displayCode}
               </Badge>
             )}
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {message}
+            {displayMessage}
           </p>
         </div>
 

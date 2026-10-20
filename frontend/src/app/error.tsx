@@ -21,8 +21,8 @@ export default function AppError({ error, reset }: RouteErrorProps) {
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[70vh]">
       <ErrorState
+        error={error}
         title="Đã xảy ra sự cố không mong muốn"
-        message={error.message || 'Hệ thống ẩm thực tạm thời không thể xử lý yêu cầu của bạn. Vui lòng thử lại sau.'}
         errorCode={error.digest ? `DIGEST_${error.digest.slice(0, 8).toUpperCase()}` : 'ROUTE_ERROR'}
         onRetry={reset}
         retryLabel="Thử tải lại trang"
