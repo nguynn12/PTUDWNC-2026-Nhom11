@@ -31,6 +31,7 @@ import { useAuthUIStore } from "@/store/auth-ui-store";
 import type { ResendConfirmationResponse, UserDto } from "@/types/auth";
 import { AuthErrorState } from "./AuthErrorState";
 import { AuthLoading } from "./AuthLoading";
+import { ChangePasswordForm } from "./ChangePasswordForm";
 import { FormAlert } from "./FormAlert";
 import { ProfileForm } from "./ProfileForm";
 import { RoleBadge } from "./RoleBadge";
@@ -257,6 +258,23 @@ export function ProfileView() {
             </CardHeader>
             <CardContent>
               <ProfileForm me={me} />
+            </CardContent>
+          </Card>
+
+          <Card id="doi-mat-khau" className="scroll-mt-24">
+            <CardHeader>
+              <CardTitle className="text-lg">Đổi mật khẩu</CardTitle>
+              <CardDescription>
+                Sau khi đổi, bạn vẫn đăng nhập trên trình duyệt này; các thiết bị khác sẽ bị đăng xuất. Tài khoản tạo
+                bằng Google chưa có mật khẩu thì dùng{" "}
+                <Link href="/auth/forgot-password" className="font-medium text-primary hover:underline">
+                  Quên mật khẩu
+                </Link>{" "}
+                để tạo mật khẩu.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChangePasswordForm />
             </CardContent>
           </Card>
 

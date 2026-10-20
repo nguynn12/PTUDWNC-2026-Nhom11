@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, EyeOff } from "lucide-react";
-import { useState, type ComponentProps } from "react";
+import { useState, type ComponentProps, type ReactNode } from "react";
 import type { FieldError } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,16 +12,21 @@ interface PasswordFieldProps extends Omit<ComponentProps<"input">, "type"> {
   label: string;
   error?: FieldError;
   hint?: string;
+  /** Liên kết đặt cùng hàng với nhãn (vd. "Quên mật khẩu?"). */
+  labelAction?: ReactNode;
 }
 
 /** Ô mật khẩu có nút hiện/ẩn. */
-export function PasswordField({ label, error, hint, id, ...rest }: PasswordFieldProps) {
+export function PasswordField({ label, error, hint, labelAction, id, ...rest }: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
   const inputId = id ?? rest.name ?? label;
 
   return (
-    <div className="grid gap-2">
-      <Label htmlFor={inputId}>{label}</Label>
+    <div className="grid content-start gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <Label htmlFor={inputId}>{label}</Label>
+        {labelAction}
+      </div>
       <div className="relative">
         <Input
           id={inputId}

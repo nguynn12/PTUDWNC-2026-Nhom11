@@ -103,6 +103,24 @@ export interface ResendConfirmationRequest {
   email: string;
 }
 
+/** Quên mật khẩu: POST /auth/password/forgot (luôn 204). */
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+/** Đặt lại mật khẩu bằng link trong email: POST /auth/password/reset (204). */
+export interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  newPassword: string;
+}
+
+/** Đổi mật khẩu khi đã đăng nhập: POST /auth/password/change (Bearer) → 200 + AuthResponseDto mới. */
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 /** FR-AUTH-010: PATCH /admin/users/{id}/status (chỉ Admin). */
 export interface ToggleUserStatusRequest {
   isActive: boolean;
@@ -126,6 +144,7 @@ export type AuthErrorCode =
   | "AUTH_ACCOUNT_DISABLED"
   | "AUTH_ACCOUNT_LOCKED"
   | "AUTH_EMAIL_NOT_CONFIRMED"
+  | "AUTH_RESET_TOKEN_INVALID"
   | "RATE_LIMIT_EXCEEDED";
 
 /** Mã lỗi chỉ sinh ở phía client (không tới được máy chủ). */

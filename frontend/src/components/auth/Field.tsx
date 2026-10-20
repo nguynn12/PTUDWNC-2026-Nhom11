@@ -42,7 +42,7 @@ interface FieldProps extends ComponentProps<"input"> {
 export function Field({ label, error, hint, id, className, ...rest }: FieldProps) {
   const inputId = id ?? rest.name ?? label;
   return (
-    <div className="grid gap-2">
+    <div className="grid content-start gap-2">
       <Label htmlFor={inputId}>{label}</Label>
       <Input
         id={inputId}

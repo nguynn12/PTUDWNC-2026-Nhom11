@@ -37,6 +37,36 @@ export const profileSchema = z.object({
   bio: z.string().max(1000, "Giới thiệu tối đa 1000 ký tự."),
 });
 
+export const forgotPasswordSchema = z.object({ email });
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword,
+    confirmPassword: z.string().min(1, "Vui lòng nhập lại mật khẩu."),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Mật khẩu nhập lại không khớp.",
+  });
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại."),
+    newPassword,
+    confirmPassword: z.string().min(1, "Vui lòng nhập lại mật khẩu mới."),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Mật khẩu nhập lại không khớp.",
+  })
+  .refine((d) => d.newPassword !== d.currentPassword, {
+    path: ["newPassword"],
+    message: "Mật khẩu mới phải khác mật khẩu hiện tại.",
+  });
+
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
 export type ProfileValues = z.infer<typeof profileSchema>;
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
