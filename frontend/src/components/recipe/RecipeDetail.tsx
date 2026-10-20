@@ -1,25 +1,36 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { RecipeDetailDto, RecipeDifficulty } from "@/types/api";
 
 interface RecipeDetailProps {
   recipe: RecipeDetailDto;
 }
 
-function getDifficultyBadge(diff: RecipeDifficulty) {
-  if (diff === "Easy" || diff === 0) return { label: "Độ khó: Dễ", className: "badge-easy" };
-  if (diff === "Hard" || diff === 2) return { label: "Độ khó: Khó", className: "badge-hard" };
-  return { label: "Độ khó: Vừa", className: "badge-medium" };
+function getDifficultyBadge(diff: RecipeDifficulty): {
+  label: string;
+  variant: "easy" | "medium" | "hard";
+} {
+  if (diff === "Easy" || diff === 0) return { label: "Độ khó: Dễ", variant: "easy" };
+  if (diff === "Hard" || diff === 2) return { label: "Độ khó: Khó", variant: "hard" };
+  return { label: "Độ khó: Vừa", variant: "medium" };
 }
 
 export function RecipeDetail({ recipe }: RecipeDetailProps) {
   const diff = getDifficultyBadge(recipe.difficulty);
+
   const heroImage =
     recipe.primaryImageUrl ||
     recipe.images?.find((img) => img.isPrimary)?.imageUrl ||
     recipe.images?.[0]?.imageUrl ||
     "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=85";
+
+  // State thư viện ảnh (Image Gallery)
+  const [selectedImage, setSelectedImage] = useState<string>(heroImage);
 
   const authorAvatar =
     recipe.author?.avatarUrl ||
@@ -46,6 +57,20 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
     (a, b) => a.stepNumber - b.stepNumber
   );
 
+  // Danh sách hình ảnh của công thức (loại bỏ trùng lặp nếu có)
+  const allImages = React.useMemo(() => {
+    const list: string[] = [];
+    if (recipe.primaryImageUrl) list.push(recipe.primaryImageUrl);
+    if (recipe.images && recipe.images.length > 0) {
+      recipe.images.forEach((img) => {
+        if (img.imageUrl && !list.includes(img.imageUrl)) {
+          list.push(img.imageUrl);
+        }
+      });
+    }
+    return list.length > 0 ? list : [heroImage];
+  }, [recipe.primaryImageUrl, recipe.images, heroImage]);
+
   // Thẻ dữ liệu có cấu trúc JSON-LD Schema.org Recipe phục vụ SEO Google (SRS NFR-SEO)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -60,7 +85,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
     datePublished: recipe.publishedAt,
     prepTime: `PT${recipe.prepTime || 15}M`,
     cookTime: `PT${recipe.cookTime || 30}M`,
-    totalTime: `PT${recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 45}M`,
+    totalTime: `PT${recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 45}M`,
     recipeYield: `${recipe.servings || 4} khẩu phần`,
     recipeCategory: recipe.categoryName,
     recipeIngredient: sortedIngredients.map(
@@ -83,7 +108,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
   };
 
   return (
-    <article className="container section" style={{ maxWidth: "980px" }}>
+    <article className="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
       {/* Nhúng thẻ dữ liệu có cấu trúc JSON-LD Schema.org cho SEO */}
       <script
         type="application/ld+json"
@@ -93,25 +118,21 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
       {/* Điều hướng Breadcrumbs */}
       <nav
         aria-label="Breadcrumb"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "0.88rem",
-          color: "var(--text-muted)",
-          marginBottom: "20px",
-          flexWrap: "wrap",
-        }}
+        className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-6 flex-wrap"
       >
-        <Link href="/" style={{ color: "var(--text-secondary)" }}>Trang chủ</Link>
+        <Link href="/" className="hover:text-[var(--primary)] transition-colors">
+          Trang chủ
+        </Link>
         <span>/</span>
-        <Link href="/recipes" style={{ color: "var(--text-secondary)" }}>Công thức</Link>
+        <Link href="/recipes" className="hover:text-[var(--primary)] transition-colors">
+          Công thức
+        </Link>
         {recipe.categorySlug && (
           <>
             <span>/</span>
             <Link
               href={`/categories/${recipe.categorySlug}`}
-              style={{ color: "var(--primary)", fontWeight: 600 }}
+              className="text-[var(--primary)] font-semibold hover:underline"
             >
               {recipe.categoryName}
             </Link>
@@ -120,57 +141,52 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
       </nav>
 
       {/* Tiêu đề & Thông tin đầu bài */}
-      <header style={{ marginBottom: "28px", display: "flex", flexDirection: "column", gap: "14px" }}>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+      <header className="mb-8 space-y-4">
+        <div className="flex items-center gap-2 flex-wrap">
           {recipe.categoryName && (
-            <span className="badge badge-category">{recipe.categoryName}</span>
+            <Badge variant="category" className="border border-[var(--border-subtle)] text-xs font-semibold">
+              {recipe.categoryName}
+            </Badge>
           )}
-          <span className={`badge ${diff.className}`}>{diff.label}</span>
+          <Badge variant={diff.variant} className="text-xs font-semibold">
+            {diff.label}
+          </Badge>
+          {recipe.status && recipe.status !== "Published" && (
+            <Badge
+              variant={recipe.status === "Draft" ? "statusDraft" : "statusArchived"}
+              className="text-xs"
+            >
+              {recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}
+            </Badge>
+          )}
         </div>
 
-        <h1 style={{ fontSize: "clamp(2rem, 3.5vw + 1rem, 2.85rem)", lineHeight: 1.25 }}>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[var(--text-primary)] tracking-tight leading-tight">
           {recipe.title}
         </h1>
 
-        <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+        <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-3xl">
           {recipe.description}
         </p>
 
         {/* Thông tin tác giả & Thời gian xuất bản */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            paddingTop: "12px",
-            borderTop: "1px solid var(--border-subtle)",
-          }}
-        >
-          <div
-            style={{
-              position: "relative",
-              width: "44px",
-              height: "44px",
-              borderRadius: "var(--radius-full)",
-              overflow: "hidden",
-              border: "2px solid var(--primary-light)",
-            }}
-          >
+        <div className="flex items-center gap-3 pt-4 border-t border-[var(--border-subtle)]">
+          <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-[var(--primary-light)] flex-shrink-0">
             <Image
               src={authorAvatar}
               alt={recipe.author?.displayName || recipe.author?.userName || "Tác giả"}
               fill
               sizes="44px"
               unoptimized
-              style={{ objectFit: "cover" }}
+              className="object-cover"
             />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-primary)" }}>
+            <div className="font-bold text-sm sm:text-base text-[var(--text-primary)]">
               {recipe.author?.displayName || recipe.author?.userName || "Chuyên gia Ẩm thực"}
             </div>
             {formattedDate && (
-              <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }} suppressHydrationWarning>
+              <div className="text-xs text-[var(--text-muted)]" suppressHydrationWarning>
                 Xuất bản: {formattedDate}
               </div>
             )}
@@ -178,300 +194,257 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         </div>
       </header>
 
-      {/* Ảnh chính Hero Image (LCP Optimization với cờ priority) */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          paddingTop: "56.25%", // Tỷ lệ 16:9
-          borderRadius: "var(--radius-xl)",
-          overflow: "hidden",
-          boxShadow: "var(--shadow-md)",
-          marginBottom: "36px",
-          backgroundColor: "var(--bg-surface-alt)",
-        }}
-      >
-        <Image
-          src={heroImage}
-          alt={recipe.title}
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 980px"
-          style={{ objectFit: "cover" }}
-        />
-      </div>
+      {/* ẢNH CHÍNH & THƯ VIỆN ẢNH (Image Gallery) */}
+      <section className="mb-10 space-y-3">
+        {/* Khối Ảnh chính Hero Image (Tỷ lệ 16:9) */}
+        <div className="relative w-full pt-[56.25%] rounded-3xl overflow-hidden shadow-lg bg-[var(--bg-surface-alt)] border border-[var(--border-subtle)]">
+          <Image
+            src={selectedImage}
+            alt={recipe.title}
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 1024px"
+            className="object-cover transition-all duration-300"
+          />
+        </div>
 
-      {/* Thanh thông số nhanh (Quick Stats Bar) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-          gap: "16px",
-          padding: "20px",
-          backgroundColor: "var(--bg-surface)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: "var(--radius-lg)",
-          boxShadow: "var(--shadow-xs)",
-          marginBottom: "40px",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Chuẩn bị</div>
-          <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-primary)", marginTop: "4px" }}>
+        {/* Thư viện ảnh dạng dải thumbnail bên dưới */}
+        {allImages.length > 1 && (
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 pt-1">
+            {allImages.map((imgUrl, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setSelectedImage(imgUrl)}
+                className={`relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all cursor-pointer ${
+                  selectedImage === imgUrl
+                    ? "border-[var(--primary)] ring-2 ring-[var(--primary-subtle)] scale-102"
+                    : "border-transparent opacity-70 hover:opacity-100"
+                }`}
+                title={`Xem ảnh ${idx + 1}`}
+              >
+                <Image
+                  src={imgUrl}
+                  alt={`Thumbnail ${idx + 1}`}
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* THANH THÔNG SỐ NHANH (Quick Stats Bar) */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 p-5 sm:p-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-xs mb-10">
+        <div className="text-center p-2 rounded-xl bg-[var(--bg-surface-alt)]/60">
+          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-bold">
+            Chuẩn bị
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
             {recipe.prepTime || 15} phút
           </div>
         </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Thời gian nấu</div>
-          <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-primary)", marginTop: "4px" }}>
+
+        <div className="text-center p-2 rounded-xl bg-[var(--bg-surface-alt)]/60">
+          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-bold">
+            Nấu nướng
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
             {recipe.cookTime || 30} phút
           </div>
         </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Tổng thời gian</div>
-          <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--primary)", marginTop: "4px" }}>
-            {recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 45} phút
+
+        <div className="text-center p-2 rounded-xl bg-[var(--bg-surface-alt)]/60">
+          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-bold">
+            Tổng thời gian
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-[var(--primary)] mt-1">
+            {recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 45} phút
           </div>
         </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Khẩu phần</div>
-          <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-primary)", marginTop: "4px" }}>
+
+        <div className="text-center p-2 rounded-xl bg-[var(--bg-surface-alt)]/60">
+          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-bold">
+            Khẩu phần
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
             {recipe.servings || 4} người
           </div>
         </div>
-        {recipe.nutrition?.calories && (
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Năng lượng</div>
-            <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--secondary)", marginTop: "4px" }}>
-              {recipe.nutrition.calories} kcal
+
+        {Boolean(recipe.nutrition?.calories) && (
+          <div className="col-span-2 sm:col-span-4 lg:col-span-1 text-center p-2 rounded-xl bg-[var(--secondary-light)]/60">
+            <div className="text-xs text-[var(--secondary)] uppercase tracking-wider font-bold">
+              Năng lượng
+            </div>
+            <div className="text-lg sm:text-xl font-bold text-[var(--secondary)] mt-1">
+              {recipe.nutrition?.calories} kcal
             </div>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Bố cục 2 cột: Nguyên liệu & Dinh dưỡng bên trái, Các bước bên phải */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: "40px",
-        }}
-      >
-        {/* KHỐI 1: NGUYÊN LIỆU NẤU ĂN */}
-        <section
-          style={{
-            padding: "28px",
-            backgroundColor: "var(--bg-surface)",
-            borderRadius: "var(--radius-lg)",
-            border: "1px solid var(--border-subtle)",
-            boxShadow: "var(--shadow-sm)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-            <h2 style={{ fontSize: "1.45rem", display: "flex", alignItems: "center", gap: "8px" }}>
-              🥗 Nguyên liệu chuẩn bị
-            </h2>
-            <span style={{ fontSize: "0.88rem", color: "var(--text-muted)" }}>
-              {sortedIngredients.length} nguyên liệu
-            </span>
-          </div>
+      {/* BỐ CỤC NỘI DUNG: NGUYÊN LIỆU + DINH DƯỠNG & CÁC BƯỚC THỰC HIỆN */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+        {/* CỘT TRÁI (Lg: 4/12): Nguyên liệu & Dinh dưỡng */}
+        <div className="lg:col-span-5 space-y-8">
+          {/* KHỐI 1: NGUYÊN LIỆU NẤU ĂN */}
+          <Card className="rounded-2xl border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs">
+            <div className="p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-5 pb-3 border-b border-[var(--border-subtle)]">
+                <h2 className="text-xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
+                  <span>🥗</span>
+                  <span>Nguyên liệu</span>
+                </h2>
+                <Badge variant="outline" className="text-xs font-semibold">
+                  {sortedIngredients.length} nguyên liệu
+                </Badge>
+              </div>
 
-          <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px", padding: 0 }}>
-            {sortedIngredients.map((ing) => (
-              <li
-                key={ing.id || ing.name}
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  justifyContent: "space-between",
-                  paddingBottom: "10px",
-                  borderBottom: "1px dashed var(--border-subtle)",
-                  fontSize: "1rem",
-                }}
-              >
-                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                  {ing.name}
-                </span>
-                <span
-                  style={{
-                    color: "var(--primary)",
-                    fontWeight: 700,
-                    backgroundColor: "var(--primary-light)",
-                    padding: "2px 8px",
-                    borderRadius: "var(--radius-sm)",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  {ing.quantity} {ing.unit}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* KHỐI 2: THÔNG TIN DINH DƯỠNG (KÈM LƯU Ý BẮT BUỘC THEO SRS DÒNG 1295) */}
-        {recipe.nutrition && (
-          <section
-            style={{
-              padding: "24px",
-              backgroundColor: "var(--bg-surface-alt)",
-              borderRadius: "var(--radius-lg)",
-              border: "1px solid var(--border-default)",
-            }}
-          >
-            <h3 style={{ fontSize: "1.2rem", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-              📊 Giá trị dinh dưỡng (mỗi khẩu phần)
-            </h3>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
-                gap: "12px",
-                marginBottom: "16px",
-              }}
-            >
-              {recipe.nutrition.calories && (
-                <div style={{ backgroundColor: "var(--bg-surface)", padding: "12px", borderRadius: "var(--radius-md)", textAlign: "center" }}>
-                  <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Calo</div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--primary)" }}>{recipe.nutrition.calories} kcal</div>
-                </div>
-              )}
-              {recipe.nutrition.proteinGrams !== undefined && recipe.nutrition.proteinGrams !== null && (
-                <div style={{ backgroundColor: "var(--bg-surface)", padding: "12px", borderRadius: "var(--radius-md)", textAlign: "center" }}>
-                  <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Chất đạm</div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700 }}>{recipe.nutrition.proteinGrams} g</div>
-                </div>
-              )}
-              {recipe.nutrition.carbsGrams !== undefined && recipe.nutrition.carbsGrams !== null && (
-                <div style={{ backgroundColor: "var(--bg-surface)", padding: "12px", borderRadius: "var(--radius-md)", textAlign: "center" }}>
-                  <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Tinh bột</div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700 }}>{recipe.nutrition.carbsGrams} g</div>
-                </div>
-              )}
-              {recipe.nutrition.fatGrams !== undefined && recipe.nutrition.fatGrams !== null && (
-                <div style={{ backgroundColor: "var(--bg-surface)", padding: "12px", borderRadius: "var(--radius-md)", textAlign: "center" }}>
-                  <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Chất béo</div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700 }}>{recipe.nutrition.fatGrams} g</div>
-                </div>
-              )}
-              {recipe.nutrition.fiberGrams !== undefined && recipe.nutrition.fiberGrams !== null && (
-                <div style={{ backgroundColor: "var(--bg-surface)", padding: "12px", borderRadius: "var(--radius-md)", textAlign: "center" }}>
-                  <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Chất xơ</div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700 }}>{recipe.nutrition.fiberGrams} g</div>
-                </div>
-              )}
+              <ul className="space-y-3 p-0 list-none m-0">
+                {sortedIngredients.map((ing) => (
+                  <li
+                    key={ing.id || ing.name}
+                    className="flex items-center justify-between pb-2.5 border-b border-dashed border-[var(--border-subtle)] last:border-none text-sm sm:text-base"
+                  >
+                    <span className="font-medium text-[var(--text-primary)]">
+                      {ing.name}
+                    </span>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-[var(--primary)] bg-[var(--primary-light)]">
+                      {ing.quantity} {ing.unit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
+          </Card>
 
-            {/* DÒNG LƯU Ý BẮT BUỘC THEO ĐẶC TẢ SRS DÒNG 1295 */}
-            <p
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--text-muted)",
-                fontStyle: "italic",
-                borderLeft: "3px solid var(--accent-amber)",
-                paddingLeft: "10px",
-                margin: 0,
-              }}
-            >
-              “Thông tin dinh dưỡng do tác giả cung cấp và chỉ mang tính tham khảo.”
-            </p>
-          </section>
-        )}
+          {/* KHỐI 2: THÔNG TIN DINH DƯỠNG */}
+          {recipe.nutrition && (
+            <Card className="rounded-2xl border-[var(--border-subtle)] bg-[var(--bg-surface-alt)]/50 shadow-xs">
+              <div className="p-5 sm:p-6 space-y-4">
+                <h3 className="text-lg font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
+                  <span>📊</span>
+                  <span>Giá trị dinh dưỡng (mỗi khẩu phần)</span>
+                </h3>
 
-        {/* KHỐI 3: HƯỚNG DẪN CÁC BƯỚC NẤU ĂN */}
-        <section style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          <h2 style={{ fontSize: "1.6rem", display: "flex", alignItems: "center", gap: "10px" }}>
-            👩‍🍳 Hướng dẫn các bước thực hiện
-          </h2>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            {sortedSteps.map((step) => (
-              <div
-                key={step.id || step.stepNumber}
-                style={{
-                  display: "flex",
-                  gap: "20px",
-                  padding: "24px",
-                  backgroundColor: "var(--bg-surface)",
-                  borderRadius: "var(--radius-lg)",
-                  border: "1px solid var(--border-subtle)",
-                  boxShadow: "var(--shadow-xs)",
-                }}
-              >
-                {/* Số thứ tự bước tròn */}
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "var(--radius-full)",
-                    backgroundColor: "var(--primary)",
-                    color: "var(--text-inverse)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: 800,
-                    fontSize: "1.1rem",
-                    flexShrink: 0,
-                    boxShadow: "0 2px 6px rgba(200, 90, 23, 0.3)",
-                  }}
-                >
-                  {step.stepNumber}
-                </div>
-
-                {/* Nội dung bước làm */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
-                    <h3 style={{ fontSize: "1.2rem", margin: 0, color: "var(--text-primary)" }}>
-                      {step.title || `Bước ${step.stepNumber}`}
-                    </h3>
-
-                    {/* Hẹn giờ nấu nếu có */}
-                    {step.timerMinutes && (
-                      <span
-                        className="badge"
-                        style={{
-                          backgroundColor: "var(--accent-amber-light)",
-                          color: "var(--accent-amber)",
-                          border: "1px solid #fde68a",
-                          fontSize: "0.85rem",
-                        }}
-                      >
-                        ⏱️ Hẹn giờ: {step.timerMinutes} phút
-                      </span>
-                    )}
-                  </div>
-
-                  <p style={{ fontSize: "1rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>
-                    {step.description}
-                  </p>
-
-                  {/* Ảnh minh họa bước làm nếu có */}
-                  {step.imageUrl && (
-                    <div
-                      style={{
-                        position: "relative",
-                        width: "100%",
-                        height: "240px",
-                        borderRadius: "var(--radius-md)",
-                        overflow: "hidden",
-                        marginTop: "10px",
-                      }}
-                    >
-                      <Image
-                        src={step.imageUrl}
-                        alt={`Ảnh minh họa bước ${step.stepNumber}`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 600px"
-                        style={{ objectFit: "cover" }}
-                      />
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {recipe.nutrition.calories && (
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
+                      <div className="text-xs text-[var(--text-muted)] font-medium">Calo</div>
+                      <div className="text-base font-bold text-[var(--primary)] mt-0.5">
+                        {recipe.nutrition.calories} kcal
+                      </div>
+                    </div>
+                  )}
+                  {recipe.nutrition.proteinGrams !== undefined && recipe.nutrition.proteinGrams !== null && (
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
+                      <div className="text-xs text-[var(--text-muted)] font-medium">Chất đạm</div>
+                      <div className="text-base font-bold text-[var(--text-primary)] mt-0.5">
+                        {recipe.nutrition.proteinGrams} g
+                      </div>
+                    </div>
+                  )}
+                  {recipe.nutrition.carbsGrams !== undefined && recipe.nutrition.carbsGrams !== null && (
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
+                      <div className="text-xs text-[var(--text-muted)] font-medium">Tinh bột</div>
+                      <div className="text-base font-bold text-[var(--text-primary)] mt-0.5">
+                        {recipe.nutrition.carbsGrams} g
+                      </div>
+                    </div>
+                  )}
+                  {recipe.nutrition.fatGrams !== undefined && recipe.nutrition.fatGrams !== null && (
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
+                      <div className="text-xs text-[var(--text-muted)] font-medium">Chất béo</div>
+                      <div className="text-base font-bold text-[var(--text-primary)] mt-0.5">
+                        {recipe.nutrition.fatGrams} g
+                      </div>
+                    </div>
+                  )}
+                  {recipe.nutrition.fiberGrams !== undefined && recipe.nutrition.fiberGrams !== null && (
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
+                      <div className="text-xs text-[var(--text-muted)] font-medium">Chất xơ</div>
+                      <div className="text-base font-bold text-[var(--text-primary)] mt-0.5">
+                        {recipe.nutrition.fiberGrams} g
+                      </div>
                     </div>
                   )}
                 </div>
+
+                {/* DÒNG LƯU Ý BẮT BUỘC THEO ĐẶC TẢ SRS DÒNG 1295 */}
+                <p className="text-xs text-[var(--text-muted)] italic border-l-2 border-amber-500 pl-2.5 m-0 leading-relaxed">
+                  “Thông tin dinh dưỡng do tác giả cung cấp và chỉ mang tính tham khảo.”
+                </p>
               </div>
+            </Card>
+          )}
+        </div>
+
+        {/* CỘT PHẢI (Lg: 7/12): Hướng dẫn các bước nấu ăn */}
+        <div className="lg:col-span-7 space-y-6">
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
+              <span>👩‍🍳</span>
+              <span>Các bước thực hiện</span>
+            </h2>
+            <span className="text-xs font-semibold text-[var(--text-muted)]">
+              {sortedSteps.length} bước
+            </span>
+          </div>
+
+          <div className="space-y-5">
+            {sortedSteps.map((step) => (
+              <Card
+                key={step.id || step.stepNumber}
+                className="overflow-hidden border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs rounded-2xl"
+              >
+                <CardContent className="p-5 sm:p-6">
+                  <div className="flex items-start gap-4">
+                    {/* Số thứ tự bước tròn */}
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-extrabold text-sm sm:text-base flex-shrink-0 shadow-sm shadow-[var(--primary)]/30">
+                      {step.stepNumber}
+                    </div>
+
+                    {/* Nội dung bước làm */}
+                    <div className="flex-1 space-y-3 min-w-0">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] m-0">
+                          {step.title || `Bước ${step.stepNumber}`}
+                        </h3>
+
+                        {/* Hẹn giờ nấu nếu có */}
+                        {step.timerMinutes && (
+                          <Badge variant="medium" className="text-xs font-medium">
+                            ⏱️ Hẹn giờ: {step.timerMinutes} phút
+                          </Badge>
+                        )}
+                      </div>
+
+                      <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed m-0 whitespace-pre-line">
+                        {step.description}
+                      </p>
+
+                      {/* Ảnh minh họa bước làm nếu có */}
+                      {step.imageUrl && (
+                        <div className="relative w-full pt-[52%] rounded-xl overflow-hidden mt-3 border border-[var(--border-subtle)] bg-[var(--bg-surface-alt)]">
+                          <Image
+                            src={step.imageUrl}
+                            alt={`Ảnh minh họa bước ${step.stepNumber}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 600px"
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
-        </section>
+        </div>
       </div>
     </article>
   );

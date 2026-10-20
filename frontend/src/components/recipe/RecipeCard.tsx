@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
 
 interface RecipeCardProps {
@@ -8,14 +10,17 @@ interface RecipeCardProps {
   priority?: boolean;
 }
 
-function getDifficultyLabel(diff: RecipeDifficulty): { label: string; className: string } {
-  if (diff === "Easy" || diff === 0) return { label: "Dễ", className: "badge-easy" };
-  if (diff === "Hard" || diff === 2) return { label: "Khó", className: "badge-hard" };
-  return { label: "Vừa", className: "badge-medium" };
+function getDifficultyVariant(diff: RecipeDifficulty): {
+  label: string;
+  variant: "easy" | "medium" | "hard";
+} {
+  if (diff === "Easy" || diff === 0) return { label: "Dễ", variant: "easy" };
+  if (diff === "Hard" || diff === 2) return { label: "Khó", variant: "hard" };
+  return { label: "Vừa", variant: "medium" };
 }
 
 export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
-  const diffInfo = getDifficultyLabel(recipe.difficulty);
+  const diffInfo = getDifficultyVariant(recipe.difficulty);
   const fallbackImage =
     recipe.primaryImageUrl ||
     "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
@@ -26,27 +31,15 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
       recipe.author?.displayName || recipe.author?.userName || "Bếp Trưởng"
     )}&background=fed8c4&color=c85a17`;
 
+  const totalTime =
+    recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 30;
+
   return (
-    <article
-      className="card"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        position: "relative",
-      }}
-    >
-      {/* Khối Ảnh bìa công thức */}
+    <Card className="group flex flex-col h-full overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] rounded-2xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+      {/* Khối Ảnh bìa công thức với tỷ lệ 16:10 */}
       <Link
         href={`/recipes/${recipe.slug}`}
-        style={{
-          position: "relative",
-          width: "100%",
-          paddingTop: "62.5%", // Tỷ lệ khung hình 16:10
-          overflow: "hidden",
-          display: "block",
-          backgroundColor: "var(--bg-surface-alt)",
-        }}
+        className="relative block w-full pt-[62.5%] overflow-hidden bg-[var(--bg-surface-alt)]"
       >
         <Image
           src={fallbackImage}
@@ -54,163 +47,98 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
           fill
           priority={priority}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          style={{
-            objectFit: "cover",
-            transition: "transform var(--transition-base)",
-          }}
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
 
+        {/* Lớp phủ chuyển sắc nhẹ để làm nổi bật nhãn */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+
         {/* Badges góc trên */}
-        <div
-          style={{
-            position: "absolute",
-            top: "12px",
-            left: "12px",
-            right: "12px",
-            display: "flex",
-            justifyContent: "space-between",
-            pointerEvents: "none",
-          }}
-        >
+        <div className="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-none gap-2">
           {recipe.categoryName && (
-            <span
-              className="badge badge-category"
-              style={{
-                boxShadow: "var(--shadow-sm)",
-                backdropFilter: "blur(4px)",
-              }}
-            >
+            <Badge variant="category" className="shadow-xs backdrop-blur-md">
               {recipe.categoryName}
-            </span>
+            </Badge>
           )}
-          <span
-            className={`badge ${diffInfo.className}`}
-            style={{
-              boxShadow: "var(--shadow-sm)",
-              marginLeft: "auto",
-            }}
-          >
-            {diffInfo.label}
-          </span>
+
+          <div className="ml-auto flex items-center gap-1.5">
+            <Badge variant={diffInfo.variant} className="shadow-xs">
+              {diffInfo.label}
+            </Badge>
+
+            {recipe.status && recipe.status !== "Published" && (
+              <Badge
+                variant={recipe.status === "Draft" ? "statusDraft" : "statusArchived"}
+                className="shadow-xs"
+              >
+                {recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}
+              </Badge>
+            )}
+          </div>
         </div>
       </Link>
 
       {/* Thân thẻ */}
-      <div
-        className="card-body"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          flex: 1,
-        }}
-      >
-        {/* Chỉ số nhanh: Thời gian & Calo */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            fontSize: "0.82rem",
-            color: "var(--text-muted)",
-          }}
-        >
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-            ⏱️ {recipe.totalTime || (recipe.prepTime + recipe.cookTime) || 30} phút
+      <div className="p-5 flex flex-col flex-1 gap-2.5">
+        {/* Chỉ số nhanh: Thời gian & Calo & Khẩu phần */}
+        <div className="flex items-center flex-wrap gap-3 text-xs font-medium text-[var(--text-muted)]">
+          <span className="inline-flex items-center gap-1">
+            <span>⏱️</span> {totalTime} phút
           </span>
-          {recipe.calories && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              🔥 {recipe.calories} kcal
+          {Boolean(recipe.calories) && (
+            <span className="inline-flex items-center gap-1">
+              <span>🔥</span> {recipe.calories} kcal
             </span>
           )}
-          {recipe.servings && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              👥 {recipe.servings} phần
+          {Boolean(recipe.servings) && (
+            <span className="inline-flex items-center gap-1">
+              <span>👥</span> {recipe.servings} phần
             </span>
           )}
         </div>
 
         {/* Tiêu đề công thức */}
-        <h3 style={{ fontSize: "1.15rem", lineHeight: 1.35, margin: 0 }}>
+        <h3 className="text-lg font-bold leading-snug tracking-tight m-0">
           <Link
             href={`/recipes/${recipe.slug}`}
-            className="line-clamp-2"
-            style={{
-              color: "var(--text-primary)",
-              transition: "color var(--transition-fast)",
-            }}
+            className="line-clamp-2 text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors duration-200"
           >
             {recipe.title}
           </Link>
         </h3>
 
         {/* Mô tả ngắn */}
-        <p
-          className="line-clamp-2"
-          style={{
-            fontSize: "0.88rem",
-            color: "var(--text-secondary)",
-            lineHeight: 1.5,
-            margin: 0,
-          }}
-        >
+        <p className="line-clamp-2 text-sm text-[var(--text-secondary)] leading-relaxed m-0">
           {recipe.description}
         </p>
 
-        {/* Chân thẻ: Thông tin tác giả */}
-        <div
-          style={{
-            marginTop: "auto",
-            paddingTop: "12px",
-            borderTop: "1px solid var(--border-subtle)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div
-              style={{
-                position: "relative",
-                width: "26px",
-                height: "26px",
-                borderRadius: "var(--radius-full)",
-                overflow: "hidden",
-                border: "1px solid var(--border-subtle)",
-              }}
-            >
+        {/* Chân thẻ: Thông tin tác giả & CTA */}
+        <div className="mt-auto pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative w-7 h-7 rounded-full overflow-hidden border border-[var(--border-subtle)] flex-shrink-0">
               <Image
                 src={authorAvatar}
                 alt={recipe.author?.displayName || recipe.author?.userName || "Tác giả"}
                 fill
-                sizes="26px"
+                sizes="28px"
                 unoptimized
-                style={{ objectFit: "cover" }}
+                className="object-cover"
               />
             </div>
-            <span
-              style={{
-                fontSize: "0.82rem",
-                fontWeight: 600,
-                color: "var(--text-primary)",
-              }}
-            >
+            <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
               {recipe.author?.displayName || recipe.author?.userName || "Ẩm thực gia"}
             </span>
           </div>
 
           <Link
             href={`/recipes/${recipe.slug}`}
-            style={{
-              fontSize: "0.82rem",
-              fontWeight: 600,
-              color: "var(--primary)",
-            }}
+            className="inline-flex items-center text-xs font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] whitespace-nowrap transition-colors"
           >
-            Xem cách làm →
+            Xem cách làm
+            <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
           </Link>
         </div>
       </div>
-    </article>
+    </Card>
   );
 }

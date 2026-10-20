@@ -3,6 +3,8 @@
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
+import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface RecipeToolbarProps {
   totalCount: number;
@@ -50,85 +52,56 @@ export function RecipeToolbar({
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "16px",
-        padding: "14px 20px",
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border-subtle)",
-        borderRadius: "var(--radius-lg)",
-        boxShadow: "var(--shadow-xs)",
-        marginBottom: "24px",
-        flexWrap: "wrap",
-      }}
-    >
+    <div className="flex flex-wrap items-center justify-between gap-4 p-4 md:px-5 md:py-3.5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs mb-6">
       {/* SỐ LƯỢNG KẾT QUẢ & NÚT BỘ LỌC MOBILE */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <button
+      <div className="flex items-center gap-3">
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={() => setFilterDrawerOpen(true)}
-          className="btn btn-outline btn-sm mobile-filter-btn"
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+          className="lg:hidden inline-flex items-center gap-1.5 font-semibold text-xs rounded-xl"
         >
-          <span>🌪️</span> Bộ lọc
-        </button>
+          <span>🌪️</span>
+          <span>Bộ lọc</span>
+        </Button>
 
-        <span style={{ fontSize: "0.95rem", color: "var(--text-secondary)" }}>
-          Tìm thấy <strong style={{ color: "var(--text-primary)" }}>{totalCount}</strong> công thức
+        <span className="text-sm md:text-base text-[var(--text-secondary)]">
+          Tìm thấy <strong className="text-[var(--text-primary)] font-bold">{totalCount}</strong> công thức
         </span>
       </div>
 
       {/* SẮP XẾP & CHẾ ĐỘ XEM */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label htmlFor="sort-select" style={{ fontSize: "0.85rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
+      <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+        <div className="flex items-center gap-2">
+          <label htmlFor="sort-select" className="text-xs sm:text-sm text-[var(--text-muted)] whitespace-nowrap hidden sm:inline">
             Sắp xếp:
           </label>
-          <select
-            id="sort-select"
-            value={getSelectedSortOption()}
-            onChange={handleSortChange}
-            className="select"
-            style={{
-              padding: "6px 12px",
-              fontSize: "0.88rem",
-              width: "auto",
-              minWidth: "160px",
-            }}
-          >
-            <option value="newest">Mới nhất</option>
-            <option value="quickest">Nấu nhanh nhất</option>
-            <option value="calories">Calo thấp nhất</option>
-            <option value="title">Tên món ăn (A-Z)</option>
-          </select>
+          <div className="w-[155px] sm:w-[175px]">
+            <Select
+              id="sort-select"
+              value={getSelectedSortOption()}
+              onChange={handleSortChange}
+              className="h-9 text-xs sm:text-sm rounded-xl py-1 px-3"
+            >
+              <option value="newest">Mới nhất</option>
+              <option value="quickest">Nấu nhanh nhất</option>
+              <option value="calories">Calo thấp nhất</option>
+              <option value="title">Tên món ăn (A-Z)</option>
+            </Select>
+          </div>
         </div>
 
         {/* NÚT CHUYỂN GRID / LIST */}
-        <div
-          style={{
-            display: "inline-flex",
-            backgroundColor: "var(--bg-surface-alt)",
-            padding: "3px",
-            borderRadius: "var(--radius-md)",
-            border: "1px solid var(--border-subtle)",
-          }}
-        >
+        <div className="inline-flex items-center bg-[var(--bg-surface-alt)] p-1 rounded-xl border border-[var(--border-subtle)]">
           <button
             type="button"
             onClick={() => setRecipesViewMode("grid")}
-            style={{
-              padding: "4px 8px",
-              borderRadius: "var(--radius-sm)",
-              backgroundColor: recipesViewMode === "grid" ? "var(--bg-surface)" : "transparent",
-              color: recipesViewMode === "grid" ? "var(--primary)" : "var(--text-muted)",
-              boxShadow: recipesViewMode === "grid" ? "var(--shadow-xs)" : "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "0.95rem",
-            }}
+            className={`px-2.5 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer ${
+              recipesViewMode === "grid"
+                ? "bg-[var(--bg-surface)] text-[var(--primary)] shadow-xs font-bold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            }`}
             title="Xem dạng lưới"
             aria-label="Xem dạng lưới"
           >
@@ -137,16 +110,11 @@ export function RecipeToolbar({
           <button
             type="button"
             onClick={() => setRecipesViewMode("list")}
-            style={{
-              padding: "4px 8px",
-              borderRadius: "var(--radius-sm)",
-              backgroundColor: recipesViewMode === "list" ? "var(--bg-surface)" : "transparent",
-              color: recipesViewMode === "list" ? "var(--primary)" : "var(--text-muted)",
-              boxShadow: recipesViewMode === "list" ? "var(--shadow-xs)" : "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "0.95rem",
-            }}
+            className={`px-2.5 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer ${
+              recipesViewMode === "list"
+                ? "bg-[var(--bg-surface)] text-[var(--primary)] shadow-xs font-bold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            }`}
             title="Xem dạng danh sách"
             aria-label="Xem dạng danh sách"
           >

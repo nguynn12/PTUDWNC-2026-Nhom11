@@ -7,6 +7,7 @@ import { RecipeFilterSidebar } from "@/components/recipe/RecipeFilterSidebar";
 import { RecipeToolbar } from "@/components/recipe/RecipeToolbar";
 import { RecipeListWrapper } from "@/components/recipe/RecipeListWrapper";
 import { Pagination } from "@/components/common/Pagination";
+import { EmptyState } from "@/components/common/EmptyState";
 import type {
   RecipeSummaryDto,
   CategoryDto,
@@ -82,48 +83,39 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
   }
 
   return (
-    <div className="container section">
+    <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
       {/* Breadcrumb */}
       <nav
         aria-label="Breadcrumb"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "0.88rem",
-          color: "var(--text-muted)",
-          marginBottom: "20px",
-        }}
+        className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-6"
       >
-        <Link href="/" style={{ color: "var(--text-secondary)" }}>Trang chủ</Link>
+        <Link href="/" className="hover:text-[var(--primary)] transition-colors">
+          Trang chủ
+        </Link>
         <span>/</span>
-        <span style={{ color: "var(--primary)", fontWeight: 600 }}>Duyệt công thức</span>
+        <span className="text-[var(--primary)] font-semibold">Duyệt công thức</span>
       </nav>
 
       {/* Header trang */}
-      <div style={{ marginBottom: "32px" }}>
-        <span className="eyebrow">Thực đơn phong phú mỗi ngày</span>
-        <h1 style={{ fontSize: "clamp(2rem, 3.5vw + 1rem, 2.75rem)", marginBottom: "8px" }}>
+      <div className="mb-8">
+        <span className="eyebrow block mb-2 text-xs font-bold tracking-widest uppercase text-[var(--primary)]">
+          Thực đơn phong phú mỗi ngày
+        </span>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--text-primary)] tracking-tight mb-3">
           Kho Tàng Công Thức Nấu Ăn
         </h1>
-        <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", maxWidth: "68ch" }}>
+        <p className="text-base sm:text-lg text-[var(--text-secondary)] max-w-2xl leading-relaxed">
           Tìm kiếm cảm hứng vào bếp với các công thức được định lượng chuẩn xác và minh bạch dinh dưỡng.
         </p>
       </div>
 
       {/* Bố cục 2 cột: Sidebar bộ lọc bên trái + Danh sách bài viết bên phải */}
-      <div
-        style={{
-          display: "flex",
-          gap: "32px",
-          alignItems: "flex-start",
-        }}
-      >
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* CỘT 1: SIDEBAR BỘ LỌC ĐA TIÊU CHÍ */}
         <RecipeFilterSidebar categories={categories} />
 
         {/* CỘT 2: TOOLBAR & DANH SÁCH BÀI VIẾT */}
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="flex-1 min-w-0 w-full">
           <RecipeToolbar
             totalCount={totalCount}
             currentSort={sortBy}
@@ -136,35 +128,20 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
               <RecipeListWrapper recipes={recipes} />
 
               {/* Phân trang đồng bộ URL */}
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-              />
+              <Pagination page={page} totalPages={totalPages} />
             </>
           ) : (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "64px 20px",
-                backgroundColor: "var(--bg-surface)",
-                borderRadius: "var(--radius-lg)",
-                border: "1px dashed var(--border-default)",
-              }}
-            >
-              <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🔍</div>
-              <h3 style={{ fontSize: "1.25rem", marginBottom: "8px", color: "var(--text-primary)" }}>
-                Không tìm thấy công thức phù hợp
-              </h3>
-              <p style={{ color: "var(--text-muted)", maxWidth: "450px", margin: "0 auto 24px" }}>
-                Hãy thử nới lỏng các tiêu chí lọc (thời gian, calo, độ khó) để tìm thấy nhiều món ăn ngon hơn.
-              </p>
-              <Link href="/recipes" className="btn btn-outline">
-                Xóa toàn bộ bộ lọc
-              </Link>
-            </div>
+            <EmptyState
+              icon="🔍"
+              title="Không tìm thấy công thức phù hợp"
+              description="Hãy thử nới lỏng các tiêu chí lọc (thời gian, calo, độ khó) để tìm thấy nhiều món ăn ngon hơn."
+              actionText="Xóa toàn bộ bộ lọc"
+              actionHref="/recipes"
+            />
           )}
         </div>
       </div>
     </div>
   );
 }
+

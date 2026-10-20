@@ -146,6 +146,7 @@ export interface RecipeSummaryDto {
   totalTime: number;
   servings: number;
   difficulty: RecipeDifficulty;
+  status?: RecipeStatus;
   primaryImageUrl?: string | null;
   categoryId: string;
   categoryName: string;
