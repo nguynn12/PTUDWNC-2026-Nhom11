@@ -6,19 +6,24 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface PaginationProps {
-  page: number;
+export interface PaginationProps {
+  page?: number;
+  currentPage?: number;
   totalPages: number;
   onPageChange?: (page: number) => void;
   className?: string;
+  pageSize?: number;
+  totalItems?: number;
 }
 
 export function Pagination({
-  page,
+  page: pageProp,
+  currentPage: currentPageProp,
   totalPages,
   onPageChange,
   className,
 }: PaginationProps) {
+  const page = pageProp ?? currentPageProp ?? 1;
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
