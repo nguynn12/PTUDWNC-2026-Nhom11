@@ -1,12 +1,12 @@
 "use client";
 
+import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { useHasRole } from "@/store/auth-store";
 import type { UserRole } from "@/types/auth";
-import styles from "@/styles/auth.module.css";
 import { AuthCard } from "./AuthCard";
-import { FormAlert } from "./FormAlert";
 import { RequireAuth } from "./RequireAuth";
 
 interface RequireRoleProps {
@@ -28,14 +28,20 @@ export function RequireRole({ role, children, fallback }: RequireRoleProps) {
       {allowed
         ? children
         : (fallback ?? (
-            <section className={styles.page}>
-              <AuthCard title="Không có quyền truy cập">
-                <FormAlert variant="warning">
-                  Trang này chỉ dành cho {role === "Admin" ? "Quản trị viên" : "Tác giả"}.
-                </FormAlert>
-                <Link href="/" className={styles.button}>
-                  Về trang chủ
-                </Link>
+            <section className="mx-auto flex w-full max-w-6xl justify-center px-4 py-16">
+              <AuthCard>
+                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                  <span className="flex size-12 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                    <ShieldAlert className="size-6" aria-hidden="true" />
+                  </span>
+                  <h1 className="font-serif text-xl font-bold">Không có quyền truy cập</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Trang này chỉ dành cho {role === "Admin" ? "Quản trị viên" : "Tác giả"}.
+                  </p>
+                  <Button asChild className="mt-2">
+                    <Link href="/">Về trang chủ</Link>
+                  </Button>
+                </div>
               </AuthCard>
             </section>
           ))}

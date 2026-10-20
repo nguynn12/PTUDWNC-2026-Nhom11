@@ -4,14 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { authApi } from "@/lib/auth/api";
 import { applyFieldErrors, type AppError } from "@/lib/errors";
+import { cn } from "@/lib/utils";
 import { profileSchema, type ProfileValues } from "@/lib/validators/auth";
 import { useAuthStore } from "@/store/auth-store";
 import { useAuthUIStore } from "@/store/auth-ui-store";
 import type { UserDto } from "@/types/auth";
-import styles from "@/styles/auth.module.css";
-import { Field } from "./Field";
+import { Field, FieldMessage } from "./Field";
 import { FormAlert } from "./FormAlert";
 import { SubmitButton } from "./SubmitButton";
 import { UserAvatar } from "./UserAvatar";
@@ -63,16 +66,17 @@ export function ProfileForm({ me }: { me: UserDto }) {
   });
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form onSubmit={onSubmit} noValidate className="grid gap-5">
       {serverError && <FormAlert>{serverError}</FormAlert>}
 
-      <div className={styles.avatarField}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <UserAvatar
           name={displayName || me.displayName}
           src={IMAGE_URL.test(avatarUrl) ? avatarUrl : me.avatarUrl}
           size="lg"
+          className="ring-4 ring-primary/10"
         />
-        <div className={styles.avatarFieldInput}>
+        <div className="min-w-0 flex-1">
           <Field
             label="URL ảnh đại diện"
             placeholder="https://..."
@@ -83,36 +87,39 @@ export function ProfileForm({ me }: { me: UserDto }) {
         </div>
       </div>
 
-      <div className={styles.formGrid}>
+      <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Tên hiển thị" error={errors.displayName} {...register("displayName")} />
         <Field id="email" label="Email" value={me.email} hint="Email đăng nhập, không đổi được." disabled readOnly />
       </div>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="bio">
-          Giới thiệu
-        </label>
-        <textarea
+      <div className="grid gap-2">
+        <Label htmlFor="bio">Giới thiệu</Label>
+        <Textarea
           id="bio"
           rows={4}
           placeholder="Vài dòng về bạn và phong cách nấu ăn yêu thích..."
-          className={`${styles.input} ${styles.textarea} ${errors.bio ? styles.inputError : ""}`}
+          className="min-h-28"
           aria-invalid={errors.bio ? true : undefined}
-          aria-describedby="bio-count"
+          aria-describedby={errors.bio ? "bio-error" : undefined}
           {...register("bio")}
         />
-        <div className={styles.fieldFoot}>
-          {errors.bio ? <span className={styles.error}>{errors.bio.message}</span> : <span />}
-          <span id="bio-count" className={`${styles.fieldHint} ${bioLength > BIO_MAX ? styles.error : ""}`}>
+        <div className="flex items-start justify-between gap-3">
+          <FieldMessage id="bio" error={errors.bio} />
+          <span
+            className={cn("ml-auto text-xs text-muted-foreground", bioLength > BIO_MAX && "text-destructive")}
+            aria-live="polite"
+          >
             {bioLength}/{BIO_MAX}
           </span>
         </div>
       </div>
 
-      <div className={styles.formActions}>
-        <button
+      <div className="flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:justify-end">
+        <Button
           type="button"
-          className={`${styles.button} ${styles.buttonGhost}`}
+          variant="outline"
+          size="lg"
+          className="h-10 hover:bg-muted hover:text-foreground"
           disabled={!isDirty || saveMutation.isPending}
           onClick={() => {
             reset();
@@ -120,13 +127,8 @@ export function ProfileForm({ me }: { me: UserDto }) {
           }}
         >
           Huỷ thay đổi
-        </button>
-        <SubmitButton
-          className={styles.buttonAuto}
-          loading={saveMutation.isPending}
-          loadingText="Đang lưu..."
-          disabled={!isDirty}
-        >
+        </Button>
+        <SubmitButton className="sm:w-auto" loading={saveMutation.isPending} loadingText="Đang lưu..." disabled={!isDirty}>
           Lưu thay đổi
         </SubmitButton>
       </div>

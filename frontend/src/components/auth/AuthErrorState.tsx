@@ -1,4 +1,5 @@
-import styles from "@/styles/auth.module.css";
+import { CircleAlert, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface AuthErrorStateProps {
   title?: string;
@@ -7,7 +8,7 @@ interface AuthErrorStateProps {
   retryLabel?: string;
 }
 
-/** Trạng thái lỗi dùng chung (không tải được dữ liệu, error.tsx của route). */
+/** Trạng thái lỗi khi không tải được dữ liệu của module Xác thực (vd. hồ sơ). */
 export function AuthErrorState({
   title = "Đã có lỗi xảy ra",
   message,
@@ -15,13 +16,16 @@ export function AuthErrorState({
   retryLabel = "Thử lại",
 }: AuthErrorStateProps) {
   return (
-    <div className={styles.stateBox} role="alert">
-      <p className={styles.stateTitle}>{title}</p>
-      {message && <p className={styles.stateText}>{message}</p>}
+    <div className="flex flex-col items-center gap-3 py-8 text-center" role="alert">
+      <span className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+        <CircleAlert className="size-6" aria-hidden="true" />
+      </span>
+      <p className="font-semibold">{title}</p>
+      {message && <p className="max-w-sm text-sm text-muted-foreground">{message}</p>}
       {onRetry && (
-        <button type="button" className={`${styles.button} ${styles.buttonSmall}`} onClick={onRetry}>
-          {retryLabel}
-        </button>
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          <RotateCcw /> {retryLabel}
+        </Button>
       )}
     </div>
   );

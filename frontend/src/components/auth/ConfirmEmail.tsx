@@ -40,16 +40,17 @@ export function ConfirmEmail() {
   }, [userId, token, mutate]);
 
   return (
-    <AuthCard title="Xác nhận email">
+    <AuthCard title="Xác nhận email" subtitle="Kích hoạt tài khoản để xuất bản công thức.">
       {(!userId || !token) && <FormAlert>Liên kết xác nhận không hợp lệ.</FormAlert>}
       {isPending && <AuthLoading message="Đang xác nhận email..." />}
       {isSuccess && (
-        <FormAlert variant="success">
-          Email đã được xác nhận. <Link href="/auth/login">Đăng nhập</Link>
+        <FormAlert variant="success" title="Xác nhận thành công">
+          Email đã được xác nhận. Bạn có thể <Link href="/auth/login">đăng nhập</Link> hoặc về{" "}
+          <Link href="/profile">hồ sơ cá nhân</Link>.
         </FormAlert>
       )}
       {isError && (
-        <FormAlert>
+        <FormAlert title="Không xác nhận được email">
           {error.message} Liên kết có thể đã dùng hoặc hết hạn; vào <Link href="/profile">Hồ sơ cá nhân</Link> để gửi
           lại email xác nhận.
         </FormAlert>

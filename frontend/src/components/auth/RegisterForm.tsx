@@ -66,7 +66,7 @@ export function RegisterForm() {
     >
       {serverError && <FormAlert>{serverError}</FormAlert>}
 
-      <form onSubmit={onSubmit} noValidate>
+      <form onSubmit={onSubmit} noValidate className="grid gap-4">
         <Field label="Tên hiển thị" autoComplete="name" error={errors.displayName} {...register("displayName")} />
         <Field label="Email" type="email" autoComplete="email" error={errors.email} {...register("email")} />
         <PasswordField

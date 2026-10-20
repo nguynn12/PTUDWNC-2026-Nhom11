@@ -1,23 +1,16 @@
-import styles from "@/styles/auth.module.css";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-/** Vòng quay nhỏ; size="sm" dùng trong nút. */
-export function Spinner({ size = "md", label }: { size?: "sm" | "md"; label?: string }) {
+/** Trạng thái đang tải của module Xác thực (kiểm tra phiên, tải hồ sơ). */
+export function AuthLoading({ message = "Đang tải...", className }: { message?: string; className?: string }) {
   return (
-    <span
-      className={`${styles.spinner} ${size === "sm" ? styles.spinnerSm : ""}`}
-      role={label ? "status" : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-    />
-  );
-}
-
-/** Trạng thái đang tải dùng chung (kiểm tra phiên, tải hồ sơ, loading.tsx). */
-export function AuthLoading({ message = "Đang tải..." }: { message?: string }) {
-  return (
-    <div className={styles.stateBox} role="status" aria-live="polite">
-      <Spinner />
-      <p className={styles.stateText}>{message}</p>
+    <div
+      className={cn("flex flex-col items-center justify-center gap-3 py-10 text-center", className)}
+      role="status"
+      aria-live="polite"
+    >
+      <Loader2 className="size-7 animate-spin text-primary" aria-hidden="true" />
+      <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );
 }

@@ -10,7 +10,8 @@ import { login, loginWithGoogle } from "@/lib/auth/session";
 import { safeCallbackUrl } from "@/lib/auth/utils";
 import { loginSchema, type LoginValues } from "@/lib/validators/auth";
 import { useAuthStatus } from "@/store/auth-store";
-import styles from "@/styles/auth.module.css";
+import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import { AuthCard } from "./AuthCard";
 import { Field } from "./Field";
 import { FormAlert } from "./FormAlert";
@@ -70,7 +71,7 @@ export function LoginForm() {
     >
       {serverError && <FormAlert>{serverError}</FormAlert>}
 
-      <form onSubmit={onSubmit} noValidate>
+      <form onSubmit={onSubmit} noValidate className="grid gap-4">
         <Field label="Email" type="email" autoComplete="email" error={errors.email} {...register("email")} />
         <PasswordField
           label="Mật khẩu"
@@ -83,9 +84,17 @@ export function LoginForm() {
         </SubmitButton>
       </form>
 
-      <div className={styles.divider}>hoặc</div>
+      <div className="flex items-center gap-3 text-xs text-muted-foreground uppercase">
+        <Separator className="flex-1" />
+        hoặc
+        <Separator className="flex-1" />
+      </div>
       <GoogleSignInButton onCredential={onGoogleCredential} />
-      {googlePending && <p className={styles.hint}>Đang đăng nhập bằng Google...</p>}
+      {googlePending && (
+        <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" /> Đang đăng nhập bằng Google...
+        </p>
+      )}
     </AuthCard>
   );
 }
