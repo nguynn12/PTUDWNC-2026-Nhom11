@@ -43,6 +43,7 @@ public static class RecipeStepEndpoints
             var result = await stepService.AddStepAsync(recipeId, request, userId, isAdmin, ct);
             return Results.Created($"/api/v1/recipes/{recipeId}/steps", ApiResponse<RecipeStepDto>.Success(result));
         })
+        .RequireAuthorization()
         .WithName("AddRecipeStep")
         .WithSummary("Thêm bước thực hiện mới vào công thức nấu ăn.");
 
@@ -59,6 +60,7 @@ public static class RecipeStepEndpoints
             var result = await stepService.ReorderStepsAsync(recipeId, request, userId, isAdmin, ct);
             return Results.Ok(ApiResponse<IReadOnlyList<RecipeStepDto>>.Success(result));
         })
+        .RequireAuthorization()
         .WithName("ReorderRecipeSteps")
         .WithSummary("Sắp xếp lại thứ tự toàn bộ các bước thực hiện theo danh sách IDs mới.");
 
@@ -76,6 +78,7 @@ public static class RecipeStepEndpoints
             var result = await stepService.UpdateStepAsync(recipeId, stepId, request, userId, isAdmin, ct);
             return Results.Ok(ApiResponse<RecipeStepDto>.Success(result));
         })
+        .RequireAuthorization()
         .WithName("UpdateRecipeStep")
         .WithSummary("Cập nhật thông tin chi tiết một bước thực hiện.");
 
@@ -92,6 +95,7 @@ public static class RecipeStepEndpoints
             await stepService.DeleteStepAsync(recipeId, stepId, userId, isAdmin, ct);
             return Results.NoContent();
         })
+        .RequireAuthorization()
         .WithName("DeleteRecipeStep")
         .WithSummary("Xóa một bước thực hiện và tự động đánh lại số thứ tự (renumber) các bước còn lại.");
 

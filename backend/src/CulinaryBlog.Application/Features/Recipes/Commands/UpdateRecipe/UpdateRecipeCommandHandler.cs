@@ -31,9 +31,13 @@ public sealed class UpdateRecipeCommandHandler(
             throw new NotFoundException("Recipe", request.Id, "RECIPE_NOT_FOUND");
         }
 
-        // 2. Kiểm tra quyền sở hữu (Tác giả hoặc Quản trị viên)
-        if (!string.IsNullOrWhiteSpace(currentUserService.UserId) &&
-            !currentUserService.IsAdmin &&
+        // 2. Kiểm tra xác thực và quyền sở hữu (bắt buộc có UserId, không cho phép ẩn danh)
+        if (string.IsNullOrWhiteSpace(currentUserService.UserId))
+        {
+            throw new UnauthorizedException("Vui lòng đăng nhập để chỉnh sửa công thức.", "AUTH_UNAUTHORIZED");
+        }
+
+        if (!currentUserService.IsAdmin &&
             !string.Equals(recipe.AuthorId, currentUserService.UserId, StringComparison.OrdinalIgnoreCase))
         {
             throw new ForbiddenException("Bạn không có quyền chỉnh sửa công thức này.", "RECIPE_FORBIDDEN");

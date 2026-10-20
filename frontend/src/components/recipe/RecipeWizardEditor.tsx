@@ -158,8 +158,8 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               ? 'Hard'
               : 'Medium'
         );
-        setPrepTimeMinutes(detail.prepTimeMinutes);
-        setCookTimeMinutes(detail.cookTimeMinutes);
+        setPrepTimeMinutes(detail.prepTimeMinutes ?? detail.prepTime ?? 15);
+        setCookTimeMinutes(detail.cookTimeMinutes ?? detail.cookTime ?? 30);
         setServings(detail.servings);
         setXmin(detail.xmin ?? null);
         setRecipeStatus(String(detail.status || 'Draft'));

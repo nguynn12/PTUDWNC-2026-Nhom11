@@ -10,7 +10,7 @@ interface RecipeCardProps {
   priority?: boolean;
 }
 
-function getDifficultyVariant(diff: RecipeDifficulty): {
+function getDifficultyVariant(diff: RecipeDifficulty | number): {
   label: string;
   variant: "easy" | "medium" | "hard";
 } {
@@ -32,7 +32,10 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
     )}&background=fed8c4&color=c85a17`;
 
   const totalTime =
-    recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 30;
+    recipe.totalTime ||
+    (recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) +
+      (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0) ||
+    30;
 
   return (
     <Card className="group flex flex-col h-full overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] rounded-2xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300">

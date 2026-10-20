@@ -29,7 +29,7 @@ public sealed class EmailConfirmationTests
         var ex = await Assert.ThrowsAsync<BusinessRuleValidationException>(
             () => handler.Handle(new ConfirmEmailCommand("user-1", "sai"), TestContext.Current.CancellationToken));
 
-        Assert.Equal("AUTH_CONFIRMATION_TOKEN_INVALID", ex.ErrorCode);
+        Assert.Equal("VALIDATION_ERROR", ex.ErrorCode); // SRS Phụ lục B
     }
 
     [Fact]

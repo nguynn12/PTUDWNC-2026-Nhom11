@@ -255,12 +255,12 @@ export default function DashboardOverviewPage() {
                           {recipe.categoryName || 'Ẩm thực'}
                         </span>
                       </td>
-                      <td>{renderStatusBadge(recipe.status)}</td>
+                      <td>{renderStatusBadge(recipe.status || 'Draft')}</td>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <ClockIcon size={14} />
-                            {recipe.prepTimeMinutes + recipe.cookTimeMinutes} phút
+                            {(recipe.prepTimeMinutes ?? recipe.prepTime ?? 0) + (recipe.cookTimeMinutes ?? recipe.cookTime ?? 0)} phút
                           </span>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <UsersIcon size={14} />

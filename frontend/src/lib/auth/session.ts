@@ -1,6 +1,13 @@
 import axios from "axios";
 import { ApiError, fromAxiosError } from "./errors";
-import type { AuthResponseDto, RegisterRequest } from "./types";
+import type {
+  AuthResponseDto,
+  GoogleLoginRequest,
+  LoginRequest,
+  LogoutRequest,
+  RefreshTokenRequest,
+  RegisterRequest,
+} from "@/types/auth";
 import { readRefreshToken, STORAGE_KEY_REFRESH_TOKEN, useAuthStore } from "./store";
 
 /** Client riêng cho /auth/*: không gắn interceptor để tránh vòng lặp refresh. */
@@ -22,13 +29,13 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 const REFRESH_MARGIN_MS = 60_000;
 
 export async function login(email: string, password: string) {
-  const res = await post<AuthResponseDto>("/auth/login", { email, password });
+  const res = await post<AuthResponseDto>("/auth/login", { email, password } satisfies LoginRequest);
   useAuthStore.getState().setSession(res);
   return res.user;
 }
 
 export async function loginWithGoogle(idToken: string, nonce: string) {
-  const res = await post<AuthResponseDto>("/auth/google", { idToken, nonce });
+  const res = await post<AuthResponseDto>("/auth/google", { idToken, nonce } satisfies GoogleLoginRequest);
   useAuthStore.getState().setSession(res);
   return res.user;
 }
@@ -44,7 +51,7 @@ export async function register(body: RegisterRequest) {
 export async function logout() {
   const refreshToken = readRefreshToken();
   if (refreshToken) {
-    await post("/auth/logout", { refreshToken }).catch(() => undefined);
+    await post("/auth/logout", { refreshToken } satisfies LogoutRequest).catch(() => undefined);
   }
   useAuthStore.getState().clear();
 }
@@ -78,7 +85,7 @@ async function doRefresh(): Promise<boolean> {
     return false;
   }
   try {
-    const res = await post<AuthResponseDto>("/auth/refresh", { refreshToken });
+    const res = await post<AuthResponseDto>("/auth/refresh", { refreshToken } satisfies RefreshTokenRequest);
     useAuthStore.getState().setSession(res);
     return true;
   } catch (error) {

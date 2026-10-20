@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ interface RecipeDetailProps {
   recipe: RecipeDetailDto;
 }
 
-function getDifficultyBadge(diff: RecipeDifficulty): {
+function getDifficultyBadge(diff: RecipeDifficulty | number): {
   label: string;
   variant: "easy" | "medium" | "hard";
 } {
@@ -49,7 +49,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
 
   // Sắp xếp nguyên liệu theo sortOrder
   const sortedIngredients = [...(recipe.ingredients || [])].sort(
-    (a, b) => a.sortOrder - b.sortOrder
+    (a, b) => (a.sortOrder ?? a.orderIndex ?? 0) - (b.sortOrder ?? b.orderIndex ?? 0)
   );
 
   // Sắp xếp các bước theo stepNumber
@@ -261,7 +261,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
             Tổng thời gian
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--primary)] mt-1">
-            {recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 45} phút
+            {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 15) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 30)) || 45} phút
           </div>
         </div>
 

@@ -47,21 +47,36 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
         _logger.LogInformation("Thực hiện tìm kiếm công thức: Q='{SearchTerm}', Page={Page}, PageSize={PageSize}",
             searchTerm, page, pageSize);
 
-        // 2. Truy vấn Full-Text Search sử dụng PostgreSQL SearchVector (GIN Index) và fallback Trigram Similarity
-        var baseQuery = _dbContext.Recipes
-            .FromSqlInterpolated($@"
-                SELECT * FROM ""Recipes""
-                WHERE ""Status"" = {(short)RecipeStatus.Published}
-                  AND ""IsDeleted"" = false
-                  AND (
-                      ""SearchVector"" @@ plainto_tsquery('simple', unaccent({searchTerm}))
-                      OR similarity(unaccent(""Title""), unaccent({searchTerm})) > 0.3
-                  )
-                ORDER BY
-                  ts_rank(""SearchVector"", plainto_tsquery('simple', unaccent({searchTerm}))) DESC,
-                  ""PublishedAt"" DESC
-            ")
-            .AsNoTracking();
+        // 2. Truy vấn Full-Text Search sử dụng PostgreSQL SearchVector (GIN Index) và fallback Trigram Similarity (hỗ trợ fallback Contains cho môi trường test non-Npgsql)
+        var isNpgsql = _dbContext is DbContext efDb && efDb.Database.ProviderName != null && efDb.Database.ProviderName.Contains("Npgsql", StringComparison.OrdinalIgnoreCase);
+
+        IQueryable<Recipe> baseQuery;
+        if (!isNpgsql)
+        {
+            var lowerSearch = searchTerm.ToLower();
+            baseQuery = _dbContext.Recipes
+                .AsNoTracking()
+                .Where(r => r.Status == RecipeStatus.Published && !r.IsDeleted &&
+                    (r.Title.ToLower().Contains(lowerSearch) || (r.Description != null && r.Description.ToLower().Contains(lowerSearch))))
+                .OrderByDescending(r => r.PublishedAt);
+        }
+        else
+        {
+            baseQuery = _dbContext.Recipes
+                .FromSqlInterpolated($@"
+                    SELECT * FROM ""Recipes""
+                    WHERE ""Status"" = {(short)RecipeStatus.Published}
+                      AND ""IsDeleted"" = false
+                      AND (
+                          ""SearchVector"" @@ plainto_tsquery('simple', unaccent({searchTerm}))
+                          OR similarity(unaccent(""Title""), unaccent({searchTerm})) > 0.3
+                      )
+                    ORDER BY
+                      ts_rank(""SearchVector"", plainto_tsquery('simple', unaccent({searchTerm}))) DESC,
+                      ""PublishedAt"" DESC
+                ")
+                .AsNoTracking();
+        }
 
         // 3. Áp dụng các bộ lọc kết hợp đa tiêu chí (toán tử AND theo FR-SRCH-002)
         if (request.CategoryId.HasValue)

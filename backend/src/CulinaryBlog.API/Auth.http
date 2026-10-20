@@ -164,3 +164,36 @@ Content-Type: application/json
 {
   "isActive": true
 }
+
+# ---------------------------------------------------------------------------
+# Lab 5 — Bảo mật & tài liệu API (CORS, versioning, /overview)
+# ---------------------------------------------------------------------------
+
+### CORS preflight từ frontend hợp lệ → 204, có Access-Control-Allow-Origin: http://localhost:3000
+OPTIONS {{baseUrl}}/auth/me
+Origin: http://localhost:3000
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: authorization
+
+### CORS preflight từ origin lạ → 204 nhưng KHÔNG có Access-Control-Allow-Origin (trình duyệt chặn)
+OPTIONS {{baseUrl}}/auth/me
+Origin: http://evil.example.com
+Access-Control-Request-Method: GET
+
+### Versioning: response có header api-supported-versions: 1.0
+GET {{baseUrl}}/
+
+### Versioning: phiên bản không hỗ trợ → 400 (Problem Details UnsupportedApiVersion)
+GET http://localhost:5000/api/v2/auth/me
+Authorization: Bearer {{accessToken}}
+
+### /overview: chưa đăng nhập → 401
+GET {{baseUrl}}/overview
+
+### /overview: Author → 403
+GET {{baseUrl}}/overview
+Authorization: Bearer {{accessToken}}
+
+### /overview: Admin → 200
+GET {{baseUrl}}/overview
+Authorization: Bearer {{adminToken}}
