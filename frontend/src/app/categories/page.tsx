@@ -1,8 +1,9 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getCategories } from "@/lib/api/categories";
 import { CategoryCard } from "@/components/category/CategoryCard";
+import { Container } from "@/components/common/Container";
+import { PageHeader } from "@/components/common/PageHeader";
 import type { CategoryDto } from "@/types/api";
 
 export const revalidate = 3600; // ISR 1 giờ
@@ -39,41 +40,26 @@ export default async function CategoriesPage() {
   }
 
   return (
-    <div className="container section">
-      {/* Breadcrumb */}
-      <nav
-        aria-label="Breadcrumb"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "0.88rem",
-          color: "var(--text-muted)",
-          marginBottom: "24px",
-        }}
-      >
-        <Link href="/" style={{ color: "var(--text-secondary)" }}>Trang chủ</Link>
-        <span>/</span>
-        <span style={{ color: "var(--primary)", fontWeight: 600 }}>Danh mục</span>
-      </nav>
+    <div className="py-8 sm:py-12">
+      <Container>
+        {/* Header trang */}
+        <PageHeader
+          breadcrumbs={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Danh mục" },
+          ]}
+          badge="Chủ đề ẩm thực phong phú"
+          title="Tất Cả Danh Mục Món Ăn"
+          description="Lựa chọn danh mục yêu thích để tìm kiếm những công thức nấu ăn phù hợp nhất với khẩu vị và nhu cầu của gia đình bạn."
+        />
 
-      {/* Header trang */}
-      <div style={{ marginBottom: "40px", maxWidth: "700px" }}>
-        <span className="eyebrow">Chủ đề ẩm thực phong phú</span>
-        <h1 style={{ fontSize: "clamp(2rem, 3vw + 1rem, 2.75rem)", marginBottom: "12px" }}>
-          Tất Cả Danh Mục Món Ăn
-        </h1>
-        <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)" }}>
-          Lựa chọn danh mục yêu thích để tìm kiếm những công thức nấu ăn phù hợp nhất với khẩu vị và nhu cầu của gia đình bạn.
-        </p>
-      </div>
-
-      {/* Lưới danh mục */}
-      <div className="category-grid">
-        {categories.map((category) => (
-          <CategoryCard key={category.id || category.slug} category={category} />
-        ))}
-      </div>
+        {/* Lưới danh mục */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 mt-8">
+          {categories.map((category) => (
+            <CategoryCard key={category.id || category.slug} category={category} />
+          ))}
+        </div>
+      </Container>
     </div>
   );
 }

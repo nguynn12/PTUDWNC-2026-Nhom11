@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { CheckCircleIcon, AlertTriangleIcon, XIcon, ShieldAlertIcon } from './Icons';
+import React, { createContext, useContext, useCallback, ReactNode } from 'react';
+import { toast as sonnerToast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -25,60 +26,71 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+/**
+ * ToastProvider tích hợp thư viện Sonner hiện đại (Lab 6 - TV3).
+ * Giữ nguyên 100% hợp đồng API của `useToast()` để các trang Dashboard, Auth, Recipe không bị vỡ.
+ */
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
-
   const showToast = useCallback(
-    ({ type, title, message, duration = 4000 }: Omit<ToastMessage, 'id'>) => {
-      const id = Math.random().toString(36).substring(2, 9);
-      const newToast: ToastMessage = { id, type, title, message, duration };
+    ({ type, title, message, duration }: Omit<ToastMessage, 'id'>) => {
+      const options = {
+        description: message,
+        duration: duration ?? 4000,
+      };
 
-      setToasts(prev => [...prev, newToast]);
-
-      if (duration > 0) {
-        setTimeout(() => {
-          removeToast(id);
-        }, duration);
+      switch (type) {
+        case 'success':
+          sonnerToast.success(title, options);
+          break;
+        case 'error':
+          sonnerToast.error(title, { ...options, duration: duration ?? 6000 });
+          break;
+        case 'warning':
+          sonnerToast.warning(title, { ...options, duration: duration ?? 5000 });
+          break;
+        case 'info':
+        default:
+          sonnerToast.info(title, options);
+          break;
       }
     },
-    [removeToast]
+    []
   );
 
-  const showSuccess = useCallback((title: string, message?: string) => showToast({ type: 'success', title, message }), [showToast]);
-  const showError = useCallback((title: string, message?: string) => showToast({ type: 'error', title, message, duration: 6000 }), [showToast]);
-  const showWarning = useCallback((title: string, message?: string) => showToast({ type: 'warning', title, message, duration: 5000 }), [showToast]);
-  const showInfo = useCallback((title: string, message?: string) => showToast({ type: 'info', title, message }), [showToast]);
+  const showSuccess = useCallback(
+    (title: string, message?: string) => showToast({ type: 'success', title, message }),
+    [showToast]
+  );
+  const showError = useCallback(
+    (title: string, message?: string) => showToast({ type: 'error', title, message, duration: 6000 }),
+    [showToast]
+  );
+  const showWarning = useCallback(
+    (title: string, message?: string) => showToast({ type: 'warning', title, message, duration: 5000 }),
+    [showToast]
+  );
+  const showInfo = useCallback(
+    (title: string, message?: string) => showToast({ type: 'info', title, message }),
+    [showToast]
+  );
+  const removeToast = useCallback((id: string) => {
+    sonnerToast.dismiss(id);
+  }, []);
 
   return (
-    <ToastContext.Provider value={{ toasts, showToast, showSuccess, showError, showWarning, showInfo, removeToast }}>
+    <ToastContext.Provider
+      value={{
+        toasts: [],
+        showToast,
+        showSuccess,
+        showError,
+        showWarning,
+        showInfo,
+        removeToast,
+      }}
+    >
       {children}
-      <div className="toast-container" aria-live="polite">
-        {toasts.map(toast => (
-          <div key={toast.id} className={`toast-item toast-${toast.type}`} role="alert">
-            <div className="toast-icon">
-              {toast.type === 'success' && <CheckCircleIcon size={20} />}
-              {toast.type === 'error' && <ShieldAlertIcon size={20} />}
-              {toast.type === 'warning' && <AlertTriangleIcon size={20} />}
-              {toast.type === 'info' && <CheckCircleIcon size={20} />}
-            </div>
-            <div className="toast-content">
-              <div className="toast-title">{toast.title}</div>
-              {toast.message && <div className="toast-message">{toast.message}</div>}
-            </div>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="toast-close"
-              aria-label="Đóng thông báo"
-            >
-              <XIcon size={16} />
-            </button>
-          </div>
-        ))}
-      </div>
+      <Toaster richColors position="top-right" closeButton />
     </ToastContext.Provider>
   );
 }
@@ -90,3 +102,5 @@ export function useToast(): ToastContextType {
   }
   return context;
 }
+
+export default ToastProvider;

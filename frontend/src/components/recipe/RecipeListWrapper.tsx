@@ -13,9 +13,19 @@ export function RecipeListWrapper({ recipes }: RecipeListWrapperProps) {
   const { recipesViewMode } = useUIStore();
 
   return (
-    <div className={recipesViewMode === "list" ? "recipe-list" : "recipe-grid"}>
+    <div
+      className={
+        recipesViewMode === "list"
+          ? "recipe-list flex flex-col gap-6 mb-8"
+          : "recipe-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
+      }
+    >
       {recipes.map((recipe, idx) => (
-        <RecipeCard key={recipe.id || recipe.slug} recipe={recipe} priority={idx < 3} />
+        <RecipeCard
+          key={recipe.id || recipe.slug}
+          recipe={recipe}
+          priority={idx < 3}
+        />
       ))}
     </div>
   );

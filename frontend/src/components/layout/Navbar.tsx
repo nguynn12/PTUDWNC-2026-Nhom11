@@ -1,129 +1,104 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useUIStore } from "@/store/ui-store";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Search,
+  Menu,
+  Home,
+  BookOpen,
+  Layers,
+  ShieldCheck,
+  ChefHat,
+  X,
+} from "lucide-react";
+import { Container } from "@/components/common/Container";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { cn } from "@/lib/utils";
+
+interface NavLinkItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const navLinks: NavLinkItem[] = [
+  { href: "/", label: "Trang chủ", icon: Home },
+  { href: "/recipes", label: "Khám phá công thức", icon: BookOpen },
+  { href: "/categories", label: "Danh mục", icon: Layers },
+  { href: "/search", label: "Tìm kiếm", icon: Search },
+  { href: "/dashboard/categories", label: "Quản trị Admin", icon: ShieldCheck },
+];
 
 export function Navbar() {
   const pathname = usePathname();
-  const { isMobileMenuOpen, toggleMobileMenu, setMobileMenuOpen } = useUIStore();
-
-  const navLinks = [
-    { href: "/", label: "Trang chủ" },
-    { href: "/recipes", label: "Khám phá công thức" },
-    { href: "/categories", label: "Danh mục" },
-    { href: "/search", label: "Tìm kiếm" },
-    { href: "/dashboard/categories", label: "Quản trị Admin" },
-  ];
+  const router = useRouter();
+  const [quickQuery, setQuickQuery] = useState("");
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
 
+  const handleQuickSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = quickQuery.trim();
+    if (trimmed) {
+      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+      setQuickQuery("");
+      setIsMobileOpen(false);
+    } else {
+      router.push("/search");
+      setIsMobileOpen(false);
+    }
+  };
+
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        backgroundColor: "rgba(251, 249, 246, 0.92)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "1px solid var(--border-subtle)",
-        transition: "all var(--transition-base)",
-      }}
-    >
-      <div
-        className="container"
-        style={{
-          height: "var(--header-height)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "20px",
-        }}
-      >
+    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/90 backdrop-blur-md transition-all">
+      <Container className="flex h-18 items-center justify-between gap-4">
         {/* LOGO THƯƠNG HIỆU */}
         <Link
           href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            textDecoration: "none",
-          }}
-          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center gap-2.5 transition-transform hover:scale-[1.02] shrink-0"
         >
-          <div
-            style={{
-              width: "42px",
-              height: "42px",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: "var(--primary)",
-              color: "var(--text-inverse)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.3rem",
-              fontWeight: 800,
-              boxShadow: "0 3px 10px rgba(200, 90, 23, 0.35)",
-            }}
-          >
-            🍳
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/25">
+            <ChefHat className="h-5 w-5" />
           </div>
           <div>
-            <span
-              style={{
-                fontSize: "1.3rem",
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
-                color: "var(--text-primary)",
-                display: "block",
-                lineHeight: 1.1,
-              }}
-            >
-              Culinary<span style={{ color: "var(--primary)" }}>Blog</span>
+            <span className="block font-serif text-xl font-bold tracking-tight text-foreground leading-none">
+              Culinary<span className="text-primary">Blog</span>
             </span>
-            <span
-              style={{
-                fontSize: "0.68rem",
-                color: "var(--text-muted)",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                fontWeight: 700,
-              }}
-            >
+            <span className="block text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
               Nghệ thuật ẩm thực
             </span>
           </div>
         </Link>
 
         {/* MENU ĐIỀU HƯỚNG MÁY TÍNH (DESKTOP) */}
-        <nav
-          style={{
-            display: "none",
-            alignItems: "center",
-            gap: "8px",
-          }}
-          className="desktop-nav"
-        >
+        <nav className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "0.92rem",
-                  fontWeight: active ? 700 : 500,
-                  color: active ? "var(--primary)" : "var(--text-secondary)",
-                  backgroundColor: active ? "var(--primary-light)" : "transparent",
-                  transition: "all var(--transition-fast)",
-                }}
+                className={cn(
+                  "px-3.5 py-2 text-sm font-medium rounded-lg transition-colors",
+                  active
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
                 {link.label}
               </Link>
@@ -131,76 +106,111 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* NÚT THAO TÁC BÊN PHẢI */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Nút Tìm kiếm nhanh */}
-          <Link
-            href="/search"
-            className="btn btn-outline btn-sm"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
+        {/* CỤM CHỨC NĂNG BÊN PHẢI (QUICK SEARCH + USER MENU + MOBILE MENU) */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Ô TÌM KIẾM NHANH TRÊN DESKTOP */}
+          <form
+            onSubmit={handleQuickSearch}
+            className="hidden md:flex relative items-center w-48 xl:w-64"
           >
-            🔍 <span className="search-text">Tìm kiếm</span>
-          </Link>
-
-          {/* Tài khoản: nút Đăng nhập hoặc menu người dùng (module Auth) */}
-          <UserMenu />
-
-          {/* Nút Hamburger menu Mobile */}
-          <button
-            type="button"
-            onClick={toggleMobileMenu}
-            className="btn btn-outline btn-sm mobile-menu-btn"
-            style={{
-              padding: "8px 10px",
-              fontSize: "1.1rem",
-            }}
-            aria-label="Mở menu di động"
-            aria-expanded={isMobileMenuOpen}
-          >
-            {isMobileMenuOpen ? "✕" : "☰"}
-          </button>
-        </div>
-      </div>
-
-      {/* MENU ĐIỀU HƯỚNG TRÊN MOBILE (DRAWER XUỐNG KHI MỞ) */}
-      {isMobileMenuOpen && (
-        <div
-          style={{
-            backgroundColor: "var(--bg-surface)",
-            borderBottom: "1px solid var(--border-default)",
-            padding: "16px 20px 24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            boxShadow: "var(--shadow-md)",
-          }}
-        >
-          {navLinks.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "1rem",
-                  fontWeight: active ? 700 : 500,
-                  color: active ? "var(--primary)" : "var(--text-primary)",
-                  backgroundColor: active ? "var(--primary-light)" : "transparent",
-                }}
+            <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="search"
+              placeholder="Tìm món ăn, nguyên liệu..."
+              value={quickQuery}
+              onChange={(e) => setQuickQuery(e.target.value)}
+              className="h-9 w-full rounded-full pl-9 pr-8 text-xs bg-muted/50 border-border/80 focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+            {quickQuery && (
+              <button
+                type="button"
+                onClick={() => setQuickQuery("")}
+                className="absolute right-2.5 text-muted-foreground hover:text-foreground p-0.5"
+                aria-label="Xóa từ khóa"
               >
-                {link.label}
-              </Link>
-            );
-          })}
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </form>
+
+          {/* TÀI KHOẢN NGƯỜI DÙNG */}
+          <div className="shrink-0">
+            <UserMenu />
+          </div>
+
+          {/* MENU DI ĐỘNG BẰNG SHADCN SHEET */}
+          <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+            <SheetTrigger
+              className="inline-flex lg:hidden items-center justify-center h-9 w-9 rounded-lg border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer shrink-0"
+              aria-label="Mở menu di động"
+            >
+              <Menu className="h-5 w-5" />
+            </SheetTrigger>
+
+            <SheetContent side="right" className="w-[300px] sm:w-[360px] p-0 flex flex-col">
+              <SheetHeader className="p-5 border-b border-border/60 text-left">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                    <ChefHat className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <SheetTitle className="font-serif text-lg font-bold">
+                      Culinary<span className="text-primary">Blog</span>
+                    </SheetTitle>
+                    <SheetDescription className="text-xs">
+                      Khám phá & sáng tạo món ngon mỗi ngày
+                    </SheetDescription>
+                  </div>
+                </div>
+              </SheetHeader>
+
+              {/* Ô TÌM KIẾM NHANH TRONG MOBILE SHEET */}
+              <div className="p-4 border-b border-border/40">
+                <form onSubmit={handleQuickSearch} className="relative flex items-center">
+                  <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    type="search"
+                    placeholder="Tìm món ngon..."
+                    value={quickQuery}
+                    onChange={(e) => setQuickQuery(e.target.value)}
+                    className="h-10 w-full rounded-lg pl-9 pr-3 text-sm bg-muted/60"
+                  />
+                </form>
+              </div>
+
+              {/* DANH SÁCH LIÊN KẾT TRONG MOBILE SHEET */}
+              <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const active = isActive(link.href);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsMobileOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                        active
+                          ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* FOOTER CỦA SHEET */}
+              <div className="p-4 border-t border-border/40 text-center text-xs text-muted-foreground">
+                <p>Culinary Blog — Phiên bản 1.0.0</p>
+                <p className="mt-0.5 text-[0.7rem] text-muted-foreground/80">PTUDWNC 2026 - Nhóm 11</p>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-      )}
+      </Container>
     </header>
   );
 }

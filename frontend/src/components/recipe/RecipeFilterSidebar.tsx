@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUIStore } from "@/store/ui-store";
 import type { CategoryDto } from "@/types/api";
+import { Select } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface RecipeFilterSidebarProps {
   categories: CategoryDto[];
@@ -82,50 +85,53 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
   );
 
   const filterContent = (
-    <form onSubmit={handleApplyFilter} style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h3 style={{ fontSize: "1.15rem", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>🌪️</span> Bộ lọc đa tiêu chí
+    <form onSubmit={handleApplyFilter} className="flex flex-col gap-6">
+      {/* Tiêu đề & nút Đặt lại */}
+      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+        <h3 className="text-base font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
+          <span>🌪️</span>
+          <span>Bộ lọc đa tiêu chí</span>
         </h3>
         {hasActiveFilters && (
           <button
             type="button"
             onClick={handleResetFilter}
-            style={{ fontSize: "0.82rem", color: "var(--primary)", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
+            className="text-xs font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors cursor-pointer"
           >
-            Đặt lại
+            Đặt lại tất cả
           </button>
         )}
       </div>
 
       {/* 1. Lọc theo danh mục */}
-      <div className="input-group">
-        <label htmlFor="filter-category" className="label">
+      <div className="space-y-2">
+        <label htmlFor="filter-category" className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
           Danh mục món ăn
         </label>
-        <select
+        <Select
           id="filter-category"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          className="select"
         >
           <option value="">Tất cả danh mục</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
-              {cat.name} ({cat.recipeCount || 0})
+              {cat.name} {cat.recipeCount ? `(${cat.recipeCount})` : ""}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {/* 2. Lọc theo độ khó */}
-      <div className="input-group">
-        <span className="label">Độ khó chế biến</span>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "6px" }}>
+      <div className="space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block">
+          Độ khó chế biến
+        </span>
+        <div className="grid grid-cols-3 gap-2">
           {[
-            { value: "Easy", label: "Dễ" },
-            { value: "Medium", label: "Vừa" },
-            { value: "Hard", label: "Khó" },
+            { value: "Easy", label: "Dễ", variant: "easy" as const },
+            { value: "Medium", label: "Vừa", variant: "medium" as const },
+            { value: "Hard", label: "Khó", variant: "hard" as const },
           ].map((item) => {
             const isSelected = difficulty === item.value;
             return (
@@ -133,18 +139,11 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
                 key={item.value}
                 type="button"
                 onClick={() => setDifficulty(isSelected ? "" : item.value)}
-                style={{
-                  padding: "8px 6px",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  textAlign: "center",
-                  border: `1px solid ${isSelected ? "var(--primary)" : "var(--border-default)"}`,
-                  backgroundColor: isSelected ? "var(--primary-light)" : "var(--bg-surface)",
-                  color: isSelected ? "var(--primary)" : "var(--text-secondary)",
-                  cursor: "pointer",
-                  transition: "all var(--transition-fast)",
-                }}
+                className={`py-2 px-2 rounded-xl text-xs font-semibold text-center transition-all duration-200 cursor-pointer border ${
+                  isSelected
+                    ? "border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)] shadow-xs"
+                    : "border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface-alt)]"
+                }`}
               >
                 {item.label}
               </button>
@@ -154,15 +153,14 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
       </div>
 
       {/* 3. Lọc theo thời gian nấu tối đa */}
-      <div className="input-group">
-        <label htmlFor="filter-time" className="label">
+      <div className="space-y-2">
+        <label htmlFor="filter-time" className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
           Thời gian tối đa: {maxTotalTime ? `${maxTotalTime} phút` : "Bất kỳ"}
         </label>
-        <select
+        <Select
           id="filter-time"
           value={maxTotalTime}
           onChange={(e) => setMaxTotalTime(e.target.value)}
-          className="select"
         >
           <option value="">Không giới hạn</option>
           <option value="15">Dưới 15 phút (Cực nhanh)</option>
@@ -171,51 +169,51 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
           <option value="60">Dưới 1 tiếng</option>
           <option value="90">Dưới 1 tiếng 30 phút</option>
           <option value="120">Dưới 2 tiếng</option>
-        </select>
+        </Select>
       </div>
 
       {/* 4. Lọc theo khoảng calo */}
-      <div className="input-group">
-        <span className="label">Lượng Calo (kcal)</span>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <input
+      <div className="space-y-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block">
+          Lượng Calo (kcal)
+        </span>
+        <div className="flex items-center gap-2">
+          <Input
             type="number"
             placeholder="Tối thiểu"
             min={0}
             max={2000}
             value={minCalories}
             onChange={(e) => setMinCalories(e.target.value)}
-            className="input"
-            style={{ fontSize: "0.88rem", padding: "8px 10px" }}
+            className="text-xs py-1.5"
           />
-          <span style={{ color: "var(--text-muted)" }}>-</span>
-          <input
+          <span className="text-[var(--text-muted)] font-medium">-</span>
+          <Input
             type="number"
             placeholder="Tối đa"
             min={0}
             max={3000}
             value={maxCalories}
             onChange={(e) => setMaxCalories(e.target.value)}
-            className="input"
-            style={{ fontSize: "0.88rem", padding: "8px 10px" }}
+            className="text-xs py-1.5"
           />
         </div>
       </div>
 
       {/* Nút hành động */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-        <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
+      <div className="flex flex-col gap-2.5 pt-2">
+        <Button type="submit" variant="default" className="w-full">
           Áp dụng bộ lọc
-        </button>
+        </Button>
         {hasActiveFilters && (
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={handleResetFilter}
-            className="btn btn-outline"
-            style={{ width: "100%" }}
+            className="w-full"
           >
             Xóa bộ lọc
-          </button>
+          </Button>
         )}
       </div>
     </form>
@@ -224,75 +222,26 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
   return (
     <>
       {/* KHỐI SIDEBAR TRÊN MÁY TÍNH (DESKTOP) */}
-      <aside
-        className="filter-desktop-sidebar"
-        style={{
-          width: "280px",
-          flexShrink: 0,
-          backgroundColor: "var(--bg-surface)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: "var(--radius-lg)",
-          padding: "24px",
-          boxShadow: "var(--shadow-xs)",
-          height: "fit-content",
-          position: "sticky",
-          top: "92px",
-        }}
-      >
+      <aside className="hidden lg:block w-72 shrink-0 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-xs sticky top-24 self-start">
         {filterContent}
       </aside>
 
       {/* KHỐI DRAWER TRƯỢT TRÊN MOBILE KHI BẤM NÚT BỘ LỌC */}
       {isFilterDrawerOpen && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 100,
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          {/* Lớp nền mờ */}
+        <div className="fixed inset-0 z-50 lg:hidden flex justify-end bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
           <div
+            className="absolute inset-0"
             onClick={() => setFilterDrawerOpen(false)}
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundColor: "var(--bg-overlay)",
-              backdropFilter: "blur(4px)",
-            }}
+            aria-label="Đóng bộ lọc"
           />
-
-          {/* Khung nội dung Drawer */}
-          <div
-            style={{
-              position: "relative",
-              width: "min(340px, 90vw)",
-              height: "100%",
-              backgroundColor: "var(--bg-surface)",
-              padding: "28px 24px",
-              boxShadow: "var(--shadow-lg)",
-              overflowY: "auto",
-              zIndex: 1,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "20px",
-                paddingBottom: "12px",
-                borderBottom: "1px solid var(--border-subtle)",
-              }}
-            >
-              <h3 style={{ fontSize: "1.2rem", margin: 0 }}>Bộ Lọc Công Thức</h3>
+          <div className="relative w-full max-w-xs h-full bg-[var(--bg-surface)] p-6 shadow-2xl overflow-y-auto flex flex-col z-10 animate-in slide-in-from-right duration-300">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[var(--border-subtle)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] m-0">Bộ lọc công thức</h2>
               <button
                 type="button"
                 onClick={() => setFilterDrawerOpen(false)}
-                className="btn btn-ghost btn-sm"
-                style={{ fontSize: "1.2rem", padding: "4px 8px" }}
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-surface-alt)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                aria-label="Đóng"
               >
                 ✕
               </button>

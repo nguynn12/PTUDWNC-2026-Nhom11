@@ -1,19 +1,42 @@
 'use client';
 
 import React from 'react';
-import { AlertTriangleIcon, TrashIcon, XIcon } from './Icons';
+import { AlertTriangle, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
-interface ConfirmDialogProps {
+export interface ConfirmDialogProps {
+  /** Trạng thái mở/đóng modal. */
   isOpen: boolean;
+  /** Tiêu đề hộp thoại xác nhận. */
   title: string;
+  /** Nội dung thông điệp chi tiết. */
   message: string;
+  /** Nhãn nút xác nhận. Mặc định là 'Xác nhận'. */
   confirmLabel?: string;
+  /** Nhãn nút hủy. Mặc định là 'Hủy bỏ'. */
   cancelLabel?: string;
+  /** Đánh dấu thao tác mang tính hủy hoại (xóa, thanh lọc) để đổi màu cảnh báo đỏ. */
   isDestructive?: boolean;
+  /** Hàm callback khi xác nhận. */
   onConfirm: () => void;
+  /** Hàm callback khi hủy hoặc đóng modal. */
   onCancel: () => void;
 }
 
+/**
+ * ConfirmDialog chuẩn hóa theo shadcn/ui AlertDialog (Lab 6 - TV3).
+ * Giữ nguyên 100% props và hàm gọi để không làm vỡ Dashboard và các trang quản trị.
+ */
 export function ConfirmDialog({
   isOpen,
   title,
@@ -24,40 +47,49 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
-      <div className="modal-card">
-        <div className="modal-header">
-          <div className={`modal-icon-badge ${isDestructive ? 'badge-danger' : 'badge-primary'}`}>
-            {isDestructive ? <TrashIcon size={22} /> : <AlertTriangleIcon size={22} />}
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <AlertDialogContent className="max-w-md">
+        <AlertDialogHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div
+            className={cn(
+              'rounded-full p-3 flex items-center justify-center shrink-0 shadow-sm',
+              isDestructive
+                ? 'bg-destructive/10 text-destructive border border-destructive/20'
+                : 'bg-primary/10 text-primary border border-primary/20'
+            )}
+          >
+            {isDestructive ? (
+              <Trash2 className="w-5 h-5" aria-hidden="true" />
+            ) : (
+              <AlertTriangle className="w-5 h-5" aria-hidden="true" />
+            )}
           </div>
-          <div>
-            <h3 className="modal-title">{title}</h3>
+          <div className="space-y-1 text-left">
+            <AlertDialogTitle className="text-lg font-bold text-foreground">
+              {title}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
+              {message}
+            </AlertDialogDescription>
           </div>
-          <button onClick={onCancel} className="modal-close-btn" aria-label="Đóng">
-            <XIcon size={18} />
-          </button>
-        </div>
+        </AlertDialogHeader>
 
-        <div className="modal-body">
-          <p className="confirm-message">{message}</p>
-        </div>
-
-        <div className="modal-footer">
-          <button type="button" onClick={onCancel} className="btn btn-secondary">
+        <AlertDialogFooter className="mt-4 gap-2 sm:gap-0">
+          <AlertDialogCancel onClick={onCancel} className="cursor-pointer">
             {cancelLabel}
-          </button>
-          <button
-            type="button"
+          </AlertDialogCancel>
+          <AlertDialogAction
             onClick={onConfirm}
-            className={`btn ${isDestructive ? 'btn-danger' : 'btn-primary'}`}
+            variant={isDestructive ? 'destructive' : 'default'}
+            className="cursor-pointer font-medium"
           >
             {confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
+
+export default ConfirmDialog;
