@@ -36,6 +36,11 @@ import {
   CheckCircleIcon,
   FlameIcon,
 } from '@/components/common/Icons';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface RecipeWizardEditorProps {
   mode: 'create' | 'edit';
@@ -188,7 +193,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   );
 
   useEffect(() => {
+    let ignore = false;
     RecipeApi.getCategories().then(cats => {
+      if (ignore) return;
       setCategories(cats);
       if (cats.length > 0 && !initialRecipeId) {
         setCategoryId(cats[0].id);
@@ -196,8 +203,16 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     });
 
     if (mode === 'edit' && initialRecipeId) {
-      loadRecipeData(initialRecipeId);
+      void Promise.resolve().then(() => {
+        if (!ignore) {
+          void loadRecipeData(initialRecipeId);
+        }
+      });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [mode, initialRecipeId, loadRecipeData]);
 
   // Dọn dẹp URL preview ảnh khi unmount hoặc đổi file
@@ -730,23 +745,41 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
       </header>
 
       <main className="dashboard-content">
-        {/* Thanh Stepper 4 Bước */}
-        <div className="wizard-stepper">
+        {/* Thanh Stepper 4 Bước dạng Tabs responsive */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8 p-1.5 bg-[var(--bg-surface-alt)]/60 rounded-2xl border border-[var(--border-subtle)]">
           <button
             type="button"
-            className={`wizard-step-tab ${activeStep === 1 ? 'active' : recipeId ? 'completed' : ''}`}
+            className={`flex items-center gap-3 p-3.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
+              activeStep === 1
+                ? 'bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)] text-[var(--primary)]'
+                : 'hover:bg-[var(--bg-surface)]/50 text-[var(--text-secondary)]'
+            }`}
             onClick={() => setActiveStep(1)}
           >
-            <div className="wizard-step-num">{recipeId && activeStep !== 1 ? <CheckIcon size={16} /> : '1'}</div>
-            <div>
-              <div className="wizard-step-label">Bước 1: Thông tin chung</div>
-              <div className="wizard-step-sub">Tiêu đề, thời gian, dinh dưỡng</div>
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors ${
+                recipeId && activeStep !== 1
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : activeStep === 1
+                  ? 'bg-[var(--primary)] text-white shadow-xs'
+                  : 'bg-[var(--bg-surface-alt)] text-[var(--text-muted)]'
+              }`}
+            >
+              {recipeId && activeStep !== 1 ? <CheckIcon size={16} /> : '1'}
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-bold truncate">Bước 1: Thông tin chung</div>
+              <div className="text-xs text-[var(--text-muted)] truncate">Tiêu đề, thời gian, dinh dưỡng</div>
             </div>
           </button>
 
           <button
             type="button"
-            className={`wizard-step-tab ${activeStep === 2 ? 'active' : ingredients.length > 0 ? 'completed' : ''}`}
+            className={`flex items-center gap-3 p-3.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
+              activeStep === 2
+                ? 'bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)] text-[var(--primary)]'
+                : 'hover:bg-[var(--bg-surface)]/50 text-[var(--text-secondary)]'
+            }`}
             onClick={() => {
               if (!recipeId) {
                 showInfo('Lưu Bước 1 trước', 'Hãy bấm Lưu Bước 1 để khởi tạo công thức trước khi thêm nguyên liệu.');
@@ -755,18 +788,30 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               setActiveStep(2);
             }}
           >
-            <div className="wizard-step-num">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors ${
+                ingredients.length > 0 && activeStep !== 2
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : activeStep === 2
+                  ? 'bg-[var(--primary)] text-white shadow-xs'
+                  : 'bg-[var(--bg-surface-alt)] text-[var(--text-muted)]'
+              }`}
+            >
               {ingredients.length > 0 && activeStep !== 2 ? <CheckIcon size={16} /> : '2'}
             </div>
-            <div>
-              <div className="wizard-step-label">Bước 2: Nguyên liệu ({ingredients.length})</div>
-              <div className="wizard-step-sub">Định lượng số thực & đơn vị</div>
+            <div className="min-w-0">
+              <div className="text-sm font-bold truncate">Bước 2: Nguyên liệu ({ingredients.length})</div>
+              <div className="text-xs text-[var(--text-muted)] truncate">Định lượng số thực & đơn vị</div>
             </div>
           </button>
 
           <button
             type="button"
-            className={`wizard-step-tab ${activeStep === 3 ? 'active' : steps.length > 0 ? 'completed' : ''}`}
+            className={`flex items-center gap-3 p-3.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
+              activeStep === 3
+                ? 'bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)] text-[var(--primary)]'
+                : 'hover:bg-[var(--bg-surface)]/50 text-[var(--text-secondary)]'
+            }`}
             onClick={() => {
               if (!recipeId) {
                 showInfo('Lưu Bước 1 trước', 'Hãy bấm Lưu Bước 1 để khởi tạo công thức trước khi thêm bước nấu.');
@@ -775,18 +820,30 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               setActiveStep(3);
             }}
           >
-            <div className="wizard-step-num">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors ${
+                steps.length > 0 && activeStep !== 3
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : activeStep === 3
+                  ? 'bg-[var(--primary)] text-white shadow-xs'
+                  : 'bg-[var(--bg-surface-alt)] text-[var(--text-muted)]'
+              }`}
+            >
               {steps.length > 0 && activeStep !== 3 ? <CheckIcon size={16} /> : '3'}
             </div>
-            <div>
-              <div className="wizard-step-label">Bước 3: Bước thực hiện ({steps.length})</div>
-              <div className="wizard-step-sub">Hướng dẫn & sắp xếp Reorder</div>
+            <div className="min-w-0">
+              <div className="text-sm font-bold truncate">Bước 3: Bước thực hiện ({steps.length})</div>
+              <div className="text-xs text-[var(--text-muted)] truncate">Hướng dẫn & sắp xếp Reorder</div>
             </div>
           </button>
 
           <button
             type="button"
-            className={`wizard-step-tab ${activeStep === 4 ? 'active' : images.length > 0 ? 'completed' : ''}`}
+            className={`flex items-center gap-3 p-3.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
+              activeStep === 4
+                ? 'bg-[var(--bg-surface)] shadow-xs border border-[var(--border-subtle)] text-[var(--primary)]'
+                : 'hover:bg-[var(--bg-surface)]/50 text-[var(--text-secondary)]'
+            }`}
             onClick={() => {
               if (!recipeId) {
                 showInfo('Lưu Bước 1 trước', 'Hãy bấm Lưu Bước 1 để khởi tạo công thức trước khi tải ảnh.');
@@ -795,12 +852,20 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               setActiveStep(4);
             }}
           >
-            <div className="wizard-step-num">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors ${
+                images.length > 0 && activeStep !== 4
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : activeStep === 4
+                  ? 'bg-[var(--primary)] text-white shadow-xs'
+                  : 'bg-[var(--bg-surface-alt)] text-[var(--text-muted)]'
+              }`}
+            >
               {images.length > 0 && activeStep !== 4 ? <CheckIcon size={16} /> : '4'}
             </div>
-            <div>
-              <div className="wizard-step-label">Bước 4: Ảnh MinIO ({images.length})</div>
-              <div className="wizard-step-sub">Upload ≤ 5MB & chọn Primary</div>
+            <div className="min-w-0">
+              <div className="text-sm font-bold truncate">Bước 4: Ảnh MinIO ({images.length})</div>
+              <div className="text-xs text-[var(--text-muted)] truncate">Upload ≤ 5MB & chọn Primary</div>
             </div>
           </button>
         </div>
@@ -809,51 +874,49 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
             NỘI DUNG BƯỚC 1: THÔNG TIN CHUNG & DINH DƯỠNG
            ========================================================= */}
         {activeStep === 1 && (
-          <div className="section-card">
-            <div className="section-header">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-xs overflow-hidden">
+            <div className="p-5 sm:p-6 border-b border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
                   <BookOpenIcon size={20} />
                   <span>Bước 1: Thông tin cơ bản & Giá trị Dinh dưỡng</span>
                 </h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 mb-0">
                   Cung cấp tên món ăn, phân loại danh mục, khẩu phần phục vụ và thông số dinh dưỡng trên mỗi khẩu phần.
                 </p>
               </div>
               {recipeStatus && (
-                <span className="status-badge badge-draft">Trạng thái: {recipeStatus}</span>
+                <Badge variant={recipeStatus === 'Draft' ? 'statusDraft' : 'statusPublished'} className="text-xs">
+                  Trạng thái: {recipeStatus}
+                </Badge>
               )}
             </div>
 
-            <div style={{ padding: '24px' }}>
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label className="form-label">
-                    <span>
-                      Tiêu đề công thức <span className="form-required">*</span>
-                    </span>
-                    <span className="form-hint">{title.length}/250 ký tự</span>
-                  </label>
-                  <input
+            <div className="p-5 sm:p-6 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Tiêu đề công thức <span className="text-[var(--danger)]">*</span>
+                    </label>
+                    <span className="text-xs text-[var(--text-muted)]">{title.length}/250 ký tự</span>
+                  </div>
+                  <Input
                     type="text"
-                    className="form-input"
                     placeholder="Ví dụ: Phở Bò Truyền Thống Hà Nội Nước Trong..."
                     value={title}
                     maxLength={250}
                     onChange={e => setTitle(e.target.value)}
                   />
-                  {step1Errors.title && <span className="form-error">{step1Errors.title}</span>}
+                  {step1Errors.title && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.title}</p>}
                 </div>
 
-                <div className="form-grid-2">
-                  <div className="form-group">
-                    <label className="form-label">
-                      <span>
-                        Danh mục món ăn <span className="form-required">*</span>
-                      </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Danh mục món ăn <span className="text-[var(--danger)]">*</span>
                     </label>
-                    <select
-                      className="form-select"
+                    <Select
                       value={categoryId}
                       onChange={e => setCategoryId(e.target.value)}
                     >
@@ -862,229 +925,213 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                           {cat.name}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">
-                      <span>
-                        Độ khó thực hiện <span className="form-required">*</span>
-                      </span>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Độ khó thực hiện <span className="text-[var(--danger)]">*</span>
                     </label>
-                    <select
-                      className="form-select"
+                    <Select
                       value={String(difficulty)}
                       onChange={e => setDifficulty(e.target.value as DifficultyLevel)}
                     >
                       <option value="Easy">Dễ (Easy) — Phù hợp người mới</option>
                       <option value="Medium">Trung bình (Medium) — Gia đình</option>
                       <option value="Hard">Khó (Hard) — Chuẩn Đầu bếp</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">
-                  <span>
-                    Mô tả tổng quan & câu chuyện món ăn <span className="form-required">*</span>
-                  </span>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                  Mô tả tổng quan & câu chuyện món ăn <span className="text-[var(--danger)]">*</span>
                 </label>
-                <textarea
-                  className="form-textarea"
+                <Textarea
                   placeholder="Giới thiệu hương vị đặc trưng, nguồn gốc hoặc bí quyết giúp món ăn tròn vị..."
                   value={description}
                   onChange={e => setDescription(e.target.value)}
+                  className="min-h-[100px]"
                 />
                 {step1Errors.description && (
-                  <span className="form-error">{step1Errors.description}</span>
+                  <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.description}</p>
                 )}
               </div>
 
-              <div className="form-grid-3">
-                <div className="form-group">
-                  <label className="form-label">
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <ClockIcon size={15} /> Thời gian sơ chế (phút)
-                    </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                    <ClockIcon size={14} /> Thời gian sơ chế (phút)
                   </label>
-                  <input
+                  <Input
                     type="number"
                     min={0}
                     max={1440}
-                    className="form-input"
                     value={prepTimeMinutes}
                     onChange={e => setPrepTimeMinutes(Number(e.target.value))}
                   />
-                  {step1Errors.prepTime && <span className="form-error">{step1Errors.prepTime}</span>}
+                  {step1Errors.prepTime && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.prepTime}</p>}
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <FlameIcon size={15} /> Thời gian nấu (phút)
-                    </span>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                    <FlameIcon size={14} /> Thời gian nấu (phút)
                   </label>
-                  <input
+                  <Input
                     type="number"
                     min={0}
                     max={1440}
-                    className="form-input"
                     value={cookTimeMinutes}
                     onChange={e => setCookTimeMinutes(Number(e.target.value))}
                   />
-                  {step1Errors.cookTime && <span className="form-error">{step1Errors.cookTime}</span>}
+                  {step1Errors.cookTime && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.cookTime}</p>}
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <UsersIcon size={15} /> Số khẩu phần (người) <span className="form-required">*</span>
-                    </span>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                    <UsersIcon size={14} /> Khẩu phần (người) <span className="text-[var(--danger)]">*</span>
                   </label>
-                  <input
+                  <Input
                     type="number"
                     min={1}
                     max={100}
-                    className="form-input"
                     value={servings}
                     onChange={e => setServings(Number(e.target.value))}
                   />
-                  <span className="form-hint">
-                    Dùng làm cơ sở tính toán lại định lượng nguyên liệu tự động (Serving Scaler).
-                  </span>
-                  {step1Errors.servings && <span className="form-error">{step1Errors.servings}</span>}
+                  <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                    Cơ sở tính toán tự động khẩu phần (Serving Scaler).
+                  </p>
+                  {step1Errors.servings && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.servings}</p>}
                 </div>
               </div>
 
               {/* Bảng thông tin Dinh dưỡng tùy chọn (RecipeNutrition) */}
-              <div
-                style={{
-                  marginTop: '12px',
-                  padding: '18px',
-                  borderRadius: 'var(--radius-lg)',
-                  background: '#FAF9F6',
-                  border: '1px solid var(--border-color)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <label className="checkbox-row">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-[var(--text-primary)]">
                     <input
                       type="checkbox"
                       checked={hasNutrition}
                       onChange={e => setHasNutrition(e.target.checked)}
+                      className="w-4 h-4 rounded text-[var(--primary)] accent-[var(--primary)] cursor-pointer"
                     />
                     <span>Bổ sung thông số Dinh dưỡng trên 1 khẩu phần (RecipeNutrition)</span>
                   </label>
-                  <span className="status-badge badge-draft">Tùy chọn theo SRS</span>
+                  <Badge variant="outline" className="text-xs">
+                    Tùy chọn theo SRS
+                  </Badge>
                 </div>
 
                 {hasNutrition && (
-                  <div className="form-grid-3" style={{ marginTop: '16px' }}>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Năng lượng (Calories - kcal)</label>
-                      <input
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+                    <div className="space-y-1">
+                      <label className="text-xs text-[var(--text-muted)] font-medium">Calo (kcal)</label>
+                      <Input
                         type="number"
                         min={0}
-                        className="form-input"
                         value={nutrition.calories ?? 0}
                         onChange={e =>
                           setNutrition(prev => ({ ...prev, calories: Number(e.target.value) }))
                         }
+                        className="text-xs py-1"
                       />
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Chất đạm (Protein - g)</label>
-                      <input
+                    <div className="space-y-1">
+                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất đạm (g)</label>
+                      <Input
                         type="number"
                         step="0.1"
                         min={0}
-                        className="form-input"
                         value={nutrition.protein ?? 0}
                         onChange={e =>
                           setNutrition(prev => ({ ...prev, protein: Number(e.target.value) }))
                         }
+                        className="text-xs py-1"
                       />
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Chất béo (Fat - g)</label>
-                      <input
+                    <div className="space-y-1">
+                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất béo (g)</label>
+                      <Input
                         type="number"
                         step="0.1"
                         min={0}
-                        className="form-input"
                         value={nutrition.fat ?? 0}
                         onChange={e =>
                           setNutrition(prev => ({ ...prev, fat: Number(e.target.value) }))
                         }
+                        className="text-xs py-1"
                       />
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Tinh bột (Carbs - g)</label>
-                      <input
+                    <div className="space-y-1">
+                      <label className="text-xs text-[var(--text-muted)] font-medium">Tinh bột (g)</label>
+                      <Input
                         type="number"
                         step="0.1"
                         min={0}
-                        className="form-input"
                         value={nutrition.carbohydrates ?? 0}
                         onChange={e =>
                           setNutrition(prev => ({ ...prev, carbohydrates: Number(e.target.value) }))
                         }
+                        className="text-xs py-1"
                       />
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Chất xơ (Fiber - g)</label>
-                      <input
+                    <div className="space-y-1">
+                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất xơ (g)</label>
+                      <Input
                         type="number"
                         step="0.1"
                         min={0}
-                        className="form-input"
                         value={nutrition.fiber ?? 0}
                         onChange={e =>
                           setNutrition(prev => ({ ...prev, fiber: Number(e.target.value) }))
                         }
+                        className="text-xs py-1"
                       />
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Muối khoáng (Sodium - mg)</label>
-                      <input
+                    <div className="space-y-1">
+                      <label className="text-xs text-[var(--text-muted)] font-medium">Natri (mg)</label>
+                      <Input
                         type="number"
                         step="1"
                         min={0}
-                        className="form-input"
                         value={nutrition.sodium ?? 0}
                         onChange={e =>
                           setNutrition(prev => ({ ...prev, sodium: Number(e.target.value) }))
                         }
+                        className="text-xs py-1"
                       />
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="wizard-footer-bar">
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              {/* Thanh điều hướng footer Bước 1 */}
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)] flex-wrap gap-3">
+                <div className="text-xs text-[var(--text-muted)]">
                   {recipeId
                     ? `Đang chỉnh sửa công thức #${recipeId.slice(0, 8)} (Header If-Match: "${xmin ?? 'N/A'}")`
-                    : 'Bước 1 sẽ khởi tạo bản nháp (Draft) để lấy ID cho 10 API Nguyên liệu, Bước làm & Ảnh.'}
+                    : 'Bước 1 sẽ khởi tạo bản nháp (Draft) để lấy ID cho các bước tiếp theo.'}
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="flex items-center gap-3">
                   {recipeId && (
-                    <button
+                    <Button
                       type="button"
-                      className="btn btn-secondary"
+                      variant="outline"
                       disabled={savingStep1}
                       onClick={() => handleSaveStep1(false)}
+                      className="gap-2"
                     >
-                      <SaveIcon size={17} />
-                      <span>{savingStep1 ? 'Đang lưu...' : 'Lưu thông tin chung'}</span>
-                    </button>
+                      <SaveIcon size={16} />
+                      <span>{savingStep1 ? 'Đang lưu...' : 'Lưu thông tin'}</span>
+                    </Button>
                   )}
-                  <button
+                  <Button
                     type="button"
-                    className="btn btn-primary"
+                    variant="default"
                     disabled={savingStep1}
                     onClick={() => handleSaveStep1(true)}
+                    className="gap-2"
                   >
                     <span>
                       {savingStep1
@@ -1093,8 +1140,8 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                           ? 'Lưu & Tiếp tục Bước 2'
                           : 'Khởi tạo Công thức & Sang Bước 2'}
                     </span>
-                    <ChevronRightIcon size={17} />
-                  </button>
+                    <ChevronRightIcon size={16} />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -1105,80 +1152,65 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
             NỘI DUNG BƯỚC 2: QUẢN LÝ NGUYÊN LIỆU (3 API TV4)
            ========================================================= */}
         {activeStep === 2 && (
-          <div className="section-card">
-            <div className="section-header">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-xs overflow-hidden">
+            <div className="p-5 sm:p-6 border-b border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
                   <ListIcon size={20} />
                   <span>Bước 2: Danh sách Nguyên liệu & Định lượng ({ingredients.length} nguyên liệu)</span>
                 </h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 mb-0">
                   Sử dụng 3 API: <code>POST /ingredients</code>, <code>PUT /ingredients/&#123;id&#125;</code>,{' '}
                   <code>DELETE /ingredients/&#123;id&#125;</code>. Hỗ trợ số thực (decimal) và gia vị &ldquo;vừa đủ&rdquo; (nullable).
                 </p>
               </div>
-              <span className="status-badge badge-published">Khẩu phần gốc: {servings} người</span>
+              <Badge variant="secondary" className="text-xs">
+                Khẩu phần gốc: {servings} người
+              </Badge>
             </div>
 
-            <div style={{ padding: '24px' }}>
+            <div className="p-5 sm:p-6 space-y-6">
               {/* Form thêm / cập nhật nguyên liệu */}
               <form
                 onSubmit={handleSubmitIngredient}
-                style={{
-                  background: '#FAF9F6',
-                  padding: '20px',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border-color)',
-                }}
+                className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4"
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '14px',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                  }}
-                >
-                  <h3 style={{ fontSize: '0.96rem', fontWeight: 700 }}>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] m-0">
                     {editingIngId ? 'Chỉnh sửa nguyên liệu đang chọn' : 'Thêm nguyên liệu mới'}
                   </h3>
-                  <label className="checkbox-row">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[var(--text-primary)]">
                     <input
                       type="checkbox"
                       checked={ingIsSeasoning}
                       onChange={e => setIngIsSeasoning(e.target.checked)}
+                      className="w-4 h-4 rounded text-[var(--primary)] accent-[var(--primary)] cursor-pointer"
                     />
                     <span>Gia vị nêm nếm &ldquo;vừa đủ&rdquo; (Quantity & Unit = null theo Quyết định E1, E2)</span>
                   </label>
                 </div>
 
-                <div className="form-grid-4">
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">
-                      <span>
-                        Tên nguyên liệu <span className="form-required">*</span>
-                      </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Tên nguyên liệu <span className="text-[var(--danger)]">*</span>
                     </label>
-                    <input
+                    <Input
                       type="text"
-                      className="form-input"
                       placeholder="VD: Thịt thăn bò, Xương ống..."
                       value={ingName}
                       onChange={e => setIngName(e.target.value)}
                     />
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">
-                      <span>Số lượng (decimal) {!ingIsSeasoning && <span className="form-required">*</span>}</span>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Số lượng {!ingIsSeasoning && <span className="text-[var(--danger)]">*</span>}
                     </label>
-                    <input
+                    <Input
                       type="number"
                       step="0.01"
                       min="0.01"
-                      className="form-input"
                       placeholder={ingIsSeasoning ? 'Vừa đủ (Nullable)' : 'VD: 1.5 hoặc 500'}
                       disabled={ingIsSeasoning}
                       value={ingIsSeasoning ? '' : ingQuantity}
@@ -1186,14 +1218,13 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                     />
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">
-                      <span>Đơn vị tính {!ingIsSeasoning && <span className="form-required">*</span>}</span>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Đơn vị {!ingIsSeasoning && <span className="text-[var(--danger)]">*</span>}
                     </label>
-                    <input
+                    <Input
                       type="text"
                       list="common-units-list"
-                      className="form-input"
                       placeholder={ingIsSeasoning ? 'Không áp dụng' : 'g, kg, ml, muỗng...'}
                       disabled={ingIsSeasoning}
                       value={ingIsSeasoning ? '' : ingUnit}
@@ -1206,11 +1237,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                     </datalist>
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Ghi chú sơ chế</label>
-                    <input
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Ghi chú sơ chế
+                    </label>
+                    <Input
                       type="text"
-                      className="form-input"
                       placeholder="VD: Thái lát mỏng ngang thớ..."
                       value={ingNotes}
                       onChange={e => setIngNotes(e.target.value)}
@@ -1218,13 +1250,24 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
+                <div className="flex items-center justify-end gap-2.5 pt-2">
                   {editingIngId && (
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={resetIngredientForm}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={resetIngredientForm}
+                    >
                       Hủy sửa
-                    </button>
+                    </Button>
                   )}
-                  <button type="submit" className="btn btn-primary btn-sm" disabled={submittingIng}>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    size="sm"
+                    disabled={submittingIng}
+                    className="gap-2"
+                  >
                     <PlusCircleIcon size={16} />
                     <span>
                       {submittingIng
@@ -1233,63 +1276,64 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                           ? 'Cập nhật nguyên liệu (PUT)'
                           : 'Thêm vào danh sách (POST)'}
                     </span>
-                  </button>
+                  </Button>
                 </div>
               </form>
 
               {/* Danh sách nguyên liệu đã thêm */}
               {ingredients.length === 0 ? (
-                <div className="empty-state" style={{ padding: '40px 20px' }}>
-                  <p className="empty-title">Chưa có nguyên liệu nào</p>
-                  <p className="empty-desc">
+                <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+                  <p className="text-base font-bold text-[var(--text-primary)] mb-1">Chưa có nguyên liệu nào</p>
+                  <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto mb-0">
                     Hãy nhập tên nguyên liệu, số lượng định lượng và bấm &ldquo;Thêm vào danh sách&rdquo; ở biểu mẫu trên.
                   </p>
                 </div>
               ) : (
-                <div className="dynamic-list">
+                <div className="space-y-2.5">
                   {ingredients.map((ing, idx) => (
-                    <div key={ing.id} className="dynamic-card">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <div className="step-badge-circle">{idx + 1}</div>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>
-                            {ing.name}
-                            <span
-                              style={{
-                                marginLeft: '10px',
-                                padding: '3px 10px',
-                                borderRadius: '999px',
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                background: ing.quantity !== null ? '#FFEDE6' : '#F3F4F6',
-                                color: ing.quantity !== null ? 'var(--primary)' : 'var(--text-muted)',
-                              }}
+                    <div
+                      key={ing.id}
+                      className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--primary-subtle)] transition-colors gap-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-7 h-7 rounded-full bg-[var(--bg-surface-alt)] text-[var(--text-secondary)] font-bold text-xs flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-bold text-sm text-[var(--text-primary)] flex items-center gap-2 flex-wrap">
+                            <span>{ing.name}</span>
+                            <Badge
+                              variant={ing.quantity !== null && ing.quantity !== undefined ? "subtle" as const : "secondary"}
+                              className="text-xs"
                             >
                               {ing.quantity !== null && ing.quantity !== undefined
                                 ? `${ing.quantity} ${ing.unit || ''}`
                                 : 'Gia vị vừa đủ'}
-                            </span>
+                            </Badge>
                           </div>
                           {ing.notes && (
-                            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                            <p className="text-xs text-[var(--text-muted)] mt-0.5 mb-0 truncate">
                               Ghi chú: {ing.notes}
-                            </div>
+                            </p>
                           )}
                         </div>
                       </div>
 
-                      <div className="table-actions">
-                        <button
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button
                           type="button"
-                          className="btn btn-secondary btn-sm"
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleSelectEditIngredient(ing)}
+                          className="h-8 px-2.5 gap-1 text-xs"
                         >
-                          <EditIcon size={15} />
+                          <EditIcon size={14} />
                           <span>Sửa</span>
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           type="button"
-                          className="btn btn-danger btn-sm"
+                          variant="destructive"
+                          size="sm"
                           onClick={() =>
                             setDeleteConfirm({
                               isOpen: true,
@@ -1298,25 +1342,37 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                               label: ing.name,
                             })
                           }
+                          className="h-8 px-2.5 gap-1 text-xs"
                         >
-                          <TrashIcon size={15} />
+                          <TrashIcon size={14} />
                           <span>Xóa</span>
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
 
-              <div className="wizard-footer-bar">
-                <button type="button" className="btn btn-secondary" onClick={() => setActiveStep(1)}>
-                  <ChevronLeftIcon size={17} />
+              {/* Thanh điều hướng footer Bước 2 */}
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)] flex-wrap gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setActiveStep(1)}
+                  className="gap-2"
+                >
+                  <ChevronLeftIcon size={16} />
                   <span>Quay lại Bước 1</span>
-                </button>
-                <button type="button" className="btn btn-primary" onClick={() => setActiveStep(3)}>
+                </Button>
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => setActiveStep(3)}
+                  className="gap-2"
+                >
                   <span>Tiếp tục Bước 3: Các bước thực hiện</span>
-                  <ChevronRightIcon size={17} />
-                </button>
+                  <ChevronRightIcon size={16} />
+                </Button>
               </div>
             </div>
           </div>
@@ -1326,91 +1382,89 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
             NỘI DUNG BƯỚC 3: CÁC BƯỚC THỰC HIỆN & REORDER (4 API TV4)
            ========================================================= */}
         {activeStep === 3 && (
-          <div className="section-card">
-            <div className="section-header">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-xs overflow-hidden">
+            <div className="p-5 sm:p-6 border-b border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
                   <LayersIcon size={20} />
                   <span>Bước 3: Các bước Chế biến & Sắp xếp Reorder ({steps.length} bước)</span>
                 </h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 mb-0">
                   Sử dụng 4 API: <code>POST /steps</code>, <code>PUT /steps/&#123;id&#125;</code>,{' '}
-                  <code>PUT /steps/reorder</code> (Transaction nguyên tử), và <code>DELETE /steps/&#123;id&#125;</code> (Tự động đánh lại số 1..N).
+                  <code>PUT /steps/reorder</code> (Transaction nguyên tử), và <code>DELETE /steps/&#123;id&#125;</code>.
                 </p>
               </div>
             </div>
 
-            <div style={{ padding: '24px' }}>
+            <div className="p-5 sm:p-6 space-y-6">
               <form
                 onSubmit={handleSubmitStep}
-                style={{
-                  background: '#FAF9F6',
-                  padding: '20px',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border-color)',
-                }}
+                className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4"
               >
-                <h3 style={{ fontSize: '0.96rem', fontWeight: 700, marginBottom: '14px' }}>
+                <h3 className="text-sm font-bold text-[var(--text-primary)] m-0">
                   {editingStepId
                     ? 'Chỉnh sửa bước chế biến đang chọn'
                     : `Thêm Bước thứ ${steps.length + 1}`}
                 </h3>
 
-                <div className="form-grid-2">
-                  <div className="form-group">
-                    <label className="form-label">
-                      <span>
-                        Tiêu đề bước làm <span className="form-required">*</span>
-                      </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Tiêu đề bước làm <span className="text-[var(--danger)]">*</span>
                     </label>
-                    <input
+                    <Input
                       type="text"
-                      className="form-input"
                       placeholder="VD: Sơ chế & chần xương bò khử mùi..."
                       value={stepTitle}
                       onChange={e => setStepTitle(e.target.value)}
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <ClockIcon size={15} /> Thời gian hẹn giờ bước này (phút - tùy chọn)
-                      </span>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                      <ClockIcon size={14} /> Thời gian hẹn giờ (phút - tùy chọn)
                     </label>
-                    <input
+                    <Input
                       type="number"
                       min={0}
                       max={1440}
-                      className="form-input"
-                      placeholder="VD: 15 (Hỗ trợ đồng hồ đếm ngược ở Chế độ Nấu ăn)"
+                      placeholder="VD: 15 (Hỗ trợ đồng hồ đếm ngược)"
                       value={stepDuration}
                       onChange={e => setStepDuration(e.target.value)}
                     />
                   </div>
                 </div>
 
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label className="form-label">
-                    <span>
-                      Hướng dẫn chi tiết thao tác <span className="form-required">*</span>
-                    </span>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                    Hướng dẫn chi tiết thao tác <span className="text-[var(--danger)]">*</span>
                   </label>
-                  <textarea
-                    className="form-textarea"
+                  <Textarea
                     placeholder="Mô tả chi tiết nhiệt độ lửa, thời gian canh chỉnh và mẹo nhận biết khi đạt yêu cầu..."
                     value={stepInstruction}
                     onChange={e => setStepInstruction(e.target.value)}
+                    className="min-h-[90px]"
                   />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
+                <div className="flex items-center justify-end gap-2.5 pt-2">
                   {editingStepId && (
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={resetStepForm}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={resetStepForm}
+                    >
                       Hủy sửa
-                    </button>
+                    </Button>
                   )}
-                  <button type="submit" className="btn btn-primary btn-sm" disabled={submittingStep}>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    size="sm"
+                    disabled={submittingStep}
+                    className="gap-2"
+                  >
                     <PlusCircleIcon size={16} />
                     <span>
                       {submittingStep
@@ -1419,78 +1473,83 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                           ? 'Cập nhật bước làm (PUT)'
                           : `Thêm Bước ${steps.length + 1} (POST)`}
                     </span>
-                  </button>
+                  </Button>
                 </div>
               </form>
 
               {/* Danh sách các bước & nút Reorder Lên/Xuống */}
               {steps.length === 0 ? (
-                <div className="empty-state" style={{ padding: '40px 20px' }}>
-                  <p className="empty-title">Chưa có bước thực hiện nào</p>
-                  <p className="empty-desc">
+                <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+                  <p className="text-base font-bold text-[var(--text-primary)] mb-1">Chưa có bước thực hiện nào</p>
+                  <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto mb-0">
                     Hãy chia nhỏ quy trình nấu ăn thành từng bước rõ ràng kèm thời gian hẹn giờ đếm ngược.
                   </p>
                 </div>
               ) : (
-                <div className="dynamic-list">
+                <div className="space-y-3">
                   {steps.map((step, index) => (
-                    <div key={step.id} className="dynamic-card">
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', flex: 1 }}>
-                        <div className="step-badge-circle">{step.stepNumber}</div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: 800, fontSize: '0.96rem', color: 'var(--text-main)' }}>
+                    <div
+                      key={step.id}
+                      className="flex items-start justify-between p-4 sm:p-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--primary-subtle)] transition-colors gap-3"
+                    >
+                      <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                          {step.stepNumber}
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-1.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-sm sm:text-base text-[var(--text-primary)]">
                               Bước {step.stepNumber}: {step.title}
                             </span>
                             {step.durationMinutes !== null && step.durationMinutes !== undefined && (
-                              <span className="status-badge badge-archived">
-                                <ClockIcon size={12} /> Hẹn giờ: {step.durationMinutes} phút
-                              </span>
+                              <Badge variant="medium" className="text-xs">
+                                <ClockIcon size={12} className="mr-1" /> Hẹn giờ: {step.durationMinutes} phút
+                              </Badge>
                             )}
                           </div>
-                          <p
-                            style={{
-                              fontSize: '0.88rem',
-                              color: 'var(--text-muted)',
-                              marginTop: '6px',
-                              lineHeight: 1.6,
-                            }}
-                          >
+                          <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed m-0 whitespace-pre-line">
                             {step.description}
                           </p>
                         </div>
                       </div>
 
-                      <div className="table-actions">
-                        <button
+                      <div className="flex items-center gap-1 shrink-0 pt-0.5">
+                        <Button
                           type="button"
-                          className="btn btn-icon-only"
-                          title="Di chuyển bước lên (PUT /steps/reorder)"
+                          variant="ghost"
+                          size="icon"
+                          title="Di chuyển bước lên"
                           disabled={index === 0 || reorderingSteps}
                           onClick={() => handleMoveStep(index, 'up')}
+                          className="h-8 w-8 text-xs text-[var(--text-muted)]"
                         >
-                          <ArrowUpIcon size={16} />
-                        </button>
-                        <button
+                          <ArrowUpIcon size={14} />
+                        </Button>
+                        <Button
                           type="button"
-                          className="btn btn-icon-only"
-                          title="Di chuyển bước xuống (PUT /steps/reorder)"
+                          variant="ghost"
+                          size="icon"
+                          title="Di chuyển bước xuống"
                           disabled={index === steps.length - 1 || reorderingSteps}
                           onClick={() => handleMoveStep(index, 'down')}
+                          className="h-8 w-8 text-xs text-[var(--text-muted)]"
                         >
-                          <ArrowDownIcon size={16} />
-                        </button>
-                        <button
+                          <ArrowDownIcon size={14} />
+                        </Button>
+                        <Button
                           type="button"
-                          className="btn btn-secondary btn-sm"
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleSelectEditStep(step)}
+                          className="h-8 px-2.5 gap-1 text-xs"
                         >
-                          <EditIcon size={15} />
+                          <EditIcon size={14} />
                           <span>Sửa</span>
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           type="button"
-                          className="btn btn-danger btn-sm"
+                          variant="destructive"
+                          size="sm"
                           onClick={() =>
                             setDeleteConfirm({
                               isOpen: true,
@@ -1499,25 +1558,37 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                               label: `Bước ${step.stepNumber}: ${step.title}`,
                             })
                           }
+                          className="h-8 px-2.5 gap-1 text-xs"
                         >
-                          <TrashIcon size={15} />
+                          <TrashIcon size={14} />
                           <span>Xóa</span>
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
 
-              <div className="wizard-footer-bar">
-                <button type="button" className="btn btn-secondary" onClick={() => setActiveStep(2)}>
-                  <ChevronLeftIcon size={17} />
-                  <span>Quay lại Bước 2 (Nguyên liệu)</span>
-                </button>
-                <button type="button" className="btn btn-primary" onClick={() => setActiveStep(4)}>
+              {/* Thanh điều hướng footer Bước 3 */}
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)] flex-wrap gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setActiveStep(2)}
+                  className="gap-2"
+                >
+                  <ChevronLeftIcon size={16} />
+                  <span>Quay lại Bước 2</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => setActiveStep(4)}
+                  className="gap-2"
+                >
                   <span>Tiếp tục Bước 4: Upload Ảnh MinIO</span>
-                  <ChevronRightIcon size={17} />
-                </button>
+                  <ChevronRightIcon size={16} />
+                </Button>
               </div>
             </div>
           </div>
@@ -1527,14 +1598,14 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
             NỘI DUNG BƯỚC 4: UPLOAD ẢNH MINIO & GALLERY (3 API TV4)
            ========================================================= */}
         {activeStep === 4 && (
-          <div className="section-card">
-            <div className="section-header">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-xs overflow-hidden">
+            <div className="p-5 sm:p-6 border-b border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
                   <ImageIcon size={20} />
                   <span>Bước 4: Quản lý Hình ảnh & MinIO Object Storage ({images.length} ảnh)</span>
                 </h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 mb-0">
                   Sử dụng 3 API: <code>POST /images</code> (Multipart upload ≤ 5MB),{' '}
                   <code>PATCH /images/&#123;imageId&#125;</code> (Đặt ảnh chính Primary & AltText), và{' '}
                   <code>DELETE /images/&#123;imageId&#125;</code>.
@@ -1542,11 +1613,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               </div>
             </div>
 
-            <div style={{ padding: '24px' }}>
+            <div className="p-5 sm:p-6 space-y-6">
               {/* Form Upload Multipart/Form-Data */}
               <form onSubmit={handleUploadImage}>
                 <div
-                  className="upload-dropzone"
+                  className="p-8 sm:p-10 border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--primary)] rounded-3xl bg-[var(--bg-surface-alt)]/50 text-center cursor-pointer transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={e => e.preventDefault()}
                   onDrop={e => {
@@ -1559,99 +1630,74 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                     ref={fileInputRef}
                     type="file"
                     accept="image/jpeg,image/png,image/webp,image/avif"
-                    style={{ display: 'none' }}
+                    className="hidden"
                     onChange={e => handleFileChange(e.target.files?.[0] || null)}
                   />
-                  <div
-                    style={{
-                      width: '52px',
-                      height: '52px',
-                      borderRadius: '999px',
-                      background: '#FFEDE6',
-                      color: 'var(--primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      margin: '0 auto 12px',
-                    }}
-                  >
-                    <UploadCloudIcon size={26} />
+                  <div className="w-12 h-12 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center mx-auto mb-3 shadow-xs">
+                    <UploadCloudIcon size={24} />
                   </div>
-                  <p style={{ fontWeight: 700, fontSize: '0.96rem', color: 'var(--text-main)' }}>
+                  <p className="text-sm sm:text-base font-bold text-[var(--text-primary)] mb-1">
                     {selectedFile
                       ? `Đã chọn: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`
                       : 'Nhấn để chọn ảnh hoặc kéo thả ảnh món ăn vào đây'}
                   </p>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  <p className="text-xs text-[var(--text-muted)] mb-0">
                     Định dạng hỗ trợ: JPEG, PNG, WebP, AVIF • Dung lượng tối đa: 5MB / ảnh
                   </p>
                 </div>
 
                 {selectedFile && (
-                  <div
-                    style={{
-                      marginTop: '16px',
-                      padding: '18px',
-                      borderRadius: 'var(--radius-lg)',
-                      background: '#FAF9F6',
-                      border: '1px solid var(--border-color)',
-                      display: 'grid',
-                      gridTemplateColumns: '180px 1fr',
-                      gap: '18px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div className="media-thumb-wrapper" style={{ borderRadius: 'var(--radius-md)' }}>
+                  <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] flex flex-col sm:flex-row gap-5 items-center">
+                    <div className="relative w-44 h-32 rounded-xl overflow-hidden border border-[var(--border-subtle)] bg-stone-100 shrink-0">
                       {previewUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={previewUrl} alt="Xem trước ảnh tải lên" className="media-thumb-img" />
+                        <img src={previewUrl} alt="Xem trước ảnh tải lên" className="w-full h-full object-cover" />
                       )}
                     </div>
 
-                    <div>
-                      <div className="form-group">
-                        <label className="form-label">
-                          <span>Mô tả ảnh (Alt Text chuẩn SEO & Accessibility)</span>
+                    <div className="flex-1 w-full space-y-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                          Mô tả ảnh (Alt Text chuẩn SEO & Accessibility)
                         </label>
-                        <input
+                        <Input
                           type="text"
-                          className="form-input"
                           placeholder="VD: Tô phở bò truyền thống Hà Nội nóng hổi..."
                           value={imgAltText}
                           onChange={e => setImgAltText(e.target.value)}
                         />
                       </div>
 
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          flexWrap: 'wrap',
-                          gap: '12px',
-                        }}
-                      >
-                        <label className="checkbox-row">
+                      <div className="flex items-center justify-between flex-wrap gap-3">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[var(--text-primary)]">
                           <input
                             type="checkbox"
                             checked={imgIsPrimary || images.length === 0}
                             onChange={e => setImgIsPrimary(e.target.checked)}
+                            className="w-4 h-4 rounded text-[var(--primary)] accent-[var(--primary)] cursor-pointer"
                           />
                           <span>Đặt làm Ảnh đại diện chính (IsPrimary) của công thức</span>
                         </label>
 
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button
+                        <div className="flex items-center gap-2">
+                          <Button
                             type="button"
-                            className="btn btn-secondary btn-sm"
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleFileChange(null)}
                           >
                             Hủy chọn
-                          </button>
-                          <button type="submit" className="btn btn-primary btn-sm" disabled={uploadingImg}>
+                          </Button>
+                          <Button
+                            type="submit"
+                            variant="default"
+                            size="sm"
+                            disabled={uploadingImg}
+                            className="gap-2"
+                          >
                             <UploadCloudIcon size={16} />
                             <span>{uploadingImg ? 'Đang tải lên MinIO...' : 'Tải ảnh lên MinIO (POST)'}</span>
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1661,85 +1707,89 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
               {/* Thư viện ảnh đã tải lên */}
               {images.length === 0 ? (
-                <div className="empty-state" style={{ padding: '40px 20px' }}>
-                  <p className="empty-title">Chưa có hình ảnh nào trong Album</p>
-                  <p className="empty-desc">
+                <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+                  <p className="text-base font-bold text-[var(--text-primary)] mb-1">Chưa có hình ảnh nào trong Album</p>
+                  <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto mb-0">
                     Tải lên ít nhất 1 bức ảnh chất lượng cao để làm ảnh bìa (Primary Image) thu hút độc giả.
                   </p>
                 </div>
               ) : (
-                <div className="media-gallery-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {images.map(img => (
-                    <div key={img.id} className={`media-card ${img.isPrimary ? 'is-primary' : ''}`}>
-                      <div className="media-thumb-wrapper">
+                    <div
+                      key={img.id}
+                      className={`rounded-2xl border overflow-hidden bg-[var(--bg-surface)] flex flex-col transition-all ${
+                        img.isPrimary
+                          ? 'border-[var(--primary)] ring-2 ring-[var(--primary-subtle)] shadow-sm'
+                          : 'border-[var(--border-subtle)]'
+                      }`}
+                    >
+                      <div className="relative w-full pt-[60%] overflow-hidden bg-[var(--bg-surface-alt)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={img.originalUrl}
                           alt={img.altText || title}
-                          className="media-thumb-img"
+                          className="absolute inset-0 w-full h-full object-cover"
                           loading="lazy"
                         />
                         {img.isPrimary && (
-                          <span className="primary-ribbon">
-                            <StarIcon size={12} /> Ảnh chính (Primary)
-                          </span>
+                          <div className="absolute top-2.5 left-2.5">
+                            <Badge variant="default" className="text-xs font-bold gap-1 shadow-sm">
+                              <StarIcon size={12} /> Ảnh chính
+                            </Badge>
+                          </div>
                         )}
                       </div>
 
-                      <div className="media-card-body">
-                        <div>
-                          <label className="form-label" style={{ fontSize: '0.76rem', marginBottom: '4px' }}>
+                      <div className="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                             Alt Text (SEO):
                           </label>
-                          <div style={{ display: 'flex', gap: '6px' }}>
-                            <input
+                          <div className="flex gap-2">
+                            <Input
                               type="text"
-                              className="form-input"
-                              style={{ padding: '6px 10px', fontSize: '0.82rem' }}
+                              className="text-xs py-1 h-8"
                               value={editingAltMap[img.id] ?? img.altText ?? ''}
                               onChange={e =>
                                 setEditingAltMap(prev => ({ ...prev, [img.id]: e.target.value }))
                               }
                             />
-                            <button
+                            <Button
                               type="button"
-                              className="btn btn-secondary btn-sm"
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-2.5 text-xs shrink-0"
                               title="Lưu Alt Text (PATCH)"
                               onClick={() => handleSaveAltText(img)}
                             >
                               Lưu
-                            </button>
+                            </Button>
                           </div>
                         </div>
 
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginTop: 'auto',
-                            paddingTop: '8px',
-                            borderTop: '1px solid var(--border-light)',
-                          }}
-                        >
+                        <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
                           {!img.isPrimary ? (
-                            <button
+                            <Button
                               type="button"
-                              className="btn btn-secondary btn-sm"
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleSetPrimaryImage(img)}
+                              className="h-8 px-2 text-xs text-[var(--text-secondary)] gap-1"
                             >
-                              <StarIcon size={14} />
+                              <StarIcon size={13} />
                               <span>Đặt làm ảnh chính</span>
-                            </button>
+                            </Button>
                           ) : (
-                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary)' }}>
-                              ★ Đang là ảnh bìa
+                            <span className="text-xs font-bold text-[var(--primary)]">
+                              ★ Ảnh đại diện
                             </span>
                           )}
 
-                          <button
+                          <Button
                             type="button"
-                            className="btn btn-danger btn-sm"
+                            variant="destructive"
+                            size="sm"
                             onClick={() =>
                               setDeleteConfirm({
                                 isOpen: true,
@@ -1748,10 +1798,10 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                                 label: img.altText || 'Hình ảnh món ăn',
                               })
                             }
+                            className="h-8 px-2 text-xs"
                           >
-                            <TrashIcon size={14} />
-                            <span>Xóa</span>
-                          </button>
+                            <TrashIcon size={13} />
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1759,20 +1809,31 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                 </div>
               )}
 
-              <div className="wizard-footer-bar">
-                <button type="button" className="btn btn-secondary" onClick={() => setActiveStep(3)}>
-                  <ChevronLeftIcon size={17} />
-                  <span>Quay lại Bước 3 (Các bước làm)</span>
-                </button>
+              {/* Thanh điều hướng footer Bước 4 */}
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)] flex-wrap gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setActiveStep(3)}
+                  className="gap-2"
+                >
+                  <ChevronLeftIcon size={16} />
+                  <span>Quay lại Bước 3</span>
+                </Button>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <Link href="/dashboard/recipes" className="btn btn-secondary">
-                    Lưu Nháp & Về Danh sách
+                <div className="flex items-center gap-3">
+                  <Link href="/dashboard/recipes">
+                    <Button variant="outline">Lưu Nháp & Về Danh sách</Button>
                   </Link>
-                  <button type="button" className="btn btn-primary" onClick={handlePublishNow}>
+                  <Button
+                    type="button"
+                    variant="default"
+                    onClick={handlePublishNow}
+                    className="gap-2"
+                  >
                     <CheckCircleIcon size={18} />
                     <span>Hoàn tất & Xuất bản Công thức</span>
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

@@ -1,5 +1,5 @@
 // ============================================================================
-// CULINARY BLOG — API CONTRACTS & DTO TYPES
+// CULINARY BLOG  EAPI CONTRACTS & DTO TYPES
 // Chuẩn hóa theo SRS v1.3.0 & Backend Minimal APIs
 // ============================================================================
 
@@ -157,7 +157,7 @@ export interface RecipeNutritionDto {
   sodiumMilligrams?: number | null;
   sugarGrams?: number | null;
   source?: string | number | null;
-  // Aliases đồng bộ với form TV3 & TV4
+  // Aliases đồng bềEvới form TV3 & TV4
   fat?: number | null;
   carbohydrates?: number | null;
   protein?: number | null;

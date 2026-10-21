@@ -8,19 +8,32 @@ Theo quyết định thống nhất của nhóm tại Lab 5, toàn bộ cấu tr
 
 - `src/app`: Quản lý các tuyến đường (routes), layouts, loading, và error boundaries (`/`, `/recipes`, `/dashboard`, `/auth`, `/categories`, `/admin`).
 - `src/components`: Các UI Components phân chia theo miền nghiệp vụ:
-  - `components/recipes`: Component chi tiết công thức, Multi-step Wizard 4 bước (`RecipeWizardEditor.tsx`).
+  - `components/ui`: Các UI primitives chuẩn **shadcn/ui** (`card`, `badge`, `button`, `input`, `textarea`, `select`, `checkbox`, `tabs`, `skeleton`).
+  - `components/recipe` & `components/recipes`: Component danh sách, bộ lọc, chi tiết công thức (`RecipeCard.tsx`, `RecipeFilterSidebar.tsx`, `RecipeToolbar.tsx`, `RecipeListWrapper.tsx`, `RecipeDetail.tsx`), và Multi-step Wizard 4 bước (`RecipeWizardEditor.tsx`).
   - `components/auth`: Form đăng nhập, đăng ký, xác thực tài khoản và hồ sơ người dùng.
   - `components/layout`: Header, Footer, Navbar và UserMenu.
-  - `components/common`: Các thành phần tái sử dụng (Toast, Dialog, Icons).
+  - `components/common`: Các thành phần tái sử dụng (`EmptyState`, `ErrorState`, `Skeleton`, `Toast`, `ConfirmDialog`, `ConflictDialog`, `Pagination`, `Icons`).
 - `src/types`: **Hệ thống Type Definitions tập trung (src/types/)**:
   - `recipe-content.ts`: Chứa toàn bộ types cho Recipe Ingredients, Steps, Images, Nutrition và Wizard payloads.
   - `api.ts`: Chứa các types phân trang, Problem Details, Category và Recipe Summary.
   - `index.ts`: Entrypoint xuất khẩu toàn bộ types của hệ thống, không còn tình trạng khai báo trùng lặp.
-- `src/lib`: API clients (`api-client.ts`), cấu hình HTTP và auth session.
+- `src/lib`:
+  - `utils.ts`: Hàm tiện ích `cn` (kết hợp `clsx` + `tailwind-merge`), `formatDate`, `formatDuration`, `formatNumber`, `buildQueryString`.
+  - `api-client.ts`, `api/`: API clients, cấu hình HTTP và auth session.
 - `src/hooks`: Custom React hooks phục vụ truy xuất dữ liệu với TanStack React Query.
 - `src/store`: Quản lý state toàn cục phía Client với Zustand (`auth-store.ts`, `ui-store.ts`, `auth-ui-store.ts`).
 
 > **Ghi chú về thư mục `src/features/`**: Nhóm đã thống nhất dọn dẹp thư mục `src/features/` (trước đây chỉ có README) để tránh phân mảnh cấu trúc và tập trung toàn bộ components và types về `src/components` và `src/types`.
+
+## Cấu hình Giao diện & shadcn/ui (Lab 6)
+
+- **Tailwind CSS & Design Tokens**: Tích hợp chuẩn hoá hệ thống biến và typography của `globals.css` mà không gây xung đột hay vỡ bố cục các trang cũ.
+- **Bảng màu & Tokens**: Ánh xạ toàn bộ biến theme `--primary` (`#c85a17`), `--secondary` (`#2b7a4b`), `--bg-main`, `--bg-card` vào Tailwind theme colors.
+- **Quy chuẩn Component**: Tất cả các component mới và được thiết kế lại đều loại bỏ inline styles `style={{...}}`, sử dụng class Tailwind và các UI primitives từ `@/components/ui/` (`Button`, `Card`, `Badge`, `Input`, `Textarea`, `Select`, `Skeleton`...).
+- **Xử lý Utility & Ghép lớp**: Ghép className bằng `cn()` trong `src/lib/utils.ts` để class truyền vào ghi đè được class mặc định.
+- **Ví dụ Module**:
+  - Module Xác thực: `components/auth` (Field, PasswordField, FormAlert, SubmitButton, UserAvatar, RoleBadge) và `components/layout/UserMenu.tsx`.
+  - Module Công thức: `components/recipe` (`RecipeCard.tsx`, `RecipeFilterSidebar.tsx`, `RecipeToolbar.tsx`, `RecipeListWrapper.tsx`, `RecipeDetail.tsx`, `RecipeWizardEditor.tsx`).
 
 ## Gọi API
 
@@ -45,13 +58,6 @@ Mọi lỗi từ `apiClient` là `AppError` (`src/lib/errors.ts`) gồm `status`
 - Khai báo rõ phần state và phần action trong interface; action đặt tên theo động từ (`setSession`, `clearSession`).
 - Đọc store bằng selector để tránh render thừa: `useAuthStore((s) => s.user)` hoặc selector có sẵn (`useCurrentUser()`, `useAuthStatus()`, `useHasRole("Admin")`). Không gọi `useAuthStore()` không có selector.
 - Trạng thái đăng nhập chỉ đọc từ `src/store/auth-store.ts`; access token nằm trong bộ nhớ, không đọc/ghi `localStorage` trực tiếp.
-
-## Giao diện (shadcn/ui)
-
-- Dùng component có sẵn trong `src/components/ui` (Button, Card, Input, Label, Alert, Avatar, Badge, DropdownMenu...) và class Tailwind; không tạo thêm CSS module mới.
-- Ghép className bằng `cn()` trong `src/lib/utils.ts` để class truyền vào ghi đè được class mặc định.
-- Kiểu mặc định của thẻ HTML trong `globals.css` nằm trong `@layer base`, nên utility Tailwind luôn ghi đè được.
-- Ví dụ module Xác thực: `components/auth` (Field, PasswordField, FormAlert, SubmitButton, UserAvatar, RoleBadge) và `components/layout/UserMenu.tsx` (DropdownMenu + Avatar).
 
 ## Tiện ích dùng chung
 
