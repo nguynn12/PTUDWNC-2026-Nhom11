@@ -5,24 +5,25 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ApiError, DEFAULT_ERROR_MESSAGE } from "@/lib/auth/errors";
+import { getErrorMessage } from "@/lib/errors";
 import { login, loginWithGoogle } from "@/lib/auth/session";
-import { useAuthStore } from "@/lib/auth/store";
 import { safeCallbackUrl } from "@/lib/auth/utils";
 import { loginSchema, type LoginValues } from "@/lib/validators/auth";
-import styles from "@/styles/auth.module.css";
+import { useAuthStatus } from "@/store/auth-store";
+import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { AuthCard } from "./AuthCard";
 import { Field } from "./Field";
+import { FormAlert } from "./FormAlert";
 import { GoogleSignInButton } from "./GoogleSignInButton";
-
-function errorMessage(error: unknown): string {
-  return error instanceof ApiError ? error.message : DEFAULT_ERROR_MESSAGE;
-}
+import { PasswordField } from "./PasswordField";
+import { SubmitButton } from "./SubmitButton";
 
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const callbackUrl = safeCallbackUrl(params.get("callbackUrl"));
-  const status = useAuthStore((s) => s.status);
+  const status = useAuthStatus();
   const [serverError, setServerError] = useState<string | null>(null);
   const [googlePending, setGooglePending] = useState(false);
 
@@ -42,7 +43,7 @@ export function LoginForm() {
     try {
       await login(values.email, values.password);
     } catch (error) {
-      setServerError(errorMessage(error));
+      setServerError(getErrorMessage(error));
     }
   });
 
@@ -52,46 +53,48 @@ export function LoginForm() {
     try {
       await loginWithGoogle(idToken, nonce);
     } catch (error) {
-      setServerError(errorMessage(error));
+      setServerError(getErrorMessage(error));
     } finally {
       setGooglePending(false);
     }
   }, []);
 
   return (
-    <main className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Đăng nhập</h1>
-        <p className={styles.subtitle}>Chào mừng bạn trở lại Culinary Blog.</p>
-
-        {serverError && (
-          <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-            {serverError}
-          </div>
-        )}
-
-        <form onSubmit={onSubmit} noValidate>
-          <Field label="Email" type="email" autoComplete="email" error={errors.email} {...register("email")} />
-          <Field
-            label="Mật khẩu"
-            type="password"
-            autoComplete="current-password"
-            error={errors.password}
-            {...register("password")}
-          />
-          <button type="submit" className={styles.button} disabled={isSubmitting || googlePending}>
-            {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
-          </button>
-        </form>
-
-        <div className={styles.divider}>hoặc</div>
-        <GoogleSignInButton onCredential={onGoogleCredential} />
-        {googlePending && <p className={styles.hint}>Đang đăng nhập bằng Google...</p>}
-
-        <p className={styles.footer}>
+    <AuthCard
+      title="Đăng nhập"
+      subtitle="Chào mừng bạn trở lại Culinary Blog."
+      footer={
+        <>
           Chưa có tài khoản? <Link href="/auth/register">Đăng ký</Link>
-        </p>
+        </>
+      }
+    >
+      {serverError && <FormAlert>{serverError}</FormAlert>}
+
+      <form onSubmit={onSubmit} noValidate className="grid gap-4">
+        <Field label="Email" type="email" autoComplete="email" error={errors.email} {...register("email")} />
+        <PasswordField
+          label="Mật khẩu"
+          autoComplete="current-password"
+          error={errors.password}
+          {...register("password")}
+        />
+        <SubmitButton loading={isSubmitting} loadingText="Đang đăng nhập..." disabled={googlePending}>
+          Đăng nhập
+        </SubmitButton>
+      </form>
+
+      <div className="flex items-center gap-3 text-xs text-muted-foreground uppercase">
+        <Separator className="flex-1" />
+        hoặc
+        <Separator className="flex-1" />
       </div>
-    </main>
+      <GoogleSignInButton onCredential={onGoogleCredential} />
+      {googlePending && (
+        <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" /> Đang đăng nhập bằng Google...
+        </p>
+      )}
+    </AuthCard>
   );
 }

@@ -1,8 +1,8 @@
+/** auth-ui-store.ts — trạng thái giao diện của module Xác thực (menu tài khoản, thông báo nhanh). */
 import { create } from "zustand";
 
 export type AuthToastKind = "success" | "error";
 
-/** Trạng thái giao diện của phần Auth (menu tài khoản, thông báo nhanh). Tách khỏi useUIStore của nhóm. */
 interface AuthUIState {
   userMenuOpen: boolean;
   toast: { kind: AuthToastKind; message: string } | null;

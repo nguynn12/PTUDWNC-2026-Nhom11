@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-// Trùng với AUTH_FLAG_COOKIE trong lib/auth/store.ts (không import để middleware không kéo code client).
+// Trùng với AUTH_FLAG_COOKIE trong store/auth-store.ts (không import để middleware không kéo code client).
 const AUTH_FLAG_COOKIE = "cb_logged_in";
 // SRS 5.1: /dashboard/*, /profile bắt buộc đăng nhập; /admin/* là khu quản trị của nhóm.
 const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/profile"];

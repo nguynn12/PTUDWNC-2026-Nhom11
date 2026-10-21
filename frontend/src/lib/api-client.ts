@@ -1,5 +1,6 @@
+import { apiRequest } from './api/axios';
+import { AppError } from './errors';
 import {
-  ProblemDetails,
   RecipeSummaryDto,
   RecipeStatus,
   PaginatedList,
@@ -21,101 +22,43 @@ import type {
   RecipeFullDetailDto,
 } from '@/types/recipe-content';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000/api/v1';
+/**
+ * Lỗi API của module Công thức. Từ Buổi 6 dùng chung `AppError` của lib/errors.ts
+ * (giữ tên ApiError để không phải sửa các chỗ đang `instanceof ApiError`).
+ * status = 0 nghĩa là không kết nối được backend (khi đó RecipeApi dùng dữ liệu mẫu).
+ */
+export const ApiError = AppError;
+export type ApiError = AppError;
 
-export class ApiError extends Error {
-  public status: number;
-  public problemDetails?: ProblemDetails;
-  public errorCode?: string;
+type FetchApiOptions = Omit<RequestInit, "headers"> & {
+  headers?: Record<string, string>;
+  ifMatch?: string | number | null;
+};
 
-  constructor(status: number, message: string, problemDetails?: ProblemDetails) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
-    this.problemDetails = problemDetails;
-    this.errorCode = problemDetails?.type ?? (status === 409 ? 'RECIPE_CONCURRENCY_CONFLICT' : undefined);
-  }
-}
+/**
+ * Gọi API qua client chung `apiClient` (lib/api/axios.ts): tự gắn Bearer token, tự refresh khi 401,
+ * lỗi luôn là AppError (RFC 7807). Giữ chữ ký fetch cũ để RecipeApi không phải đổi.
+ */
+export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {}): Promise<T> {
+  const { method = "GET", body, headers = {}, ifMatch, signal } = options;
+  const requestHeaders: Record<string, string> = { ...headers };
 
-// Lưu trữ token mô phỏng để demo nếu chưa đăng nhập qua Auth.js
-let mockToken: string | null = 'mock-jwt-token';
-
-export function setAuthToken(token: string | null) {
-  mockToken = token;
-}
-
-export function getAuthToken(): string | null {
-  return mockToken;
-}
-
-// Hàm fetch wrapper xử lý chuẩn RFC 7807 Problem Details và header If-Match
-export async function fetchApi<T>(
-  endpoint: string,
-  options: RequestInit & { ifMatch?: string | number | null } = {}
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-  const headers = new Headers(options.headers || {});
-
-  headers.set('Accept', 'application/json');
-
-  if (options.body && typeof options.body === 'string') {
-    headers.set('Content-Type', 'application/json');
-  }
+  // Body đã JSON.stringify sẵn: báo cho backend biết là JSON.
+  if (typeof body === "string") requestHeaders["Content-Type"] = "application/json";
 
   // Gắn Concurrency Token If-Match nếu có
-  if (options.ifMatch !== undefined && options.ifMatch !== null) {
-    headers.set('If-Match', `"${options.ifMatch}"`);
-  }
+  if (ifMatch !== undefined && ifMatch !== null) requestHeaders["If-Match"] = `"${ifMatch}"`;
 
-  // Gắn Authorization Bearer
-  const token = getAuthToken();
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
+  const data = await apiRequest<T | "">({
+    url: endpoint.startsWith("/") ? endpoint : `/${endpoint}`,
+    method,
+    data: body ?? undefined,
+    headers: requestHeaders,
+    signal: signal ?? undefined,
+  });
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
-
-    if (response.status === 204) {
-      return {} as T;
-    }
-
-    const contentType = response.headers.get('content-type');
-    const isJson = contentType && (contentType.includes('application/json') || contentType.includes('application/problem+json'));
-
-    if (!response.ok) {
-      let problemDetails: ProblemDetails | undefined;
-      if (isJson) {
-        try {
-          problemDetails = await response.json();
-        } catch {
-          // Bỏ qua lỗi parse JSON
-        }
-      }
-
-      const errorMessage =
-        problemDetails?.detail ||
-        problemDetails?.title ||
-        `Yêu cầu API thất bại với mã trạng thái ${response.status}`;
-
-      throw new ApiError(response.status, errorMessage, problemDetails);
-    }
-
-    if (isJson) {
-      return (await response.json()) as T;
-    }
-
-    return (await response.text()) as unknown as T;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    // Lỗi mạng hoặc không kết nối được
-    throw new ApiError(0, `Không thể kết nối đến máy chủ Backend (${(error as Error).message})`);
-  }
+  // 204 No Content: giữ hành vi cũ trả về object rỗng.
+  return (data === "" ? {} : data) as T;
 }
 
 // ==========================================
@@ -864,16 +807,20 @@ function updateMockRecipe(
 ): RecipeSummaryDto {
   const idx = mockRecipesStorage.findIndex(r => r.id === id);
   if (idx === -1) {
-    throw new ApiError(404, 'Không tìm thấy công thức cần cập nhật.');
+    throw new ApiError({ status: 404, code: 'RECIPE_NOT_FOUND', message: 'Không tìm thấy công thức cần cập nhật.' });
   }
 
   const current = mockRecipesStorage[idx];
   if (xmin && current.xmin && String(xmin) !== String(current.xmin)) {
-    throw new ApiError(409, 'Xung đột dữ liệu: Công thức đã bị thay đổi bởi một phiên làm việc khác.', {
+    throw new ApiError({
+      status: 409,
+      message: 'Xung đột dữ liệu: Công thức đã bị thay đổi bởi một phiên làm việc khác.',
+      problem: {
       type: 'RECIPE_CONCURRENCY_CONFLICT',
       title: 'Concurrency Conflict',
       status: 409,
       detail: `Token If-Match "${xmin}" không khớp với phiên bản hiện tại "${current.xmin}".`,
+      },
     });
   }
 
@@ -1056,7 +1003,7 @@ function updateMockImage(
     mockImagesMap[recipeId] = [...list].sort((a, b) => (a.orderIndex ?? a.displayOrder ?? 0) - (b.orderIndex ?? b.displayOrder ?? 0));
     return list[idx];
   }
-  throw new ApiError(404, 'Không tìm thấy hình ảnh.');
+  throw new ApiError({ status: 404, message: 'Không tìm thấy hình ảnh.' });
 }
 
 function deleteMockImage(recipeId: string, imageId: string): void {

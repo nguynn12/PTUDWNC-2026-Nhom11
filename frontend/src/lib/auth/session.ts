@@ -1,5 +1,5 @@
-import axios from "axios";
-import { ApiError, fromAxiosError } from "./errors";
+import { apiRequest } from "@/lib/api/axios";
+import { AppError } from "@/lib/errors";
 import type {
   AuthResponseDto,
   GoogleLoginRequest,
@@ -8,22 +8,11 @@ import type {
   RefreshTokenRequest,
   RegisterRequest,
 } from "@/types/auth";
-import { readRefreshToken, STORAGE_KEY_REFRESH_TOKEN, useAuthStore } from "./store";
+import { readRefreshToken, STORAGE_KEY_REFRESH_TOKEN, useAuthStore } from "@/store/auth-store";
 
-/** Client riêng cho /auth/*: không gắn interceptor để tránh vòng lặp refresh. */
-const authHttp = axios.create({
-  baseURL: "/api/v1",
-  timeout: 15_000,
-  headers: { Accept: "application/json" },
-});
-
-async function post<T>(path: string, body: unknown): Promise<T> {
-  try {
-    const res = await authHttp.post<T>(path, body);
-    return res.data;
-  } catch (error) {
-    throw fromAxiosError(error);
-  }
+/** Các API phiên đăng nhập (/auth/login, /auth/refresh...) không gắn token để tránh vòng lặp refresh. */
+function post<T>(path: string, body: unknown): Promise<T> {
+  return apiRequest<T>({ url: path, method: "POST", data: body, skipAuth: true });
 }
 
 const REFRESH_MARGIN_MS = 60_000;
@@ -53,7 +42,7 @@ export async function logout() {
   if (refreshToken) {
     await post("/auth/logout", { refreshToken } satisfies LogoutRequest).catch(() => undefined);
   }
-  useAuthStore.getState().clear();
+  useAuthStore.getState().clearSession();
 }
 
 // Mỗi refresh token chỉ dùng được một lần (backend xoay vòng và thu hồi cả family nếu dùng lại).
@@ -81,7 +70,7 @@ async function doRefresh(): Promise<boolean> {
   // Đọc lại trong khoá: tab khác có thể vừa xoay vòng token.
   const refreshToken = readRefreshToken();
   if (!refreshToken) {
-    useAuthStore.getState().clear();
+    useAuthStore.getState().clearSession();
     return false;
   }
   try {
@@ -89,8 +78,8 @@ async function doRefresh(): Promise<boolean> {
     useAuthStore.getState().setSession(res);
     return true;
   } catch (error) {
-    if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
-      useAuthStore.getState().clear(); // token hết hạn/bị thu hồi/tài khoản bị khoá
+    if (error instanceof AppError && (error.status === 401 || error.status === 403)) {
+      useAuthStore.getState().clearSession(); // token hết hạn/bị thu hồi/tài khoản bị khoá
     } else {
       useAuthStore.getState().markUnauthenticated(); // lỗi mạng: giữ token để thử lại sau
     }
@@ -126,14 +115,14 @@ export function startSession(): () => void {
   const current = useAuthStore.getState();
   if (current.status === "loading") {
     if (readRefreshToken()) void refreshSession();
-    else current.clear();
+    else current.clearSession();
   } else {
     schedule(current.accessTokenExpiresAt);
   }
 
   const onStorage = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY_REFRESH_TOKEN && event.newValue === null) {
-      useAuthStore.getState().clear(false);
+      useAuthStore.getState().clearSession(false);
     }
   };
   window.addEventListener("storage", onStorage);

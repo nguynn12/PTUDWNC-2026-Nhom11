@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useUIStore } from "@/store/useUIStore";
+import { useUIStore } from "@/store/ui-store";
 
 interface RecipeToolbarProps {
   totalCount: number;

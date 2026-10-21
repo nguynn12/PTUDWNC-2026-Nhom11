@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useUIStore } from "@/store/useUIStore";
+import { useUIStore } from "@/store/ui-store";
 import { RecipeCard } from "./RecipeCard";
 import type { RecipeSummaryDto } from "@/types/api";
 

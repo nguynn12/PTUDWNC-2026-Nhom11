@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { ProfileForm } from "@/components/auth/ProfileForm";
+import { ProfileView } from "@/components/auth/ProfileView";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 
-export const metadata: Metadata = { title: "Hồ sơ cá nhân | Culinary Blog" };
+export const metadata: Metadata = { title: "Hồ sơ cá nhân" };
 
 export default function ProfilePage() {
   return (
     <RequireAuth>
-      <ProfileForm />
+      <ProfileView />
     </RequireAuth>
   );
 }

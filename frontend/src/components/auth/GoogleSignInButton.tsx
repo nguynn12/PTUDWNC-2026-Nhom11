@@ -2,7 +2,6 @@
 
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
-import styles from "@/styles/auth.module.css";
 
 interface GoogleId {
   initialize: (config: {
@@ -42,18 +41,22 @@ export function GoogleSignInButton({ onCredential }: GoogleSignInButtonProps) {
       theme: "outline",
       size: "large",
       text: "continue_with",
-      width: 356,
+      width: 320,
     });
   }, [ready, clientId, nonce, onCredential]);
 
   if (!clientId) {
-    return <p className={styles.hint}>Chưa cấu hình NEXT_PUBLIC_GOOGLE_CLIENT_ID nên chưa dùng được đăng nhập Google.</p>;
+    return (
+      <p className="text-center text-xs text-muted-foreground">
+        Chưa cấu hình NEXT_PUBLIC_GOOGLE_CLIENT_ID nên chưa dùng được đăng nhập Google.
+      </p>
+    );
   }
 
   return (
     <>
       <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onReady={() => setReady(true)} />
-      <div ref={slot} className={styles.googleSlot} />
+      <div ref={slot} className="flex min-h-11 justify-center" />
     </>
   );
 }
