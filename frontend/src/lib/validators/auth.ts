@@ -27,16 +27,51 @@ export const registerSchema = z
     message: "Mật khẩu nhập lại không khớp.",
   });
 
+/** Giới hạn hồ sơ — khớp UpdateProfileCommandValidator của backend (SRS FR-AUTH-007). */
+export const PROFILE_LIMITS = { displayNameMin: 2, displayNameMax: 100, bioMax: 1000 } as const;
+
+const DISPLAY_NAME_MESSAGE = `Tên hiển thị từ ${PROFILE_LIMITS.displayNameMin} đến ${PROFILE_LIMITS.displayNameMax} ký tự.`;
+
+/** Form hồ sơ chỉ gồm tên và giới thiệu; ảnh đại diện được quản lý riêng (AvatarEditor). */
 export const profileSchema = z.object({
-  displayName: z.string().trim().min(2, "Tên hiển thị từ 2 đến 100 ký tự.").max(100, "Tên hiển thị từ 2 đến 100 ký tự."),
-  avatarUrl: z
+  displayName: z
     .string()
     .trim()
-    .max(500, "URL tối đa 500 ký tự.")
-    .refine((v) => v === "" || /^https?:\/\//i.test(v), "URL ảnh phải bắt đầu bằng http:// hoặc https://"),
-  bio: z.string().max(1000, "Giới thiệu tối đa 1000 ký tự."),
+    .min(PROFILE_LIMITS.displayNameMin, DISPLAY_NAME_MESSAGE)
+    .max(PROFILE_LIMITS.displayNameMax, DISPLAY_NAME_MESSAGE),
+  bio: z.string().max(PROFILE_LIMITS.bioMax, `Giới thiệu tối đa ${PROFILE_LIMITS.bioMax} ký tự.`),
 });
+
+export const forgotPasswordSchema = z.object({ email });
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword,
+    confirmPassword: z.string().min(1, "Vui lòng nhập lại mật khẩu."),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Mật khẩu nhập lại không khớp.",
+  });
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại."),
+    newPassword,
+    confirmPassword: z.string().min(1, "Vui lòng nhập lại mật khẩu mới."),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Mật khẩu nhập lại không khớp.",
+  })
+  .refine((d) => d.newPassword !== d.currentPassword, {
+    path: ["newPassword"],
+    message: "Mật khẩu mới phải khác mật khẩu hiện tại.",
+  });
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
 export type ProfileValues = z.infer<typeof profileSchema>;
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;

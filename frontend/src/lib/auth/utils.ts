@@ -15,7 +15,8 @@ export function safeCallbackUrl(raw: string | null, fallback = "/profile"): stri
 }
 
 export function initialsOf(name: string | null | undefined): string {
-  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  // NFC: tên lưu dạng tổ hợp (e + dấu rời) vẫn lấy đúng chữ cái đầu có dấu.
+  const parts = (name ?? "").normalize("NFC").trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
   return (parts.length === 1 ? parts[0][0] : parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }

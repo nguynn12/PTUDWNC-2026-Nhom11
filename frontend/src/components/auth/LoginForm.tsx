@@ -76,6 +76,11 @@ export function LoginForm() {
         <PasswordField
           label="Mật khẩu"
           autoComplete="current-password"
+          labelAction={
+            <Link href="/auth/forgot-password" className="text-sm font-medium text-primary hover:underline">
+              Quên mật khẩu?
+            </Link>
+          }
           error={errors.password}
           {...register("password")}
         />

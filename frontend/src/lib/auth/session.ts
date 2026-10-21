@@ -2,6 +2,7 @@ import { apiRequest } from "@/lib/api/axios";
 import { AppError } from "@/lib/errors";
 import type {
   AuthResponseDto,
+  ChangePasswordRequest,
   GoogleLoginRequest,
   LoginRequest,
   LogoutRequest,
@@ -32,6 +33,20 @@ export async function loginWithGoogle(idToken: string, nonce: string) {
 /** FR-AUTH-001: đăng ký trả 201 kèm cặp token nên người dùng đăng nhập luôn. */
 export async function register(body: RegisterRequest) {
   const res = await post<AuthResponseDto>("/auth/register", body);
+  useAuthStore.getState().setSession(res);
+  return res.user;
+}
+
+/**
+ * Đổi mật khẩu khi đã đăng nhập. Backend thu hồi mọi phiên cũ và trả cặp token mới cho phiên này,
+ * nên lưu lại phiên mới ngay (các tab/thiết bị khác sẽ bị đăng xuất ở lần refresh tiếp theo).
+ */
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const res = await apiRequest<AuthResponseDto>({
+    url: "/auth/password/change",
+    method: "POST",
+    data: { currentPassword, newPassword } satisfies ChangePasswordRequest,
+  });
   useAuthStore.getState().setSession(res);
   return res.user;
 }
