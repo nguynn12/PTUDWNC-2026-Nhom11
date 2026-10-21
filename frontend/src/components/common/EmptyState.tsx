@@ -10,7 +10,7 @@ export interface EmptyStateProps {
   title?: string;
   /** Mô tả chi tiết hoặc gợi ý hành động tiếp theo. */
   description?: string;
-  /** Biểu tượng minh họa tùy chọn. */
+  /** Biểu tượng minh họa tùy chọn. Nếu không truyền sẽ dùng UtensilsCrossed mặc định. */
   icon?: React.ReactNode;
   /** Nút kêu gọi hành động (Quý - TV4 props). */
   actionText?: string;
@@ -49,21 +49,21 @@ export function EmptyState({
   return (
     <Card
       className={cn(
-        "max-w-xl mx-auto border-dashed border-2 border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-none text-center rounded-2xl",
+        "max-w-xl mx-auto border-dashed border-2 border-border/80 bg-muted/20 shadow-none text-center rounded-2xl",
         className
       )}
     >
       <CardContent className="flex flex-col items-center justify-center p-6 sm:p-10 gap-4 sm:gap-5">
-        <div className="rounded-3xl bg-[var(--primary-light)] p-5 text-[var(--primary)] border border-[var(--primary-subtle)] shadow-xs transition-transform duration-300 hover:scale-105">
+        <div className="rounded-3xl bg-primary/10 p-5 text-primary border border-primary/20 shadow-xs transition-transform duration-300 hover:scale-105">
           {icon ?? <UtensilsCrossed className="w-10 h-10" aria-hidden="true" />}
         </div>
 
         <div className="space-y-2 max-w-md">
-          <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+          <h3 className="text-xl font-bold tracking-tight text-foreground">
             {title}
           </h3>
           {description && (
-            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {description}
             </p>
           )}

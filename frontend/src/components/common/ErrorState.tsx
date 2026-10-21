@@ -1,73 +1,114 @@
-import React from "react";
-import { AlertCircle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { getErrorMessage } from "@/lib/errors";
+import React from 'react';
+import Link from 'next/link';
+import { AlertCircle, RotateCcw, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { getErrorMessage, isAppError } from '@/lib/errors';
 
 export interface ErrorStateProps {
-  /** Tiêu đề thông báo lỗi. */
-  title?: string;
-  /** Thông điệp lỗi chi tiết muốn hiển thị. */
-  message?: string;
-  /** Đối tượng lỗi gốc nhận được (Error, AppError hoặc unknown). */
+  /** Đối tượng lỗi tùy chọn (AppError, AxiosError, Error thông thường). */
   error?: unknown;
-  /** Hàm callback để kích hoạt thử lại thao tác tải dữ liệu. */
+  /** Tiêu đề lỗi chính. Mặc định là 'Đã xảy ra lỗi'. */
+  title?: string;
+  /** Thông điệp chi tiết mô tả lỗi. Nếu không truyền sẽ tự động giải mã qua getErrorMessage(error). */
+  message?: string;
+  /** Mã lỗi hệ thống chuẩn hóa (RFC 7807 hoặc mã nghiệp vụ, ví dụ: RATE_LIMIT_EXCEEDED, FORBIDDEN). */
+  errorCode?: string;
+  /** Hàm callback thực thi khi người dùng nhấn nút 'Thử lại'. */
   onRetry?: () => void;
+  /** Nhãn của nút thử lại. Mặc định là 'Thử lại'. */
+  retryLabel?: string;
+  /** Tùy chọn hiển thị nút 'Về trang chủ'. Mặc định là true. */
+  showBackHome?: boolean;
   /** Lớp CSS tùy biến. */
   className?: string;
 }
 
 /**
- * Component ErrorState hiển thị trạng thái lỗi trực quan, thân thiện (Lab 6).
- * Tự động phân giải thông điệp tiếng Việt qua getErrorMessage nếu truyền đối tượng lỗi.
+ * Component ErrorState hiển thị lỗi thân thiện theo chuẩn RFC 7807 (Lab 6 - TV3).
+ * Tích hợp hàm giải mã getErrorMessage() hiển thị thông báo tiếng Việt trực quan,
+ * tránh hoàn toàn hiện tượng sập màn hình trắng khi API backend hoặc kết nối mạng gặp sự cố.
  */
 export function ErrorState({
-  title = "Đã xảy ra sự cố",
-  message,
   error,
+  title = 'Đã xảy ra lỗi',
+  message,
+  errorCode,
   onRetry,
+  retryLabel = 'Thử lại',
+  showBackHome = true,
   className,
 }: ErrorStateProps) {
   const displayMessage =
-    message ||
-    (error ? getErrorMessage(error) : "Không thể tải dữ liệu vào lúc này. Vui lòng thử lại sau.");
+    message ??
+    (error
+      ? getErrorMessage(error)
+      : 'Không thể tải được nội dung vào lúc này. Vui lòng kiểm tra kết nối mạng và thử lại.');
 
+  const displayCode =
+    errorCode ?? (isAppError(error) ? error.code : undefined);
   return (
     <Card
       role="alert"
+      aria-live="assertive"
       className={cn(
-        "max-w-xl mx-auto border-destructive/30 bg-destructive/5 shadow-none text-center rounded-2xl",
+        'max-w-xl mx-auto border-destructive/30 bg-destructive/5 shadow-md overflow-hidden transition-all',
         className
       )}
     >
-      <CardContent className="flex flex-col items-center justify-center p-6 sm:p-10 gap-4 sm:gap-5">
-        <div className="rounded-3xl bg-destructive/10 p-5 text-destructive border border-destructive/20 shadow-xs">
-          <AlertCircle className="w-10 h-10" aria-hidden="true" />
+      <CardContent className="flex flex-col items-center text-center p-4 sm:p-8 gap-4 sm:gap-5">
+        <div className="relative">
+          <div className="absolute -inset-2 rounded-full bg-destructive/15 animate-ping duration-1000" />
+          <div className="relative rounded-full bg-destructive/10 p-4 text-destructive border border-destructive/20 shadow-sm">
+            <AlertCircle className="w-10 h-10" aria-hidden="true" />
+          </div>
         </div>
 
         <div className="space-y-2 max-w-md">
-          <h3 className="text-xl font-bold tracking-tight text-destructive">
-            {title}
-          </h3>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <h3 className="text-xl font-bold tracking-tight text-foreground">
+              {title}
+            </h3>
+            {displayCode && (
+              <Badge variant="outline" className="border-destructive/40 text-destructive font-mono text-xs">
+                {displayCode}
+              </Badge>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             {displayMessage}
           </p>
         </div>
 
-        {onRetry && (
-          <div className="pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          {onRetry && (
             <Button
               type="button"
-              variant="outline"
+              variant="default"
               onClick={onRetry}
-              className="gap-2 border-destructive/30 hover:bg-destructive/10 hover:text-destructive cursor-pointer font-medium"
+              className="gap-2 shadow-sm font-medium"
             >
-              <RefreshCw className="w-4 h-4" aria-hidden="true" />
-              Thử lại
+              <RotateCcw className="w-4 h-4" aria-hidden="true" />
+              {retryLabel}
             </Button>
-          </div>
-        )}
+          )}
+
+          {showBackHome && (
+            <Button
+              asChild
+              type="button"
+              variant="outline"
+              className="gap-2 border-border/80 font-medium hover:bg-background"
+            >
+              <Link href="/">
+                <Home className="w-4 h-4" aria-hidden="true" />
+                Về trang chủ
+              </Link>
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

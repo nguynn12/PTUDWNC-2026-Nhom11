@@ -3,31 +3,50 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  PlusCircleIcon,
-  TrashIcon,
-  ArchiveIcon,
-  CheckCircleIcon,
-  RefreshCwIcon,
-  SearchIcon,
-  ClockIcon,
-  UsersIcon,
-  AlertTriangleIcon,
-  SparklesIcon,
-  EditIcon,
-} from '@/components/common/Icons';
+  PlusCircle,
+  Trash2,
+  Archive,
+  CheckCircle2,
+  RefreshCw,
+  Search,
+  Clock,
+  Users,
+  Edit,
+  ExternalLink,
+} from 'lucide-react';
 import { RecipeApi, ApiError } from '@/lib/api-client';
 import { RecipeSummaryDto } from '@/lib/types';
 import { useToast } from '@/components/common/Toast';
 import { ConflictDialog } from '@/components/common/ConflictDialog';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { Loading } from '@/components/common/Loading';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type StatusFilter = 'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
+/**
+ * Trang Quản lý Công thức Cá nhân & Vòng đời (Lab 6 - TV3).
+ * Thiết kế lại hoàn chỉnh bằng shadcn/ui, Tailwind CSS v4 và tích hợp bộ component dùng chung.
+ */
 export default function MyRecipesLifecyclePage() {
   const { showSuccess, showError, showWarning } = useToast();
 
   const [recipes, setRecipes] = useState<RecipeSummaryDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<StatusFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
@@ -49,10 +68,13 @@ export default function MyRecipesLifecyclePage() {
   const loadRecipes = async () => {
     try {
       setLoading(true);
+      setLoadError(null);
       const res = await RecipeApi.getMyRecipes({ pageSize: 50 });
       setRecipes(res.items || []);
     } catch (err) {
-      showError('Không thể tải danh sách công thức', (err as Error).message);
+      const msg = (err as Error).message || 'Không thể tải danh sách công thức.';
+      setLoadError(msg);
+      showError('Không thể tải danh sách công thức', msg);
     } finally {
       setLoading(false);
     }
@@ -62,28 +84,28 @@ export default function MyRecipesLifecyclePage() {
     loadRecipes();
   }, []);
 
-  // Lọc bài viết theo Tab và Tìm kiếm
+  // Lọc bài viết theo Tab trạng thái và Tìm kiếm từ khóa
   const filteredRecipes = useMemo(() => {
-    return recipes.filter(item => {
+    return recipes.filter((item) => {
       const s = (item.status ?? 'DRAFT').toString().toUpperCase();
       let matchTab = true;
       if (activeFilter === 'DRAFT') matchTab = s === 'DRAFT' || s === '0';
       else if (activeFilter === 'PUBLISHED') matchTab = s === 'PUBLISHED' || s === '1';
       else if (activeFilter === 'ARCHIVED') matchTab = s === 'ARCHIVED' || s === '2';
 
+      const query = searchQuery.trim().toLowerCase();
       const matchSearch =
-        !searchQuery ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase());
+        !query ||
+        item.title.toLowerCase().includes(query) ||
+        (item.description && item.description.toLowerCase().includes(query));
 
       return matchTab && matchSearch;
     });
   }, [recipes, activeFilter, searchQuery]);
 
-  // Xử lý chung các lỗi đặc thù (409 Conflict)
+  // Xử lý lỗi đặc thù (HTTP 409 Conflict token)
   const handleLifecycleError = (err: unknown, recipe: RecipeSummaryDto) => {
     if (err instanceof ApiError && err.status === 409) {
-      // Kích hoạt Conflict Modal theo chuẩn PLAN_03
       setConflictState({
         isOpen: true,
         recipeTitle: recipe.title,
@@ -101,10 +123,9 @@ export default function MyRecipesLifecyclePage() {
     try {
       setActionInProgress(recipe.id);
       const updated = await RecipeApi.publishRecipe(recipe.id, recipe.xmin);
-      showSuccess(`Đã xuất bản "${recipe.title}"`, 'Công thức hiện đã hiển thị công khai.');
-      // Cập nhật trạng thái trong mảng và token mới
-      setRecipes(prev =>
-        prev.map(r => (r.id === recipe.id ? { ...r, ...updated, status: 'Published' } : r))
+      showSuccess(`Đã xuất bản "${recipe.title}" thành công!`, 'Công thức hiện đã hiển thị công khai.');
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Published', xmin: updated?.xmin ?? r.xmin } : r))
       );
     } catch (err) {
       handleLifecycleError(err, recipe);
@@ -118,9 +139,9 @@ export default function MyRecipesLifecyclePage() {
     try {
       setActionInProgress(recipe.id);
       const updated = await RecipeApi.archiveRecipe(recipe.id, recipe.xmin);
-      showSuccess(`Đã lưu trữ "${recipe.title}"`, 'Công thức đã được ẩn khỏi danh sách công khai.');
-      setRecipes(prev =>
-        prev.map(r => (r.id === recipe.id ? { ...r, ...updated, status: 'Archived' } : r))
+      showSuccess(`Đã chuyển "${recipe.title}" vào lưu trữ`, 'Công thức tạm thời ẩn khỏi trang công khai.');
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Archived', xmin: updated?.xmin ?? r.xmin } : r))
       );
     } catch (err) {
       handleLifecycleError(err, recipe);
@@ -129,23 +150,7 @@ export default function MyRecipesLifecyclePage() {
     }
   };
 
-  // 3. Bỏ lưu trữ công thức (Unarchive)
-  const handleUnarchive = async (recipe: RecipeSummaryDto) => {
-    try {
-      setActionInProgress(recipe.id);
-      const updated = await RecipeApi.unarchiveRecipe(recipe.id, recipe.xmin);
-      showSuccess(`Đã chuyển "${recipe.title}" về Bản nháp`, 'Bạn có thể chỉnh sửa và xuất bản lại.');
-      setRecipes(prev =>
-        prev.map(r => (r.id === recipe.id ? { ...r, ...updated, status: 'Draft' } : r))
-      );
-    } catch (err) {
-      handleLifecycleError(err, recipe);
-    } finally {
-      setActionInProgress(null);
-    }
-  };
-
-  // 4. Xóa mềm vào thùng rác (Soft Delete)
+  // 3. Xóa tạm công thức vào thùng rác (Soft Delete)
   const executeDelete = async () => {
     const recipe = deleteConfirmState.recipe;
     if (!recipe) return;
@@ -155,7 +160,7 @@ export default function MyRecipesLifecyclePage() {
       setDeleteConfirmState({ isOpen: false });
       await RecipeApi.deleteRecipe(recipe.id, recipe.xmin);
       showSuccess(`Đã chuyển "${recipe.title}" vào thùng rác`, 'Quản trị viên có thể khôi phục khi cần.');
-      setRecipes(prev => prev.filter(r => r.id !== recipe.id));
+      setRecipes((prev) => prev.filter((r) => r.id !== recipe.id));
     } catch (err) {
       handleLifecycleError(err, recipe);
     } finally {
@@ -167,266 +172,318 @@ export default function MyRecipesLifecyclePage() {
     const s = status.toString().toUpperCase();
     if (s === 'PUBLISHED' || s === '1') {
       return (
-        <span className="status-badge badge-published">
-          <span className="status-dot"></span>
+        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 gap-1.5 font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
           Đã xuất bản
-        </span>
+        </Badge>
       );
     }
     if (s === 'ARCHIVED' || s === '2') {
       return (
-        <span className="status-badge badge-archived">
-          <span className="status-dot"></span>
+        <Badge variant="outline" className="bg-slate-500/10 text-slate-700 border-slate-500/30 gap-1.5 font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
           Đã lưu trữ
-        </span>
+        </Badge>
       );
     }
     return (
-      <span className="status-badge badge-draft">
-        <span className="status-dot"></span>
+      <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30 gap-1.5 font-medium">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
         Bản nháp
-      </span>
+      </Badge>
     );
   };
 
   return (
-    <>
-      {/* HEADER */}
-      <header className="dashboard-header">
-        <div className="header-title-area">
-          <h1>Quản lý Bài viết của tôi</h1>
-          <p>Điều khiển trạng thái vòng đời công thức (Bản nháp ➔ Xuất bản ➔ Lưu trữ ➔ Xóa mềm)</p>
+    <div className="space-y-8">
+      {/* HEADER KHU VỰC QUẢN LÝ */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-border">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+            Quản lý Công thức của tôi
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Điều khiển trạng thái vòng đời công thức (Bản nháp ➔ Xuất bản ➔ Lưu trữ ➔ Xóa mềm)
+          </p>
         </div>
-        <div className="header-actions">
-          <button
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
             onClick={loadRecipes}
-            className="btn btn-secondary btn-sm"
-            title="Làm mới danh sách"
             disabled={loading}
+            className="gap-2 shadow-xs"
           >
-            <RefreshCwIcon size={16} className={loading ? 'animate-spin' : ''} />
-            <span>Đồng bộ</span>
-          </button>
-          <Link href="/dashboard/recipes/new" className="btn btn-primary btn-sm">
-            <PlusCircleIcon size={16} />
-            <span>Tạo công thức mới</span>
-          </Link>
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Đồng bộ
+          </Button>
+          <Button asChild size="sm" className="gap-2 shadow-xs">
+            <Link href="/dashboard/recipes/new">
+              <PlusCircle className="w-4 h-4" />
+              Tạo công thức mới
+            </Link>
+          </Button>
         </div>
-      </header>
+      </div>
 
-      <main className="dashboard-content">
-        {/* FILTER & SEARCH BAR */}
-        <div className="filter-bar">
-          <div className="tab-buttons">
-            <button
-              onClick={() => setActiveFilter('ALL')}
-              className={`tab-btn ${activeFilter === 'ALL' ? 'active' : ''}`}
-            >
-              Tất cả ({recipes.length})
-            </button>
-            <button
-              onClick={() => setActiveFilter('PUBLISHED')}
-              className={`tab-btn ${activeFilter === 'PUBLISHED' ? 'active' : ''}`}
-            >
-              Đã xuất bản ({recipes.filter(r => (r.status ?? '').toString().toUpperCase() === 'PUBLISHED' || r.status === 1).length})
-            </button>
-            <button
-              onClick={() => setActiveFilter('DRAFT')}
-              className={`tab-btn ${activeFilter === 'DRAFT' ? 'active' : ''}`}
-            >
-              Bản nháp ({recipes.filter(r => (r.status ?? '').toString().toUpperCase() === 'DRAFT' || r.status === 0).length})
-            </button>
-            <button
-              onClick={() => setActiveFilter('ARCHIVED')}
-              className={`tab-btn ${activeFilter === 'ARCHIVED' ? 'active' : ''}`}
-            >
-              Đã lưu trữ ({recipes.filter(r => (r.status ?? '').toString().toUpperCase() === 'ARCHIVED' || r.status === 2).length})
-            </button>
-          </div>
+      {/* XỬ LÝ LỖI TOÀN TRANG NẾU CÓ */}
+      {loadError && !loading && (
+        <ErrorState
+          title="Không thể tải danh sách công thức"
+          message={loadError}
+          onRetry={loadRecipes}
+          retryLabel="Thử nạp lại"
+          showBackHome={false}
+        />
+      )}
 
-          <div className="search-input-box">
-            <SearchIcon size={16} />
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên hoặc mô tả..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </div>
+      {/* FILTER & SEARCH TABS */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5 p-1 bg-muted/60 rounded-xl border border-border/60 overflow-x-auto">
+          <Button
+            type="button"
+            variant={activeFilter === 'ALL' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveFilter('ALL')}
+            className="rounded-lg text-xs md:text-sm font-medium"
+          >
+            Tất cả ({recipes.length})
+          </Button>
+          <Button
+            type="button"
+            variant={activeFilter === 'PUBLISHED' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveFilter('PUBLISHED')}
+            className="rounded-lg text-xs md:text-sm font-medium"
+          >
+            Đã xuất bản ({recipes.filter((r) => (r.status ?? '').toString().toUpperCase() === 'PUBLISHED' || r.status === 1).length})
+          </Button>
+          <Button
+            type="button"
+            variant={activeFilter === 'DRAFT' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveFilter('DRAFT')}
+            className="rounded-lg text-xs md:text-sm font-medium"
+          >
+            Bản nháp ({recipes.filter((r) => (r.status ?? '').toString().toUpperCase() === 'DRAFT' || r.status === 0).length})
+          </Button>
+          <Button
+            type="button"
+            variant={activeFilter === 'ARCHIVED' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveFilter('ARCHIVED')}
+            className="rounded-lg text-xs md:text-sm font-medium"
+          >
+            Đã lưu trữ ({recipes.filter((r) => (r.status ?? '').toString().toUpperCase() === 'ARCHIVED' || r.status === 2).length})
+          </Button>
         </div>
 
-        {/* RECIPES TABLE */}
-        <div className="section-card">
-          <div className="table-responsive">
-            <table className="custom-table">
-              <thead>
-                <tr>
-                  <th>Tên công thức & URL</th>
-                  <th>Danh mục</th>
-                  <th>Trạng thái Vòng đời</th>
-                  <th>Thông số nấu</th>
-                  <th>xmin (Token)</th>
-                  <th style={{ textAlign: 'right' }}>Hành động Vòng đời</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>
-                      Đang tải danh sách bài viết...
-                    </td>
-                  </tr>
-                ) : filteredRecipes.length === 0 ? (
-                  <tr>
-                    <td colSpan={6}>
-                      <div className="empty-state">
-                        <div className="empty-icon-box">
-                          <AlertTriangleIcon size={28} />
-                        </div>
-                        <div className="empty-title">Không tìm thấy công thức nào</div>
-                        <div className="empty-desc">
-                          Thử thay đổi bộ lọc trạng thái hoặc từ khóa tìm kiếm.
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredRecipes.map(recipe => {
-                    const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
-                    const isBusy = actionInProgress === recipe.id;
+        <div className="relative w-full lg:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Tìm theo tên hoặc mô tả..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 bg-card"
+          />
+        </div>
+      </div>
 
-                    return (
-                      <tr key={recipe.id}>
-                        <td>
-                          <div className="recipe-title-cell">
-                            <span className="recipe-main-title">{recipe.title}</span>
-                            <span className="recipe-slug-sub">slug: /{recipe.slug}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span style={{ fontWeight: 600, color: 'var(--primary)' }}>
-                            {recipe.categoryName || 'Món ngon'}
-                          </span>
-                        </td>
-                        <td>{renderStatusBadge(recipe.status || 'Draft')}</td>
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <ClockIcon size={13} />
-                              {(recipe.prepTimeMinutes ?? recipe.prepTime ?? 0) + (recipe.cookTimeMinutes ?? recipe.cookTime ?? 0)} phút (Nấu {recipe.cookTimeMinutes ?? recipe.cookTime ?? 0}p)
-                            </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <UsersIcon size={13} />
-                              {recipe.servings} người ăn
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <code
-                            style={{
-                              background: '#F5F5F4',
-                              padding: '3px 8px',
-                              borderRadius: '4px',
-                              fontSize: '0.78rem',
-                              border: '1px solid #E7E5E4',
-                            }}
-                            title="PostgreSQL xmin Concurrency Token"
+      {/* BẢNG DANH SÁCH CÔNG THỨC */}
+      <Card className="border-border/80 shadow-xs overflow-hidden">
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-muted/40">
+              <TableRow>
+                <TableHead className="w-[30%]">Tên công thức & URL</TableHead>
+                <TableHead>Danh mục</TableHead>
+                <TableHead>Trạng thái Vòng đời</TableHead>
+                <TableHead>Thông số nấu</TableHead>
+                <TableHead>xmin (Token)</TableHead>
+                <TableHead className="text-right">Hành động Vòng đời</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-64 text-center">
+                    <Loading size="lg" text="Đang tải danh sách bài viết..." />
+                  </TableCell>
+                </TableRow>
+              ) : filteredRecipes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-72">
+                    <EmptyState
+                      title="Không tìm thấy công thức nào"
+                      description={
+                        searchQuery
+                          ? 'Không có kết quả nào khớp với từ khóa tìm kiếm của bạn.'
+                          : activeFilter !== 'ALL'
+                          ? 'Chưa có công thức nào thuộc trạng thái này.'
+                          : 'Bạn chưa tạo công thức nấu ăn nào. Hãy bắt đầu chia sẻ bí quyết ẩm thực ngay!'
+                      }
+                      action={
+                        !searchQuery && activeFilter === 'ALL'
+                          ? {
+                              label: 'Tạo công thức đầu tiên',
+                              href: '/dashboard/recipes/new',
+                            }
+                          : undefined
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredRecipes.map((recipe) => {
+                  const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
+                  const isBusy = actionInProgress === recipe.id;
+
+                  return (
+                    <TableRow key={recipe.id} className="hover:bg-muted/30 transition-colors">
+                      <TableCell>
+                        <div className="space-y-1">
+                          <Link
+                            href={`/recipes/${recipe.slug}`}
+                            className="font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 group"
                           >
-                            {recipe.xmin ? `"${recipe.xmin}"` : '—'}
-                          </code>
-                        </td>
-                        <td style={{ textAlign: 'right' }}>
-                          <div className="table-actions" style={{ justifyContent: 'flex-end' }}>
-                            {/* Nút Chỉnh sửa toàn diện (Wizard 4 bước của TV4) */}
-                            <Link
-                              href={`/dashboard/recipes/${recipe.id}/edit`}
-                              className="btn btn-secondary btn-sm"
-                              title="Chỉnh sửa toàn diện công thức (Nguyên liệu, Bước làm, Ảnh MinIO)"
-                            >
-                              <EditIcon size={14} />
-                              <span>Sửa</span>
-                            </Link>
-
-                            {/* Nút Xuất bản (Dành cho Draft & Archived) */}
-                            {(statusStr === 'DRAFT' || statusStr === '0') && (
-                              <button
-                                onClick={() => handlePublish(recipe)}
-                                disabled={isBusy}
-                                className="btn btn-primary btn-sm"
-                                title="Xuất bản công thức công khai (PUT /recipes/{id}/publish)"
-                              >
-                                <CheckCircleIcon size={14} />
-                                <span>Xuất bản</span>
-                              </button>
-                            )}
-
-                            {/* Nút Lưu trữ (Dành cho Published) */}
-                            {(statusStr === 'PUBLISHED' || statusStr === '1') && (
-                              <button
-                                onClick={() => handleArchive(recipe)}
-                                disabled={isBusy}
-                                className="btn btn-secondary btn-sm"
-                                title="Ẩn bài viết vào kho lưu trữ (PUT /recipes/{id}/archive)"
-                              >
-                                <ArchiveIcon size={14} />
-                                <span>Lưu trữ</span>
-                              </button>
-                            )}
-
-                            {/* Nút Bỏ lưu trữ (Dành cho Archived) */}
-                            {(statusStr === 'ARCHIVED' || statusStr === '2') && (
-                              <button
-                                onClick={() => handleUnarchive(recipe)}
-                                disabled={isBusy}
-                                className="btn btn-secondary btn-sm"
-                                title="Chuyển về bản nháp để chỉnh sửa (PUT /recipes/{id}/unarchive)"
-                              >
-                                <SparklesIcon size={14} />
-                                <span>Bản nháp</span>
-                              </button>
-                            )}
-
-                            {/* Nút Xóa mềm vào Thùng rác */}
-                            <button
-                              onClick={() => setDeleteConfirmState({ isOpen: true, recipe })}
-                              disabled={isBusy}
-                              className="btn btn-icon-only"
-                              title="Chuyển vào thùng rác (DELETE /recipes/{id})"
-                            >
-                              <TrashIcon size={16} />
-                            </button>
+                            <span>{recipe.title}</span>
+                            <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
+                          </Link>
+                          <div className="text-xs text-muted-foreground font-mono">
+                            slug: /{recipe.slug}
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </main>
+                        </div>
+                      </TableCell>
 
-      {/* 409 CONCURRENCY CONFLICT MODAL */}
+                      <TableCell>
+                        <span className="font-medium text-sm text-foreground">
+                          {recipe.categoryName || 'Món chính'}
+                        </span>
+                      </TableCell>
+
+                      <TableCell>
+                        {renderStatusBadge(recipe.status ?? 'DRAFT')}
+                      </TableCell>
+
+                      <TableCell>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1" title="Thời gian nấu">
+                            <Clock className="w-3.5 h-3.5" />
+                            {(recipe.cookTimeMinutes || recipe.cookTime || 30)}p
+                          </span>
+                          <span className="flex items-center gap-1" title="Khẩu phần">
+                            <Users className="w-3.5 h-3.5" />
+                            {recipe.servings || 4} người
+                          </span>
+                        </div>
+                      </TableCell>
+
+                      <TableCell>
+                        {recipe.xmin ? (
+                          <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground border border-border/50">
+                            {recipe.xmin}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic">mặc định</span>
+                        )}
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* Nút Xuất bản (Publish) */}
+                          {(statusStr === 'DRAFT' || statusStr === '0' || statusStr === 'ARCHIVED' || statusStr === '2') && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handlePublish(recipe)}
+                              disabled={isBusy}
+                              title="Xuất bản công thức"
+                              className="h-8 gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 border-emerald-200"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Xuất bản</span>
+                            </Button>
+                          )}
+
+                          {/* Nút Lưu trữ (Archive) */}
+                          {(statusStr === 'PUBLISHED' || statusStr === '1') && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleArchive(recipe)}
+                              disabled={isBusy}
+                              title="Lưu trữ công thức"
+                              className="h-8 gap-1 text-slate-700 hover:text-slate-800 hover:bg-slate-50 border-slate-200"
+                            >
+                              <Archive className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Lưu trữ</span>
+                            </Button>
+                          )}
+
+                          {/* Nút Chỉnh sửa */}
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 gap-1 text-muted-foreground hover:text-foreground"
+                          >
+                            <Link href={`/dashboard/recipes/${recipe.id}/edit`}>
+                              <Edit className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Sửa</span>
+                            </Link>
+                          </Button>
+
+                          {/* Nút Xóa tạm (Soft Delete) */}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteConfirmState({ isOpen: true, recipe })}
+                            disabled={isBusy}
+                            title="Chuyển vào thùng rác"
+                            className="h-8 gap-1 text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span className="hidden md:inline">Xóa</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* 409 CONFLICT MODAL */}
       <ConflictDialog
         isOpen={conflictState.isOpen}
         recipeTitle={conflictState.recipeTitle}
         errorMessage={conflictState.errorMessage}
         currentXmin={conflictState.currentXmin}
-        onReload={loadRecipes}
+        onReload={() => {
+          setConflictState({ isOpen: false });
+          loadRecipes();
+        }}
         onClose={() => setConflictState({ isOpen: false })}
       />
 
       {/* CONFIRM DELETE MODAL */}
       <ConfirmDialog
         isOpen={deleteConfirmState.isOpen}
-        title="Chuyển vào thùng rác?"
-        message={`Bạn có chắc muốn chuyển công thức "${deleteConfirmState.recipe?.title}" vào thùng rác không? Quản trị viên có thể phục hồi lại sau.`}
-        confirmLabel="Chuyển vào thùng rác"
+        title="Chuyển công thức vào Thùng rác?"
+        message={`Bạn có chắc chắn muốn chuyển công thức "${deleteConfirmState.recipe?.title}" vào thùng rác? Công thức sẽ bị ẩn và chỉ Quản trị viên mới có thể khôi phục hoặc xóa vĩnh viễn.`}
+        confirmLabel="Đồng ý xóa tạm"
+        cancelLabel="Hủy bỏ"
         isDestructive={true}
         onConfirm={executeDelete}
         onCancel={() => setDeleteConfirmState({ isOpen: false })}
       />
-    </>
+    </div>
   );
 }
