@@ -2256,3 +2256,67 @@
     @apply font-sans;
   }
 }
+/* ==========================================================================
+   KHU VỰC TÀI KHOẢN (/profile) — design token theo phạm vi
+   Chỉ có hiệu lực bên trong phần tử .cb-account, nên không làm đổi màu các
+   trang khác. Các token --cb-* là nguồn gốc; khối cuối ánh xạ sang biến shadcn
+   (--primary, --border, ...) để Button/Input/Badge tự nhận màu mới.
+   Độ tương phản đã đối chiếu: chữ trắng trên --cb-primary 4.2:1 (nút chính cỡ lớn),
+   chữ trên nền --cb-bg ≥ 5.2:1, viền ô nhập 3.0:1 (WCAG 1.4.11).
+   ========================================================================== */
+.cb-account {
+  --cb-primary: #c65d20;
+  --cb-primary-hover: #a84917; /* cũng là màu chữ nhấn trên nền sáng (5.5:1) */
+  --cb-primary-tint: #f9efe9; /* nền mục đang chọn: cam kem nhạt */
+  --cb-bg: #fff9f2;
+  --cb-surface: #ffffff;
+  --cb-text: #35271f;
+  --cb-text-muted: #75675e;
+  --cb-border: #e9ded2; /* đường phân cách nhẹ (trang trí) */
+  --cb-border-strong: #d6c6b5; /* viền nút phụ */
+  --cb-field-border: #9d8e80; /* viền ô nhập: đủ 3:1 trên nền trắng và kem */
+  --cb-accent: #6f7950; /* xanh thảo mộc: điểm nhấn phụ */
+  --cb-accent-ink: #565f3b; /* chữ trên nền nhạt của accent (≥ 5.7:1) */
+  --cb-danger: #b42318;
+
+  --background: var(--cb-bg);
+  --foreground: var(--cb-text);
+  --card: var(--cb-surface);
+  --card-foreground: var(--cb-text);
+  --popover: var(--cb-surface);
+  --popover-foreground: var(--cb-text);
+  --primary: var(--cb-primary);
+  --primary-foreground: #ffffff;
+  --secondary: var(--cb-accent);
+  --secondary-foreground: #ffffff;
+  --muted: #f6ede3;
+  --muted-foreground: var(--cb-text-muted);
+  --accent: #f6ebe0; /* nền khi rê chuột (Button outline/ghost) */
+  --accent-foreground: var(--cb-text);
+  --destructive: var(--cb-danger);
+  --border: var(--cb-border);
+  --input: var(--cb-field-border);
+  --ring: var(--cb-primary);
+  --radius: 0.75rem;
+  --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
+
+  background-color: var(--cb-bg);
+  color: var(--cb-text);
+}
+
+/* Vòng focus bàn phím rõ ràng (2px, đủ 3:1) thay cho vòng mờ 50% mặc định của shadcn. */
+.cb-account :is(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--cb-primary);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-account *,
+  .cb-account *::before,
+  .cb-account *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

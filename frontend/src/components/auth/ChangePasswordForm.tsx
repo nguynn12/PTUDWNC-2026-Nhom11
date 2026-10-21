@@ -5,12 +5,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { changePassword } from "@/lib/auth/session";
+import { cn } from "@/lib/utils";
 import { applyFieldErrors, type AppError } from "@/lib/errors";
 import { changePasswordSchema, type ChangePasswordValues } from "@/lib/validators/auth";
 import { useAuthUIStore } from "@/store/auth-ui-store";
 import type { UserDto } from "@/types/auth";
 import { FormAlert } from "./FormAlert";
 import { PasswordField } from "./PasswordField";
+import { primaryButtonClass } from "./profile-styles";
 import { SubmitButton } from "./SubmitButton";
 
 const SERVER_FIELDS = ["currentPassword", "newPassword"] as const;
@@ -57,6 +59,7 @@ export function ChangePasswordForm() {
         id="currentPassword"
         label="Mật khẩu hiện tại"
         autoComplete="current-password"
+        className="h-11 pr-11"
         error={errors.currentPassword}
         {...register("currentPassword")}
       />
@@ -66,6 +69,7 @@ export function ChangePasswordForm() {
           label="Mật khẩu mới"
           autoComplete="new-password"
           hint={PASSWORD_HINT}
+          className="h-11 pr-11"
           error={errors.newPassword}
           {...register("newPassword")}
         />
@@ -73,12 +77,13 @@ export function ChangePasswordForm() {
           id="confirmNewPassword"
           label="Nhập lại mật khẩu mới"
           autoComplete="new-password"
+          className="h-11 pr-11"
           error={errors.confirmPassword}
           {...register("confirmPassword")}
         />
       </div>
       <div className="flex justify-end">
-        <SubmitButton className="sm:w-auto" loading={mutation.isPending} loadingText="Đang đổi...">
+        <SubmitButton className={cn(primaryButtonClass, "sm:w-auto")} loading={mutation.isPending} loadingText="Đang đổi...">
           Đổi mật khẩu
         </SubmitButton>
       </div>

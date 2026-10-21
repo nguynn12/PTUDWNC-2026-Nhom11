@@ -27,14 +27,19 @@ export const registerSchema = z
     message: "Mật khẩu nhập lại không khớp.",
   });
 
+/** Giới hạn hồ sơ — khớp UpdateProfileCommandValidator của backend (SRS FR-AUTH-007). */
+export const PROFILE_LIMITS = { displayNameMin: 2, displayNameMax: 100, bioMax: 1000 } as const;
+
+const DISPLAY_NAME_MESSAGE = `Tên hiển thị từ ${PROFILE_LIMITS.displayNameMin} đến ${PROFILE_LIMITS.displayNameMax} ký tự.`;
+
+/** Form hồ sơ chỉ gồm tên và giới thiệu; ảnh đại diện được quản lý riêng (AvatarEditor). */
 export const profileSchema = z.object({
-  displayName: z.string().trim().min(2, "Tên hiển thị từ 2 đến 100 ký tự.").max(100, "Tên hiển thị từ 2 đến 100 ký tự."),
-  avatarUrl: z
+  displayName: z
     .string()
     .trim()
-    .max(500, "URL tối đa 500 ký tự.")
-    .refine((v) => v === "" || /^https?:\/\//i.test(v), "URL ảnh phải bắt đầu bằng http:// hoặc https://"),
-  bio: z.string().max(1000, "Giới thiệu tối đa 1000 ký tự."),
+    .min(PROFILE_LIMITS.displayNameMin, DISPLAY_NAME_MESSAGE)
+    .max(PROFILE_LIMITS.displayNameMax, DISPLAY_NAME_MESSAGE),
+  bio: z.string().max(PROFILE_LIMITS.bioMax, `Giới thiệu tối đa ${PROFILE_LIMITS.bioMax} ký tự.`),
 });
 
 export const forgotPasswordSchema = z.object({ email });

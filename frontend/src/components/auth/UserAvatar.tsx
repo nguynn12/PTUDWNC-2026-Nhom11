@@ -20,7 +20,8 @@ interface UserAvatarProps {
 export function UserAvatar({ name, src, size = "md", className }: UserAvatarProps) {
   return (
     <Avatar className={cn(SIZES[size].root, className)}>
-      {src && <AvatarImage src={src} alt={name ? `Ảnh đại diện của ${name}` : ""} />}
+      {/* no-referrer: ảnh Google (lh3.googleusercontent.com) trả 403 khi kèm Referer của localhost/site khác. */}
+      {src && <AvatarImage src={src} alt={name ? `Ảnh đại diện của ${name}` : ""} referrerPolicy="no-referrer" />}
       <AvatarFallback className={cn("bg-primary/10 font-semibold text-primary", SIZES[size].text)}>
         {initialsOf(name)}
       </AvatarFallback>

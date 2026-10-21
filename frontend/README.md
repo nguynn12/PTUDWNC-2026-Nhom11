@@ -53,6 +53,14 @@ Mọi lỗi từ `apiClient` là `AppError` (`src/lib/errors.ts`) gồm `status`
 - Kiểu mặc định của thẻ HTML trong `globals.css` nằm trong `@layer base`, nên utility Tailwind luôn ghi đè được.
 - Ví dụ module Xác thực: `components/auth` (Field, PasswordField, FormAlert, SubmitButton, UserAvatar, RoleBadge) và `components/layout/UserMenu.tsx` (DropdownMenu + Avatar).
 
+### Khu vực tài khoản (`/profile`)
+
+- Token màu theo phạm vi: class `.cb-account` (cuối `globals.css`) ghi đè biến shadcn (`--primary`, `--border`, `--input`...) chỉ trong trang hồ sơ, nên không làm đổi màu các trang khác. Hộp thoại portal ra ngoài phải mang cùng class (`PROFILE_THEME_CLASS` trong `components/auth/profile-theme.ts`).
+- Class dùng chung (nút chính/phụ, khối nội dung, chiều cao ô nhập 44px) ở `components/auth/profile-styles.ts`; dùng thay vì viết lại class.
+- Mọi thay đổi hồ sơ/ảnh đi qua `hooks/useProfileMutations.ts` để header (`auth-store`) và trang hồ sơ (query `["me"]`) luôn cùng dữ liệu.
+- Ảnh đại diện: backend chưa có endpoint tải ảnh. Nút "Chọn ảnh" chỉ hiện khi `NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED=true` (xem `.env.example`) và backend có `POST /auth/me/avatar`; xoá ảnh dùng `PATCH /auth/me` với `avatarUrl: ""`.
+- Chặn rời trang khi còn thay đổi chưa lưu: `hooks/useUnsavedChangesGuard.ts`.
+
 ## Tiện ích dùng chung
 
 `src/lib/utils.ts`: `cn()` ghép className, `formatDate()` (dd/MM/yyyy, giờ Việt Nam), `formatDuration()` (80 → "1 giờ 20 phút"), `formatNumber()` (1.234.567), `buildQueryString()` (bỏ qua giá trị rỗng).
