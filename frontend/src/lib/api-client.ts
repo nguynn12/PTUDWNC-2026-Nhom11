@@ -83,7 +83,19 @@ export const RecipeApi = {
     const endpoint = `/recipes${queryString ? `?${queryString}` : ''}`;
     
     try {
-      return await fetchApi<PaginatedList<RecipeSummaryDto>>(endpoint);
+      const res = await fetchApi<PaginatedList<RecipeSummaryDto> | { data: RecipeSummaryDto[]; meta: Record<string, unknown> }>(endpoint);
+      if (res && typeof res === 'object' && 'data' in res && Array.isArray((res as { data: RecipeSummaryDto[] }).data)) {
+        const envelope = res as { data: RecipeSummaryDto[]; meta?: { total?: number; totalCount?: number; page?: number; pageSize?: number; totalPages?: number } };
+        return {
+          items: envelope.data,
+          totalCount: envelope.meta?.total || envelope.meta?.totalCount || envelope.data.length,
+          page: envelope.meta?.page || 1,
+          totalPages: envelope.meta?.totalPages || 1,
+          hasNextPage: (envelope.meta?.page || 1) < (envelope.meta?.totalPages || 1),
+          hasPreviousPage: (envelope.meta?.page || 1) > 1,
+        };
+      }
+      return res as PaginatedList<RecipeSummaryDto>;
     } catch {
       // Dữ liệu mẫu (Demo Data Fallback) khi chưa kết nối backend trực tiếp
       return getMockRecipesList(params);
@@ -182,7 +194,11 @@ export const RecipeApi = {
   // Lấy danh sách Danh mục (Categories)
   async getCategories(): Promise<CategoryOptionDto[]> {
     try {
-      return await fetchApi<CategoryOptionDto[]>('/categories');
+      const res = await fetchApi<CategoryOptionDto[] | { data: CategoryOptionDto[] }>('/categories');
+      if (res && typeof res === 'object' && 'data' in res && Array.isArray(res.data)) {
+        return res.data;
+      }
+      return Array.isArray(res) ? res : mockCategories;
     } catch {
       return mockCategories;
     }
@@ -191,7 +207,11 @@ export const RecipeApi = {
   // Lấy chi tiết đầy đủ công thức (kèm Ingredients, Steps, Images, Nutrition, xmin)
   async getRecipeFullDetail(id: string): Promise<RecipeFullDetailDto> {
     try {
-      return await fetchApi<RecipeFullDetailDto>(`/recipes/${id}`);
+      const res = await fetchApi<RecipeFullDetailDto | { data: RecipeFullDetailDto }>(`/recipes/${id}`);
+      if (res && typeof res === 'object' && 'data' in res && (res as { data: RecipeFullDetailDto }).data) {
+        return (res as { data: RecipeFullDetailDto }).data;
+      }
+      return res as RecipeFullDetailDto;
     } catch (error) {
       if (error instanceof ApiError && error.status !== 0) {
         throw error;

@@ -196,9 +196,14 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     let ignore = false;
     RecipeApi.getCategories().then(cats => {
       if (ignore) return;
-      setCategories(cats);
-      if (cats.length > 0 && !initialRecipeId) {
-        setCategoryId(cats[0].id);
+      const list = Array.isArray(cats)
+        ? cats
+        : Array.isArray((cats as unknown as { data: CategoryOptionDto[] })?.data)
+          ? (cats as unknown as { data: CategoryOptionDto[] }).data
+          : [];
+      setCategories(list);
+      if (list.length > 0 && !initialRecipeId) {
+        setCategoryId(list[0].id);
       }
     });
 
@@ -920,7 +925,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                       value={categoryId}
                       onChange={e => setCategoryId(e.target.value)}
                     >
-                      {categories.map(cat => (
+                      {(Array.isArray(categories) ? categories : []).map(cat => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name}
                         </option>
