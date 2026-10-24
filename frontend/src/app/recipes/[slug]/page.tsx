@@ -1,9 +1,9 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getRecipeBySlug } from "@/lib/api/recipes";
+import { getRecipeBySlug, getRecipes } from "@/lib/api/recipes";
 import { RecipeDetail } from "@/components/recipe/RecipeDetail";
-import type { RecipeDetailDto } from "@/types/api";
+import type { RecipeDetailDto, RecipeSummaryDto } from "@/types/api";
 
 // ISR 300 giây (5 phút) theo đặc tả SRS Mục 5.1 (Dòng 1780)
 export const revalidate = 300;
@@ -50,6 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function RecipeDetailPage({ params }: PageProps) {
   const { slug } = await params;
   let recipe: RecipeDetailDto | null = null;
+  let relatedRecipes: RecipeSummaryDto[] = [];
 
   try {
     recipe = await getRecipeBySlug(slug);
@@ -62,5 +63,23 @@ export default async function RecipeDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <RecipeDetail recipe={recipe} />;
+  // Lấy tối đa 4 công thức liên quan cùng danh mục
+  if (recipe.categoryId) {
+    try {
+      const relatedRes = await getRecipes({
+        categoryId: recipe.categoryId,
+        pageSize: 5,
+        sortBy: "newest",
+      });
+      if (relatedRes?.data) {
+        relatedRecipes = relatedRes.data
+          .filter((r) => r.id !== recipe.id && r.slug !== recipe.slug)
+          .slice(0, 4);
+      }
+    } catch {
+      relatedRecipes = [];
+    }
+  }
+
+  return <RecipeDetail recipe={recipe} relatedRecipes={relatedRecipes} />;
 }
