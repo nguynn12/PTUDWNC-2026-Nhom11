@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -26,15 +26,15 @@ export function HeaderSearch({
 }: HeaderSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState("");
+  const initialQuery = searchParams.get("q") || "";
+  const [query, setQuery] = useState(initialQuery);
+  const [prevQueryParam, setPrevQueryParam] = useState(initialQuery);
 
-  // Đồng bộ từ khóa khi người dùng đang ở sẵn trên trang /search?q=...
-  useEffect(() => {
-    const q = searchParams.get("q");
-    if (q) {
-      setQuery(q);
-    }
-  }, [searchParams]);
+  // Đồng bộ từ khóa khi searchParams thay đổi mà không gây cascading render
+  if (initialQuery !== prevQueryParam) {
+    setPrevQueryParam(initialQuery);
+    setQuery(initialQuery);
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

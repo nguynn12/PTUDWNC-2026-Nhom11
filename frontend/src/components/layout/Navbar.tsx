@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -94,7 +94,9 @@ export function Navbar() {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Ô TÌM KIẾM NHANH TRÊN DESKTOP */}
           <div className="hidden md:block">
-            <HeaderSearch className="w-48 xl:w-64" />
+            <Suspense fallback={<div className="w-48 xl:w-64 h-9 bg-muted/50 rounded-full animate-pulse" />}>
+              <HeaderSearch className="w-48 xl:w-64" />
+            </Suspense>
           </div>
 
           {/* TÀI KHOẢN NGƯỜI DÙNG */}
@@ -130,10 +132,12 @@ export function Navbar() {
 
               {/* Ô TÌM KIẾM NHANH TRONG MOBILE SHEET */}
               <div className="p-4 border-b border-border/40">
-                <HeaderSearch
-                  className="w-full"
-                  onSearchSubmit={() => setIsMobileOpen(false)}
-                />
+                <Suspense fallback={<div className="w-full h-9 bg-muted/50 rounded-full animate-pulse" />}>
+                  <HeaderSearch
+                    className="w-full"
+                    onSearchSubmit={() => setIsMobileOpen(false)}
+                  />
+                </Suspense>
               </div>
 
               {/* DANH SÁCH LIÊN KẾT TRONG MOBILE SHEET */}
