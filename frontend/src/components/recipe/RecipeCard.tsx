@@ -23,12 +23,19 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
   const diffInfo = getDifficultyVariant(recipe.difficulty);
   const fallbackImage =
     recipe.primaryImageUrl ||
+    recipe.thumbnailUrl ||
     "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
+
+  const authorDisplayName =
+    recipe.author?.displayName ||
+    recipe.author?.userName ||
+    recipe.authorName ||
+    "Ẩm thực gia";
 
   const authorAvatar =
     recipe.author?.avatarUrl ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      recipe.author?.displayName || recipe.author?.userName || "Bếp Trưởng"
+      authorDisplayName
     )}&background=fed8c4&color=c85a17`;
 
   const totalTime =
@@ -129,7 +136,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
               />
             </div>
             <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
-              {recipe.author?.displayName || recipe.author?.userName || "Ẩm thực gia"}
+              {authorDisplayName}
             </span>
           </div>
 
