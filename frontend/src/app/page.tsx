@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCategories } from "@/lib/api/categories";
 import { getRecipes } from "@/lib/api/recipes";
-import { CategoryCard } from "@/components/category/CategoryCard";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
@@ -205,13 +204,13 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* =====================================================================
-          1. HERO BANNER ẤM CÚNG & NỔI BẬT
+          1. HERO BANNER TINH GỌN & HIỆN ĐẠI
           ===================================================================== */}
-      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-amber-500/10 via-background to-orange-500/5 py-16 sm:py-20 lg:py-24">
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-amber-500/10 via-background to-orange-500/5 py-10 sm:py-14 lg:py-16">
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Cột chữ Hero */}
-            <div className="flex flex-col gap-6 lg:col-span-7">
+            <div className="flex flex-col gap-4 lg:col-span-7">
               <div className="inline-flex items-center gap-2">
                 <Badge variant="outline" className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary border-primary/30 bg-primary/10 gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
@@ -219,24 +218,24 @@ export default async function HomePage() {
                 </Badge>
               </div>
 
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.15]">
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.15]">
                 Nghệ Thuật Ẩm Thực &amp;{" "}
                 <span className="text-primary italic">Hương Vị Đích Thực</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
                 Khám phá hàng ngàn công thức nấu ăn chuẩn vị từ các đầu bếp tài hoa. Từng bước làm tỉ mỉ, định lượng nguyên liệu chính xác và thông tin dinh dưỡng minh bạch.
               </p>
 
               {/* Nút Call To Action */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Button asChild size="lg" className="rounded-xl font-medium shadow-sm gap-2">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button asChild size="default" className="rounded-xl font-medium shadow-sm gap-2">
                   <Link href="/recipes">
                     <Utensils className="w-4 h-4" />
                     Khám phá công thức
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="rounded-xl font-medium gap-2">
+                <Button asChild size="default" variant="outline" className="rounded-xl font-medium gap-2">
                   <Link href="/search">
                     <Search className="w-4 h-4" />
                     Tìm theo nguyên liệu
@@ -245,73 +244,44 @@ export default async function HomePage() {
               </div>
 
               {/* Thống kê nhanh */}
-              <div className="grid grid-cols-3 gap-6 pt-6 border-t border-border/60 mt-2 max-w-lg">
+              <div className="grid grid-cols-3 gap-6 pt-5 border-t border-border/60 mt-1 max-w-lg">
                 <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-primary font-serif">100+</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">Công thức chuẩn vị</div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-primary font-serif">100+</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Công thức chuẩn vị</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-secondary font-serif">100%</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">Dinh dưỡng minh bạch</div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-secondary font-serif">100%</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Dinh dưỡng minh bạch</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-500 font-serif">20+</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground mt-0.5">Danh mục phong phú</div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-500 font-serif">20+</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Danh mục phong phú</div>
                 </div>
               </div>
             </div>
 
             {/* Cột ảnh minh họa Hero */}
             <div className="lg:col-span-5 relative">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border-4 border-card bg-muted">
+              <div className="relative aspect-[16/10] sm:aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border-2 border-card bg-muted">
                 <Image
-                  src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=85"
+                  src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=85"
                   alt="Không gian bếp ẩm thực ấm cúng"
                   fill
                   priority
-                  sizes="(max-width: 1024px) 100vw, 500px"
+                  sizes="(max-width: 1024px) 100vw, 450px"
                   className="object-cover"
                 />
               </div>
-              <div className="absolute -bottom-4 -left-4 hidden sm:flex items-center gap-3 bg-card/95 backdrop-blur-md p-3.5 rounded-xl border border-border shadow-lg">
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <Utensils className="w-5 h-5" />
+              <div className="absolute -bottom-3 -left-3 hidden sm:flex items-center gap-2.5 bg-card/95 backdrop-blur-md p-3 rounded-xl border border-border shadow-md">
+                <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Utensils className="w-4 h-4" />
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-foreground">Ẩm thực đa sắc màu</div>
-                  <div className="text-[11px] text-muted-foreground">Truyền cảm hứng mỗi bữa ăn</div>
+                  <div className="text-[10px] text-muted-foreground">Truyền cảm hứng mỗi bữa ăn</div>
                 </div>
               </div>
             </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* =====================================================================
-          2. KHỐI DANH MỤC MÓN ĂN NỔI BẬT (FEATURED CATEGORIES)
-          ===================================================================== */}
-      <section className="py-14 sm:py-18 bg-background">
-        <Container>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-                Khám phá theo chủ đề
-              </span>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mt-1">
-                Danh Mục Món Ăn Nổi Bật
-              </h2>
-            </div>
-            <Button asChild variant="ghost" className="text-primary hover:text-primary gap-1 self-start sm:self-auto p-0 hover:bg-transparent">
-              <Link href="/categories" className="inline-flex items-center gap-1 font-semibold">
-                Xem tất cả danh mục <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {categories.map((cat) => (
-              <CategoryCard key={cat.id || cat.slug} category={cat} />
-            ))}
           </div>
         </Container>
       </section>
