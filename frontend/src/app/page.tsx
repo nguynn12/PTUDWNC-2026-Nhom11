@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { getCategories } from "@/lib/api/categories";
@@ -16,6 +17,31 @@ import type { CategoryDto, RecipeSummaryDto } from "@/types/api";
 
 // Cấu hình ISR: Tự động tái sinh trang tĩnh ngầm định sau mỗi 60 giây khi có dữ liệu mới
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Trang Chủ — Khám Phá Hàng Ngàn Món Ngon & Công Thức Chuẩn Vị",
+  description:
+    "Culinary Blog - Nền tảng chia sẻ công thức nấu ăn tuyển chọn từ các đầu bếp tài hoa. Định lượng chính xác, dinh dưỡng minh bạch và danh mục phong phú.",
+  keywords: [
+    "công thức nấu ăn",
+    "món ngon mỗi ngày",
+    "danh mục món ăn",
+    "ẩm thực gia đình",
+    "culinary blog",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Culinary Blog — Nghệ Thuật Ẩm Thực & Hương Vị Đích Thực",
+    description:
+      "Khám phá hàng ngàn công thức nấu ăn chuẩn vị, hướng dẫn chi tiết từng bước và bảng dinh dưỡng minh bạch.",
+    url: "/",
+    siteName: "Culinary Blog",
+    locale: "vi_VN",
+    type: "website",
+  },
+};
 
 export default async function HomePage() {
   // Lấy dữ liệu thực tế từ Backend API (PostgreSQL)

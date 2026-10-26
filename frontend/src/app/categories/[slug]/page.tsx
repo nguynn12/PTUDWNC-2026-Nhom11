@@ -27,22 +27,43 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   try {
     const category = await getCategoryBySlug(slug);
-    if (!category) return { title: "Danh Mục Món Ăn | Culinary Blog" };
+    if (!category) {
+      return {
+        title: "Danh Mục Không Tồn Tại",
+        description: "Không tìm thấy danh mục món ăn yêu cầu.",
+      };
+    }
+
+    const title = `${category.name} — Khám Phá Công Thức Chuẩn Vị`;
+    const description =
+      category.description ||
+      `Khám phá các công thức nấu món ${category.name} thơm ngon, chuẩn vị với định lượng nguyên liệu chính xác và dinh dưỡng minh bạch tại Culinary Blog.`;
 
     return {
-      title: `${category.name} — Công Thức Nấu Ăn | Culinary Blog`,
-      description:
-        category.description ||
-        `Khám phá các công thức nấu món ${category.name} thơm ngon, chuẩn vị được tuyển chọn kỹ lưỡng tại Culinary Blog.`,
+      title,
+      description,
+      alternates: {
+        canonical: `/categories/${category.slug}`,
+      },
       openGraph: {
-        title: `${category.name} — Công Thức Nấu Ăn | Culinary Blog`,
-        description:
-          category.description ||
-          `Tổng hợp các công thức nấu món ${category.name} chất lượng cao, định lượng chính xác và dinh dưỡng minh bạch.`,
+        title: `${title} | Culinary Blog`,
+        description,
+        url: `/categories/${category.slug}`,
+        images: category.imageUrl
+          ? [{ url: category.imageUrl, alt: category.name }]
+          : undefined,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} | Culinary Blog`,
+        description,
       },
     };
   } catch {
-    return { title: "Danh Mục Món Ăn | Culinary Blog" };
+    return {
+      title: "Danh Mục Món Ăn",
+      description: "Khám phá công thức nấu ăn theo chủ đề tại Culinary Blog.",
+    };
   }
 }
 

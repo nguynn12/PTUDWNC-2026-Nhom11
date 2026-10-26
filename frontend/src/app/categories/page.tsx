@@ -12,12 +12,24 @@ import type { CategoryDto } from "@/types/api";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Danh Mục Món Ăn Phong Phú | Culinary Blog",
+  title: "Danh Mục Món Ăn Phong Phú",
   description:
-    "Khám phá danh sách các danh mục món ăn phong phú tại Culinary Blog: từ món khai vị, món chính, canh súp đến tráng miệng và ẩm thực thực dưỡng.",
+    "Khám phá danh sách các chủ đề ẩm thực đa dạng tại Culinary Blog: từ món khai vị, món chính, canh súp đến tráng miệng và ẩm thực thực dưỡng.",
+  keywords: [
+    "danh mục món ăn",
+    "chủ đề ẩm thực",
+    "món khai vị",
+    "món chính",
+    "món tráng miệng",
+    "món chay",
+  ],
+  alternates: {
+    canonical: "/categories",
+  },
   openGraph: {
     title: "Danh Mục Món Ăn Phong Phú | Culinary Blog",
     description: "Khám phá các danh mục món ăn phong phú và công thức nấu nướng tuyển chọn từ các chuyên gia ẩm thực.",
+    url: "/categories",
   },
 };
 
