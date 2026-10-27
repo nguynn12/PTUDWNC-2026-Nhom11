@@ -157,14 +157,34 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 - Chạy kiểm thử tự động toàn bộ 29 endpoints/routes đạt 100% kết quả PASS.
 - Kiểm tra toàn bộ mã nguồn đạt chuẩn nghiêm ngặt: `npm run typecheck`, `npm run lint`, `npm run build` trên Frontend và `dotnet build` trên Backend đạt 0 lỗi, 0 cảnh báo.
 
-### Bảng tổng hợp phân công xuyên suốt 6 Buổi Lab
+## Phân công bài tập Lab - Buổi 7
+
+**Mục tiêu:** Hoàn thiện 6 yêu cầu nghiệp vụ cốt lõi theo đặc tả Lab 7 của giảng viên: Chuẩn hóa tính năng Tài khoản (Đăng ký, Đăng nhập, Đăng xuất, Đổi mật khẩu với API Backend mới, Quên mật khẩu gửi mail thật qua SMTP); Trang Hồ sơ cá nhân (`/profile`); Trang chủ 2 cột có Sidebar danh mục và danh sách công thức mới nhất; Trang Chi tiết công thức kết nối dữ liệu thật và MinIO Storage; Chức năng Tìm kiếm Full-Text Search tiếng Việt có dấu/không dấu; Trang xem danh sách tất cả Category.
+
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến (2312682) | Trần Quốc Quân (2312726) | Tạ Nhật Nguyên (2312704) | Nguyễn Phú Quý (2312731) |
+|---|---|---|---|---|
+| **Yêu cầu phụ trách chính** | **Yêu cầu 1 & 2**: Tài khoản nâng cao & Hồ sơ cá nhân | **Yêu cầu 3 & 6**: Trang chủ Sidebar & Danh mục | **Yêu cầu 5**: Tìm kiếm FTS & Tối ưu truy vấn | **Yêu cầu 4**: Chi tiết công thức & Lưu trữ MinIO |
+| **Backend & Dịch vụ nền tảng** | Bổ sung `POST /api/v1/auth/password/change` (thu hồi token cũ, cấp session mới); Cài đặt `SmtpEmailService` (MailKit) gửi mail kích hoạt và reset mật khẩu thật qua SMTP; Bổ sung endpoint upload avatar (việc thêm) | Tối ưu hóa truy vấn danh mục kèm `RecipeCount`; Bổ sung metadata cho các route danh mục; Cấu hình sinh tự động `sitemap.ts` và `robots.ts` theo SRS | Tối ưu hóa chỉ mục `tsvector` PostgreSQL và trigger Full-Text Search; Viết integration test cho tìm kiếm tiếng Việt; Cài đặt Hangfire Job tự động dọn rác 30 ngày (việc thêm) | Chuyển đổi `FileStorageService` sang MinIO Storage (`AWSSDK.S3`); Cấu hình MinIO bucket và access policy trong `docker-compose.yml`; Viết integration test upload/delete ảnh |
+| **Giao diện & Trải nghiệm UI** | Xây dựng form Đổi mật khẩu (`ChangePasswordForm`); Hoàn thiện giao diện Quên/Đặt lại mật khẩu với token từ URL; Hoàn thiện trang Hồ sơ (`/profile`, `ProfileForm`, `AvatarEditor`) | Thiết kế lại Trang chủ `app/page.tsx` thành 2 cột: Sidebar `<aside>` danh mục sticky + Main content công thức mới nhất; Bỏ dữ liệu cứng fallback; Trang `/categories` và `/categories/[slug]` | Xây dựng trang `/search`: Ô nhập debounce 300ms, đồng bộ `?q=`, bộ lọc danh mục/độ khó/thời gian, sắp xếp kết quả; Tạo component `HeaderSearch.tsx` gắn vào `Navbar` | Hoàn thiện `RecipeDetail`: Ảnh chính + album ảnh, tác giả, danh mục, thời gian, khẩu phần, danh sách nguyên liệu phân số (½, ¼), các bước làm, bảng dinh dưỡng; Khối công thức liên quan; Breadcrumb |
+| **Bảo mật & Kiểm soát luồng** | Thu hồi token ngay khi đổi mật khẩu; Kiểm tra token email hết hạn/đã dùng; Validate mật khẩu mới theo chuẩn bảo mật; Phân quyền `RequireAuthorization` cho endpoint đổi mật khẩu | Xử lý trạng thái tải (`Skeleton`), lỗi (`ErrorState`), danh sách rỗng (`EmptyState`); Responsive mượt mà trên di động (sidebar thu gọn thành Sheet/Accordion) | Xử lý từ khóa tiếng Việt có dấu và không dấu; Chặn spam tìm kiếm với thông báo thân thiện khi vượt rate limit (429); Xử lý trạng thái tìm không thấy kết quả | Kiểm soát quyền xem: công thức Draft/Archived chỉ Author sở hữu hoặc Admin mới xem được (người khác nhận 404/Not Found); Tích hợp Schema JSON-LD chuẩn SEO |
+
+### Công việc chung của cả nhóm
+
+- Chạy kiểm thử End-to-End toàn diện luồng tương tác người dùng trên giao diện thật: Đăng ký → Nhận email xác nhận → Đăng nhập → Cập nhật hồ sơ → Đổi mật khẩu → Đăng xuất → Quên mật khẩu → Đặt lại mật khẩu thành công.
+- Chạy kiểm thử toàn diện luồng khám phá nội dung: Trang chủ có Sidebar danh mục → Lọc công thức mới nhất → Xem chi tiết công thức → Tìm kiếm FTS có/không dấu từ Header.
+- Đảm bảo toàn bộ dự án vượt qua các cổng kiểm định chất lượng: `npm run typecheck`, `npm run lint`, `npm run build` trên Frontend và `dotnet build`, `dotnet test` trên Backend đều đạt 0 lỗi, 0 cảnh báo.
+- Cập nhật tài liệu cấu hình biến môi trường SMTP Email và MinIO Storage trong `.env.example` và README.
+
+### Bảng tổng hợp phân công xuyên suốt 7 Buổi Lab
 
 | Thành viên | MSSV | Vai trò chính & Phân hệ xuyên suốt (Backend ➔ Frontend) | Nhánh Git chính |
 |---|---|---|---|
-| **Liêng Hót Ha Luyến** | 2312682 | **Phân hệ Xác thực & Quản lý Người dùng**: Auth APIs, JWT/Refresh Token, Profile, Security CORS/Auth, API Client, Error Handling, Auth Pages & UI | `2312682_LiengHotHaLuyen_Auth_backend`<br>`2312682_LiengHotHaLuyen_Auth_frontend` |
-| **Trần Quốc Quân** | 2312726 | **Phân hệ Danh mục, Khám phá & Giám sát**: Category CRUD, PostgreSQL FTS, Rate Limiting, Integration Tests, Tailwind v4, shadcn/ui, Layout & Public Pages | `2312726_TranQuocQuan_Category_Search_backend`<br>`2312726_TranQuocQuan_Category_Search_frontend` |
-| **Tạ Nhật Nguyên** | 2312704 | **Phân hệ Vòng đời Công thức, Thùng rác & UI States**: Recipe Lifecycle, Concurrency `xmin`/`If-Match`, Trash/Purge, Route Boundaries, Common Components (Loading/Error/Empty), Dashboard & Admin Pages | `2312704_TaNhatNguyen_Recipe-lifecycle_backend`<br>`2312704_TaNhatNguyen_Recipe-lifecycle_frontend` |
-| **Nguyễn Phú Quý** | 2312731 | **Phân hệ Nội dung Chi tiết, Media Storage & Form Wizard**: Recipe Content (Ingredients/Steps), MinIO Storage, RecipeDetail UI, RecipeWizardEditor Multi-step Form, Responsive Design | `2312731_NguyenPhuQuy_Recipe-details_backend`<br>`2312731_NguyenPhuQuy_Recipe-details_frontend` |
+| **Liêng Hót Ha Luyến** | 2312682 | **Phân hệ Xác thực & Quản lý Người dùng**: Auth APIs, JWT/Refresh Token, Đổi mật khẩu, SMTP Email thật, Profile, Security CORS/Auth, API Client, Error Handling, Auth Pages & UI | `2312682_LiengHotHaLuyen_Auth_backend`<br>`2312682_LiengHotHaLuyen_Auth_frontend` |
+| **Trần Quốc Quân** | 2312726 | **Phân hệ Danh mục, Khám phá & Giám sát**: Category CRUD, Trang chủ 2 cột có Sidebar, PostgreSQL FTS, Rate Limiting, Integration Tests, Tailwind v4, shadcn/ui, Layout & Public Pages | `2312726_TranQuocQuan_Category_Search_backend`<br>`2312726_TranQuocQuan_Category_Search_frontend` |
+| **Tạ Nhật Nguyên** | 2312704 | **Phân hệ Vòng đời Công thức, Thùng rác, Tìm kiếm & UI States**: Recipe Lifecycle, Concurrency `xmin`/`If-Match`, Trash/Purge, Route Boundaries, Module Tìm kiếm FTS & HeaderSearch, Common Components (Loading/Error/Empty), Dashboard & Admin Pages | `2312704_TaNhatNguyen_Recipe-lifecycle_backend`<br>`2312704_TaNhatNguyen_Recipe-lifecycle_frontend` |
+| **Nguyễn Phú Quý** | 2312731 | **Phân hệ Nội dung Chi tiết, Media Storage & Form Wizard**: Recipe Content (Ingredients/Steps), MinIO Object Storage, RecipeDetail UI (nguyên liệu phân số, album ảnh, dinh dưỡng), RecipeWizardEditor Multi-step Form, Responsive Design | `2312731_NguyenPhuQuy_Recipe-details_backend`<br>`2312731_NguyenPhuQuy_Recipe-details_frontend` |
 
 ## Công nghệ sử dụng
 
