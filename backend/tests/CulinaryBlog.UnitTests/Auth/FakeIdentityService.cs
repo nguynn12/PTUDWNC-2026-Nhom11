@@ -11,6 +11,7 @@ internal sealed class FakeIdentityService : IIdentityService
     public CreateUserResult CreateResult { get; set; } = CreateUserResult.Success("new-user");
 
     public UserAccount? Account { get; set; }
+    public bool ChangePasswordResult { get; set; }
 
     public Task<CredentialCheckResult> CheckCredentialsAsync(string email, string password) =>
         Task.FromResult(CredentialResult);
@@ -47,6 +48,8 @@ internal sealed class FakeIdentityService : IIdentityService
     public Task<string?> GeneratePasswordResetTokenAsync(string email) => throw new NotSupportedException();
 
     public Task<bool> ResetPasswordAsync(string email, string token, string newPassword) => throw new NotSupportedException();
+    public Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword) =>
+        Task.FromResult(ChangePasswordResult);
 
     /// <summary>Kết quả trả về của <see cref="ConfirmEmailAsync"/>.</summary>
     public bool ConfirmEmailResult { get; set; } = true;
@@ -61,6 +64,7 @@ internal sealed class FakeIdentityService : IIdentityService
 internal sealed class FakeAccountEmailSender : IAccountEmailSender
 {
     public List<(string UserId, string Email, string Token)> Sent { get; } = [];
+    public List<(string Email, string Token)> PasswordResetSent { get; } = [];
 
     /// <summary>Đặt true để giả lập máy chủ email lỗi.</summary>
     public bool Fail { get; set; }
@@ -74,6 +78,12 @@ internal sealed class FakeAccountEmailSender : IAccountEmailSender
         }
 
         Sent.Add((userId, email, token));
+        return Task.CompletedTask;
+    }
+
+    public Task SendPasswordResetAsync(string email, string token, CancellationToken cancellationToken = default)
+    {
+        PasswordResetSent.Add((email, token));
         return Task.CompletedTask;
     }
 }

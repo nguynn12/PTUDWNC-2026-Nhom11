@@ -34,6 +34,7 @@ public interface IIdentityService
     Task<bool> ToggleUserStatusAsync(string userId, bool isActive);
     Task<string?> GeneratePasswordResetTokenAsync(string email);
     Task<bool> ResetPasswordAsync(string email, string token, string newPassword);
+    Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
     /// <summary>Tạo token xác nhận email cho user (null nếu user không tồn tại).</summary>
     Task<string?> GenerateEmailConfirmationTokenAsync(string userId);
 
