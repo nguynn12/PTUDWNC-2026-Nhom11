@@ -57,7 +57,9 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
             baseQuery = _dbContext.Recipes
                 .AsNoTracking()
                 .Where(r => r.Status == RecipeStatus.Published && !r.IsDeleted &&
-                    (r.Title.ToLower().Contains(lowerSearch) || (r.Description != null && r.Description.ToLower().Contains(lowerSearch))))
+                    (r.Title.ToLower().Contains(lowerSearch) || 
+                     r.Slug.ToLower().Contains(lowerSearch) || 
+                     (r.Description != null && r.Description.ToLower().Contains(lowerSearch))))
                 .OrderByDescending(r => r.PublishedAt);
         }
         else

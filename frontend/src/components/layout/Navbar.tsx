@@ -11,10 +11,8 @@ import {
   Layers,
   ShieldCheck,
   ChefHat,
-  X,
 } from "lucide-react";
 import { Container } from "@/components/common/Container";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetTrigger,
@@ -24,6 +22,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { HeaderSearch } from "@/components/layout/HeaderSearch";
 import { cn } from "@/lib/utils";
 
 interface NavLinkItem {
@@ -42,26 +41,11 @@ const navLinks: NavLinkItem[] = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [quickQuery, setQuickQuery] = useState("");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
-  };
-
-  const handleQuickSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = quickQuery.trim();
-    if (trimmed) {
-      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
-      setQuickQuery("");
-      setIsMobileOpen(false);
-    } else {
-      router.push("/search");
-      setIsMobileOpen(false);
-    }
   };
 
   return (
@@ -109,29 +93,9 @@ export function Navbar() {
         {/* CỤM CHỨC NĂNG BÊN PHẢI (QUICK SEARCH + USER MENU + MOBILE MENU) */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Ô TÌM KIẾM NHANH TRÊN DESKTOP */}
-          <form
-            onSubmit={handleQuickSearch}
-            className="hidden md:flex relative items-center w-48 xl:w-64"
-          >
-            <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              type="search"
-              placeholder="Tìm món ăn, nguyên liệu..."
-              value={quickQuery}
-              onChange={(e) => setQuickQuery(e.target.value)}
-              className="h-9 w-full rounded-full pl-9 pr-8 text-xs bg-muted/50 border-border/80 focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all"
-            />
-            {quickQuery && (
-              <button
-                type="button"
-                onClick={() => setQuickQuery("")}
-                className="absolute right-2.5 text-muted-foreground hover:text-foreground p-0.5"
-                aria-label="Xóa từ khóa"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </form>
+          <div className="hidden md:flex relative items-center w-48 xl:w-64">
+            <HeaderSearch />
+          </div>
 
           {/* TÀI KHOẢN NGƯỜI DÙNG */}
           <div className="shrink-0">
@@ -166,16 +130,11 @@ export function Navbar() {
 
               {/* Ô TÌM KIẾM NHANH TRONG MOBILE SHEET */}
               <div className="p-4 border-b border-border/40">
-                <form onSubmit={handleQuickSearch} className="relative flex items-center">
-                  <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="search"
-                    placeholder="Tìm món ngon..."
-                    value={quickQuery}
-                    onChange={(e) => setQuickQuery(e.target.value)}
-                    className="h-10 w-full rounded-lg pl-9 pr-3 text-sm bg-muted/60"
-                  />
-                </form>
+                <HeaderSearch
+                  inputClassName="h-10 rounded-lg text-sm bg-muted/60"
+                  placeholder="Tìm món ngon..."
+                  onSearchComplete={() => setIsMobileOpen(false)}
+                />
               </div>
 
               {/* DANH SÁCH LIÊN KẾT TRONG MOBILE SHEET */}
