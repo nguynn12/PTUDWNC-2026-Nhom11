@@ -1,0 +1,71 @@
+@baseUrl = http://localhost:5000
+
+### 1. Kiểm tra Readiness Probe (Kiểm tra sẵn sàng hệ thống & PostgreSQL)
+GET {{baseUrl}}/health/ready
+Accept: application/json
+
+### 2. Kiểm tra thông tin API v1
+GET {{baseUrl}}/api/v1
+Accept: application/json
+
+### 3. Xem tổng quan dữ liệu hệ thống (Overview)
+GET {{baseUrl}}/api/v1/overview
+Accept: application/json
+
+### 4. Tạo công thức mới (POST /recipes - Trạng thái mặc định Draft)
+POST {{baseUrl}}/api/v1/recipes
+Content-Type: application/json
+
+{
+  "title": "Phở Bò Hà Nội Truyền Thống",
+  "description": "Món phở bò thơm ngon đậm đà hương vị truyền thống gia truyền.",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 180,
+  "servings": 4,
+  "difficulty": 2,
+  "categoryId": "11111111-1111-1111-1111-111111111111"
+}
+
+### 5. Cập nhật công thức và kiểm tra Optimistic Concurrency (PUT /recipes/{id} kèm If-Match)
+PUT {{baseUrl}}/api/v1/recipes/{{recipeId}}
+Content-Type: application/json
+If-Match: "12345"
+
+{
+  "title": "Phở Bò Tái Lăn Hà Nội Đặc Biệt",
+  "description": "Công thức phở bò tái lăn chuẩn vị Hà Thành.",
+  "prepTimeMinutes": 25,
+  "cookTimeMinutes": 150,
+  "servings": 4,
+  "difficulty": 2
+}
+
+### 6. Xuất bản công thức (POST hoặc PATCH /recipes/{id}/publish)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/publish
+Content-Type: application/json
+
+### 7. Hủy xuất bản công thức (POST /recipes/{id}/unpublish)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/unpublish
+Content-Type: application/json
+
+### 8. Lưu trữ công thức (POST /recipes/{id}/archive)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/archive
+Content-Type: application/json
+
+### 9. Hủy lưu trữ công thức (POST /recipes/{id}/unarchive)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/unarchive
+Content-Type: application/json
+
+### 10. Xóa mềm công thức (DELETE /recipes/{id} - Đưa vào thùng rác)
+DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}
+
+### 11. Xem danh sách thùng rác (GET /recipes/trash dành cho Admin)
+GET {{baseUrl}}/api/v1/recipes/trash?pageNumber=1&pageSize=10
+Accept: application/json
+
+### 12. Khôi phục công thức từ thùng rác (POST /recipes/{id}/restore)
+POST {{baseUrl}}/api/v1/recipes/{{recipeId}}/restore
+Content-Type: application/json
+
+### 13. Xóa vĩnh viễn công thức khỏi database (DELETE /recipes/{id}/purge dành cho Admin)
+DELETE {{baseUrl}}/api/v1/recipes/{{recipeId}}/purge

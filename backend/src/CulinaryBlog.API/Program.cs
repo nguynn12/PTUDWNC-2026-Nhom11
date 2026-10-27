@@ -1,51 +1,115 @@
+using CulinaryBlog.API;
+using CulinaryBlog.API.Configuration;
+using CulinaryBlog.API.Endpoints;
+using CulinaryBlog.API.Middlewares;
+using CulinaryBlog.API.OpenApi;
 using CulinaryBlog.Application;
+using CulinaryBlog.Domain.Constants;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Lab 5 (TV1): tài liệu OpenAPI có Bearer JWT, API versioning theo URL, CORS allowlist cho frontend.
+builder.Services.AddCulinaryOpenApi();
+builder.Services.AddCulinaryApiVersioning();
+builder.Services.AddFrontendCors(builder.Configuration, builder.Environment);
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<AuthExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddPresentation(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
+// CORS đặt đầu pipeline: preflight OPTIONS trả ngay (không tính rate limit) và header CORS
+// vẫn có trên response lỗi (401/429/500) để trình duyệt đọc được Problem Details.
+app.UseCors(CorsSetup.PolicyName);
 
-// Tự động Migrate và Seed dữ liệu mẫu (User/Role/Recipe) ở môi trường Development
+// Exception → RFC 7807 Problem Details (AuthExceptionHandler + GlobalExceptionHandler)
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.UseRateLimiter();
+
+// Cấu hình OpenAPI và giao diện kiểm thử tương tác Scalar UI (thay thế Swagger)
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
-    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-
-    if (dbContext.Database.IsRelational())
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
     {
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
-        await CategorySeeder.SeedAsync(dbContext);
-        await RecipeSeeder.SeedAsync(dbContext);
-        await RecipeDetailSeeder.SeedAsync(dbContext);
+        options.WithTitle("Culinary Blog API - PTUDWNC Nhom 11")
+               .WithTheme(ScalarTheme.Moon)
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+               // Ô "Authentication" của Scalar dùng scheme Bearer; token được nhớ khi tải lại trang.
+               .AddPreferredSecuritySchemes([OpenApiSetup.BearerSchemeName])
+               .EnablePersistentAuthentication();
+    });
+
+    app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
+    app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+
+        if (dbContext.Database.IsRelational())
+        {
+            await initialiser.InitialiseAsync();
+            await initialiser.SeedAsync();
+            await CategorySeeder.SeedAsync(dbContext);
+            await RecipeSeeder.SeedAsync(dbContext);
+            await RecipeDetailSeeder.SeedAsync(dbContext);
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
     }
 }
 
-var api = app.MapGroup("/api/v1");
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Nhóm /api/v1 có phiên bản (Asp.Versioning, SRS 5.2). Các module gắn endpoint vào nhóm này.
+var api = app.MapVersionedApi()
+    .RequireRateLimiting(CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PolicyName)
+    .AddEndpointFilter(async (context, next) =>
+    {
+        context.HttpContext.Response.Headers["X-RateLimit-Limit"] = CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PermitLimit.ToString();
+        return await next(context);
+    });
+
+// 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
+api.MapAuthEndpoints();
+api.MapAdminUserEndpoints();
+
+// 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
+api.MapCategoryEndpoints();
+api.MapRecipeEndpoints();
+
+// 3. Phân hệ Vòng đời công thức & Thùng rác (Thành viên 3)
+api.MapRecipeLifecycleEndpoints();
+
+// 4. Phân hệ Chi tiết công thức, Nguyên liệu, Bước làm & Hình ảnh (Thành viên 4)
+api.MapRecipeIngredientEndpoints();
+api.MapRecipeStepEndpoints();
+api.MapRecipeImageEndpoints();
+
 api.MapGet("/", () => Results.Ok(new
 {
     name = "Culinary Blog API",
     version = "v1"
 }));
 
-api.MapGet("/recipes", async (CulinaryBlogDbContext dbContext) =>
-{
-    var count = await dbContext.Recipes.CountAsync();
-    var sample = await dbContext.Recipes.Take(10).ToListAsync();
-    return Results.Ok(new { total = count, sample });
-});
-
+// Tổng quan dữ liệu (có email người dùng) => chỉ Admin được xem.
 api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 {
     var usersCount = await dbContext.Users.CountAsync();
@@ -57,7 +121,6 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 
     var sampleWithRelations = await dbContext.Recipes
         .Include(r => r.Category)
-        .Include(r => r.Author)
         .Include(r => r.Ingredients)
         .Include(r => r.Steps)
         .Include(r => r.Images)
@@ -68,7 +131,10 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
             r.Title,
             r.Slug,
             Category = r.Category != null ? new { r.Category.Id, r.Category.Name } : null,
-            Author = r.Author != null ? new { r.Author.Id, r.Author.DisplayName, r.Author.Email } : null,
+            Author = dbContext.Users
+                .Where(u => u.Id == r.AuthorId)
+                .Select(u => new { u.Id, u.DisplayName, u.Email })
+                .FirstOrDefault(),
             IngredientsCount = r.Ingredients.Count,
             StepsCount = r.Steps.Count,
             ImagesCount = r.Images.Count
@@ -85,20 +151,23 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
         totalImages = imagesCount,
         sampleWithRelations
     });
-});
+})
+.WithTags("System")
+.RequireAuthorization(Roles.Admin);
 
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
+// Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live, /health/ready)
+app.MapHealthEndpoints();
 
-app.MapGet("/health/database", async (
+app.MapGet("/health/ready", async (
     CulinaryBlogDbContext dbContext,
     CancellationToken cancellationToken) =>
 {
     var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
 
     return canConnect
-        ? Results.Ok(new { status = "Healthy", dependency = "PostgreSQL" })
+        ? Results.Ok(new { status = "Ready", checks = new { database = "Healthy" } })
         : Results.Problem(
-            title: "Database is unavailable",
+            title: "Service is not ready to receive traffic",
             statusCode: StatusCodes.Status503ServiceUnavailable);
 });
 

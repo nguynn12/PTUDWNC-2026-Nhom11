@@ -12,8 +12,8 @@ Thư mục này chứa toàn bộ quyết định kiến trúc phát sinh từ v
 
 | File | Nội dung | Số mục |
 |---|---|---|
-| `RESOLVED-CONFLICTS.md` | 27 mâu thuẫn giữa các phần của SRS đã được phân tích và chốt quyết định kiến trúc (ADR) | 27 |
-| `OPEN-QUESTIONS.md` | Các điểm SRS v1.2.0 vẫn còn mơ hồ/tự mâu thuẫn, cần người quyết trước khi code phần liên quan | 4 |
+| `RESOLVED-CONFLICTS.md` | 27 mâu thuẫn giữa các phần của SRS đã được phân tích và chốt quyết định kiến trúc (ADR), cộng D7 chốt từ OPEN-QUESTIONS #1 | 28 |
+| `OPEN-QUESTIONS.md` | Các điểm SRS v1.2.0 vẫn còn mơ hồ/tự mâu thuẫn, cần người quyết trước khi code phần liên quan | 3 còn mở (mục 1 đã chốt) |
 
 ## Quy tắc cho AI coding agent đọc thư mục này
 

@@ -2,6 +2,7 @@ namespace CulinaryBlog.Infrastructure.Configurations;
 
 using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Domain.Enums;
+using CulinaryBlog.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -63,7 +64,9 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .HasForeignKey(r => r.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(r => r.Author)
+        // Recipe (Domain) không có navigation Author — khai báo FK không navigation để giữ
+        // nguyên ràng buộc AuthorId -> AspNetUsers.Id trong DB (RESOLVED-CONFLICTS.md mục D7).
+        builder.HasOne<ApplicationUser>()
             .WithMany()
             .HasForeignKey(r => r.AuthorId)
             .OnDelete(DeleteBehavior.Restrict);
@@ -172,5 +175,14 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .WithOne(img => img.Recipe)
             .HasForeignKey(img => img.RecipeId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // 13. Full-Text Search tsvector (Shadow Property) và GIN Index (mục 3.4 & 7.2 SRS)
+        builder.Property<NpgsqlTypes.NpgsqlTsVector>("SearchVector")
+            .HasColumnType("tsvector")
+            .IsRequired(false);
+
+        builder.HasIndex("SearchVector")
+            .HasMethod("GIN")
+            .HasDatabaseName("IX_Recipes_SearchVector");
     }
 }

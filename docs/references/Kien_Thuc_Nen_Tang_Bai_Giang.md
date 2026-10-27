@@ -191,6 +191,8 @@ EF Core là Data Mapper: Entity là POCO thuần, không có logic DB. **Change 
 
 Chương 3 dạy và minh hoạ đầy đủ **Repository Pattern + Unit of Work** (`IRepository<T>`, `IRecipeRepository`, `IUnitOfWork`) như một tầng abstraction giữa Application và EF Core, với lý do: testability (dễ mock hơn `DbContext`) và Dependency Inversion.
 
+> ✅ **Cập nhật 30/09/2026:** Lab 3 yêu cầu Repository + Unit of Work, nhóm đã chuyển sang dùng pattern này (xem `docs/architecture/README.md`). Ghi chú bên dưới chỉ còn giá trị lịch sử.
+>
 > ⚠️ **Khác biệt có chủ đích với dự án thực tế**: theo README.md và cấu trúc Application layer hiện tại của `PTUDWNC-2026-Nhom11`, quy ước của dự án là **CQRS Handler dùng trực tiếp `IApplicationDbContext`**, KHÔNG dùng Repository/Unit of Work. Đây không phải là thiếu sót — Chương 3 giới thiệu Repository/UoW như một pattern thay thế để sinh viên biết, nhưng nhóm đã chọn hướng "Handler → IApplicationDbContext trực tiếp" (đơn giản hơn, giảm một tầng abstraction không cần thiết khi đã có MediatR Handler làm ranh giới use case). Khi đọc code mẫu trong Chương 3 có `IUnitOfWork.Recipes.AddAsync(...)`, cần **quy đổi** sang `_context.Recipes.Add(...)` + `_context.SaveChangesAsync()` cho khớp coding convention thực tế của repo. Đừng thêm Repository/UoW vào dự án trừ khi có quyết định kiến trúc (ADR) mới thay đổi quy ước này.
 
 ### 3.3 Thiết kế Domain Entities và ERD
