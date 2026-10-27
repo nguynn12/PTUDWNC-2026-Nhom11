@@ -96,6 +96,76 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 | **Recipe Content và Media** | API Ingredient, Recipe Step, Recipe Image hoạt động; upload file được tích hợp với MinIO |
 | **Tích hợp và build** | Các API chính được kiểm thử; toàn bộ Backend build thành công sau khi merge |
 
+## Phân công bài tập Lab - Buổi 4
+
+**Mục tiêu:** Hoàn thiện toàn bộ hệ thống 41 REST API Backend theo chuẩn đặc tả SRS Chương 8. Áp dụng Clean Architecture, CQRS với MediatR, FluentValidation, tối ưu hóa truy vấn PostgreSQL, MinIO Storage, phân quyền đa tầng và kiểm soát đồng thời (Optimistic Concurrency với `xmin`/`If-Match`).
+
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến (2312682) | Trần Quốc Quân (2312726) | Tạ Nhật Nguyên (2312704) | Nguyễn Phú Quý (2312731) |
+|---|---|---|---|---|
+| **Phân hệ phụ trách** | Xác thực & Quản lý Người dùng | Danh mục, Khám phá Công thức & Giám sát | Vòng đời Công thức & Thùng rác Quản trị | Nội dung Chi tiết Công thức & Media Storage |
+| **Số lượng API** | **10 Endpoints** | **10 Endpoints** | **11 Endpoints** | **10 Endpoints** |
+| **Danh sách API chính** | • `POST /api/v1/auth/register`<br>• `POST /api/v1/auth/login`<br>• `POST /api/v1/auth/google`<br>• `POST /api/v1/auth/refresh`<br>• `POST /api/v1/auth/logout`<br>• `POST /api/v1/auth/email/confirm`<br>• `POST /api/v1/auth/email/resend`<br>• `GET /api/v1/auth/me`<br>• `PATCH /api/v1/auth/me`<br>• `PATCH /api/v1/admin/users/{id}/status` | • `GET /api/v1/categories`<br>• `GET /api/v1/categories/{slug}`<br>• `POST /api/v1/categories`<br>• `PUT /api/v1/categories/{id}`<br>• `DELETE /api/v1/categories/{id}`<br>• `GET /api/v1/recipes`<br>• `GET /api/v1/recipes/search`<br>• `GET /api/v1/recipes/{slug}`<br>• `GET /health`<br>• `GET /health/live` | • `POST /api/v1/recipes`<br>• `PUT /api/v1/recipes/{id}`<br>• `PATCH /api/v1/recipes/{id}/publish`<br>• `PATCH /api/v1/recipes/{id}/unpublish`<br>• `PATCH /api/v1/recipes/{id}/archive`<br>• `PATCH /api/v1/recipes/{id}/unarchive`<br>• `DELETE /api/v1/recipes/{id}`<br>• `GET /api/v1/admin/recipes/trash`<br>• `POST /api/v1/admin/recipes/{id}/restore`<br>• `DELETE /api/v1/admin/recipes/{id}/purge`<br>• `GET /health/ready` | • `POST /api/v1/recipes/{id}/images`<br>• `PATCH /api/v1/recipes/{id}/images/{imageId}`<br>• `DELETE /api/v1/recipes/{id}/images/{imageId}`<br>• `POST /api/v1/recipes/{id}/ingredients`<br>• `PUT /api/v1/recipes/{id}/ingredients/{id}`<br>• `DELETE /api/v1/recipes/{id}/ingredients/{id}`<br>• `POST /api/v1/recipes/{id}/steps`<br>• `PUT /api/v1/recipes/{id}/steps/{id}`<br>• `PUT /api/v1/recipes/{id}/steps/reorder`<br>• `DELETE /api/v1/recipes/{id}/steps/{id}` |
+| **Kỹ thuật chuyên sâu** | Token Rotation & Reuse Detection; Google ID Token OAuth2; Hash mật khẩu chuẩn Identity; Quản lý Lockout trạng thái user | PostgreSQL FTS với unaccent & GIN Index; Phân trang & lọc đa tiêu chí; ETag & Cache; Liveness Health Check | Optimistic Concurrency Control qua `If-Match` và `xmin`; Validate xuất bản công thức nghiêm ngặt; Thùng rác Soft Delete / Restore / Hard Delete; Readiness Probe | Upload file MinIO Storage với giới hạn 5MB và format JPEG/PNG/WebP/AVIF; Reorder các bước nấu trong Transaction nguyên tử |
+
+### Công việc chung của cả nhóm
+
+- Thống nhất và tuân thủ định dạng chuẩn RFC 7807 Problem Details cho toàn bộ 41 API endpoints.
+- Chuẩn hóa format trả về (ApiResponse bọc dữ liệu kèm metadata phân trang PagedMeta).
+- Tích hợp tài liệu tương tác qua OpenAPI và Scalar UI tại `/scalar/v1`.
+- Chạy kiểm thử toàn diện 41 API endpoints qua Postman và REST Client, kiểm soát mã trạng thái HTTP chuẩn (200, 201, 204, 400, 401, 403, 404, 409, 422).
+- Đảm bảo toàn bộ project Backend build thành công (`0 Error, 0 Warning`).
+
+## Phân công bài tập Lab - Buổi 5
+
+**Mục tiêu:** Thiết lập bảo mật Backend nâng cao (CORS allowlist, Rate Limiting đa chính sách, Authorization bảo vệ toàn bộ API); Tích hợp API Versioning và tài liệu OpenAPI hoàn chỉnh; Khởi tạo môi trường và cấu trúc dự án Frontend Next.js 16 App Router với TypeScript; Chuẩn hóa tập trung hệ thống Types, dọn dẹp các thư mục thừa.
+
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến (2312682) | Trần Quốc Quân (2312726) | Tạ Nhật Nguyên (2312704) | Nguyễn Phú Quý (2312731) |
+|---|---|---|---|---|
+| **Bảo mật & Phân quyền** | Cấu hình CORS đọc từ `appsettings.json` (chặn wildcard); Rà soát `JwtBearerSetup` (thời hạn token, ClockSkew, Issuer/Audience); Bảo vệ endpoint `/overview` | Cài đặt Rate Limiting chung (100 req/phút/IP) áp dụng cho `/api/v1`; Gắn `RequireAuthorization("Admin")` cho `POST/PUT/DELETE /categories` | Gắn `RequireAuthorization("Author")` và policy `VerifiedAuthor` cho toàn bộ nhóm Recipe Lifecycle; Gắn `RequireAuthorization("Admin")` cho nhóm `/admin/recipes` | Cài đặt Rate Limiting upload (5 req/phút/IP) cho `POST /recipes/{id}/images`; Gắn `RequireAuthorization("Author")` cho Ingredient, Step, Image |
+| **API Versioning & Tài liệu** | Cài đặt `Asp.Versioning.Http`, chuyển `MapGroup` sang `/api/v{version:apiVersion}`; Thêm security scheme Bearer vào OpenAPI Document để Scalar có nút Authorize | Kiểm tra và xử lý lỗi trả về 429 RFC 7807 với mã `RATE_LIMIT_EXCEEDED`, headers `X-RateLimit-*` và `Retry-After` | Loại bỏ nhánh bỏ qua kiểm tra sở hữu khi UserId rỗng trong các Handlers; Bổ sung `ConcurrencyToken` vào 5 Command Lifecycle | Chuyển đổi và nâng cấp `FileStorageService` sang MinIO Storage; Bổ sung `FileValidationHelper` kiểm tra magic bytes |
+| **Cấu trúc & Types Frontend** | Tập trung hóa toàn bộ types của Auth và `ApiResponse`, `ProblemDetails` vào `src/types/`; Bổ sung biến môi trường vào `.env.example` | Gom `RecipeSummaryDto`, `CategoryDto`, `PagedMeta` về `src/types/`; Thống nhất thư mục `components/recipe` | Gom `RecipeStatus`, `RecipeDifficulty`, `RecipeNutritionDto`, `RecipeFullDetailDto` về `src/types/`, xóa bản khai báo trùng | Gom types cho `RecipeIngredientDto`, `RecipeStepDto`, `RecipeImageDto` về `src/types/`; Dọn dẹp loại bỏ thư mục `src/features/` |
+| **Kiểm thử tích hợp** | Kiểm thử luồng xác thực: token hết hạn trả 401, refresh token thu hồi, bảo vệ route thành công | Khởi tạo project `CulinaryBlog.IntegrationTests`, viết test cho Categories, Recipes, Rate Limiting 429 | Viết integration test luồng chuyển đổi trạng thái: Publish → Unpublish → Archive → Delete; kiểm thử `If-Match` sai trả 409 | Kiểm thử upload ảnh vượt quá dung lượng cho phép hoặc sai định dạng; kiểm thử rate limit upload lần thứ 6 trả 429 |
+
+### Công việc chung của cả nhóm
+
+- Thực hiện kiểm tra toàn diện chất lượng mã nguồn: `npm run typecheck`, `npm run lint`, `npm run build` trên Frontend và `dotnet build`, `dotnet test` trên Backend đều đạt 0 lỗi.
+- Đảm bảo mọi endpoint nghiệp vụ nhạy cảm đều được bảo vệ chặt chẽ bởi đúng quyền (`Author`, `VerifiedAuthor`, `Admin`).
+- Thống nhất cấu trúc dự án Frontend App Router phẳng, gọn gàng, định kiểu tĩnh mạnh mẽ bằng TypeScript.
+
+## Phân công bài tập Lab - Buổi 6
+
+**Mục tiêu:** Hiện đại hóa toàn diện giao diện UI/UX Frontend với Tailwind CSS v4 và thư viện thành phần shadcn/ui Base Nova; Cài đặt lớp tiện ích xử lý lỗi (`AppError`, `getErrorMessage`), hợp nhất HTTP Client duy nhất; Chuẩn hóa State Management với Zustand; Xây dựng thư viện component dùng chung (Loading, ErrorState, EmptyState, Pagination, Sonner Toast, Dialogs); Thiết lập Layout đa tầng và Route Boundaries (`loading.tsx`, `error.tsx`, `not-found.tsx`).
+
+### Phân công theo thành viên
+
+| Hạng mục | Liêng Hót Ha Luyến (2312682) | Trần Quốc Quân (2312726) | Tạ Nhật Nguyên (2312704) | Nguyễn Phú Quý (2312731) |
+|---|---|---|---|---|
+| **Hạ tầng & Tiện ích UI** | Hợp nhất 4 client gọi API thành 1 client duy nhất (`lib/api/axios.ts`) kèm auto-refresh token; Xây dựng `lib/errors.ts` (`AppError`, `getErrorMessage` Việt hóa); Tạo `lib/utils.ts` (`cn`, format ngày/thời gian/số) | Tích hợp Tailwind CSS v4 và khởi tạo shadcn/ui (`components.json`); Ánh xạ màu thương hiệu HSL cam đất (`#c85a17`) và xanh lá (`#2b7a4b`); Cài đặt các base component shadcn/ui | Xây dựng bộ component trạng thái dùng chung: `Loading.tsx`, `PageLoader.tsx`, `ErrorState.tsx`, `EmptyState.tsx`; Thay thế modal/toast cũ bằng `sonner` và shadcn `alert-dialog` | Thiết kế lại component `RecipeCard` bằng Card + Badge; Xây dựng `RecipeFilterSidebar` (Select, Checkbox), `RecipeToolbar` (sắp xếp), `RecipeListWrapper` |
+| **Quản lý trạng thái (Store)** | Chuẩn hóa store Zustand: `store/auth-store.ts` (quản lý session, tokens, user profile), `store/ui-store.ts`, `store/auth-ui-store.ts` | Tái cấu trúc Layout chung (`Navbar`, `Footer`, Mobile Sheet Drawer, Container, PageHeader) | Đồng bộ trạng thái UI trong Dashboard và Admin; Giữ nguyên signature của các component dùng chung để không làm vỡ các module liên quan | Quản lý form state cho các bước trong Multi-step Wizard (`RecipeWizardEditor`) bằng React Hook Form & Zod |
+| **Giao diện Màn hình UI** | Tái thiết kế giao diện tĩnh nhóm Auth bằng shadcn/ui: `/auth/login`, `/auth/register`, `/auth/forgot-password`, `/auth/reset-password`, `/profile`, `UserMenu` | Thiết kế giao diện Trang chủ (`app/page.tsx`), Danh mục công thức (`/categories`), Trang tìm kiếm (`/search`) | Thiết kế giao diện Dashboard quản lý bài viết (`/dashboard/recipes`) và Quản trị thùng rác (`/admin/recipes/trash`); Thêm Route Boundaries `app/loading.tsx`, `app/error.tsx`, `app/global-error.tsx` | Thiết kế lại trang Chi tiết công thức `RecipeDetail` (ảnh, khẩu phần, thời gian, nguyên liệu, các bước làm, bảng dinh dưỡng); Tái thiết kế Form tạo/sửa công thức Wizard |
+| **Tối ưu hóa & Responsive** | Xử lý redirect trang Auth; Validate form với React Hook Form và Zod; Hiển thị thông báo lỗi thân thiện | Tối ưu hóa SEO với JSON-LD và Metadata; Kiểm tra hiển thị responsive toàn bộ các trang công khai | Kiểm tra kịch bản mất kết nối Backend hiển thị `ErrorState` có nút Thử lại; Xử lý trạng thái danh sách rỗng với `EmptyState` | Loại bỏ toàn bộ `style={{...}}` inline chuyển sang class Tailwind/shadcn; Kiểm tra responsive 3 độ phân giải (375px di động, 768px tablet, 1280px desktop) |
+
+### Công việc chung của cả nhóm
+
+- Hợp nhất toàn bộ các nhánh tính năng của 4 thành viên vào nhánh `develop`.
+- Đồng bộ giao diện toàn bộ ứng dụng theo hệ thống Design System chung (bảng màu, typography, khoảng cách, bo góc).
+- Đảm bảo 100% các Route Boundaries xử lý trơn tru mọi tình huống dữ liệu đang tải, rỗng hoặc có lỗi phát sinh.
+- Chạy kiểm thử tự động toàn bộ 29 endpoints/routes đạt 100% kết quả PASS.
+- Kiểm tra toàn bộ mã nguồn đạt chuẩn nghiêm ngặt: `npm run typecheck`, `npm run lint`, `npm run build` trên Frontend và `dotnet build` trên Backend đạt 0 lỗi, 0 cảnh báo.
+
+### Bảng tổng hợp phân công xuyên suốt 6 Buổi Lab
+
+| Thành viên | MSSV | Vai trò chính & Phân hệ xuyên suốt (Backend ➔ Frontend) | Nhánh Git chính |
+|---|---|---|---|
+| **Liêng Hót Ha Luyến** | 2312682 | **Phân hệ Xác thực & Quản lý Người dùng**: Auth APIs, JWT/Refresh Token, Profile, Security CORS/Auth, API Client, Error Handling, Auth Pages & UI | `2312682_LiengHotHaLuyen_Auth_backend`<br>`2312682_LiengHotHaLuyen_Auth_frontend` |
+| **Trần Quốc Quân** | 2312726 | **Phân hệ Danh mục, Khám phá & Giám sát**: Category CRUD, PostgreSQL FTS, Rate Limiting, Integration Tests, Tailwind v4, shadcn/ui, Layout & Public Pages | `2312726_TranQuocQuan_Category_Search_backend`<br>`2312726_TranQuocQuan_Category_Search_frontend` |
+| **Tạ Nhật Nguyên** | 2312704 | **Phân hệ Vòng đời Công thức, Thùng rác & UI States**: Recipe Lifecycle, Concurrency `xmin`/`If-Match`, Trash/Purge, Route Boundaries, Common Components (Loading/Error/Empty), Dashboard & Admin Pages | `2312704_TaNhatNguyen_Recipe-lifecycle_backend`<br>`2312704_TaNhatNguyen_Recipe-lifecycle_frontend` |
+| **Nguyễn Phú Quý** | 2312731 | **Phân hệ Nội dung Chi tiết, Media Storage & Form Wizard**: Recipe Content (Ingredients/Steps), MinIO Storage, RecipeDetail UI, RecipeWizardEditor Multi-step Form, Responsive Design | `2312731_NguyenPhuQuy_Recipe-details_backend`<br>`2312731_NguyenPhuQuy_Recipe-details_frontend` |
+
 ## Công nghệ sử dụng
 
 - Backend: .NET 10 Minimal API, Entity Framework Core và PostgreSQL.
@@ -253,9 +323,11 @@ PTUDWNC-2026-Nhom11/
 ├── frontend/
 │   ├── src/
 │   │   ├── app/                          # Next.js routes và layouts
-│   │   ├── features/                     # Module nghiệp vụ theo lát cắt dọc
-│   │   ├── components/                   # Component giao diện dùng chung
-│   │   └── lib/                          # API client và tiện ích dùng chung
+│   │   ├── components/                   # Component giao diện dùng chung và shadcn/ui
+│   │   ├── hooks/                        # Custom React hooks
+│   │   ├── lib/                          # API client, utilities và auth helper
+│   │   ├── store/                        # Quản lý trạng thái Zustand
+│   │   └── types/                        # TypeScript types tập trung
 │   ├── package.json
 │   └── package-lock.json
 ├── infrastructure/
