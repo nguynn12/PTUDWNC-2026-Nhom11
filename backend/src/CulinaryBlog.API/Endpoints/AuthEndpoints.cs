@@ -9,6 +9,7 @@ using CulinaryBlog.Application.Auth.Commands.ConfirmEmail;
 using CulinaryBlog.Application.Auth.Commands.ResendConfirmationEmail;
 using CulinaryBlog.Application.Auth.Commands.ForgotPassword;
 using CulinaryBlog.Application.Auth.Commands.ResetPassword;
+using CulinaryBlog.Application.Auth.Commands.ChangePassword;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -75,6 +76,12 @@ public static class AuthEndpoints
             await sender.Send(command);
             return Results.NoContent();
         });
+
+        group.MapPost("/password/change", async (ChangePasswordCommand command, ISender sender) =>
+        {
+            var result = await sender.Send(command);
+            return Results.Ok(result);
+        }).RequireAuthorization();
 
         // RESOLVED-CONFLICTS D3: logout chỉ cần refreshToken trong body, KHÔNG yêu cầu access
         // token còn hạn (access token có thể đã hết hạn khi người dùng bấm đăng xuất).

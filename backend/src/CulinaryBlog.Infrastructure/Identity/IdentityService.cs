@@ -284,6 +284,18 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
+    public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return false;
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        return result.Succeeded;
+    }
+
     private async Task<UserAccount> ToAccountAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
