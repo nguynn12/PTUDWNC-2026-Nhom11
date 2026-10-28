@@ -6,8 +6,11 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
-import { useAuthStore } from "@/lib/auth/store";
+
+import { useAuthStore } from "@/store/auth-store";
 import type { RecipeDetailDto, RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
+
+
 
 interface RecipeDetailProps {
   recipe: RecipeDetailDto;
