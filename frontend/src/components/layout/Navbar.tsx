@@ -13,7 +13,6 @@ import {
   ChefHat,
 } from "lucide-react";
 import { Container } from "@/components/common/Container";
-import { HeaderSearch } from "@/components/search/HeaderSearch";
 import {
   Sheet,
   SheetTrigger,
@@ -23,6 +22,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { HeaderSearch } from "@/components/search/HeaderSearch";
 import { cn } from "@/lib/utils";
 
 interface NavLinkItem {
@@ -93,7 +93,7 @@ export function Navbar() {
         {/* CỤM CHỨC NĂNG BÊN PHẢI (QUICK SEARCH + USER MENU + MOBILE MENU) */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Ô TÌM KIẾM NHANH TRÊN DESKTOP */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex relative items-center w-48 xl:w-64">
             <Suspense fallback={<div className="w-48 xl:w-64 h-9 bg-muted/50 rounded-full animate-pulse" />}>
               <HeaderSearch className="w-48 xl:w-64" />
             </Suspense>
@@ -135,7 +135,10 @@ export function Navbar() {
                 <Suspense fallback={<div className="w-full h-9 bg-muted/50 rounded-full animate-pulse" />}>
                   <HeaderSearch
                     className="w-full"
+                    inputClassName="h-10 rounded-lg text-sm bg-muted/60"
+                    placeholder="Tìm món ngon..."
                     onSearchSubmit={() => setIsMobileOpen(false)}
+                    onSearchComplete={() => setIsMobileOpen(false)}
                   />
                 </Suspense>
               </div>

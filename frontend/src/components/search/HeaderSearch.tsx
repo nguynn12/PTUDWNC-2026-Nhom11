@@ -8,8 +8,10 @@ import { cn } from "@/lib/utils";
 
 export interface HeaderSearchProps {
   className?: string;
+  inputClassName?: string;
   placeholder?: string;
   onSearchSubmit?: () => void;
+  onSearchComplete?: () => void;
 }
 
 /**
@@ -17,13 +19,16 @@ export interface HeaderSearchProps {
  * 
  * PHÂN CÔNG PHỐI HỢP NHÓM (Buổi 7):
  * - Thành viên 2 (Quân): Thiết lập khung (Stub/Interface) và nhúng an toàn vào Navbar (Desktop & Mobile).
- * - Thành viên 3 (Nguyên): Tiếp nhận mở rộng logic chuyên sâu (gợi ý tự động Autocomplete, debounce, lịch sử tìm kiếm).
+ * - Thành viên 3 (Nguyên): Tiếp nhận mở rộng logic chuyên sâu, đồng bộ 2 chiều và integration tests.
  */
 export function HeaderSearch({
   className,
+  inputClassName,
   placeholder = "Tìm món ăn, nguyên liệu...",
   onSearchSubmit,
+  onSearchComplete,
 }: HeaderSearchProps) {
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
@@ -49,6 +54,9 @@ export function HeaderSearch({
     if (onSearchSubmit) {
       onSearchSubmit();
     }
+    if (onSearchComplete) {
+      onSearchComplete();
+    }
   };
 
   const handleClear = () => {
@@ -70,8 +78,12 @@ export function HeaderSearch({
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="h-9 w-full rounded-full pl-9 pr-8 text-xs bg-muted/50 border-border/80 focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground"
+        className={cn(
+          "h-9 w-full rounded-full pl-9 pr-8 text-xs bg-muted/50 border-border/80 focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground",
+          inputClassName
+        )}
       />
+
 
       {/* Nút xóa nhanh từ khóa khi có nội dung */}
       {query && (

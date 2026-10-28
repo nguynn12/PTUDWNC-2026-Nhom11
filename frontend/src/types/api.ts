@@ -252,7 +252,7 @@ export interface GetRecipesParams {
   maxTotalTime?: number;
   minCalories?: number;
   maxCalories?: number;
-  sortBy?: "publishedAt" | "newest" | "totalTime" | "quickest" | "prepTime" | "cookTime" | "calories" | "title" | "servings" | "createdAt";
+  sortBy?: "relevance" | "publishedAt" | "newest" | "totalTime" | "quickest" | "prepTime" | "cookTime" | "calories" | "title" | "servings" | "createdAt";
   sortOrder?: "asc" | "desc";
 }
 

@@ -51,4 +51,8 @@ docker-compose.override.yml
 docs/Lab*.md
 docs/TASK_*.md
 docs/buoi*.md
+docs/plans/buoi5/
+docs/plans/buoi6/
+docs/plans/buoi7/
+
 
