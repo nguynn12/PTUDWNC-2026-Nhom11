@@ -179,6 +179,7 @@ export interface RecipeSummaryDto {
   difficulty: RecipeDifficulty | number;
   status?: RecipeStatus | number;
   primaryImageUrl?: string | null;
+  thumbnailUrl?: string | null;
   categoryId: string;
   categoryName?: string | null;
   categorySlug?: string | null;
