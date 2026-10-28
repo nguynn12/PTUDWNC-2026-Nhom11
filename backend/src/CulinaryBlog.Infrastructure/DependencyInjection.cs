@@ -75,7 +75,16 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<IEmailService, CulinaryBlog.Infrastructure.Services.MockEmailService>();
+        services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
+        var emailSettings = configuration.GetSection(EmailSettings.SectionName).Get<EmailSettings>();
+        if (emailSettings?.IsConfigured == true)
+        {
+            services.AddScoped<IEmailService, SmtpEmailService>();
+        }
+        else
+        {
+            services.AddScoped<IEmailService, MockEmailService>();
+        }
         services.Configure<Services.ClientAppSettings>(configuration.GetSection(Services.ClientAppSettings.SectionName));
         services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
         services.AddScoped<IClientInfoService, Services.ClientInfoService>();
