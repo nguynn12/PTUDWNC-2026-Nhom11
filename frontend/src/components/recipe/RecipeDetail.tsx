@@ -1,14 +1,52 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { RecipeDetailDto, RecipeDifficulty } from "@/types/api";
+import { RecipeCard } from "@/components/recipe/RecipeCard";
+import { useAuthStore } from "@/lib/auth/store";
+import type { RecipeDetailDto, RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
 
 interface RecipeDetailProps {
   recipe: RecipeDetailDto;
+  relatedRecipes?: RecipeSummaryDto[];
+}
+
+function formatIngredientQuantity(quantity?: number | null): string {
+  if (quantity === null || quantity === undefined || quantity === 0) {
+    return "Vừa đủ";
+  }
+
+  const whole = Math.floor(quantity);
+  const remainder = Math.round((quantity - whole) * 1000) / 1000;
+
+  const fractionMap: Record<string, string> = {
+    "0.5": "½",
+    "0.25": "¼",
+    "0.75": "¾",
+    "0.333": "⅓",
+    "0.667": "⅔",
+    "0.125": "⅛",
+    "0.375": "⅜",
+    "0.625": "⅝",
+    "0.875": "⅞",
+  };
+
+  let fraction = "";
+  for (const [key, glyph] of Object.entries(fractionMap)) {
+    if (Math.abs(parseFloat(key) - remainder) < 0.02) {
+      fraction = glyph;
+      break;
+    }
+  }
+
+  if (fraction) {
+    return whole > 0 ? `${whole} ${fraction}` : fraction;
+  }
+
+  return Number(quantity.toFixed(2)).toString();
 }
 
 function getDifficultyBadge(diff: RecipeDifficulty | number): {
@@ -20,8 +58,16 @@ function getDifficultyBadge(diff: RecipeDifficulty | number): {
   return { label: "Độ khó: Vừa", variant: "medium" };
 }
 
-export function RecipeDetail({ recipe }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps) {
   const diff = getDifficultyBadge(recipe.difficulty);
+  const user = useAuthStore((s) => s.user);
+
+  // Quyền xem và sửa: Tác giả hoặc Quản trị viên
+  const isAuthorOrAdmin =
+    Boolean(user) &&
+    (user?.id === recipe.author?.id ||
+      user?.id === (recipe as { authorId?: string }).authorId ||
+      user?.roles?.includes("Admin"));
 
   const heroImage =
     recipe.primaryImageUrl ||
@@ -142,24 +188,47 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
 
       {/* Tiêu đề & Thông tin đầu bài */}
       <header className="mb-8 space-y-4">
-        <div className="flex items-center gap-2 flex-wrap">
-          {recipe.categoryName && (
-            <Badge variant="category" className="border border-[var(--border-subtle)] text-xs font-semibold">
-              {recipe.categoryName}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            {recipe.categoryName && (
+              <Badge variant="category" className="border border-[var(--border-subtle)] text-xs font-semibold">
+                {recipe.categoryName}
+              </Badge>
+            )}
+            <Badge variant={diff.variant} className="text-xs font-semibold">
+              {diff.label}
             </Badge>
-          )}
-          <Badge variant={diff.variant} className="text-xs font-semibold">
-            {diff.label}
-          </Badge>
-          {recipe.status && recipe.status !== "Published" && (
-            <Badge
-              variant={recipe.status === "Draft" ? "statusDraft" : "statusArchived"}
-              className="text-xs"
+            {recipe.status && recipe.status !== "Published" && (
+              <Badge
+                variant={recipe.status === "Draft" ? "statusDraft" : "statusArchived"}
+                className="text-xs"
+              >
+                {recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}
+              </Badge>
+            )}
+          </div>
+
+          {/* Nút tác giả / Admin chỉnh sửa công thức */}
+          {isAuthorOrAdmin && (
+            <Link
+              href={`/dashboard/recipes/${recipe.id}/edit`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--primary-light)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all shadow-xs border border-[var(--primary)]/20"
             >
-              {recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}
-            </Badge>
+              <span>✏️</span>
+              <span>Chỉnh sửa công thức</span>
+            </Link>
           )}
         </div>
+
+        {/* Cảnh báo chế độ xem trước dành riêng cho bản nháp / lưu trữ */}
+        {recipe.status && recipe.status !== "Published" && (
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs sm:text-sm flex items-center gap-2">
+            <span>⚠️</span>
+            <span>
+              Công thức đang ở trạng thái <strong>{recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}</strong>. Chỉ tác giả và quản trị viên mới có thể xem nội dung này.
+            </span>
+          </div>
+        )}
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[var(--text-primary)] tracking-tight leading-tight">
           {recipe.title}
@@ -304,19 +373,31 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
               </div>
 
               <ul className="space-y-3 p-0 list-none m-0">
-                {sortedIngredients.map((ing) => (
-                  <li
-                    key={ing.id || ing.name}
-                    className="flex items-center justify-between pb-2.5 border-b border-dashed border-[var(--border-subtle)] last:border-none text-sm sm:text-base"
-                  >
-                    <span className="font-medium text-[var(--text-primary)]">
-                      {ing.name}
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-[var(--primary)] bg-[var(--primary-light)]">
-                      {ing.quantity} {ing.unit}
-                    </span>
-                  </li>
-                ))}
+                {sortedIngredients.map((ing) => {
+                  const formattedQty = formatIngredientQuantity(ing.quantity);
+                  const isVuaDu = formattedQty === "Vừa đủ";
+
+                  return (
+                    <li
+                      key={ing.id || ing.name}
+                      className="flex items-center justify-between pb-2.5 border-b border-dashed border-[var(--border-subtle)] last:border-none text-sm sm:text-base gap-3"
+                    >
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-medium text-[var(--text-primary)]">
+                          {ing.name}
+                        </span>
+                        {ing.notes && (
+                          <span className="text-xs text-[var(--text-muted)] italic">
+                            {ing.notes}
+                          </span>
+                        )}
+                      </div>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-[var(--primary)] bg-[var(--primary-light)] whitespace-nowrap flex-shrink-0">
+                        {isVuaDu ? "Vừa đủ" : `${formattedQty} ${ing.unit || ""}`.trim()}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </Card>
@@ -446,6 +527,32 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* KHỐI CÔNG THỨC LIÊN QUAN (Related Recipes) */}
+      {relatedRecipes && relatedRecipes.length > 0 && (
+        <section className="mt-16 pt-10 border-t border-[var(--border-subtle)] space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] m-0 flex items-center gap-2">
+              <span>🍲</span>
+              <span>Công thức cùng chuyên mục</span>
+            </h2>
+            {recipe.categorySlug && (
+              <Link
+                href={`/categories/${recipe.categorySlug}`}
+                className="text-sm font-semibold text-[var(--primary)] hover:underline flex items-center gap-1"
+              >
+                <span>Xem tất cả</span>
+                <span>→</span>
+              </Link>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {relatedRecipes.map((relRecipe) => (
+              <RecipeCard key={relRecipe.id} recipe={relRecipe} />
+            ))}
+          </div>
+        </section>
+      )}
     </article>
   );
 }
