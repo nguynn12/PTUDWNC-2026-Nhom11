@@ -121,10 +121,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   // --- STATE BƯỚC 4: UPLOAD & QUẢN LÝ ẢNH MINIO (3 API TV4) ---
   const [images, setImages] = useState<RecipeImageDto[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imgAltText, setImgAltText] = useState('');
   const [imgIsPrimary, setImgIsPrimary] = useState(false);
   const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [editingAltMap, setEditingAltMap] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -503,39 +505,46 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   // =========================================================
   // XỬ LÝ BƯỚC 4: UPLOAD & QUẢN LÝ ẢNH MINIO (POST / PATCH / DELETE)
   // =========================================================
-  const handleFileChange = (file: File | null) => {
-    if (!file) {
+  const handleFileChange = (filesInput: FileList | File[] | File | null) => {
+    if (!filesInput) {
       setSelectedFile(null);
+      setSelectedFiles([]);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
+      setUploadProgress(0);
       return;
     }
 
-    // Kiểm tra định dạng file theo SRS Mục 8.3
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      showError(
-        'Định dạng ảnh không hợp lệ',
-        'Hệ thống chỉ chấp nhận các định dạng: JPEG, PNG, WebP hoặc AVIF.'
-      );
-      return;
-    }
+    const files = filesInput instanceof FileList ? Array.from(filesInput) : Array.isArray(filesInput) ? filesInput : [filesInput];
+    if (files.length === 0) return;
 
-    // Kiểm tra dung lượng tối đa 5MB
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      showError(
-        'Dung lượng ảnh vượt quá 5MB',
-        `File đã chọn nặng ${sizeMb}MB. Vui lòng chọn ảnh nhỏ hơn hoặc bằng 5MB.`
-      );
-      return;
+    for (const file of files) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        showError(
+          'Định dạng ảnh không hợp lệ',
+          `Tệp "${file.name}" không hợp lệ. Chỉ chấp nhận JPEG, PNG, WebP hoặc AVIF.`
+        );
+        return;
+      }
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+        showError(
+          'Dung lượng ảnh vượt quá 5MB',
+          `Tệp "${file.name}" nặng ${sizeMb}MB. Vui lòng chọn ảnh nhỏ hơn hoặc bằng 5MB.`
+        );
+        return;
+      }
     }
 
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setSelectedFile(files[0]);
+    setSelectedFiles(files);
+    setPreviewUrl(URL.createObjectURL(files[0]));
+    setUploadProgress(0);
     if (!imgAltText.trim()) {
-      setImgAltText(`${title || 'Món ăn'} - ${file.name.replace(/\.[^/.]+$/, '')}`);
+      setImgAltText(`${title || 'Món ăn'} - ${files[0].name.replace(/\.[^/.]+$/, '')}`);
     }
     if (images.length === 0) {
       setImgIsPrimary(true);
@@ -549,42 +558,104 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
       setActiveStep(1);
       return;
     }
-    if (!selectedFile) {
-      showWarning('Chưa chọn file ảnh', 'Vui lòng chọn một bức ảnh món ăn từ máy tính.');
+    const filesToUpload = selectedFiles.length > 0 ? selectedFiles : selectedFile ? [selectedFile] : [];
+    if (filesToUpload.length === 0) {
+      showWarning('Chưa chọn file ảnh', 'Vui lòng chọn ít nhất một bức ảnh món ăn từ máy tính.');
       return;
     }
 
     setUploadingImg(true);
+    setUploadProgress(0);
     try {
-      const uploaded = await RecipeApi.uploadImage(
-        recipeId,
-        selectedFile,
-        imgAltText.trim() || title,
-        imgIsPrimary || images.length === 0
-      );
+      const total = filesToUpload.length;
+      const uploadedList: RecipeImageDto[] = [];
+
+      for (let i = 0; i < total; i++) {
+        const file = filesToUpload[i];
+        const isFirst = (i === 0) && (imgIsPrimary || images.length === 0);
+        const alt = total === 1 ? (imgAltText.trim() || title) : `${imgAltText.trim() || title} (Ảnh ${i + 1})`;
+
+        const uploaded = await RecipeApi.uploadImage(
+          recipeId,
+          file,
+          alt,
+          isFirst,
+          (percent) => {
+            const overall = Math.round(((i * 100) + percent) / total);
+            setUploadProgress(overall);
+          }
+        );
+        uploadedList.push(uploaded);
+      }
 
       setImages(prev => {
-        const base = uploaded.isPrimary ? prev.map(i => ({ ...i, isPrimary: false })) : [...prev];
-        return [...base, uploaded];
+        let base = [...prev];
+        for (const uploaded of uploadedList) {
+          if (uploaded.isPrimary) {
+            base = base.map(img => ({ ...img, isPrimary: false }));
+          }
+          base.push(uploaded);
+        }
+        return base;
       });
-      setEditingAltMap(prev => ({ ...prev, [uploaded.id]: uploaded.altText || '' }));
+
+      setEditingAltMap(prev => {
+        const next = { ...prev };
+        uploadedList.forEach(u => { next[u.id] = u.altText || ''; });
+        return next;
+      });
+
       setSelectedFile(null);
+      setSelectedFiles([]);
       setPreviewUrl(null);
       setImgAltText('');
       setImgIsPrimary(false);
+      setUploadProgress(100);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
       showSuccess(
         'Tải ảnh lên MinIO thành công',
-        uploaded.isPrimary
-          ? 'Ảnh đã được đặt làm Ảnh đại diện chính (Primary).'
-          : 'Ảnh đã được thêm vào thư viện món ăn.'
+        `Đã tải lên ${total} hình ảnh vào Album công thức an toàn trên MinIO S3.`
       );
     } catch (err) {
-      showError('Upload ảnh thất bại', (err as ApiError).message);
+      const apiErr = err as ApiError;
+      showError('Upload ảnh thất bại', apiErr.message || 'Lỗi khi tải ảnh lên MinIO.');
     } finally {
       setUploadingImg(false);
+    }
+  };
+
+  const handleMoveImageOrder = async (index: number, direction: 'left' | 'right') => {
+    if (!recipeId) return;
+    const targetIndex = direction === 'left' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= images.length) return;
+
+    const currentImg = images[index];
+    const targetImg = images[targetIndex];
+
+    try {
+      await RecipeApi.updateImage(recipeId, currentImg.id, {
+        altText: editingAltMap[currentImg.id] ?? currentImg.altText,
+        isPrimary: currentImg.isPrimary,
+        orderIndex: targetImg.orderIndex,
+      });
+
+      await RecipeApi.updateImage(recipeId, targetImg.id, {
+        altText: editingAltMap[targetImg.id] ?? targetImg.altText,
+        isPrimary: targetImg.isPrimary,
+        orderIndex: currentImg.orderIndex,
+      });
+
+      setImages(prev => {
+        const next = [...prev];
+        next[index] = { ...currentImg, orderIndex: targetImg.orderIndex };
+        next[targetIndex] = { ...targetImg, orderIndex: currentImg.orderIndex };
+        return next;
+      });
+      showSuccess('Đã đổi thứ tự', `Đã chuyển đổi thứ tự hiển thị ảnh thành công.`);
+    } catch (err) {
+      showError('Lỗi đổi thứ tự', (err as ApiError).message);
     }
   };
 
@@ -1627,24 +1698,26 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                   onDragOver={e => e.preventDefault()}
                   onDrop={e => {
                     e.preventDefault();
-                    const droppedFile = e.dataTransfer.files?.[0] || null;
-                    handleFileChange(droppedFile);
+                    handleFileChange(e.dataTransfer.files);
                   }}
                 >
                   <input
                     ref={fileInputRef}
                     type="file"
+                    multiple
                     accept="image/jpeg,image/png,image/webp,image/avif"
                     className="hidden"
-                    onChange={e => handleFileChange(e.target.files?.[0] || null)}
+                    onChange={e => handleFileChange(e.target.files)}
                   />
                   <div className="w-12 h-12 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center mx-auto mb-3 shadow-xs">
                     <UploadCloudIcon size={24} />
                   </div>
                   <p className="text-sm sm:text-base font-bold text-[var(--text-primary)] mb-1">
-                    {selectedFile
+                    {selectedFiles.length > 1
+                      ? `Đã chọn ${selectedFiles.length} hình ảnh (Tổng: ${(selectedFiles.reduce((acc, f) => acc + f.size, 0) / 1024).toFixed(1)} KB)`
+                      : selectedFile
                       ? `Đã chọn: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`
-                      : 'Nhấn để chọn ảnh hoặc kéo thả ảnh món ăn vào đây'}
+                      : 'Nhấn để chọn một hoặc nhiều ảnh (kéo thả ảnh món ăn vào đây)'}
                   </p>
                   <p className="text-xs text-[var(--text-muted)] mb-0">
                     Định dạng hỗ trợ: JPEG, PNG, WebP, AVIF • Dung lượng tối đa: 5MB / ảnh
@@ -1672,6 +1745,21 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                           onChange={e => setImgAltText(e.target.value)}
                         />
                       </div>
+
+                      {uploadingImg && (
+                        <div className="w-full space-y-1.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                          <div className="flex items-center justify-between text-xs font-semibold text-amber-900 dark:text-amber-200">
+                            <span>⚡ Đang tải lên MinIO Object Storage...</span>
+                            <span>{uploadProgress}%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-amber-200/50 dark:bg-amber-900/40 overflow-hidden">
+                            <div
+                              className="h-full bg-[var(--primary)] transition-all duration-150 rounded-full"
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between flex-wrap gap-3">
                         <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[var(--text-primary)]">
@@ -1701,7 +1789,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                             className="gap-2"
                           >
                             <UploadCloudIcon size={16} />
-                            <span>{uploadingImg ? 'Đang tải lên MinIO...' : 'Tải ảnh lên MinIO (POST)'}</span>
+                            <span>{uploadingImg ? `Đang tải lên MinIO (${uploadProgress}%)...` : selectedFiles.length > 1 ? `Tải ${selectedFiles.length} ảnh lên MinIO` : 'Tải ảnh lên MinIO (POST)'}</span>
                           </Button>
                         </div>
                       </div>
@@ -1720,7 +1808,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {images.map(img => (
+                  {images.map((img, idx) => (
                     <div
                       key={img.id}
                       className={`rounded-2xl border overflow-hidden bg-[var(--bg-surface)] flex flex-col transition-all ${
@@ -1774,22 +1862,48 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                         </div>
 
                         <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
-                          {!img.isPrimary ? (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleSetPrimaryImage(img)}
-                              className="h-8 px-2 text-xs text-[var(--text-secondary)] gap-1"
-                            >
-                              <StarIcon size={13} />
-                              <span>Đặt làm ảnh chính</span>
-                            </Button>
-                          ) : (
-                            <span className="text-xs font-bold text-[var(--primary)]">
-                              ★ Ảnh đại diện
-                            </span>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {!img.isPrimary ? (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleSetPrimaryImage(img)}
+                                className="h-8 px-2 text-xs text-[var(--text-secondary)] gap-1"
+                              >
+                                <StarIcon size={13} />
+                                <span>Ảnh chính</span>
+                              </Button>
+                            ) : (
+                              <span className="text-xs font-bold text-[var(--primary)]">
+                                ★ Đại diện
+                              </span>
+                            )}
+                            <div className="flex items-center gap-0.5 ml-1">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveImageOrder(idx, 'left')}
+                                className="h-7 w-7 p-0 text-xs"
+                                title="Đổi thứ tự sang trái"
+                              >
+                                ←
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={idx === images.length - 1}
+                                onClick={() => handleMoveImageOrder(idx, 'right')}
+                                className="h-7 w-7 p-0 text-xs"
+                                title="Đổi thứ tự sang phải"
+                              >
+                                →
+                              </Button>
+                            </div>
+                          </div>
 
                           <Button
                             type="button"

@@ -1,3 +1,4 @@
+using Amazon.S3;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Persistence;
@@ -41,8 +42,23 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        // ── Dịch vụ lưu trữ tệp tin (Thành viên 4) ───────────────────────────────
-        services.AddScoped<IFileStorageService, FileStorageService>();
+        // ── Dịch vụ lưu trữ tệp tin & Xử lý hình ảnh MinIO S3 (Thành viên 4 - Lab 8) ──────
+        services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
+        services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var minioSettings = configuration.GetSection(MinioSettings.SectionName).Get<MinioSettings>() ?? new MinioSettings();
+            var s3Config = new AmazonS3Config
+            {
+                ServiceURL = minioSettings.Endpoint,
+                ForcePathStyle = minioSettings.ForcePathStyle,
+                UseHttp = minioSettings.Endpoint.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            };
+            return new AmazonS3Client(minioSettings.AccessKey, minioSettings.SecretKey, s3Config);
+        });
+
+        services.AddScoped<FileStorageService>();
+        services.AddScoped<IFileStorageService, MinioFileStorageService>();
+        services.AddScoped<IImageProcessingService, ImageProcessingService>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         services.AddDataProtection();

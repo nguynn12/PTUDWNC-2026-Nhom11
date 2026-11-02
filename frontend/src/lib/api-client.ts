@@ -33,6 +33,7 @@ export type ApiError = AppError;
 type FetchApiOptions = Omit<RequestInit, "headers"> & {
   headers?: Record<string, string>;
   ifMatch?: string | number | null;
+  onUploadProgress?: (progressEvent: import("axios").AxiosProgressEvent) => void;
 };
 
 /**
@@ -40,7 +41,7 @@ type FetchApiOptions = Omit<RequestInit, "headers"> & {
  * lỗi luôn là AppError (RFC 7807). Giữ chữ ký fetch cũ để RecipeApi không phải đổi.
  */
 export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {}): Promise<T> {
-  const { method = "GET", body, headers = {}, ifMatch, signal } = options;
+  const { method = "GET", body, headers = {}, ifMatch, signal, onUploadProgress } = options;
   const requestHeaders: Record<string, string> = { ...headers };
 
   // Body đã JSON.stringify sẵn: báo cho backend biết là JSON.
@@ -55,6 +56,7 @@ export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {
     data: body ?? undefined,
     headers: requestHeaders,
     signal: signal ?? undefined,
+    onUploadProgress,
   });
 
   // 204 No Content: giữ hành vi cũ trả về object rỗng.
@@ -380,7 +382,8 @@ export const RecipeApi = {
     recipeId: string,
     file: File,
     altText?: string | null,
-    isPrimary = false
+    isPrimary = false,
+    onUploadProgress?: (percent: number) => void
   ): Promise<RecipeImageDto> {
     const formData = new FormData();
     formData.append('file', file);
@@ -393,6 +396,12 @@ export const RecipeApi = {
       return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images`, {
         method: 'POST',
         body: formData,
+        onUploadProgress: (e) => {
+          if (e.total && e.total > 0 && onUploadProgress) {
+            const percent = Math.min(100, Math.round((e.loaded / e.total) * 100));
+            onUploadProgress(percent);
+          }
+        },
       });
     } catch (error) {
       if (error instanceof ApiError && error.status !== 0) {

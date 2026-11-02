@@ -28,5 +28,8 @@
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <!-- MinIO Object Storage & Image Processing (Lab 8 - Nguyen Phu Quy) -->
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.415.11" />
+    <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
 </Project>

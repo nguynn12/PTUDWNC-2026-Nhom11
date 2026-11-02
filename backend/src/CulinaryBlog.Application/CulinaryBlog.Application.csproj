@@ -11,5 +11,6 @@
          vì đây vẫn là abstraction (interface), không phải implementation EF Core của Database cụ thể. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="SixLabors.ImageSharp" />
   </ItemGroup>
 </Project>
