@@ -16,13 +16,14 @@ public record PublishRecipeCommand(Guid Id, uint? ConcurrencyToken = null) : IRe
 /// <summary>
 /// Handler xử lý xuất bản công thức.
 /// Kiểm tra điều kiện C4, C5 (bắt buộc >= 1 Ingredient và >= 1 Step),
-/// cập nhật trạng thái Published và thiết lập PublishedAt nếu lần đầu xuất bản.
+/// cập nhật trạng thái Published, thiết lập PublishedAt và tự động hủy cache (NFR-PERF).
 /// </summary>
 public sealed class PublishRecipeCommandHandler(
     IRepository<Recipe> recipeRepository,
     IUnitOfWork unitOfWork,
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    ICacheInvalidator? cacheInvalidator = null)
     : IRequestHandler<PublishRecipeCommand, RecipeResponseDto>
 {
     public async Task<RecipeResponseDto> Handle(
@@ -94,6 +95,12 @@ public sealed class PublishRecipeCommandHandler(
 
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Hủy cache Redis theo NFR-PERF
+        if (cacheInvalidator != null)
+        {
+            await cacheInvalidator.InvalidateRecipeAsync(recipe.Id, recipe.Slug, cancellationToken);
+        }
 
         var updatedXmin = await dbContext.Recipes
             .Where(r => r.Id == recipe.Id)

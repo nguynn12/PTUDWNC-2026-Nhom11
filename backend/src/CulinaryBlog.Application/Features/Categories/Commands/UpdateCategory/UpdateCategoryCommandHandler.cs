@@ -9,19 +9,22 @@ using Microsoft.Extensions.Logging;
 namespace CulinaryBlog.Application.Features.Categories.Commands.UpdateCategory;
 
 /// <summary>
-/// Handler xử lý UpdateCategoryCommand, cập nhật thông tin và bảo toàn Slug theo SRS C7.
+/// Handler xử lý UpdateCategoryCommand, cập nhật thông tin, bảo toàn Slug theo SRS C7 và tự động hủy cache (NFR-PERF).
 /// </summary>
 public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, CategoryDto>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<UpdateCategoryCommandHandler> _logger;
+    private readonly ICacheInvalidator? _cacheInvalidator;
 
     public UpdateCategoryCommandHandler(
         IApplicationDbContext dbContext,
-        ILogger<UpdateCategoryCommandHandler> logger)
+        ILogger<UpdateCategoryCommandHandler> logger,
+        ICacheInvalidator? cacheInvalidator = null)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _cacheInvalidator = cacheInvalidator;
     }
 
     public async Task<CategoryDto> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
@@ -64,6 +67,12 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
             .CountAsync(r => r.CategoryId == category.Id && r.Status == RecipeStatus.Published && !r.IsDeleted, cancellationToken);
 
         _logger.LogInformation("Cập nhật danh mục thành công. Id: {Id}", category.Id);
+
+        // Invalidate cache
+        if (_cacheInvalidator != null)
+        {
+            await _cacheInvalidator.InvalidateCategoriesAsync(category.Slug, cancellationToken);
+        }
 
         return new CategoryDto
         {

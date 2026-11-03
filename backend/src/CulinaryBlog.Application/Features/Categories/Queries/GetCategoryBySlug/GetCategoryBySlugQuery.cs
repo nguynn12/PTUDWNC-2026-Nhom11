@@ -1,3 +1,4 @@
+using CulinaryBlog.Application.Common.Constants;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Features.Categories.DTOs;
 using CulinaryBlog.Domain.Enums;
@@ -14,25 +15,39 @@ namespace CulinaryBlog.Application.Features.Categories.Queries.GetCategoryBySlug
 public record GetCategoryBySlugQuery(string Slug) : IRequest<CategoryDetailDto?>;
 
 /// <summary>
-/// Handler xử lý GetCategoryBySlugQuery, truy vấn chi tiết từ cơ sở dữ liệu.
+/// Handler xử lý GetCategoryBySlugQuery, truy vấn chi tiết từ cơ sở dữ liệu kết hợp Redis Cache 30 phút (NFR-PERF).
 /// </summary>
 public class GetCategoryBySlugQueryHandler : IRequestHandler<GetCategoryBySlugQuery, CategoryDetailDto?>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<GetCategoryBySlugQueryHandler> _logger;
+    private readonly ICacheService? _cacheService;
 
     public GetCategoryBySlugQueryHandler(
         IApplicationDbContext dbContext,
-        ILogger<GetCategoryBySlugQueryHandler> logger)
+        ILogger<GetCategoryBySlugQueryHandler> logger,
+        ICacheService? cacheService = null)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _cacheService = cacheService;
     }
 
     public async Task<CategoryDetailDto?> Handle(GetCategoryBySlugQuery request, CancellationToken cancellationToken)
     {
         var normalizedSlug = request.Slug.Trim().ToLowerInvariant();
-        _logger.LogInformation("Truy vấn thông tin danh mục với slug '{Slug}'.", normalizedSlug);
+        var cacheKey = $"{CacheConstants.CategoryPrefix}{normalizedSlug}";
+
+        if (_cacheService != null)
+        {
+            var cached = await _cacheService.GetAsync<CategoryDetailDto>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return cached;
+            }
+        }
+
+        _logger.LogInformation("Truy vấn DB: Thông tin danh mục với slug '{Slug}'.", normalizedSlug);
 
         var category = await _dbContext.Categories
             .AsNoTracking()
@@ -56,6 +71,11 @@ public class GetCategoryBySlugQueryHandler : IRequestHandler<GetCategoryBySlugQu
         {
             _logger.LogWarning("Không tìm thấy danh mục với slug '{Slug}'.", normalizedSlug);
             return null;
+        }
+
+        if (_cacheService != null)
+        {
+            await _cacheService.SetAsync(cacheKey, category, CacheConstants.CategoryDuration, cancellationToken);
         }
 
         return category;
