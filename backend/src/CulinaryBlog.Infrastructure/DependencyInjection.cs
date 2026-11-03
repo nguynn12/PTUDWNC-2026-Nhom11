@@ -5,10 +5,12 @@ using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
+using CulinaryBlog.Infrastructure.Services.Cache;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace CulinaryBlog.Infrastructure;
 
@@ -30,6 +32,33 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
+
+        // ── Redis Cache & Invalidation (NFR-PERF, NFR-REL-002) ──────────────────
+        var redisConnectionString = configuration.GetConnectionString("Redis")
+            ?? configuration["Redis:ConnectionString"]
+            ?? "localhost:6379";
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            configOptions.ConnectTimeout = 2000;
+            configOptions.SyncTimeout = 2000;
+            options.ConfigurationOptions = configOptions;
+            options.InstanceName = configuration["Redis:InstanceName"] ?? "CulinaryBlog:";
+        });
+
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            configOptions.ConnectTimeout = 2000;
+            configOptions.SyncTimeout = 2000;
+            return ConnectionMultiplexer.Connect(configOptions);
+        });
+
+        services.AddScoped<ICacheService, RedisCacheService>();
+        services.AddScoped<ICacheInvalidator, CacheInvalidator>();
 
         // ── Repository và Unit of Work (Yêu cầu chung Lab 3) ─────────────────────
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
