@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import type { CategoryDto } from "@/types/api";
 
 // Cấu hình ISR: Tự động tái sinh ngầm định trang sau 60 giây khi có danh mục mới
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Danh Mục Món Ăn Phong Phú",
@@ -30,6 +30,11 @@ export const metadata: Metadata = {
     title: "Danh Mục Món Ăn Phong Phú | Culinary Blog",
     description: "Khám phá các danh mục món ăn phong phú và công thức nấu nướng tuyển chọn từ các chuyên gia ẩm thực.",
     url: "/categories",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Danh Mục Món Ăn Phong Phú | Culinary Blog",
+    description: "Khám phá các danh mục món ăn phong phú và công thức nấu nướng tuyển chọn từ các chuyên gia ẩm thực.",
   },
 };
 

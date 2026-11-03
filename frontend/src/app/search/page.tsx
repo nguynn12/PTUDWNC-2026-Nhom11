@@ -12,6 +12,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tìm Kiếm Công Thức Nấu Ăn | Culinary Blog",
     description: "Công cụ tìm kiếm công thức nấu ăn thông minh và nhanh chóng.",
+    url: "/search",
+  },
+  alternates: {
+    canonical: "/search",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tìm Kiếm Công Thức Nấu Ăn | Culinary Blog",
+    description: "Công cụ tìm kiếm công thức nấu ăn thông minh và nhanh chóng.",
   },
 };
 
