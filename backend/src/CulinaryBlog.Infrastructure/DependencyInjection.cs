@@ -7,6 +7,7 @@ using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
 using CulinaryBlog.Infrastructure.Services.Cache;
+using CulinaryBlog.Infrastructure.Services.Sitemap;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -65,6 +66,10 @@ public static class DependencyInjection
 
         services.AddScoped<ICacheService, RedisCacheService>();
         services.AddScoped<ICacheInvalidator, CacheInvalidator>();
+
+        // ── Sitemap Service & Hangfire Job (FR-JOB-003, NFR-SEO) ────────────────
+        services.AddScoped<ISitemapService, SitemapService>();
+        services.AddTransient<Jobs.GenerateSitemapJob>();
 
         // ── Repository và Unit of Work (Yêu cầu chung Lab 3) ─────────────────────
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
