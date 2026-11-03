@@ -12,13 +12,17 @@ import {
   FlameIcon,
 } from '@/components/common/Icons';
 import { ToastProvider } from '@/components/common/Toast';
+import { RequireRole } from '@/components/auth/RequireRole';
+import { useCurrentUser } from '@/store/auth-store';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const user = useCurrentUser();
 
   return (
     <ToastProvider>
-      <div className="dashboard-wrapper">
+      <RequireRole role="Admin">
+        <div className="dashboard-wrapper">
         {/* SIDEBAR NAVIGATION */}
         <aside className="dashboard-sidebar">
           <div className="sidebar-brand">
@@ -50,16 +54,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <span>Bài viết của tôi</span>
             </Link>
 
-            <div className="sidebar-nav-heading">Thùng rác & Dọn dẹp</div>
-
+            <div className="sidebar-nav-heading">Nội dung</div>
             <Link
               href="/admin/recipes/trash"
               className={`sidebar-link ${pathname.startsWith('/admin/recipes/trash') ? 'active' : ''}`}
             >
               <TrashIcon size={18} />
-              <span>Thùng rác</span>
+              <span>Thùng rác công thức</span>
               <span className="sidebar-badge">Admin</span>
             </Link>
+
+            <div className="sidebar-nav-heading">Quản lý người dùng</div>
             <Link
               href="/admin/users"
               className={`sidebar-link ${pathname.startsWith('/admin/users') ? 'active' : ''}`}
@@ -68,6 +73,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <span>Người dùng</span>
               <span className="sidebar-badge">Admin</span>
             </Link>
+
+            <div className="sidebar-nav-heading">Giám sát hệ thống</div>
             <Link
               href="/admin/system-logs"
               className={`sidebar-link ${pathname.startsWith('/admin/system-logs') ? 'active' : ''}`}
@@ -87,18 +94,19 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
           <div className="sidebar-footer">
             <div className="user-profile-widget">
-              <div className="user-avatar">TN</div>
+              <div className="user-avatar">{(user?.displayName ?? 'U').slice(0, 2).toUpperCase()}</div>
               <div style={{ overflow: 'hidden' }}>
-                <div className="user-info-name">Tạ Nhật Nguyên</div>
-                <div className="user-info-role">Nhóm trưởng • Admin</div>
+                  <div className="user-info-name">{user?.displayName ?? 'Quản trị viên'}</div>
+                  <div className="user-info-role">Quản trị viên</div>
               </div>
             </div>
           </div>
         </aside>
 
         {/* MAIN CONTENT CONTAINER */}
-        <div className="dashboard-main">{children}</div>
-      </div>
+          <div className="dashboard-main">{children}</div>
+        </div>
+      </RequireRole>
     </ToastProvider>
   );
 }

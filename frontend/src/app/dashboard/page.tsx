@@ -18,9 +18,12 @@ import {
 import { RecipeApi } from '@/lib/api-client';
 import { DashboardMetrics, RecipeSummaryDto } from '@/lib/types';
 import { useToast } from '@/components/common/Toast';
+import { useCurrentUser, useHasRole } from '@/store/auth-store';
 
 export default function DashboardOverviewPage() {
   const { showError } = useToast();
+  const user = useCurrentUser();
+  const isAdmin = useHasRole('Admin');
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalRecipes: 0,
     publishedCount: 0,
@@ -109,6 +112,31 @@ export default function DashboardOverviewPage() {
             <div className="metric-icon-box metric-icon-primary">
               <BookOpenIcon size={24} />
             </div>
+
+            <section className="section-card" style={{ marginBottom: '28px' }}>
+              <div className="section-header">
+                <div>
+                  <h2 className="section-title">Từ tác giả đến món ăn</h2>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                    {user?.displayName ?? 'Tác giả'} tạo công thức, gắn vào danh mục và chia sẻ món ăn với cộng đồng.
+                  </p>
+                </div>
+              </div>
+              <div className="quick-actions-grid">
+                <Link href="/dashboard/recipes/new" className="action-card">
+                  <div className="action-card-title">1. Tạo công thức</div>
+                  <div className="action-card-desc">Nhập tên món ăn, mô tả, nguyên liệu, các bước làm và hình ảnh.</div>
+                </Link>
+                <Link href="/categories" className="action-card">
+                  <div className="action-card-title">2. Chọn danh mục món ăn</div>
+                  <div className="action-card-desc">Mỗi công thức thuộc một danh mục để người đọc dễ khám phá.</div>
+                </Link>
+                <Link href="/recipes" className="action-card">
+                  <div className="action-card-title">3. Xem món ăn công khai</div>
+                  <div className="action-card-desc">Công thức đã xuất bản sẽ xuất hiện trong kho món ăn và trang danh mục.</div>
+                </Link>
+              </div>
+            </section>
             <div>
               <div className="metric-value">{loading ? '...' : metrics.totalRecipes}</div>
               <div className="metric-label">Tổng số công thức</div>
@@ -187,6 +215,21 @@ export default function DashboardOverviewPage() {
             </div>
           </Link>
 
+          {isAdmin && (
+            <Link href="/dashboard/categories" className="action-card">
+              <div className="action-card-header">
+                <div className="metric-icon-box metric-icon-warning">
+                  <BookOpenIcon size={22} />
+                </div>
+                <ArrowUpRightIcon size={18} color="#A8A29E" />
+              </div>
+              <div className="action-card-title">Quản lý danh mục món ăn</div>
+              <div className="action-card-desc">
+                Tạo và sắp xếp danh mục; số lượng công thức được liên kết trực tiếp từ dữ liệu thực tế.
+              </div>
+            </Link>
+          )}
+
           <Link href="/admin/recipes/trash" className="action-card">
             <div className="action-card-header">
               <div className="metric-icon-box metric-icon-danger">
@@ -252,7 +295,13 @@ export default function DashboardOverviewPage() {
                       </td>
                       <td>
                         <span style={{ fontWeight: 600, color: 'var(--primary-dark)' }}>
-                          {recipe.categoryName || 'Ẩm thực'}
+                          {recipe.categorySlug ? (
+                            <Link href={`/categories/${recipe.categorySlug}`} className="hover:underline">
+                              {recipe.categoryName || 'Ẩm thực'}
+                            </Link>
+                          ) : (
+                            recipe.categoryName || 'Ẩm thực'
+                          )}
                         </span>
                       </td>
                       <td>{renderStatusBadge(recipe.status || 'Draft')}</td>
