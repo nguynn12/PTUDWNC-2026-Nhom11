@@ -49,6 +49,8 @@ public sealed class CulinaryBlogDbContext(DbContextOptions<CulinaryBlogDbContext
     /// </summary>
     public DbSet<RecipeImage> RecipeImages => Set<RecipeImage>();
 
+    public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

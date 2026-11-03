@@ -6,6 +6,7 @@ import type {
   UpdateProfileRequest,
   UserDto,
   AdminUsersResponse,
+  SystemLogsResponse,
 } from "@/types/auth";
 
 /**
@@ -24,6 +25,15 @@ export const authApi = {
     apiClient.get<never, AdminUsersResponse>("/admin/users", { params }),
   toggleUserStatus: (id: string, isActive: boolean) =>
     apiClient.patch<never, void>(`/admin/users/${encodeURIComponent(id)}/status`, { isActive }),
+  listSystemLogs: (params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    level?: "Information" | "Warning" | "Error";
+    statusCode?: number;
+    from?: string;
+    to?: string;
+  }) => apiClient.get<never, SystemLogsResponse>("/admin/system-logs", { params }),
   me: () => apiClient.get<never, UserDto>("/auth/me"),
   updateProfile: (body: UpdateProfileRequest) => apiClient.patch<never, UserDto>("/auth/me", body),
   /**

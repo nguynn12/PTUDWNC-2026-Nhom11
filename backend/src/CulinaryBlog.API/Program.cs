@@ -94,6 +94,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<SystemAuditLoggingMiddleware>();
 
 // Nhóm /api/v1 có phiên bản (Asp.Versioning, SRS 5.2). Các module gắn endpoint vào nhóm này.
 var api = app.MapVersionedApi()
@@ -107,6 +108,7 @@ var api = app.MapVersionedApi()
 // 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
 api.MapAuthEndpoints();
 api.MapAdminUserEndpoints();
+api.MapSystemLogEndpoints();
 
 // 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
 api.MapCategoryEndpoints();

@@ -68,6 +68,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <span>Người dùng</span>
               <span className="sidebar-badge">Admin</span>
             </Link>
+            <Link
+              href="/admin/system-logs"
+              className={`sidebar-link ${pathname.startsWith('/admin/system-logs') ? 'active' : ''}`}
+            >
+              <span aria-hidden="true">📝</span>
+              <span>Nhật ký hệ thống</span>
+              <span className="sidebar-badge">Admin</span>
+            </Link>
 
             <div className="sidebar-nav-heading">Liên kết</div>
 
