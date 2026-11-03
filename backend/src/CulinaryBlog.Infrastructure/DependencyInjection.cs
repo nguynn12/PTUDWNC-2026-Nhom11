@@ -1,6 +1,7 @@
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Persistence;
+using CulinaryBlog.Infrastructure.Persistence.Interceptors;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
@@ -24,8 +25,13 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 "Connection string 'DefaultConnection' was not configured.");
 
-        services.AddDbContext<CulinaryBlogDbContext>(options =>
+        // ── EF Core Interceptor giám sát truy vấn chậm > 100ms (NFR-PERF) ────────
+        services.AddSingleton<SlowQueryInterceptor>();
+
+        services.AddDbContext<CulinaryBlogDbContext>((sp, options) =>
         {
+            var slowQueryInterceptor = sp.GetRequiredService<SlowQueryInterceptor>();
+            options.AddInterceptors(slowQueryInterceptor);
             options.UseNpgsql(connectionString);
             options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
