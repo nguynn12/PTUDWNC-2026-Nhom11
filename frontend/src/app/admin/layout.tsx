@@ -60,6 +60,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <span>Thùng rác</span>
               <span className="sidebar-badge">Admin</span>
             </Link>
+            <Link
+              href="/admin/users"
+              className={`sidebar-link ${pathname.startsWith('/admin/users') ? 'active' : ''}`}
+            >
+              <span aria-hidden="true">👥</span>
+              <span>Người dùng</span>
+              <span className="sidebar-badge">Admin</span>
+            </Link>
 
             <div className="sidebar-nav-heading">Liên kết</div>
 

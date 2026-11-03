@@ -125,6 +125,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const [imgAltText, setImgAltText] = useState('');
   const [imgIsPrimary, setImgIsPrimary] = useState(false);
   const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [editingAltMap, setEditingAltMap] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -550,12 +551,14 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     }
 
     setUploadingImg(true);
+    setUploadProgress(0);
     try {
       const uploaded = await RecipeApi.uploadImage(
         recipeId,
         selectedFile,
         imgAltText.trim() || title,
-        imgIsPrimary || images.length === 0
+        imgIsPrimary || images.length === 0,
+        setUploadProgress
       );
 
       setImages(prev => {
@@ -580,6 +583,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
       showError('Upload ảnh thất bại', (err as ApiError).message);
     } finally {
       setUploadingImg(false);
+      setUploadProgress(0);
     }
   };
 
@@ -1696,9 +1700,20 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                             className="gap-2"
                           >
                             <UploadCloudIcon size={16} />
-                            <span>{uploadingImg ? 'Đang tải lên MinIO...' : 'Tải ảnh lên MinIO (POST)'}</span>
+                            <span>{uploadingImg ? `Đang tải lên... ${uploadProgress}%` : 'Tải ảnh lên (POST)'}</span>
                           </Button>
                         </div>
+                        {uploadingImg && (
+                          <div className="mt-3" aria-live="polite">
+                            <div className="h-2 overflow-hidden rounded-full bg-[var(--border-subtle)]">
+                              <div
+                                className="h-full bg-[var(--primary)] transition-[width]"
+                                style={{ width: `${uploadProgress}%` }}
+                              />
+                            </div>
+                            <p className="mt-1 text-right text-xs text-[var(--text-muted)]">{uploadProgress}%</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

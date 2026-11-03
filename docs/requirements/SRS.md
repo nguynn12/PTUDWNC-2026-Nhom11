@@ -2214,6 +2214,11 @@ Trong MVP, server chỉ tạo `Nutrition_Source=Manual`. Chế độ `AutoCalcul
 | POST | `/auth/email/resend` | Public |
 | GET | `/auth/me` | Bearer |
 | PATCH | `/auth/me` | Bearer |
+| POST | `/auth/me/avatar` | ****** (multipart, JPG/PNG/WebP, tối đa 5 MB) |
+| POST | `/auth/password/forgot` | Public |
+| POST | `/auth/password/reset` | Public token |
+| POST | `/auth/password/change` | ****** |
+| GET | `/admin/users` | Admin (phân trang, tìm kiếm, lọc role/status) |
 | PATCH | `/admin/users/{id}/status` | Admin |
 
 ### 8.2. Category

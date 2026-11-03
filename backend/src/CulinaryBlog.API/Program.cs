@@ -27,6 +27,23 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+    app.UseHttpsRedirection();
+}
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
+    await next();
+});
+
 // CORS đặt đầu pipeline: preflight OPTIONS trả ngay (không tính rate limit) và header CORS
 // vẫn có trên response lỗi (401/429/500) để trình duyệt đọc được Problem Details.
 app.UseCors(CorsSetup.PolicyName);
@@ -157,19 +174,6 @@ api.MapGet("/overview", async (CulinaryBlogDbContext dbContext) =>
 
 // Định tuyến Health Checks ở cả root và api group (đáp ứng SRS Mục 8.4: /health, /health/live, /health/ready)
 app.MapHealthEndpoints();
-
-app.MapGet("/health/ready", async (
-    CulinaryBlogDbContext dbContext,
-    CancellationToken cancellationToken) =>
-{
-    var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
-
-    return canConnect
-        ? Results.Ok(new { status = "Ready", checks = new { database = "Healthy" } })
-        : Results.Problem(
-            title: "Service is not ready to receive traffic",
-            statusCode: StatusCodes.Status503ServiceUnavailable);
-});
 
 app.Run();
 

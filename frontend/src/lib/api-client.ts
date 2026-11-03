@@ -360,7 +360,8 @@ export const RecipeApi = {
     recipeId: string,
     file: File,
     altText?: string | null,
-    isPrimary = false
+    isPrimary = false,
+    onProgress?: (percent: number) => void
   ): Promise<RecipeImageDto> {
     const formData = new FormData();
     formData.append('file', file);
@@ -369,17 +370,17 @@ export const RecipeApi = {
     }
     formData.append('isPrimary', isPrimary ? 'true' : 'false');
 
-    try {
-      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images`, {
-        method: 'POST',
-        body: formData,
-      });
-    } catch (error) {
-      if (error instanceof ApiError && error.status !== 0) {
-        throw error;
-      }
-      return uploadMockImage(recipeId, file, altText ?? null, isPrimary);
-    }
+    const response = await apiRequest<{ data: RecipeImageDto }>({
+      url: `/recipes/${recipeId}/images`,
+      method: 'POST',
+      data: formData,
+      onUploadProgress: event => {
+        if (event.total && onProgress) {
+          onProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      },
+    });
+    return response.data;
   },
 
   // --- [API 9/10 TV4] PATCH /api/v1/recipes/{id}/images/{imageId} ---
@@ -389,10 +390,11 @@ export const RecipeApi = {
     request: UpdateRecipeImageRequest
   ): Promise<RecipeImageDto> {
     try {
-      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
+      const response = await fetchApi<{ data: RecipeImageDto }>(`/recipes/${recipeId}/images/${imageId}`, {
         method: 'PATCH',
         body: JSON.stringify(request),
       });
+      return response.data;
     } catch (error) {
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
@@ -1015,5 +1017,3 @@ function deleteMockImage(recipeId: string, imageId: string): void {
   }
   mockImagesMap[recipeId] = remaining;
 }
-
-
