@@ -9,9 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// Handler xử lý GetRecipeBySlugQuery: eager load các thực thể con và ánh xạ RecipeDetailDto.
+/// Handler xử lý GetRecipeBySlugQuery: eager load các thực thể con và ánh xạ RecipeDetailDto,
+/// hỗ trợ phát hiện slug cũ và chuyển hướng 301 Permanent Redirect (RESOLVED-CONFLICTS C7, FR-RCP-002).
 /// </summary>
-public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery, RecipeDetailDto?>
+public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery, GetRecipeBySlugResult>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUserQueryService _userQueryService;
@@ -27,7 +28,7 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
         _logger = logger;
     }
 
-    public async Task<RecipeDetailDto?> Handle(GetRecipeBySlugQuery request, CancellationToken cancellationToken)
+    public async Task<GetRecipeBySlugResult> Handle(GetRecipeBySlugQuery request, CancellationToken cancellationToken)
     {
         var slug = request.Slug.Trim().ToLowerInvariant();
         _logger.LogInformation("Truy vấn chi tiết Recipe theo Slug: '{Slug}'", slug);
@@ -43,15 +44,33 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
 
         if (recipe is null)
         {
+            // Kiểm tra trong lịch sử slug cũ (RecipeSlugHistory) xem có chuyển hướng 301 được không
+            var slugHistory = await _dbContext.RecipeSlugHistories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(h => h.OldSlug == slug, cancellationToken);
+
+            if (slugHistory != null)
+            {
+                var targetRecipe = await _dbContext.Recipes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(r => r.Id == slugHistory.RecipeId && !r.IsDeleted, cancellationToken);
+
+                if (targetRecipe != null && !string.IsNullOrWhiteSpace(targetRecipe.Slug))
+                {
+                    _logger.LogInformation("Slug '{OldSlug}' đã chuyển hướng sang '{NewSlug}' (301 Permanent Redirect)", slug, targetRecipe.Slug);
+                    return GetRecipeBySlugResult.Redirect(targetRecipe.Slug);
+                }
+            }
+
             _logger.LogWarning("Không tìm thấy Recipe nào đang Published với Slug: '{Slug}'", slug);
-            return null;
+            return GetRecipeBySlugResult.NotFound();
         }
 
         var authors = await _userQueryService.GetAuthorSummariesAsync([recipe.AuthorId], cancellationToken);
         var authorSummary = authors.TryGetValue(recipe.AuthorId, out var a) ? a : null;
 
         // Ánh xạ sang RecipeDetailDto
-        return new RecipeDetailDto
+        var dto = new RecipeDetailDto
         {
             Id = recipe.Id,
             Title = recipe.Title,
@@ -131,5 +150,7 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
                 })
                 .ToList()
         };
+
+        return GetRecipeBySlugResult.Found(dto);
     }
 }
