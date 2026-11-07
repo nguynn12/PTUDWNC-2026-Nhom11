@@ -17,7 +17,9 @@ using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Domain.Enums;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
+using CulinaryBlog.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 /// <summary>
@@ -31,6 +33,15 @@ public class RecipeLifecycleAuthorizationAndConcurrencyTests
     {
         public string? UserId { get; set; }
         public bool IsAdmin { get; set; }
+    }
+
+    private sealed class TestFileStorageService : IFileStorageService
+    {
+        public Task<string> UploadAsync(System.IO.Stream stream, string fileName, string contentType, string? folder = null, CancellationToken cancellationToken = default)
+            => Task.FromResult($"https://storage.test/{folder}/{fileName}");
+
+        public Task DeleteAsync(string fileUrl, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
     }
 
     private CulinaryBlogDbContext CreateInMemoryDbContext()
@@ -399,7 +410,9 @@ public class RecipeLifecycleAuthorizationAndConcurrencyTests
         var currentUser = new TestCurrentUserService { UserId = "admin-user", IsAdmin = true };
         var repo = new EfRepository<Recipe>(context);
         var uow = new UnitOfWork(context);
-        var handler = new PurgeRecipeCommandHandler(repo, uow, context, currentUser);
+        var fileStorage = new TestFileStorageService();
+        var purgeService = new RecipePurgeService(context, uow, repo, fileStorage, NullLogger<RecipePurgeService>.Instance);
+        var handler = new PurgeRecipeCommandHandler(purgeService, currentUser);
 
         // Act
         await handler.Handle(new PurgeRecipeCommand(recipeId), CancellationToken.None);

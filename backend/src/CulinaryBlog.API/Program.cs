@@ -1,18 +1,64 @@
 using CulinaryBlog.API;
 using CulinaryBlog.API.Configuration;
 using CulinaryBlog.API.Endpoints;
+using CulinaryBlog.API.Filters;
 using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.API.OpenApi;
 using CulinaryBlog.Application;
 using CulinaryBlog.Domain.Constants;
 using CulinaryBlog.Infrastructure;
+using CulinaryBlog.Infrastructure.Jobs;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Lab 8 (TV3): Thiết lập Serilog có cấu trúc (Console JSON, File rolling theo ngày, Seq Development)
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    var seqServerUrl = context.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341";
+    var isDev = context.HostingEnvironment.IsDevelopment();
+
+    configuration
+        .MinimumLevel.Is(isDev ? LogEventLevel.Debug : LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", isDev ? LogEventLevel.Information : LogEventLevel.Warning)
+        .Enrich.FromLogContext()
+        .Enrich.WithProperty("Application", "CulinaryBlog.API")
+        .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName);
+
+    // Sink Console: JSON có cấu trúc trong Prod, định dạng màu trong Dev
+    if (isDev)
+    {
+        configuration.WriteTo.Console(
+            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} <CorrelationId:{CorrelationId}> {Properties:j}{NewLine}{Exception}");
+    }
+    else
+    {
+        configuration.WriteTo.Console(new CompactJsonFormatter());
+    }
+
+    // Sink File: rolling daily trong logs/app-.log (lưu trữ 30 ngày)
+    configuration.WriteTo.File(
+        path: "logs/app-.log",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}");
+
+    // Sink Seq (Development/Production)
+    if (!string.IsNullOrWhiteSpace(seqServerUrl))
+    {
+        configuration.WriteTo.Seq(seqServerUrl, restrictedToMinimumLevel: LogEventLevel.Debug);
+    }
+});
 
 // Lab 5 (TV1): tài liệu OpenAPI có Bearer JWT, API versioning theo URL, CORS allowlist cho frontend.
 builder.Services.AddCulinaryOpenApi();
@@ -30,6 +76,22 @@ var app = builder.Build();
 // CORS đặt đầu pipeline: preflight OPTIONS trả ngay (không tính rate limit) và header CORS
 // vẫn có trên response lỗi (401/429/500) để trình duyệt đọc được Problem Details.
 app.UseCors(CorsSetup.PolicyName);
+
+// Lab 8 (TV3): CorrelationId & Serilog Request Logging (FR-OBS-002)
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms (UserId: {UserId}, CorrelationId: {CorrelationId})";
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("UserId", httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "Anonymous");
+        if (httpContext.Response.Headers.TryGetValue("X-Correlation-ID", out var correlationId))
+        {
+            diagnosticContext.Set("CorrelationId", correlationId.ToString());
+        }
+        diagnosticContext.Set("ClientIp", httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+    };
+});
 
 // Exception → RFC 7807 Problem Details (AuthExceptionHandler + GlobalExceptionHandler)
 app.UseExceptionHandler();
@@ -77,6 +139,29 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Lab 8 (TV3): Hangfire Dashboard & Recurring Job dọn rác 30 ngày (FR-JOB-004)
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = [new HangfireAdminAuthorizationFilter(allowAnonymousInDev: true)],
+        DashboardTitle = "Culinary Blog - Background Jobs"
+    });
+
+    try
+    {
+        RecurringJob.AddOrUpdate<PurgeExpiredRecipesJob>(
+            "purge-expired-recipes-30days",
+            job => job.ExecuteAsync(CancellationToken.None),
+            "0 3 * * *");
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Không thể đăng ký recurring job Hangfire (có thể PostgreSQL chưa sẵn sàng).");
+    }
+}
 
 // Nhóm /api/v1 có phiên bản (Asp.Versioning, SRS 5.2). Các module gắn endpoint vào nhóm này.
 var api = app.MapVersionedApi()

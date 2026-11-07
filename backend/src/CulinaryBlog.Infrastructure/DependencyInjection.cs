@@ -1,10 +1,14 @@
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Infrastructure.Identity;
+using CulinaryBlog.Infrastructure.Jobs;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
+using Hangfire;
+using Hangfire.MemoryStorage;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -106,6 +110,38 @@ public static class DependencyInjection
         .AddJwtBearer(options => JwtBearerSetup.Configure(options, jwtSettings));
 
         services.AddAuthorization(AuthorizationPolicies.Configure);
+
+        // ── Hangfire Background Job Processing (Lab 8 TV3) ───────────────────────
+        services.AddScoped<IRecipePurgeService, RecipePurgeService>();
+        services.AddScoped<PurgeExpiredRecipesJob>();
+
+        var isTesting = configuration.GetValue<bool>("IsTesting")
+            || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Testing", StringComparison.OrdinalIgnoreCase);
+
+        services.AddHangfire(config =>
+        {
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                  .UseSimpleAssemblyNameTypeSerializer()
+                  .UseRecommendedSerializerSettings();
+
+            if (isTesting)
+            {
+                config.UseMemoryStorage();
+            }
+            else
+            {
+                config.UsePostgreSqlStorage(options =>
+                {
+                    options.UseNpgsqlConnection(connectionString);
+                });
+            }
+        });
+
+        services.AddHangfireServer(options =>
+        {
+            options.WorkerCount = Math.Min(Environment.ProcessorCount * 2, 4);
+            options.Queues = ["default", "critical"];
+        });
 
         return services;
     }
