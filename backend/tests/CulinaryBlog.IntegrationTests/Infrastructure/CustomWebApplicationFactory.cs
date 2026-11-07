@@ -38,6 +38,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                ["IsTesting"] = "true",
+                ["ASPNETCORE_ENVIRONMENT"] = "Testing",
                 ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Database=fake_test_db;Username=test;Password=test",
                 ["Jwt:SecretKey"] = "SuperSecretKeyForIntegrationTestingPurposesOnly1234567890!@#$%",
                 ["Jwt:Issuer"] = "CulinaryBlogTest",

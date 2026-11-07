@@ -116,7 +116,9 @@ public static class DependencyInjection
         services.AddScoped<PurgeExpiredRecipesJob>();
 
         var isTesting = configuration.GetValue<bool>("IsTesting")
-            || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Testing", StringComparison.OrdinalIgnoreCase);
+            || string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Testing", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Testing", StringComparison.OrdinalIgnoreCase)
+            || connectionString.Contains("fake_test_db", StringComparison.OrdinalIgnoreCase);
 
         services.AddHangfire(config =>
         {
@@ -137,11 +139,14 @@ public static class DependencyInjection
             }
         });
 
-        services.AddHangfireServer(options =>
+        if (!isTesting)
         {
-            options.WorkerCount = Math.Min(Environment.ProcessorCount * 2, 4);
-            options.Queues = ["default", "critical"];
-        });
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = Math.Min(Environment.ProcessorCount * 2, 4);
+                options.Queues = ["default", "critical"];
+            });
+        }
 
         return services;
     }
