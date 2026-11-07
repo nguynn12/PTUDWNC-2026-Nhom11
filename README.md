@@ -2,6 +2,47 @@
 
 Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng nền tảng blog ẩm thực và chia sẻ công thức nấu ăn.
 
+## 🚀 Khởi chạy nhanh toàn bộ dự án với Docker Compose (< 5 phút)
+
+Hệ thống được đóng gói hoàn chỉnh bằng **Docker Compose full-stack 7 services** (PostgreSQL, Redis, MinIO S3, Seq, .NET 10 API, Next.js Web, Nginx reverse proxy).
+
+### 1. Chuẩn bị file môi trường
+`powershell
+# Sao chép file cấu hình mẫu sang .env
+cp .env.example .env
+`
+
+### 2. Khởi chạy toàn bộ hệ thống
+`powershell
+docker compose up -d --build
+`
+
+### 3. Địa chỉ truy cập các dịch vụ
+| Dịch vụ | Địa chỉ URL | Ghi chú |
+|---|---|---|
+| **Cổng vào Nginx (Reverse Proxy)** | http://localhost | Định tuyến / -> Web, /api/ -> API |
+| **Giao diện Web (Next.js)** | http://localhost:3000 | Frontend người dùng và quản trị |
+| **API & Scalar Documentation** | http://localhost:5000/scalar/v1 | Tài liệu API tương tác trực quan |
+| **MinIO Console (Object Storage)** | http://localhost:9001 | User: culinary_minio_admin / Pass: culinary_minio_secret |
+| **Seq Structured Logging** | http://localhost:5341 | Nhật ký có cấu trúc & truy vết Correlation ID |
+| **pgAdmin 4 (Quản trị DB)** | http://localhost:5050 | Email: dmin@culinaryblog.com / Pass: culinary_blog_admin |
+
+### 4. Dành cho lập trình viên (Chạy riêng hạ tầng)
+Nếu muốn debug cục bộ bằng dotnet run và 
+pm run dev:
+`powershell
+# Chỉ khởi chạy các dịch vụ nền tảng (DB, Redis, MinIO, Seq)
+docker compose up -d postgres redis minio minio-init seq
+
+# Khởi chạy Backend API
+dotnet run --project backend/src/CulinaryBlog.API
+
+# Khởi chạy Frontend Web (terminal khác)
+npm --prefix frontend run dev
+`
+
+---
+
 ## Phân công bài tập Lab - Buổi 1
 
 **Mục tiêu:** Đọc và phân tích tài liệu SRS, tìm hiểu các chức năng cần xây dựng, xác định mô hình dữ liệu và các mối quan hệ chính của hệ thống; đồng thời rà soát các điểm chưa rõ hoặc mâu thuẫn trong đặc tả để chuẩn bị cho giai đoạn triển khai.

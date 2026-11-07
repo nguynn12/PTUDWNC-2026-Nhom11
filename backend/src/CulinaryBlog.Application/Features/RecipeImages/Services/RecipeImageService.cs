@@ -16,11 +16,16 @@ public class RecipeImageService : IRecipeImageService
 {
     private readonly IApplicationDbContext _context;
     private readonly IFileStorageService _fileStorageService;
+    private readonly IImageProcessingService? _imageProcessingService;
 
-    public RecipeImageService(IApplicationDbContext context, IFileStorageService _fileStorageService)
+    public RecipeImageService(
+        IApplicationDbContext context,
+        IFileStorageService fileStorageService,
+        IImageProcessingService? imageProcessingService = null)
     {
         _context = context;
-        this._fileStorageService = _fileStorageService;
+        _fileStorageService = fileStorageService;
+        _imageProcessingService = imageProcessingService;
     }
 
     /// <inheritdoc />
@@ -104,7 +109,7 @@ public class RecipeImageService : IRecipeImageService
 
         int orderIndex = existingImages.Count > 0 ? existingImages.Max(i => i.OrderIndex) + 1 : 0;
 
-        // Lưu trữ file vào Object Storage / Local Storage
+        // 1. Lưu trữ file gốc vào Object Storage (MinIO) / Local Storage
         var publicUrl = await _fileStorageService.UploadAsync(
             stream,
             fileName,
@@ -112,11 +117,54 @@ public class RecipeImageService : IRecipeImageService
             $"recipes/{recipeId}",
             cancellationToken);
 
+        string? thumbnailUrl = null;
+        string? mediumUrl = null;
+
+        // 2. Tự động sinh thumbnail (300x300) và medium (800x600) bằng ImageSharp (FR-JOB-002)
+        if (_imageProcessingService != null)
+        {
+            try
+            {
+                var (thumb, med) = await _imageProcessingService.ProcessVariantsAsync(stream, fileName, cancellationToken);
+                if (thumb != null)
+                {
+                    using (thumb.Stream)
+                    {
+                        thumbnailUrl = await _fileStorageService.UploadAsync(
+                            thumb.Stream,
+                            thumb.FileName,
+                            thumb.ContentType,
+                            $"recipes/{recipeId}",
+                            cancellationToken);
+                    }
+                }
+
+                if (med != null)
+                {
+                    using (med.Stream)
+                    {
+                        mediumUrl = await _fileStorageService.UploadAsync(
+                            med.Stream,
+                            med.FileName,
+                            med.ContentType,
+                            $"recipes/{recipeId}",
+                            cancellationToken);
+                    }
+                }
+            }
+            catch
+            {
+                // Nếu xử lý variant thất bại: ảnh gốc vẫn hiển thị an toàn, chỉ thiếu thumbnail/medium theo SRS FR-JOB-002
+            }
+        }
+
         var image = new RecipeImage
         {
             Id = Guid.NewGuid(),
             RecipeId = recipeId,
             OriginalUrl = publicUrl,
+            ThumbnailUrl = thumbnailUrl,
+            MediumUrl = mediumUrl,
             AltText = altText?.Trim(),
             IsPrimary = shouldBePrimary,
             OrderIndex = orderIndex,
@@ -256,8 +304,16 @@ public class RecipeImageService : IRecipeImageService
             }
         }
 
-        // Xóa file khỏi storage (idempotent)
+        // Xóa file gốc và các biến thể Thumbnail, Medium khỏi storage (FR-FILE-002 idempotent)
         await _fileStorageService.DeleteAsync(imageToDelete.OriginalUrl, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(imageToDelete.ThumbnailUrl))
+        {
+            await _fileStorageService.DeleteAsync(imageToDelete.ThumbnailUrl, cancellationToken);
+        }
+        if (!string.IsNullOrWhiteSpace(imageToDelete.MediumUrl))
+        {
+            await _fileStorageService.DeleteAsync(imageToDelete.MediumUrl, cancellationToken);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
     }

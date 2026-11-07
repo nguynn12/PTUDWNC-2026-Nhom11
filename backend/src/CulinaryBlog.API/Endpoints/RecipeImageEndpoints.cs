@@ -48,6 +48,12 @@ public static class RecipeImageEndpoints
                 throw new BadRequestException("Tệp tin hình ảnh không được để trống.");
             }
 
+            // Kiểm tra giới hạn 5 MB trước khi đọc luồng vào bộ nhớ theo SRS và Lab 8
+            if (file.Length > 5 * 1024 * 1024)
+            {
+                throw new BadRequestException("Dung lượng tệp tin vượt quá giới hạn tối đa cho phép là 5MB.");
+            }
+
             var (userId, isAdmin) = ExtractUserContext(user, httpContext);
 
             using var stream = file.OpenReadStream();
