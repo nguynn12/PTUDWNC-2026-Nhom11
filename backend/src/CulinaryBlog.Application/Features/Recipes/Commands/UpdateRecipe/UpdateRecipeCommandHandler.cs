@@ -10,14 +10,15 @@ using Microsoft.EntityFrameworkCore;
 
 /// <summary>
 /// Handler xử lý cập nhật thông tin công thức nấu ăn.
-/// Tuân thủ quy tắc quyền tác giả, slug history (C7), và kiểm soát concurrency bằng xmin (C6).
+/// Tuân thủ quy tắc quyền tác giả, slug history (C7), kiểm soát concurrency bằng xmin (C6) và tự động hủy cache (NFR-PERF).
 /// </summary>
 public sealed class UpdateRecipeCommandHandler(
     IRepository<Recipe> recipeRepository,
     IRepository<RecipeSlugHistory> slugHistoryRepository,
     IUnitOfWork unitOfWork,
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    ICacheInvalidator? cacheInvalidator = null)
     : IRequestHandler<UpdateRecipeCommand, RecipeResponseDto>
 {
     public async Task<RecipeResponseDto> Handle(
@@ -118,6 +119,12 @@ public sealed class UpdateRecipeCommandHandler(
         // 7. Cập nhật qua IRepository và commit qua IUnitOfWork
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Hủy cache Redis theo NFR-PERF
+        if (cacheInvalidator != null)
+        {
+            await cacheInvalidator.InvalidateRecipeAsync(recipe.Id, recipe.Slug, cancellationToken);
+        }
 
         // 8. Lấy giá trị xmin mới sau khi commit
         var updatedXmin = await dbContext.Recipes

@@ -10,19 +10,22 @@ using Microsoft.Extensions.Logging;
 namespace CulinaryBlog.Application.Features.Categories.Commands.CreateCategory;
 
 /// <summary>
-/// Handler xử lý CreateCategoryCommand, thực hiện tạo mới danh mục và sinh slug chuẩn SEO.
+/// Handler xử lý CreateCategoryCommand, thực hiện tạo mới danh mục, sinh slug chuẩn SEO và tự động hủy cache (NFR-PERF).
 /// </summary>
 public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<CreateCategoryCommandHandler> _logger;
+    private readonly ICacheInvalidator? _cacheInvalidator;
 
     public CreateCategoryCommandHandler(
         IApplicationDbContext dbContext,
-        ILogger<CreateCategoryCommandHandler> logger)
+        ILogger<CreateCategoryCommandHandler> logger,
+        ICacheInvalidator? cacheInvalidator = null)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _cacheInvalidator = cacheInvalidator;
     }
 
     public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -73,6 +76,12 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Tạo danh mục thành công. Id: {Id}, Slug: '{Slug}'", category.Id, category.Slug);
+
+        // Invalidate cache categories
+        if (_cacheInvalidator != null)
+        {
+            await _cacheInvalidator.InvalidateCategoriesAsync(category.Slug, cancellationToken);
+        }
 
         return new CategoryDto
         {

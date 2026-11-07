@@ -6,22 +6,22 @@ using CulinaryBlog.Application.Features.Recipes.DTOs;
 using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Domain.Enums;
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
 
 /// <summary>
-/// Command lưu trữ công thức nấu ăn (Draft/Published -> Archived).
+/// Command lưu trữ công thức nấu ăn (Draft / Published -> Archived).
 /// </summary>
 public record ArchiveRecipeCommand(Guid Id, uint? ConcurrencyToken = null) : IRequest<RecipeResponseDto>;
 
 /// <summary>
-/// Handler xử lý lưu trữ công thức nấu ăn.
+/// Handler xử lý lưu trữ công thức nấu ăn và tự động hủy cache (NFR-PERF).
 /// </summary>
 public sealed class ArchiveRecipeCommandHandler(
     IRepository<Recipe> recipeRepository,
     IUnitOfWork unitOfWork,
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    ICacheInvalidator? cacheInvalidator = null)
     : IRequestHandler<ArchiveRecipeCommand, RecipeResponseDto>
 {
     public async Task<RecipeResponseDto> Handle(
@@ -71,6 +71,12 @@ public sealed class ArchiveRecipeCommandHandler(
 
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Hủy cache Redis theo NFR-PERF
+        if (cacheInvalidator != null)
+        {
+            await cacheInvalidator.InvalidateRecipeAsync(recipe.Id, recipe.Slug, cancellationToken);
+        }
 
         var updatedXmin = await dbContext.Recipes
             .Where(r => r.Id == recipe.Id)

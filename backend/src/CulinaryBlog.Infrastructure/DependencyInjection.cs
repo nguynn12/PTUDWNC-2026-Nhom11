@@ -3,6 +3,7 @@ using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.Infrastructure.Jobs;
 using CulinaryBlog.Infrastructure.Persistence;
+using CulinaryBlog.Infrastructure.Persistence.Interceptors;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
@@ -10,10 +11,13 @@ using CulinaryBlog.Infrastructure.Services;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Hangfire.PostgreSql;
+using CulinaryBlog.Infrastructure.Services.Cache;
+using CulinaryBlog.Infrastructure.Services.Sitemap;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace CulinaryBlog.Infrastructure;
 
@@ -27,14 +31,50 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 "Connection string 'DefaultConnection' was not configured.");
 
-        services.AddDbContext<CulinaryBlogDbContext>(options =>
+        // ── EF Core Interceptor giám sát truy vấn chậm > 100ms (NFR-PERF) ────────
+        services.AddSingleton<SlowQueryInterceptor>();
+
+        services.AddDbContext<CulinaryBlogDbContext>((sp, options) =>
         {
+            var slowQueryInterceptor = sp.GetRequiredService<SlowQueryInterceptor>();
+            options.AddInterceptors(slowQueryInterceptor);
             options.UseNpgsql(connectionString);
             options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
+
+        // ── Redis Cache & Invalidation (NFR-PERF, NFR-REL-002) ──────────────────
+        var redisConnectionString = configuration.GetConnectionString("Redis")
+            ?? configuration["Redis:ConnectionString"]
+            ?? "localhost:6379";
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            configOptions.ConnectTimeout = 2000;
+            configOptions.SyncTimeout = 2000;
+            options.ConfigurationOptions = configOptions;
+            options.InstanceName = configuration["Redis:InstanceName"] ?? "CulinaryBlog:";
+        });
+
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            configOptions.ConnectTimeout = 2000;
+            configOptions.SyncTimeout = 2000;
+            return ConnectionMultiplexer.Connect(configOptions);
+        });
+
+        services.AddScoped<ICacheService, RedisCacheService>();
+        services.AddScoped<ICacheInvalidator, CacheInvalidator>();
+
+        // ── Sitemap Service & Hangfire Job (FR-JOB-003, NFR-SEO) ────────────────
+        services.AddScoped<ISitemapService, SitemapService>();
+        services.AddTransient<Jobs.GenerateSitemapJob>();
 
         // ── Repository và Unit of Work (Yêu cầu chung Lab 3) ─────────────────────
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));

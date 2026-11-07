@@ -1,5 +1,6 @@
 namespace CulinaryBlog.Application.Features.Recipes.Queries.GetRecipeBySlug;
 
+using CulinaryBlog.Application.Common.Constants;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Features.Categories.DTOs;
 using CulinaryBlog.Application.Features.Recipes.DTOs;
@@ -9,29 +10,45 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// Handler xử lý GetRecipeBySlugQuery: eager load các thực thể con và ánh xạ RecipeDetailDto,
+/// <summary>
+/// Handler xử lý GetRecipeBySlugQuery: eager load các thực thể con, ánh xạ RecipeDetailDto kết hợp Redis Cache 5 phút (NFR-PERF),
 /// hỗ trợ phát hiện slug cũ và chuyển hướng 301 Permanent Redirect (RESOLVED-CONFLICTS C7, FR-RCP-002).
+/// </summary>
 /// </summary>
 public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery, GetRecipeBySlugResult>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUserQueryService _userQueryService;
     private readonly ILogger<GetRecipeBySlugQueryHandler> _logger;
+    private readonly ICacheService? _cacheService;
 
     public GetRecipeBySlugQueryHandler(
         IApplicationDbContext dbContext,
         IUserQueryService userQueryService,
-        ILogger<GetRecipeBySlugQueryHandler> logger)
+        ILogger<GetRecipeBySlugQueryHandler> logger,
+        ICacheService? cacheService = null)
     {
         _dbContext = dbContext;
         _userQueryService = userQueryService;
         _logger = logger;
+        _cacheService = cacheService;
     }
 
     public async Task<GetRecipeBySlugResult> Handle(GetRecipeBySlugQuery request, CancellationToken cancellationToken)
     {
         var slug = request.Slug.Trim().ToLowerInvariant();
-        _logger.LogInformation("Truy vấn chi tiết Recipe theo Slug: '{Slug}'", slug);
+        var slugCacheKey = $"{CacheConstants.RecipeSlugPrefix}{slug}";
+
+        if (_cacheService != null)
+        {
+            var cached = await _cacheService.GetAsync<RecipeDetailDto>(slugCacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return GetRecipeBySlugResult.Found(cached);
+            }
+        }
+
+        _logger.LogInformation("Truy vấn DB: Chi tiết Recipe theo Slug: '{Slug}'", slug);
 
         // Eager load: Category, Ingredients, Steps, Images (và Nutrition là owned entity)
         var recipe = await _dbContext.Recipes
@@ -150,6 +167,12 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
                 })
                 .ToList()
         };
+
+        if (_cacheService != null)
+        {
+            await _cacheService.SetAsync(slugCacheKey, dto, CacheConstants.RecipeDetailDuration, cancellationToken);
+            await _cacheService.SetAsync($"{CacheConstants.RecipeDetailPrefix}{recipe.Id}", dto, CacheConstants.RecipeDetailDuration, cancellationToken);
+        }
 
         return GetRecipeBySlugResult.Found(dto);
     }

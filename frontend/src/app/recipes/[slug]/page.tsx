@@ -25,14 +25,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       recipe.images?.[0]?.imageUrl ||
       "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80";
 
+    const isPublic = recipe.status === "Published" || recipe.status === 1;
+    const robots = isPublic
+      ? { index: true, follow: true }
+      : { index: false, follow: false, nocache: true };
+
     return {
       title: `${recipe.title} — Công Thức Nấu Ăn`,
       description:
         recipe.description ||
         `Hướng dẫn cách nấu món ${recipe.title} thơm ngon, chuẩn vị cùng thông tin dinh dưỡng chi tiết tại Culinary Blog.`,
+      alternates: {
+        canonical: `/recipes/${recipe.slug}`,
+      },
+      robots,
       openGraph: {
         title: `${recipe.title} — Công Thức Nấu Ăn | Culinary Blog`,
         description: recipe.description,
+        url: `/recipes/${recipe.slug}`,
         images: [{ url: heroImg, alt: recipe.title }],
       },
       twitter: {

@@ -16,7 +16,7 @@ import { Sparkles, Utensils, Search, ArrowRight, Clock, Salad, Zap } from "lucid
 import type { CategoryDto, RecipeSummaryDto } from "@/types/api";
 
 // Cấu hình ISR: Tự động tái sinh trang tĩnh ngầm định sau mỗi 60 giây khi có dữ liệu mới
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Trang Chủ — Khám Phá Hàng Ngàn Món Ngon & Công Thức Chuẩn Vị",
@@ -40,6 +40,11 @@ export const metadata: Metadata = {
     siteName: "Culinary Blog",
     locale: "vi_VN",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Culinary Blog — Nghệ Thuật Ẩm Thực & Hương Vị Đích Thực",
+    description: "Khám phá hàng ngàn công thức nấu ăn chuẩn vị, hướng dẫn chi tiết từng bước và bảng dinh dưỡng minh bạch.",
   },
 };
 

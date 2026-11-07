@@ -45,6 +45,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
     30;
 
   return (
+    <article className="h-full" aria-label={recipe.title}>
     <Card className="group flex flex-col h-full overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] rounded-2xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       {/* Khối Ảnh bìa công thức với tỷ lệ 16:10 */}
       <Link
@@ -150,5 +151,6 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
         </div>
       </div>
     </Card>
+    </article>
   );
 }

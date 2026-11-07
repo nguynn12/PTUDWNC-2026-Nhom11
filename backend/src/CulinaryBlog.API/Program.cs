@@ -155,6 +155,11 @@ if (!app.Environment.IsEnvironment("Testing"))
             "purge-expired-recipes-30days",
             job => job.ExecuteAsync(CancellationToken.None),
             "0 3 * * *");
+
+        RecurringJob.AddOrUpdate<GenerateSitemapJob>(
+            "generate-sitemap-daily",
+            job => job.RunAsync(CancellationToken.None),
+            "0 2 * * *");
     }
     catch (Exception ex)
     {
@@ -179,6 +184,7 @@ api.MapAdminUserEndpoints();
 // 2. Phân hệ Danh mục, Tra cứu & Tìm kiếm FTS (Thành viên 2)
 api.MapCategoryEndpoints();
 api.MapRecipeEndpoints();
+app.MapSitemapEndpoints();
 
 // 3. Phân hệ Vòng đời công thức & Thùng rác (Thành viên 3)
 api.MapRecipeLifecycleEndpoints();
