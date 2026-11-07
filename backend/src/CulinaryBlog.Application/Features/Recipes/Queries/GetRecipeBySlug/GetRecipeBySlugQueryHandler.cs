@@ -10,10 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// <summary>
-/// Handler xử lý GetRecipeBySlugQuery: eager load các thực thể con, ánh xạ RecipeDetailDto kết hợp Redis Cache 5 phút (NFR-PERF),
-/// hỗ trợ phát hiện slug cũ và chuyển hướng 301 Permanent Redirect (RESOLVED-CONFLICTS C7, FR-RCP-002).
-/// </summary>
+/// Handler xử lý GetRecipeBySlugQuery: eager load các thực thể con, ánh xạ RecipeDetailDto,
+/// kết hợp Redis Cache 5 phút (NFR-PERF) và hỗ trợ phát hiện slug cũ để chuyển hướng 301 Permanent Redirect (RESOLVED-CONFLICTS C7, FR-RCP-002).
 /// </summary>
 public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery, GetRecipeBySlugResult>
 {

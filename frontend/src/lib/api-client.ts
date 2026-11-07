@@ -418,10 +418,11 @@ export const RecipeApi = {
     request: UpdateRecipeImageRequest
   ): Promise<RecipeImageDto> {
     try {
-      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
+      const response = await fetchApi<{ data: RecipeImageDto }>(`/recipes/${recipeId}/images/${imageId}`, {
         method: 'PATCH',
         body: JSON.stringify(request),
       });
+      return response.data;
     } catch (error) {
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
@@ -1044,5 +1045,3 @@ function deleteMockImage(recipeId: string, imageId: string): void {
   }
   mockImagesMap[recipeId] = remaining;
 }
-
-

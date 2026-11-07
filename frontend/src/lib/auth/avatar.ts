@@ -12,9 +12,8 @@ export type AvatarMimeType = (typeof AVATAR_TYPES)[number];
 export const AVATAR_ACCEPT = [...AVATAR_TYPES, ".jpg", ".jpeg", ".png", ".webp"].join(",");
 
 /**
- * Backend CHƯA có endpoint tải ảnh đại diện (chỉ có PATCH /auth/me nhận avatarUrl dạng chuỗi).
- * Chọn ảnh từ thiết bị chỉ được bật khi đặt NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED=true sau khi backend
- * có POST /auth/me/avatar (xem authApi.uploadAvatar).
+ * Chọn ảnh từ thiết bị chỉ được bật khi đặt NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED=true
+ * (xem authApi.uploadAvatar).
  */
 export const AVATAR_UPLOAD_ENABLED = process.env.NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED === "true";
 

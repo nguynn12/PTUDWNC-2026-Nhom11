@@ -46,10 +46,12 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             _ => request.PageSize
         };
 
-        var isMine = request.Mine == true;
+        _logger.LogInformation("Truy vấn danh sách Recipe: Page={Page}, PageSize={PageSize}, CategoryId={CategoryId}, Mine={Mine}",
+            page, pageSize, request.CategoryId, request.Mine);
+
         var cacheKey = $"{CacheConstants.RecipeListPrefix}p{page}_ps{pageSize}_c{request.CategoryId}_d{request.Difficulty}_s{request.SortBy}_{request.SortOrder}_pt{request.MaxPrepTime}_ct{request.MaxCookTime}_tt{request.MaxTotalTime}_minc{request.MinCalories}_maxc{request.MaxCalories}";
 
-        if (!isMine && _cacheService != null)
+        if (_cacheService != null && request.Mine != true)
         {
             var cached = await _cacheService.GetAsync<PagedResult<RecipeSummaryDto>>(cacheKey, cancellationToken);
             if (cached != null)
@@ -57,9 +59,6 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
                 return cached;
             }
         }
-
-        _logger.LogInformation("Truy vấn danh sách Recipe: Page={Page}, PageSize={PageSize}, CategoryId={CategoryId}, Mine={Mine}",
-            page, pageSize, request.CategoryId, request.Mine);
 
         if (request.Mine == true && string.IsNullOrWhiteSpace(_currentUserService.UserId))
         {
@@ -129,7 +128,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         if (total == 0)
         {
             var emptyResult = new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
-            if (!isMine && _cacheService != null)
+            if (_cacheService != null)
             {
                 await _cacheService.SetAsync(cacheKey, emptyResult, CacheConstants.RecipeListDuration, cancellationToken);
             }
@@ -186,7 +185,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var result = new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
 
-        if (!isMine && _cacheService != null)
+        if (_cacheService != null && request.Mine != true)
         {
             await _cacheService.SetAsync(cacheKey, result, CacheConstants.RecipeListDuration, cancellationToken);
         }

@@ -131,6 +131,7 @@ public static class DependencyInjection
 
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddScoped<IUserQueryService, UserQueryService>();
+        services.AddScoped<IAdminUserQueryService, AdminUserQueryService>();
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.AddScoped<IJwtService, JwtService>();

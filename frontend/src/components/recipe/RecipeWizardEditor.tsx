@@ -623,6 +623,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
       showError('Upload ảnh thất bại', apiErr.message || 'Lỗi khi tải ảnh lên MinIO.');
     } finally {
       setUploadingImg(false);
+      setUploadProgress(0);
     }
   };
 
@@ -1792,6 +1793,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                             <span>{uploadingImg ? `Đang tải lên MinIO (${uploadProgress}%)...` : selectedFiles.length > 1 ? `Tải ${selectedFiles.length} ảnh lên MinIO` : 'Tải ảnh lên MinIO (POST)'}</span>
                           </Button>
                         </div>
+                        {uploadingImg && (
+                          <div className="mt-3" aria-live="polite">
+                            <div className="h-2 overflow-hidden rounded-full bg-[var(--border-subtle)]">
+                              <div
+                                className="h-full bg-[var(--primary)] transition-[width]"
+                                style={{ width: `${uploadProgress}%` }}
+                              />
+                            </div>
+                            <p className="mt-1 text-right text-xs text-[var(--text-muted)]">{uploadProgress}%</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

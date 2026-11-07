@@ -159,6 +159,48 @@ public static class HealthEndpoints
         .WithDescription("Trả về HTTP 200 ngay lập tức để container orchestrator xác nhận tiến trình không bị treo.")
         .Produces(StatusCodes.Status200OK);
 
+        group.MapGet("/ready", async (
+            CulinaryBlogDbContext dbContext,
+            IConfiguration configuration,
+            CancellationToken cancellationToken) =>
+        {
+            try
+            {
+                var databaseReady = await dbContext.Database.CanConnectAsync(cancellationToken);
+                if (!databaseReady)
+                    return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+
+                var redisHost = configuration["Redis:Host"] ?? "localhost";
+                var redisPort = int.TryParse(configuration["Redis:Port"], out var configuredPort)
+                    ? configuredPort
+                    : 6379;
+                using var redis = new TcpClient();
+                var connection = redis.ConnectAsync(redisHost, redisPort);
+                var completed = await Task.WhenAny(connection, Task.Delay(1000, cancellationToken));
+                if (completed != connection || !redis.Connected)
+                    return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+
+                return Results.Ok(new
+                {
+                    status = "Ready",
+                    timestamp = DateTimeOffset.UtcNow,
+                    checks = new { database = "Healthy", redis = "Healthy" }
+                });
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch
+            {
+                return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+            }
+        })
+        .WithName("GetReadinessProbe")
+        .WithSummary("Readiness Probe kiểm tra kết nối cơ sở dữ liệu")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status503ServiceUnavailable);
+
         return group;
     }
 }

@@ -105,7 +105,6 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-culinary_blog_dev};Username=${POSTGRES_USER:-culinary_blog};Password=${POSTGRES_PASSWORD:-culinary_blog_dev}
-      ConnectionStrings__Redis: redis:6379
       Minio__Endpoint: http://minio:9000
       Minio__PublicUrl: http://localhost:9000
       Minio__AccessKey: ${MINIO_ROOT_USER:-culinary_minio_admin}
@@ -153,6 +152,22 @@ services:
     depends_on:
       - api
       - web
+
+  redis:
+    image: redis:7-alpine
+    container_name: culinary-blog-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
 volumes:
   postgres_data:

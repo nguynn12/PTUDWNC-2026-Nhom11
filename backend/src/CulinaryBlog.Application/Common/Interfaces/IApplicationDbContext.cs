@@ -43,5 +43,7 @@ public interface IApplicationDbContext
     /// </summary>
     DbSet<RecipeImage> RecipeImages { get; }
 
+    DbSet<SystemLog> SystemLogs { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
