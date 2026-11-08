@@ -67,6 +67,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
             }
 
+            // Gỡ bỏ Hangfire BackgroundJobServerHostedService để tránh timeout khi Dispose host kiểm thử
+            var hangfireHostedServices = services.Where(d =>
+                d.ServiceType == typeof(IHostedService) &&
+                (d.ImplementationType?.FullName?.Contains("Hangfire", StringComparison.OrdinalIgnoreCase) == true ||
+                 d.ServiceType.FullName?.Contains("Hangfire", StringComparison.OrdinalIgnoreCase) == true)).ToList();
+
+            foreach (var descriptor in hangfireHostedServices)
+            {
+                services.Remove(descriptor);
+            }
+
             // 2. Thay thế bằng InMemory Database với ServiceProvider riêng biệt để không xung đột provider
             var inMemoryProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()
@@ -193,5 +204,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         EnsureDatabaseSeeded();
         return CreateClient();
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await base.DisposeAsync();
+        }
+        catch (TaskCanceledException)
+        {
+            // Bỏ qua ngoại lệ timeout hủy tác vụ khi đóng host test
+        }
     }
 }

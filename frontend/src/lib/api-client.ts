@@ -83,7 +83,7 @@ export const RecipeApi = {
 
     const queryString = query.toString();
     const endpoint = `/recipes${queryString ? `?${queryString}` : ''}`;
-    
+
     try {
       const res = await fetchApi<PaginatedList<RecipeSummaryDto> | { data: RecipeSummaryDto[]; meta: Record<string, unknown> }>(endpoint);
       if (res && typeof res === 'object' && 'data' in res && Array.isArray((res as { data: RecipeSummaryDto[] }).data)) {
@@ -846,10 +846,10 @@ function updateMockRecipe(
       status: 409,
       message: 'Xung đột dữ liệu: Công thức đã bị thay đổi bởi một phiên làm việc khác.',
       problem: {
-      type: 'RECIPE_CONCURRENCY_CONFLICT',
-      title: 'Concurrency Conflict',
-      status: 409,
-      detail: `Token If-Match "${xmin}" không khớp với phiên bản hiện tại "${current.xmin}".`,
+        type: 'RECIPE_CONCURRENCY_CONFLICT',
+        title: 'Concurrency Conflict',
+        status: 409,
+        detail: `Token If-Match "${xmin}" không khớp với phiên bản hiện tại "${current.xmin}".`,
       },
     });
   }
