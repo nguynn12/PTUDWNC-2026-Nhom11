@@ -13,33 +13,39 @@ public static class SystemLogEndpoints
             .RequireAuthorization("Admin");
 
         group.MapGet("", async (
-            [AsParameters] GetSystemLogsRequest request,
+            int? page,
+            int? pageSize,
+            string? search,
+            string? level,
+            int? statusCode,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
             CulinaryBlogDbContext dbContext,
             CancellationToken cancellationToken) =>
         {
-            var page = Math.Clamp(request.Page, 1, 10_000);
-            var pageSize = Math.Clamp(request.PageSize, 1, 100);
+            var p = Math.Clamp(page ?? 1, 1, 10_000);
+            var ps = Math.Clamp(pageSize ?? 25, 1, 100);
             var query = dbContext.SystemLogs.AsNoTracking().AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(request.Level))
-                query = query.Where(log => log.Level == request.Level);
-            if (request.StatusCode is not null)
-                query = query.Where(log => log.StatusCode == request.StatusCode);
-            if (request.From is not null)
-                query = query.Where(log => log.CreatedAt >= request.From);
-            if (request.To is not null)
-                query = query.Where(log => log.CreatedAt < request.To.Value.AddDays(1));
-            if (!string.IsNullOrWhiteSpace(request.Search))
+            if (!string.IsNullOrWhiteSpace(level))
+                query = query.Where(log => log.Level == level);
+            if (statusCode is not null)
+                query = query.Where(log => log.StatusCode == statusCode);
+            if (from is not null)
+                query = query.Where(log => log.CreatedAt >= from);
+            if (to is not null)
+                query = query.Where(log => log.CreatedAt < to.Value.AddDays(1));
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                var search = request.Search.Trim();
-                query = query.Where(log => log.Path.Contains(search) || (log.Message != null && log.Message.Contains(search)));
+                var s = search.Trim();
+                query = query.Where(log => log.Path.Contains(s) || (log.Message != null && log.Message.Contains(s)));
             }
 
             var totalCount = await query.CountAsync(cancellationToken);
             var logs = await query
                 .OrderByDescending(log => log.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((p - 1) * ps)
+                .Take(ps)
                 .Select(log => new SystemLogDto(
                     log.Id, log.UserId, log.Method, log.Path, log.StatusCode,
                     log.Level, log.Message, log.IpAddress, log.DurationMs, log.CreatedAt))
@@ -47,7 +53,7 @@ public static class SystemLogEndpoints
 
             return Results.Ok(new ApiResponse<IReadOnlyList<SystemLogDto>>(
                 logs,
-                new { page, pageSize, totalCount, totalPages = (int)Math.Ceiling(totalCount / (double)pageSize) }));
+                new { page = p, pageSize = ps, totalCount, totalPages = (int)Math.Ceiling(totalCount / (double)ps) }));
         });
     }
 }

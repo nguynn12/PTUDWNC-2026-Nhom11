@@ -156,7 +156,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<SystemAuditLoggingMiddleware>();
+app.UseMiddleware<CulinaryBlog.API.Middlewares.SystemAuditLoggingMiddleware>();
 
 // Lab 8 (TV3): Hangfire Dashboard & Recurring Job dọn rác 30 ngày (FR-JOB-004)
 if (!app.Environment.IsEnvironment("Testing"))

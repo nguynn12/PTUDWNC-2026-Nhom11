@@ -18,12 +18,17 @@ public static class AdminUserEndpoints
         var group = app.MapGroup("/admin/users").WithTags("Admin Users").RequireAuthorization("Admin");
 
         group.MapGet("", async (
-            [AsParameters] GetUsersRequest request,
+            int? page,
+            int? pageSize,
+            string? search,
+            string? role,
+            string? status,
+            string? sortBy,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
             var result = await sender.Send(new GetUsersQuery(
-                request.Page, request.PageSize, request.Search, request.Role, request.Status, request.SortBy),
+                page ?? 1, pageSize ?? 20, search, role, status, sortBy ?? "createdAt"),
                 cancellationToken);
             return Results.Ok(ApiResponse<IReadOnlyList<AdminUserDto>>.Success(
                 result.Data,
