@@ -249,8 +249,8 @@ npm --prefix frontend run dev
 
 - Chạy kiểm thử End-to-End trọn vẹn luồng nghiệp vụ trên môi trường đầy đủ: Đăng ký → Nhận email → Đăng nhập → Tạo công thức (nguyên liệu, bước làm, upload ảnh MinIO) → Xuất bản → Tìm kiếm FTS → Đổi trạng thái Lưu trữ / Thùng rác → Khôi phục / Xóa vĩnh viễn → Quản trị viên quản lý người dùng.
 - Vượt qua 100% các cổng kiểm định chất lượng:
-  - Frontend: `npm run typecheck` đạt 0 lỗi, `npm run build` thành công 100% tất cả 16 routes tĩnh và động.
-  - Backend: `dotnet build` 0 lỗi, toàn bộ **279/279 Unit Tests** và **33/33 Integration Tests** PASSED 100%.
+  - Frontend: `npm run typecheck` đạt 0 lỗi, `npm run build` thành công 100% tất cả 20 routes tĩnh và động.
+  - Backend: `dotnet build` 0 lỗi, toàn bộ **305/305 Unit Tests** và **34/34 Integration Tests** PASSED 100%.
 - Kiểm tra tính toàn vẹn của tệp cấu hình `.gitignore`, bảo đảm toàn bộ bản sao lưu `.dump` và báo cáo cá nhân `docs/Lab*.*` không bị commit lên GitHub remote.
 - Hoàn thành báo cáo cá nhân theo định dạng quy định của Giảng viên.
 
