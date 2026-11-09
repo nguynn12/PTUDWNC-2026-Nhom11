@@ -4,10 +4,22 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Geist } from "next/font/google";
+import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["vietnamese", "latin"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const lora = Lora({
+  subsets: ["vietnamese", "latin"],
+  variable: "--font-serif",
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -55,8 +67,8 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning className={cn("font-sans", plusJakartaSans.variable, lora.variable)}>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <Providers>
           <Navbar />
           <main id="main-content">{children}</main>

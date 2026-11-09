@@ -144,4 +144,72 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
         Assert.NotNull(envelope.Data);
         Assert.Empty(envelope.Data);
     }
+
+    [Fact]
+    public async Task SearchRecipes_WithoutDiacritics_ReturnsMatchingRecipe()
+    {
+        // Arrange (FR-SRCH-001: Tìm kiếm tiếng Việt không dấu "Pho" phải khớp với "Phở")
+        var client = _factory.CreateGuestClient();
+
+        // Act
+        var response = await client.GetAsync("/api/v1/recipes/search?q=pho");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var envelope = await response.Content.ReadFromJsonAsync<ApiResponse<List<RecipeSummaryDto>>>(JsonOptions);
+        Assert.NotNull(envelope);
+        Assert.NotNull(envelope.Data);
+        Assert.Contains(envelope.Data, r => r.Slug == "pho-bo-tai-lan-ha-noi");
+    }
+
+    [Fact]
+    public async Task SearchRecipes_WithPagination_ReturnsCorrectPageAndPageSize()
+    {
+        // Arrange (FR-SRCH-004: Phân trang tìm kiếm chuẩn)
+        var client = _factory.CreateGuestClient();
+
+        // Act
+        var response = await client.GetAsync("/api/v1/recipes/search?q=bo&page=1&pageSize=1");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var envelope = await response.Content.ReadFromJsonAsync<TestPagedEnvelope<List<RecipeSummaryDto>>>(JsonOptions);
+        Assert.NotNull(envelope);
+        Assert.NotNull(envelope.Data);
+        Assert.Single(envelope.Data);
+        Assert.NotNull(envelope.Meta);
+        Assert.Equal(1, envelope.Meta.Page);
+        Assert.Equal(1, envelope.Meta.PageSize);
+    }
+
+    [Fact]
+    public async Task SearchRecipes_QueryTooShort_ReturnsUnprocessableEntity()
+    {
+        // Arrange (FR-SRCH-001: Từ khóa phải từ 2 ký tự trở lên -> vi phạm FluentValidation ném 422)
+        var client = _factory.CreateGuestClient();
+
+        // Act: Gửi từ khóa chỉ có 1 ký tự "a"
+        var response = await client.GetAsync("/api/v1/recipes/search?q=a");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SearchRecipes_InvalidSortBy_ReturnsUnprocessableEntity()
+    {
+        // Arrange (FR-SRCH-003: Tiêu chí sắp xếp không nằm trong whitelist -> ném 422)
+        var client = _factory.CreateGuestClient();
+
+        // Act: Gửi sortBy không hợp lệ
+        var response = await client.GetAsync("/api/v1/recipes/search?q=pho&sortBy=invalid_sort_column_xyz");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+    }
 }
+
+public record TestPagedEnvelope<T>(T Data, TestPaginationMeta? Meta);
+public record TestPaginationMeta(int Page, int PageSize, int TotalCount, int TotalPages);

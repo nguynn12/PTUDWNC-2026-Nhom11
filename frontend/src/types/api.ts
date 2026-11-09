@@ -179,6 +179,7 @@ export interface RecipeSummaryDto {
   difficulty: RecipeDifficulty | number;
   status?: RecipeStatus | number;
   primaryImageUrl?: string | null;
+  thumbnailUrl?: string | null;
   categoryId: string;
   categoryName?: string | null;
   categorySlug?: string | null;
@@ -251,7 +252,7 @@ export interface GetRecipesParams {
   maxTotalTime?: number;
   minCalories?: number;
   maxCalories?: number;
-  sortBy?: "publishedAt" | "newest" | "totalTime" | "quickest" | "prepTime" | "cookTime" | "calories" | "title" | "servings" | "createdAt";
+  sortBy?: "relevance" | "publishedAt" | "newest" | "totalTime" | "quickest" | "prepTime" | "cookTime" | "calories" | "title" | "servings" | "createdAt";
   sortOrder?: "asc" | "desc";
 }
 

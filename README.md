@@ -2,6 +2,47 @@
 
 Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng nền tảng blog ẩm thực và chia sẻ công thức nấu ăn.
 
+## 🚀 Khởi chạy nhanh toàn bộ dự án với Docker Compose (< 5 phút)
+
+Hệ thống được đóng gói hoàn chỉnh bằng **Docker Compose full-stack 7 services** (PostgreSQL, Redis, MinIO S3, Seq, .NET 10 API, Next.js Web, Nginx reverse proxy).
+
+### 1. Chuẩn bị file môi trường
+`powershell
+# Sao chép file cấu hình mẫu sang .env
+cp .env.example .env
+`
+
+### 2. Khởi chạy toàn bộ hệ thống
+`powershell
+docker compose up -d --build
+`
+
+### 3. Địa chỉ truy cập các dịch vụ
+| Dịch vụ | Địa chỉ URL | Ghi chú |
+|---|---|---|
+| **Cổng vào Nginx (Reverse Proxy)** | http://localhost | Định tuyến / -> Web, /api/ -> API |
+| **Giao diện Web (Next.js)** | http://localhost:3000 | Frontend người dùng và quản trị |
+| **API & Scalar Documentation** | http://localhost:5000/scalar/v1 | Tài liệu API tương tác trực quan |
+| **MinIO Console (Object Storage)** | http://localhost:9001 | User: culinary_minio_admin / Pass: culinary_minio_secret |
+| **Seq Structured Logging** | http://localhost:5341 | Nhật ký có cấu trúc & truy vết Correlation ID |
+| **pgAdmin 4 (Quản trị DB)** | http://localhost:5050 | Email: dmin@culinaryblog.com / Pass: culinary_blog_admin |
+
+### 4. Dành cho lập trình viên (Chạy riêng hạ tầng)
+Nếu muốn debug cục bộ bằng dotnet run và 
+pm run dev:
+`powershell
+# Chỉ khởi chạy các dịch vụ nền tảng (DB, Redis, MinIO, Seq)
+docker compose up -d postgres redis minio minio-init seq
+
+# Khởi chạy Backend API
+dotnet run --project backend/src/CulinaryBlog.API
+
+# Khởi chạy Frontend Web (terminal khác)
+npm --prefix frontend run dev
+`
+
+---
+
 ## Phân công bài tập Lab - Buổi 1
 
 **Mục tiêu:** Đọc và phân tích tài liệu SRS, tìm hiểu các chức năng cần xây dựng, xác định mô hình dữ liệu và các mối quan hệ chính của hệ thống; đồng thời rà soát các điểm chưa rõ hoặc mâu thuẫn trong đặc tả để chuẩn bị cho giai đoạn triển khai.
@@ -177,14 +218,41 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 - Đảm bảo toàn bộ dự án vượt qua các cổng kiểm định chất lượng: `npm run typecheck`, `npm run lint`, `npm run build` trên Frontend và `dotnet build`, `dotnet test` trên Backend đều đạt 0 lỗi, 0 cảnh báo.
 - Cập nhật tài liệu cấu hình biến môi trường SMTP Email và MinIO Storage trong `.env.example` và README.
 
-### Bảng tổng hợp phân công xuyên suốt 7 Buổi Lab
+### Bảng tổng hợp phân công xuyên suốt 8 Buổi Lab
 
 | Thành viên | MSSV | Vai trò chính & Phân hệ xuyên suốt (Backend ➔ Frontend) | Nhánh Git chính |
 |---|---|---|---|
-| **Liêng Hót Ha Luyến** | 2312682 | **Phân hệ Xác thực & Quản lý Người dùng**: Auth APIs, JWT/Refresh Token, Đổi mật khẩu, SMTP Email thật, Profile, Security CORS/Auth, API Client, Error Handling, Auth Pages & UI | `2312682_LiengHotHaLuyen_Auth_backend`<br>`2312682_LiengHotHaLuyen_Auth_frontend` |
-| **Trần Quốc Quân** | 2312726 | **Phân hệ Danh mục, Khám phá & Giám sát**: Category CRUD, Trang chủ 2 cột có Sidebar, PostgreSQL FTS, Rate Limiting, Integration Tests, Tailwind v4, shadcn/ui, Layout & Public Pages | `2312726_TranQuocQuan_Category_Search_backend`<br>`2312726_TranQuocQuan_Category_Search_frontend` |
-| **Tạ Nhật Nguyên** | 2312704 | **Phân hệ Vòng đời Công thức, Thùng rác, Tìm kiếm & UI States**: Recipe Lifecycle, Concurrency `xmin`/`If-Match`, Trash/Purge, Route Boundaries, Module Tìm kiếm FTS & HeaderSearch, Common Components (Loading/Error/Empty), Dashboard & Admin Pages | `2312704_TaNhatNguyen_Recipe-lifecycle_backend`<br>`2312704_TaNhatNguyen_Recipe-lifecycle_frontend` |
-| **Nguyễn Phú Quý** | 2312731 | **Phân hệ Nội dung Chi tiết, Media Storage & Form Wizard**: Recipe Content (Ingredients/Steps), MinIO Object Storage, RecipeDetail UI (nguyên liệu phân số, album ảnh, dinh dưỡng), RecipeWizardEditor Multi-step Form, Responsive Design | `2312731_NguyenPhuQuy_Recipe-details_backend`<br>`2312731_NguyenPhuQuy_Recipe-details_frontend` |
+| **Liêng Hót Ha Luyến** | 2312682 | **Phân hệ Xác thực & Quản lý Người dùng**: Auth APIs, JWT/Refresh Token, Đổi mật khẩu, SMTP Email thật, Profile, Quản trị Người dùng `/admin/users`, Health Checks, Security CORS/Auth, API Client, Error Handling, Auth Pages & UI | `2312682_LiengHotHaLuyen_Auth_backend`<br>`2312682_LiengHotHaLuyen_Auth_frontend` |
+| **Trần Quốc Quân** | 2312726 | **Phân hệ Danh mục, Khám phá & Giám sát**: Category CRUD, Trang chủ 2 cột có Sidebar, PostgreSQL FTS, Redis Caching & Invalidation, Sitemap Job, Rate Limiting, Integration Tests, Tailwind v4, shadcn/ui, Layout & Public Pages | `2312726_TranQuocQuan_Category_Search_backend`<br>`2312726_TranQuocQuan_Category_Search_frontend` |
+| **Tạ Nhật Nguyên** | 2312704 | **Phân hệ Vòng đời Công thức, Thùng rác, Logging & UI States**: Recipe Lifecycle, Concurrency `xmin`/`If-Match`, Trash/Purge, Serilog Logging, Hangfire Core & Purge Job (30 ngày), Backup/Restore Scripts, Route Boundaries, Module Tìm kiếm FTS & HeaderSearch, Common Components, Dashboard & Admin Pages | `2312704_TaNhatNguyen_Recipe-lifecycle_backend`<br>`2312704_TaNhatNguyen_Recipe-lifecycle_frontend` |
+| **Nguyễn Phú Quý** | 2312731 | **Phân hệ Nội dung Chi tiết, Media Storage & Form Wizard**: Recipe Content (Ingredients/Steps), MinIO Object Storage, Image Resize Job, RecipeDetail UI (nguyên liệu phân số, album ảnh, dinh dưỡng), RecipeWizardEditor Multi-step Form, Docker Compose, CI GitHub Actions | `2312731_NguyenPhuQuy_Recipe-details_backend`<br>`2312731_NguyenPhuQuy_Recipe-details_frontend` |
+
+## Phân công bài tập Lab - Buổi 8 (Buổi cuối - Production Readiness)
+
+**Mục tiêu:** Hoàn thiện 5 yêu cầu tối thiểu của giảng viên và sẵn sàng triển khai môi trường sản xuất (Production Readiness) theo toàn bộ đặc tả SRS:
+1. **Upload ảnh**: MinIO Object Storage (`AWSSDK.S3`), xác thực magic bytes + giải mã ImageSharp, thanh tiến trình % upload, tạo thumbnail/medium tự động qua Hangfire background job.
+2. **Trang thêm mới / cập nhật & Vòng đời công thức**: `RecipeWizardEditor` đầy đủ 4 bước (Thông tin chung + Dinh dưỡng, Nguyên liệu, Bước thực hiện, Quản lý ảnh MinIO), Optimistic Concurrency `xmin` / `If-Match`, modal xử lý xung đột `ConflictDialog` (409), chuyển trạng thái Draft ↔ Publish ↔ Archive ↔ Soft Delete ↔ Restore/Purge trên `/dashboard/recipes` và `/admin/recipes/trash`.
+3. **Trang xem danh sách người dùng (Admin, Tác giả)**: `GET /admin/users` phân trang, tìm kiếm, lọc theo vai trò Admin/Author, trang `/admin/users` giao diện bảng shadcn/ui, chức năng khóa/mở khóa tài khoản có modal xác nhận `AlertDialog`.
+4. **Hệ thống Logging & Giám sát**: Serilog có cấu trúc đa Sink (Console JSON Compact, File daily rolling 30 ngày, Seq Development), `CorrelationIdMiddleware` gắn `X-Correlation-ID`, MediatR `LoggingBehavior` cảnh báo > 500ms, Log kiểm toán (Audit Trail) cho toàn bộ thao tác ghi (NFR-SEC).
+5. **Hoàn thiện các tính năng khác theo SRS**: Nền tảng tác vụ nền Hangfire (PostgreSQL + MemoryStorage fallback), Dashboard `/hangfire` phân quyền Admin, Job định kỳ dọn rác 30 ngày `PurgeExpiredRecipesJob` (FR-JOB-004), Cache Redis (`ICacheService`) và Invalidation tag, Health check 3 mức (`/health`, `/health/live`, `/health/ready`), Script sao lưu và phục hồi PostgreSQL (`backup.ps1` & `restore.ps1`), Chuyển hướng SEO 301 Permanent Redirect theo lịch sử slug cũ (`RecipeSlugHistory`).
+
+### Phân công theo thành viên Buổi 8
+
+| Hạng mục | Liêng Hót Ha Luyến (2312682) | Trần Quốc Quân (2312726) | Tạ Nhật Nguyên (2312704) | Nguyễn Phú Quý (2312731) |
+|---|---|---|---|---|
+| **Yêu cầu phụ trách chính** | **Yêu cầu 3 & 4**: Quản lý Người dùng & Endpoint Health check | **Yêu cầu 5**: Redis Caching, Invalidation & Tối ưu Hiệu năng | **Yêu cầu 2 & 4**: Logging Toàn diện, Hangfire Core & Vòng đời Công thức | **Yêu cầu 1 & 5**: Upload ảnh MinIO, Resize Job & Đóng gói Docker/CI |
+| **Backend & Dịch vụ nền tảng** | Bổ sung API `GET /api/v1/admin/users` phân trang, tìm kiếm, lọc vai trò/trạng thái; Endpoint `POST /auth/me/avatar` cập nhật ảnh đại diện; Hoàn thiện `/health/ready` (kết nối DB, Redis, MinIO); Cấu hình bảo mật JWT Secret an toàn | Tích hợp Redis 7 qua `StackExchange.Redis`, xây dựng `ICacheService` và cơ chế fallback DB khi Redis down; Invalidate cache theo tag khi Recipe/Category thay đổi; Job sinh Sitemap tự động 02:00 UTC (RedLock); Interceptor cảnh báo query EF > 100ms | Thiết lập Serilog đa Sink (Console, File, Seq); Xây dựng `CorrelationIdMiddleware` xử lý header `X-Correlation-ID`; `LoggingBehavior` đo thời gian và log kiểm toán (Audit Trail NFR-SEC); Thiết lập Hangfire PostgreSql/MemoryStorage và Dashboard `/hangfire`; Xây dựng Recurring Job dọn rác 30 ngày `PurgeExpiredRecipesJob` (FR-JOB-004) dùng chung `IRecipePurgeService`; Hỗ trợ `GET /recipes?mine=true` và chuyển hướng SEO 301 theo `RecipeSlugHistory` | Nâng cấp `FileStorageService` sang MinIO S3 (`AWSSDK.S3`) thực tế; Xác thực giới hạn 5MB và giải mã ảnh ImageSharp; Xây dựng Hangfire Job `ImageResizeJob` tạo thumbnail (300×300) và medium (800×600); Xây dựng `Dockerfile` đa tầng và `docker-compose.yml` hoàn chỉnh (api, web, postgres, redis, minio, seq, nginx) |
+| **Giao diện & Trải nghiệm UI** | Xây dựng trang `/admin/users` với bảng dữ liệu shadcn/ui, thanh tìm kiếm debounce, lọc vai trò Admin/Tác giả; Nút Khóa/Mở khóa tài khoản kèm `AlertDialog` xác nhận an toàn | Tối ưu hóa hiệu năng tải trang Web Vitals (LCP ≤ 2.5s, CLS ≤ 0.1); Cấu hình thẻ SEO canonical, OpenGraph, Twitter card; Điều chỉnh thời gian `revalidate` trang chủ theo SRS; Kiểm thử trợ năng WCAG 2.1 AA | Rà soát `RecipeWizardEditor.tsx` (validation prepTime > 0, cookTime ≥ 0, servings > 0, checklist xuất bản); Modal `ConflictDialog` bắt lỗi 409 `CONCURRENCY_CONFLICT`; Hoàn thiện nút chuyển trạng thái Draft ↔ Publish ↔ Archive ↔ Delete trên `/dashboard/recipes` và `/admin/recipes/trash` (Restore/Purge) | Nâng cấp giao diện upload ảnh trong Wizard: xem trước ảnh, thanh tiến trình % upload thời gian thực (`onUploadProgress`), gán ảnh chính, xóa ảnh, kéo thả sắp xếp `OrderIndex`; Tích hợp MinIO host vào `images.remotePatterns` |
+| **Bảo mật & Kiểm thử Tự động** | Kiểm thử xác thực: chặn tự khóa Admin, kiểm chứng thu hồi refresh token khi khóa; Integration test cho endpoint `GET /admin/users` (401, 403, 200) | Integration test cho các endpoint đọc Category và Recipe có caching; Kiểm tra khả năng tự phục hồi khi Redis ngừng hoạt động | Integration test cho Correlation ID và Serilog tracing ([CorrelationIdAndLoggingTests.cs](file:///c:/Users/storm/Downloads/PTUDWNC-2026-Nhom11/backend/tests/CulinaryBlog.IntegrationTests/Observability/CorrelationIdAndLoggingTests.cs)); Unit test vòng đời và kiểm soát đồng thời lạc quan ([RecipeLifecycleAuthorizationAndConcurrencyTests.cs](file:///c:/Users/storm/Downloads/PTUDWNC-2026-Nhom11/backend/tests/CulinaryBlog.UnitTests/Recipes/RecipeLifecycleAuthorizationAndConcurrencyTests.cs)); Viết script sao lưu tự động `backup.ps1` và phục hồi `restore.ps1` | Integration test cho luồng upload, resize và xóa ảnh; Cấu hình GitHub Actions CI `.github/workflows/ci.yml` kiểm tra build và test tự động cho cả Backend và Frontend |
+
+### Công việc chung của cả nhóm (Cuối Buổi 8)
+
+- Chạy kiểm thử End-to-End trọn vẹn luồng nghiệp vụ trên môi trường đầy đủ: Đăng ký → Nhận email → Đăng nhập → Tạo công thức (nguyên liệu, bước làm, upload ảnh MinIO) → Xuất bản → Tìm kiếm FTS → Đổi trạng thái Lưu trữ / Thùng rác → Khôi phục / Xóa vĩnh viễn → Quản trị viên quản lý người dùng.
+- Vượt qua 100% các cổng kiểm định chất lượng:
+  - Frontend: `npm run typecheck` đạt 0 lỗi, `npm run build` thành công 100% tất cả 20 routes tĩnh và động.
+  - Backend: `dotnet build` 0 lỗi, toàn bộ **305/305 Unit Tests** và **34/34 Integration Tests** PASSED 100%.
+- Kiểm tra tính toàn vẹn của tệp cấu hình `.gitignore`, bảo đảm toàn bộ bản sao lưu `.dump` và báo cáo cá nhân `docs/Lab*.*` không bị commit lên GitHub remote.
+- Hoàn thành báo cáo cá nhân theo định dạng quy định của Giảng viên.
 
 ## Công nghệ sử dụng
 

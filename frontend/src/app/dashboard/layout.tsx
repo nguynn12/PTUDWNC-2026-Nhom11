@@ -12,9 +12,13 @@ import {
   FlameIcon,
 } from '@/components/common/Icons';
 import { ToastProvider } from '@/components/common/Toast';
+import { RequireRole } from '@/components/auth/RequireRole';
+import { useCurrentUser, useHasRole } from '@/store/auth-store';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const user = useCurrentUser();
+  const isAdmin = useHasRole('Admin');
 
   const isNavActive = (href: string) => {
     if (href === '/dashboard') {
@@ -25,7 +29,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <ToastProvider>
-      <div className="dashboard-wrapper">
+      <RequireRole role="Author">
+        <div className="dashboard-wrapper">
         {/* SIDEBAR NAVIGATION */}
         <aside className="dashboard-sidebar">
           <div className="sidebar-brand">
@@ -39,7 +44,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
 
           <nav className="sidebar-nav">
-            <div className="sidebar-nav-heading">Tác giả (Author)</div>
+            <div className="sidebar-nav-heading">{isAdmin ? 'Quản trị & Tác giả' : 'Không gian Tác giả'}</div>
             
             <Link
               href="/dashboard"
@@ -54,7 +59,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               className={`sidebar-link ${isNavActive('/dashboard/recipes') && !pathname.includes('/new') ? 'active' : ''}`}
             >
               <BookOpenIcon size={18} />
-              <span>Bài viết của tôi</span>
+              <span>Công thức của tôi</span>
             </Link>
 
             <Link
@@ -65,25 +70,27 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <span>Tạo công thức mới</span>
             </Link>
 
-            <div className="sidebar-nav-heading">Hệ thống & Admin</div>
-
-            <Link
-              href="/dashboard/categories"
-              className={`sidebar-link ${pathname.startsWith('/dashboard/categories') ? 'active' : ''}`}
-            >
-              <BookOpenIcon size={18} />
-              <span>Quản lý Danh mục</span>
-              <span className="sidebar-badge">Admin</span>
-            </Link>
-
-            <Link
-              href="/admin/recipes/trash"
-              className={`sidebar-link ${pathname.startsWith('/admin/recipes/trash') ? 'active' : ''}`}
-            >
-              <TrashIcon size={18} />
-              <span>Thùng rác</span>
-              <span className="sidebar-badge">Admin</span>
-            </Link>
+            {isAdmin && (
+              <>
+                <div className="sidebar-nav-heading">Quản trị hệ thống</div>
+                <Link
+                  href="/dashboard/categories"
+                  className={`sidebar-link ${pathname.startsWith('/dashboard/categories') ? 'active' : ''}`}
+                >
+                  <BookOpenIcon size={18} />
+                  <span>Danh mục món ăn</span>
+                  <span className="sidebar-badge">Admin</span>
+                </Link>
+                <Link
+                  href="/admin/recipes/trash"
+                  className={`sidebar-link ${pathname.startsWith('/admin/recipes/trash') ? 'active' : ''}`}
+                >
+                  <TrashIcon size={18} />
+                  <span>Thùng rác công thức</span>
+                  <span className="sidebar-badge">Admin</span>
+                </Link>
+              </>
+            )}
 
             <div className="sidebar-nav-heading">Khám phá</div>
 
@@ -100,10 +107,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
           <div className="sidebar-footer">
             <div className="user-profile-widget">
-              <div className="user-avatar">TN</div>
+              <div className="user-avatar">{(user?.displayName ?? 'U').slice(0, 2).toUpperCase()}</div>
               <div style={{ overflow: 'hidden' }}>
-                <div className="user-info-name">Tạ Nhật Nguyên</div>
-                <div className="user-info-role">Nhóm trưởng • Admin</div>
+                <div className="user-info-name">{user?.displayName ?? 'Người dùng'}</div>
+                <div className="user-info-role">{isAdmin ? 'Quản trị viên' : 'Tác giả'}</div>
               </div>
             </div>
           </div>
@@ -111,7 +118,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* MAIN CONTENT CONTAINER */}
         <div className="dashboard-main">{children}</div>
-      </div>
+        </div>
+      </RequireRole>
     </ToastProvider>
   );
 }

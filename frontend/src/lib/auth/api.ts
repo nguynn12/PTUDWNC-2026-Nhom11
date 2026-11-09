@@ -5,6 +5,8 @@ import type {
   ResetPasswordRequest,
   UpdateProfileRequest,
   UserDto,
+  AdminUsersResponse,
+  SystemLogsResponse,
 } from "@/types/auth";
 
 /**
@@ -12,6 +14,26 @@ import type {
  * Đăng nhập/đăng ký/refresh/đăng xuất/đổi mật khẩu (có cấp token mới) nằm ở session.ts.
  */
 export const authApi = {
+  listUsers: (params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    role?: "Admin" | "Author";
+    status?: "active" | "inactive";
+    sortBy?: string;
+  }) =>
+    apiClient.get<never, AdminUsersResponse>("/admin/users", { params }),
+  toggleUserStatus: (id: string, isActive: boolean) =>
+    apiClient.patch<never, void>(`/admin/users/${encodeURIComponent(id)}/status`, { isActive }),
+  listSystemLogs: (params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    level?: "Information" | "Warning" | "Error";
+    statusCode?: number;
+    from?: string;
+    to?: string;
+  }) => apiClient.get<never, SystemLogsResponse>("/admin/system-logs", { params }),
   me: () => apiClient.get<never, UserDto>("/auth/me"),
   updateProfile: (body: UpdateProfileRequest) => apiClient.patch<never, UserDto>("/auth/me", body),
   /**
@@ -19,11 +41,7 @@ export const authApi = {
    * (validator bỏ qua, ApplicationUser.UpdateProfile ghi lại chuỗi rỗng), nên "" là cách xoá hiện có.
    */
   removeAvatar: () => apiClient.patch<never, UserDto>("/auth/me", { avatarUrl: "" } satisfies UpdateProfileRequest),
-  /**
-   * CHƯA CÓ TRÊN BACKEND. Hợp đồng đề xuất: POST /auth/me/avatar (Bearer), multipart/form-data, trường "file"
-   * (JPG/PNG/WebP, tối đa 5 MB) → 200 + UserDto đã có avatarUrl mới, lưu qua IFileStorageService.
-   * Chỉ được gọi khi AVATAR_UPLOAD_ENABLED (lib/auth/avatar.ts).
-   */
+  /** POST /auth/me/avatar (Bearer), multipart/form-data, trường "file" (JPG/PNG/WebP, tối đa 5 MB). */
   uploadAvatar: (file: File, onProgress?: (percent: number) => void) => {
     const form = new FormData();
     form.append("file", file);

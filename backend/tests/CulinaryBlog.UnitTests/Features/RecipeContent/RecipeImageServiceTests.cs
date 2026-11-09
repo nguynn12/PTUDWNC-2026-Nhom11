@@ -23,6 +23,17 @@ public class RecipeImageServiceTests
         }
     }
 
+    private class FakeImageProcessingService : IImageProcessingService
+    {
+        public Task<(ImageVariantResult? Thumbnail, ImageVariantResult? Medium)> ProcessVariantsAsync(
+            Stream sourceStream, string originalFileName, CancellationToken cancellationToken = default)
+        {
+            var thumb = new ImageVariantResult(new MemoryStream(new byte[10]), "thumb.webp", "image/webp", 300, 300);
+            var med = new ImageVariantResult(new MemoryStream(new byte[10]), "medium.webp", "image/webp", 800, 600);
+            return Task.FromResult<(ImageVariantResult?, ImageVariantResult?)>((thumb, med));
+        }
+    }
+
     private CulinaryBlogDbContext CreateInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<CulinaryBlogDbContext>()
@@ -182,4 +193,43 @@ public class RecipeImageServiceTests
         Assert.NotNull(refreshedSec1);
         Assert.False(refreshedSec1.IsPrimary);
     }
+
+    [Fact]
+    public async Task UploadImageAsync_WithImageProcessingService_ShouldSaveThumbnailAndMediumUrls()
+    {
+        // Arrange
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Pho Bo", Description = "Pho bo Ha Noi", AuthorId = "user1" });
+        await context.SaveChangesAsync();
+
+        var service = new RecipeImageService(context, new FakeFileStorageService(), new FakeImageProcessingService());
+        using var stream = CreateValidJpegStream();
+
+        // Act
+        var result = await service.UploadImageAsync(
+            recipeId,
+            stream,
+            "dish.jpg",
+            "image/jpeg",
+            stream.Length,
+            altText: "Bat pho dac biet",
+            isPrimary: true,
+            currentUserId: "user1",
+            isAdmin: false);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.OriginalUrl);
+        Assert.NotNull(result.ThumbnailUrl);
+        Assert.Contains("thumb.webp", result.ThumbnailUrl);
+        Assert.NotNull(result.MediumUrl);
+        Assert.Contains("medium.webp", result.MediumUrl);
+
+        var savedImage = await context.RecipeImages.FirstOrDefaultAsync(i => i.Id == result.Id);
+        Assert.NotNull(savedImage);
+        Assert.Equal(result.ThumbnailUrl, savedImage.ThumbnailUrl);
+        Assert.Equal(result.MediumUrl, savedImage.MediumUrl);
+    }
+
 }

@@ -23,7 +23,7 @@ public static class RecipeEndpoints
         var group = routes.MapGroup("/recipes")
             .WithTags("Recipes");
 
-        // FR-RCP-001: Duyệt danh sách công thức phân trang, lọc đa tiêu chí và sắp xếp linh hoạt (Public)
+        // FR-RCP-001: Duyệt danh sách công thức phân trang, lọc đa tiêu chí và sắp xếp linh hoạt (Public & Mine)
         group.MapGet("", async (
             int? page,
             int? pageSize,
@@ -36,6 +36,8 @@ public static class RecipeEndpoints
             decimal? maxCalories,
             string? sortBy,
             string? sortOrder,
+            bool? mine,
+            RecipeStatus? status,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -50,7 +52,9 @@ public static class RecipeEndpoints
                 MinCalories: minCalories,
                 MaxCalories: maxCalories,
                 SortBy: sortBy,
-                SortOrder: sortOrder);
+                SortOrder: sortOrder,
+                Mine: mine,
+                Status: status);
 
             var result = await sender.Send(query, cancellationToken);
 
@@ -66,7 +70,7 @@ public static class RecipeEndpoints
         })
         .WithName("GetRecipes")
         .WithSummary("Duyệt danh sách công thức nấu ăn")
-        .WithDescription("Trả về danh sách công thức đã xuất bản (Published), hỗ trợ phân trang, lọc đa tiêu chí (độ khó, thời gian, calo) và sắp xếp linh hoạt (FR-RCP-001).")
+        .WithDescription("Trả về danh sách công thức đã xuất bản (Published) hoặc của tác giả hiện tại (khi mine=true), hỗ trợ phân trang, lọc đa tiêu chí (độ khó, thời gian, calo) và sắp xếp linh hoạt (FR-RCP-001).")
         .Produces<ApiResponse<IReadOnlyList<RecipeSummaryDto>>>(StatusCodes.Status200OK);
 
         // FR-SRCH-001: Tìm kiếm toàn văn công thức nấu ăn (Full-Text Search) (Public)
@@ -118,17 +122,22 @@ public static class RecipeEndpoints
         .Produces<ApiResponse<IReadOnlyList<RecipeSummaryDto>>>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest);
 
-        // FR-RCP-002: Xem chi tiết công thức nấu ăn theo Slug (Public)
+        // FR-RCP-002: Xem chi tiết công thức nấu ăn theo Slug (Public, hỗ trợ 301 Permanent Redirect)
         group.MapGet("/{slug}", async (string slug, ISender sender, CancellationToken cancellationToken) =>
         {
-            var recipe = await sender.Send(new GetRecipeBySlugQuery(slug), cancellationToken);
+            var result = await sender.Send(new GetRecipeBySlugQuery(slug), cancellationToken);
 
-            if (recipe is null)
+            if (result.IsRedirect)
+            {
+                return Results.Redirect($"/api/v1/recipes/{result.RedirectSlug}", permanent: true);
+            }
+
+            if (result.Recipe is null)
             {
                 throw new NotFoundException($"Không tìm thấy công thức nấu ăn với đường dẫn '{slug}'.", "RECIPE_NOT_FOUND");
             }
 
-            return Results.Ok(new ApiResponse<RecipeDetailDto>(recipe));
+            return Results.Ok(new ApiResponse<RecipeDetailDto>(result.Recipe));
         })
         .WithName("GetRecipeBySlug")
         .WithSummary("Xem chi tiết công thức nấu ăn theo Slug")

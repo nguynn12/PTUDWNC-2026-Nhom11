@@ -31,6 +31,7 @@ public static class ErrorCodes
     /// <summary>423 — khoá tạm sau 5 lần đăng nhập sai (FR-AUTH-002 A2). CHƯA có trong Phụ lục B — đề nghị bổ sung.</summary>
     public const string AuthAccountLocked = "AUTH_ACCOUNT_LOCKED";
     public const string AuthEmailNotConfirmed = "AUTH_EMAIL_NOT_CONFIRMED";
+    public const string AuthResetTokenInvalid = "AUTH_RESET_TOKEN_INVALID";
 
     // ── Recipe ───────────────────────────────────────────────────────────────
     public const string RecipeNotFound = "RECIPE_NOT_FOUND";

@@ -29,6 +29,8 @@ public class GetRecipesQueryTests
         Assert.Null(query.MaxCalories);
         Assert.Null(query.SortBy);
         Assert.Null(query.SortOrder);
+        Assert.Null(query.Mine);
+        Assert.Null(query.Status);
     }
 
     [Fact]
@@ -49,7 +51,9 @@ public class GetRecipesQueryTests
             MinCalories: 200m,
             MaxCalories: 600m,
             SortBy: "totalTime",
-            SortOrder: "asc");
+            SortOrder: "asc",
+            Mine: true,
+            Status: RecipeStatus.Draft);
 
         // Assert
         Assert.Equal(2, query.Page);
@@ -63,6 +67,8 @@ public class GetRecipesQueryTests
         Assert.Equal(600m, query.MaxCalories);
         Assert.Equal("totalTime", query.SortBy);
         Assert.Equal("asc", query.SortOrder);
+        Assert.True(query.Mine);
+        Assert.Equal(RecipeStatus.Draft, query.Status);
     }
 
     [Theory]

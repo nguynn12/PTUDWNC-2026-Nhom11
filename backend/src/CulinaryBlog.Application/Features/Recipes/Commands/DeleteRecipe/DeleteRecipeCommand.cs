@@ -12,14 +12,15 @@ using Microsoft.EntityFrameworkCore;
 public record DeleteRecipeCommand(Guid Id, uint? ConcurrencyToken = null) : IRequest<bool>;
 
 /// <summary>
-/// Handler xử lý xóa mềm công thức nấu ăn.
+/// Handler xử lý xóa mềm công thức nấu ăn và tự động hủy cache (NFR-PERF).
 /// Đánh dấu IsDeleted = true và ghi nhận thời điểm DeletedAt theo đặc tả SRS 7.1.
 /// </summary>
 public sealed class DeleteRecipeCommandHandler(
     IRepository<Recipe> recipeRepository,
     IUnitOfWork unitOfWork,
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    ICacheInvalidator? cacheInvalidator = null)
     : IRequestHandler<DeleteRecipeCommand, bool>
 {
     public async Task<bool> Handle(
@@ -65,6 +66,12 @@ public sealed class DeleteRecipeCommandHandler(
 
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Hủy cache Redis theo NFR-PERF
+        if (cacheInvalidator != null)
+        {
+            await cacheInvalidator.InvalidateRecipeAsync(recipe.Id, recipe.Slug, cancellationToken);
+        }
 
         return true;
     }

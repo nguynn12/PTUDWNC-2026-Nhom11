@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 
 export interface GlobalErrorProps {
@@ -53,12 +54,12 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               <RotateCcw className="w-4 h-4" aria-hidden="true" />
               Tải lại trang web
             </button>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
             >
               Về trang chủ
-            </a>
+            </Link>
           </div>
         </main>
       </body>

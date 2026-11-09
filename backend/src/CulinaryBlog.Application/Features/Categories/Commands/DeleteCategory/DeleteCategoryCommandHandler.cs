@@ -7,19 +7,22 @@ using Microsoft.Extensions.Logging;
 namespace CulinaryBlog.Application.Features.Categories.Commands.DeleteCategory;
 
 /// <summary>
-/// Handler xử lý DeleteCategoryCommand, kiểm tra ràng buộc nghiệp vụ không còn Recipe và thực hiện soft delete.
+/// Handler xử lý DeleteCategoryCommand, kiểm tra ràng buộc nghiệp vụ, thực hiện soft delete và tự động hủy cache (NFR-PERF).
 /// </summary>
 public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<DeleteCategoryCommandHandler> _logger;
+    private readonly ICacheInvalidator? _cacheInvalidator;
 
     public DeleteCategoryCommandHandler(
         IApplicationDbContext dbContext,
-        ILogger<DeleteCategoryCommandHandler> logger)
+        ILogger<DeleteCategoryCommandHandler> logger,
+        ICacheInvalidator? cacheInvalidator = null)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _cacheInvalidator = cacheInvalidator;
     }
 
     public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
@@ -56,6 +59,11 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Xóa mềm danh mục thành công. Id: {Id}", category.Id);
+
+        if (_cacheInvalidator != null)
+        {
+            await _cacheInvalidator.InvalidateCategoriesAsync(category.Slug, cancellationToken);
+        }
 
         return true;
     }

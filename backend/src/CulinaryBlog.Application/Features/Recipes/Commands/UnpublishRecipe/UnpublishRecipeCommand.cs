@@ -6,7 +6,6 @@ using CulinaryBlog.Application.Features.Recipes.DTOs;
 using CulinaryBlog.Domain.Entities;
 using CulinaryBlog.Domain.Enums;
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
 
 /// <summary>
@@ -15,13 +14,14 @@ using Microsoft.EntityFrameworkCore;
 public record UnpublishRecipeCommand(Guid Id, uint? ConcurrencyToken = null) : IRequest<RecipeResponseDto>;
 
 /// <summary>
-/// Handler xử lý hủy xuất bản công thức nấu ăn.
+/// Handler xử lý hủy xuất bản công thức nấu ăn và tự động hủy cache (NFR-PERF).
 /// </summary>
 public sealed class UnpublishRecipeCommandHandler(
     IRepository<Recipe> recipeRepository,
     IUnitOfWork unitOfWork,
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    ICacheInvalidator? cacheInvalidator = null)
     : IRequestHandler<UnpublishRecipeCommand, RecipeResponseDto>
 {
     public async Task<RecipeResponseDto> Handle(
@@ -71,6 +71,12 @@ public sealed class UnpublishRecipeCommandHandler(
 
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Hủy cache Redis theo NFR-PERF
+        if (cacheInvalidator != null)
+        {
+            await cacheInvalidator.InvalidateRecipeAsync(recipe.Id, recipe.Slug, cancellationToken);
+        }
 
         var updatedXmin = await dbContext.Recipes
             .Where(r => r.Id == recipe.Id)

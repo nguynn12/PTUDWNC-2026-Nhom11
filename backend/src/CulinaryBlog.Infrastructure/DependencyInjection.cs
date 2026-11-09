@@ -1,14 +1,23 @@
+using Amazon.S3;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Infrastructure.Identity;
+using CulinaryBlog.Infrastructure.Jobs;
 using CulinaryBlog.Infrastructure.Persistence;
+using CulinaryBlog.Infrastructure.Persistence.Interceptors;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
+using Hangfire;
+using Hangfire.MemoryStorage;
+using Hangfire.PostgreSql;
+using CulinaryBlog.Infrastructure.Services.Cache;
+using CulinaryBlog.Infrastructure.Services.Sitemap;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace CulinaryBlog.Infrastructure;
 
@@ -22,14 +31,50 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 "Connection string 'DefaultConnection' was not configured.");
 
-        services.AddDbContext<CulinaryBlogDbContext>(options =>
+        // ── EF Core Interceptor giám sát truy vấn chậm > 100ms (NFR-PERF) ────────
+        services.AddSingleton<SlowQueryInterceptor>();
+
+        services.AddDbContext<CulinaryBlogDbContext>((sp, options) =>
         {
+            var slowQueryInterceptor = sp.GetRequiredService<SlowQueryInterceptor>();
+            options.AddInterceptors(slowQueryInterceptor);
             options.UseNpgsql(connectionString);
             options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CulinaryBlogDbContext>());
+
+        // ── Redis Cache & Invalidation (NFR-PERF, NFR-REL-002) ──────────────────
+        var redisConnectionString = configuration.GetConnectionString("Redis")
+            ?? configuration["Redis:ConnectionString"]
+            ?? "localhost:6379";
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            configOptions.ConnectTimeout = 2000;
+            configOptions.SyncTimeout = 2000;
+            options.ConfigurationOptions = configOptions;
+            options.InstanceName = configuration["Redis:InstanceName"] ?? "CulinaryBlog:";
+        });
+
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+            configOptions.AbortOnConnectFail = false;
+            configOptions.ConnectTimeout = 2000;
+            configOptions.SyncTimeout = 2000;
+            return ConnectionMultiplexer.Connect(configOptions);
+        });
+
+        services.AddScoped<ICacheService, RedisCacheService>();
+        services.AddScoped<ICacheInvalidator, CacheInvalidator>();
+
+        // ── Sitemap Service & Hangfire Job (FR-JOB-003, NFR-SEO) ────────────────
+        services.AddScoped<ISitemapService, SitemapService>();
+        services.AddTransient<Jobs.GenerateSitemapJob>();
 
         // ── Repository và Unit of Work (Yêu cầu chung Lab 3) ─────────────────────
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
@@ -41,8 +86,23 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        // ── Dịch vụ lưu trữ tệp tin (Thành viên 4) ───────────────────────────────
-        services.AddScoped<IFileStorageService, FileStorageService>();
+        // ── Dịch vụ lưu trữ tệp tin & Xử lý hình ảnh MinIO S3 (Thành viên 4 - Lab 8) ──────
+        services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
+        services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var minioSettings = configuration.GetSection(MinioSettings.SectionName).Get<MinioSettings>() ?? new MinioSettings();
+            var s3Config = new AmazonS3Config
+            {
+                ServiceURL = minioSettings.Endpoint,
+                ForcePathStyle = minioSettings.ForcePathStyle,
+                UseHttp = minioSettings.Endpoint.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            };
+            return new AmazonS3Client(minioSettings.AccessKey, minioSettings.SecretKey, s3Config);
+        });
+
+        services.AddScoped<FileStorageService>();
+        services.AddScoped<IFileStorageService, MinioFileStorageService>();
+        services.AddScoped<IImageProcessingService, ImageProcessingService>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         services.AddDataProtection();
@@ -71,11 +131,21 @@ public static class DependencyInjection
 
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddScoped<IUserQueryService, UserQueryService>();
+        services.AddScoped<IAdminUserQueryService, AdminUserQueryService>();
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<IEmailService, CulinaryBlog.Infrastructure.Services.MockEmailService>();
+        services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
+        var emailSettings = configuration.GetSection(EmailSettings.SectionName).Get<EmailSettings>();
+        if (emailSettings?.IsConfigured == true)
+        {
+            services.AddScoped<IEmailService, SmtpEmailService>();
+        }
+        else
+        {
+            services.AddScoped<IEmailService, MockEmailService>();
+        }
         services.Configure<Services.ClientAppSettings>(configuration.GetSection(Services.ClientAppSettings.SectionName));
         services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
         services.AddScoped<IClientInfoService, Services.ClientInfoService>();
@@ -97,6 +167,43 @@ public static class DependencyInjection
         .AddJwtBearer(options => JwtBearerSetup.Configure(options, jwtSettings));
 
         services.AddAuthorization(AuthorizationPolicies.Configure);
+
+        // ── Hangfire Background Job Processing (Lab 8 TV3) ───────────────────────
+        services.AddScoped<IRecipePurgeService, RecipePurgeService>();
+        services.AddScoped<PurgeExpiredRecipesJob>();
+
+        var isTesting = configuration.GetValue<bool>("IsTesting")
+            || string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Testing", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Testing", StringComparison.OrdinalIgnoreCase)
+            || connectionString.Contains("fake_test_db", StringComparison.OrdinalIgnoreCase);
+
+        services.AddHangfire(config =>
+        {
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                  .UseSimpleAssemblyNameTypeSerializer()
+                  .UseRecommendedSerializerSettings();
+
+            if (isTesting)
+            {
+                config.UseMemoryStorage();
+            }
+            else
+            {
+                config.UsePostgreSqlStorage(options =>
+                {
+                    options.UseNpgsqlConnection(connectionString);
+                });
+            }
+        });
+
+        if (!isTesting)
+        {
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = Math.Min(Environment.ProcessorCount * 2, 4);
+                options.Queues = ["default", "critical"];
+            });
+        }
 
         return services;
     }

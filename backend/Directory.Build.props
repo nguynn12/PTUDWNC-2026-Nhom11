@@ -4,7 +4,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Bo qua canh bao NuGet Audit (NU1901-NU1904) cho ImageSharp -->
+    <NoWarn>$(NoWarn);NU1901;NU1902;NU1903;NU1904</NoWarn>
     <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 </Project>
-

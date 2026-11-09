@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CulinaryBlog.Application.Common.Constants;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Application.Features.Recipes.DTOs;
@@ -14,22 +15,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// Handler xử lý SearchRecipesQuery: tìm kiếm toàn văn công thức bằng PostgreSQL Full-Text Search (SearchVector + unaccent + simple + pg_trgm fallback).
+/// Handler xử lý SearchRecipesQuery: tìm kiếm toàn văn công thức bằng PostgreSQL Full-Text Search kết hợp Redis Cache 1 phút (NFR-PERF).
 /// </summary>
 public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, PagedResult<RecipeSummaryDto>>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUserQueryService _userQueryService;
     private readonly ILogger<SearchRecipesQueryHandler> _logger;
+    private readonly ICacheService? _cacheService;
 
     public SearchRecipesQueryHandler(
         IApplicationDbContext dbContext,
         IUserQueryService userQueryService,
-        ILogger<SearchRecipesQueryHandler> logger)
+        ILogger<SearchRecipesQueryHandler> logger,
+        ICacheService? cacheService = null)
     {
         _dbContext = dbContext;
         _userQueryService = userQueryService;
         _logger = logger;
+        _cacheService = cacheService;
     }
 
     public async Task<PagedResult<RecipeSummaryDto>> Handle(SearchRecipesQuery request, CancellationToken cancellationToken)
@@ -44,6 +48,17 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
             _ => request.PageSize
         };
 
+        var cacheKey = $"{CacheConstants.SearchPrefix}q{searchTerm.ToLowerInvariant()}_p{page}_ps{pageSize}_c{request.CategoryId}_d{request.Difficulty}_s{request.SortBy}_{request.SortOrder}_pt{request.MaxPrepTime}_ct{request.MaxCookTime}_tt{request.MaxTotalTime}_minc{request.MinCalories}_maxc{request.MaxCalories}";
+
+        if (_cacheService != null)
+        {
+            var cached = await _cacheService.GetAsync<PagedResult<RecipeSummaryDto>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return cached;
+            }
+        }
+
         _logger.LogInformation("Thực hiện tìm kiếm công thức: Q='{SearchTerm}', Page={Page}, PageSize={PageSize}",
             searchTerm, page, pageSize);
 
@@ -57,7 +72,9 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
             baseQuery = _dbContext.Recipes
                 .AsNoTracking()
                 .Where(r => r.Status == RecipeStatus.Published && !r.IsDeleted &&
-                    (r.Title.ToLower().Contains(lowerSearch) || (r.Description != null && r.Description.ToLower().Contains(lowerSearch))))
+                    (r.Title.ToLower().Contains(lowerSearch) || 
+                     r.Slug.ToLower().Contains(lowerSearch) || 
+                     (r.Description != null && r.Description.ToLower().Contains(lowerSearch))))
                 .OrderByDescending(r => r.PublishedAt);
         }
         else
@@ -120,7 +137,12 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
         if (total == 0)
         {
             _logger.LogInformation("Không tìm thấy công thức nào phù hợp với từ khóa '{SearchTerm}'.", searchTerm);
-            return new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
+            var emptyResult = new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
+            if (_cacheService != null)
+            {
+                await _cacheService.SetAsync(cacheKey, emptyResult, CacheConstants.SearchDuration, cancellationToken);
+            }
+            return emptyResult;
         }
 
         // 5. Áp dụng sắp xếp: nếu người dùng yêu cầu sắp xếp khác ngoài "relevance"
@@ -177,7 +199,14 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
 
         _logger.LogInformation("Tìm kiếm thành công: {Count}/{Total} công thức cho trang {Page}", items.Count, total, page);
 
-        return new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
+        var result = new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
+
+        if (_cacheService != null)
+        {
+            await _cacheService.SetAsync(cacheKey, result, CacheConstants.SearchDuration, cancellationToken);
+        }
+
+        return result;
     }
 
     /// <summary>

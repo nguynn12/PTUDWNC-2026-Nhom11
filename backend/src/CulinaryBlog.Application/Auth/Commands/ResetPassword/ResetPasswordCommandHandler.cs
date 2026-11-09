@@ -30,7 +30,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand>
         var result = await _identityService.ResetPasswordAsync(request.Email, request.Token, request.NewPassword);
         if (!result)
         {
-            throw new BusinessRuleValidationException("Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.", "AUTH_RESET_TOKEN_INVALID");
+            throw new BusinessRuleValidationException("Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.", ErrorCodes.AuthResetTokenInvalid);
         }
 
         var user = await _identityService.GetUserDetailsByEmailAsync(request.Email);

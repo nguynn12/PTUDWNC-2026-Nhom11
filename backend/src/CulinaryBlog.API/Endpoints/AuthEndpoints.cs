@@ -9,6 +9,10 @@ using CulinaryBlog.Application.Auth.Commands.ConfirmEmail;
 using CulinaryBlog.Application.Auth.Commands.ResendConfirmationEmail;
 using CulinaryBlog.Application.Auth.Commands.ForgotPassword;
 using CulinaryBlog.Application.Auth.Commands.ResetPassword;
+using CulinaryBlog.Application.Auth.Commands.ChangePassword;
+using CulinaryBlog.Application.Auth.Dtos;
+using CulinaryBlog.Application.Common.Exceptions;
+using CulinaryBlog.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -76,6 +80,12 @@ public static class AuthEndpoints
             return Results.NoContent();
         });
 
+        group.MapPost("/password/change", async (ChangePasswordCommand command, ISender sender) =>
+        {
+            var result = await sender.Send(command);
+            return Results.Ok(result);
+        }).RequireAuthorization();
+
         // RESOLVED-CONFLICTS D3: logout chỉ cần refreshToken trong body, KHÔNG yêu cầu access
         // token còn hạn (access token có thể đã hết hạn khi người dùng bấm đăng xuất).
         group.MapPost("/logout", async (LogoutCommand command, ISender sender) =>
@@ -95,5 +105,56 @@ public static class AuthEndpoints
             var result = await sender.Send(command);
             return Results.Ok(result);
         }).RequireAuthorization();
+
+        group.MapPost("/me/avatar", async (
+            IFormFile file,
+            ICurrentUserService currentUser,
+            IIdentityService identity,
+            IFileStorageService storage,
+            CancellationToken cancellationToken) =>
+        {
+            if (currentUser.UserId is not { Length: > 0 } userId)
+                return Results.Unauthorized();
+            if (file.Length is <= 0 or > 5 * 1024 * 1024)
+                return Results.Problem("Ảnh đại diện phải có kích thước từ 1 byte đến 5 MB.", statusCode: 400);
+
+            var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+            if (!allowedTypes.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
+                return Results.Problem("Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.", statusCode: 400);
+
+            await using var input = file.OpenReadStream();
+            var header = new byte[12];
+            var read = await input.ReadAsync(header, cancellationToken);
+            if (!IsSupportedImage(header, read))
+                return Results.Problem("Nội dung tệp không phải ảnh hợp lệ.", statusCode: 400);
+            input.Position = 0;
+
+            var user = await identity.GetUserDetailsByIdAsync(userId);
+            if (user is null)
+                return Results.Unauthorized();
+            if (!user.IsActive)
+                return Results.Problem("Tài khoản đã bị vô hiệu hóa.", statusCode: 403);
+
+            var avatarUrl = await storage.UploadAsync(input, file.FileName, file.ContentType, "avatars", cancellationToken);
+            if (!await identity.UpdateProfileAsync(userId, null, null, avatarUrl))
+            {
+                await storage.DeleteAsync(avatarUrl, cancellationToken);
+                return Results.Problem("Không cập nhật được ảnh đại diện.", statusCode: 500);
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.AvatarUrl))
+                await storage.DeleteAsync(user.AvatarUrl, cancellationToken);
+
+            var updated = await identity.GetUserDetailsByIdAsync(userId);
+            return updated is null
+                ? Results.Problem("Không tải lại được hồ sơ.", statusCode: 500)
+                : Results.Ok(updated.ToUserDto());
+        }).RequireAuthorization();
     }
+
+    private static bool IsSupportedImage(byte[] bytes, int length) =>
+        (length >= 3 && bytes[0] == 0xff && bytes[1] == 0xd8 && bytes[2] == 0xff) ||
+        (length >= 8 && bytes[..8].SequenceEqual(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 })) ||
+        (length >= 12 && bytes[..4].SequenceEqual("RIFF"u8.ToArray()) &&
+         bytes[8..12].SequenceEqual("WEBP"u8.ToArray()));
 }

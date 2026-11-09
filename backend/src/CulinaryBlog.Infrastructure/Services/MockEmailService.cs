@@ -12,7 +12,7 @@ public class MockEmailService : IEmailService
         _logger = logger;
     }
 
-    public Task SendEmailAsync(string to, string subject, string body)
+    public Task SendEmailAsync(string to, string subject, string body, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("--- MOCK EMAIL SENT ---");
         _logger.LogInformation("To: {To}", to);

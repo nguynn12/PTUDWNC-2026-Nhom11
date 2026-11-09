@@ -38,7 +38,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                ["IsTesting"] = "true",
+                ["ASPNETCORE_ENVIRONMENT"] = "Testing",
                 ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Database=fake_test_db;Username=test;Password=test",
+                ["JwtSettings:Secret"] = "SuperSecretKeyForIntegrationTestingPurposesOnly1234567890!@#$%",
+                ["JwtSettings:Issuer"] = "CulinaryBlogTest",
+                ["JwtSettings:Audience"] = "CulinaryBlogTest",
+                ["JwtSettings:ExpiryMinutes"] = "60",
                 ["Jwt:SecretKey"] = "SuperSecretKeyForIntegrationTestingPurposesOnly1234567890!@#$%",
                 ["Jwt:Issuer"] = "CulinaryBlogTest",
                 ["Jwt:Audience"] = "CulinaryBlogTest",
@@ -57,6 +63,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 d.ServiceType == typeof(IApplicationDbContext)).ToList();
 
             foreach (var descriptor in dbContextDescriptors)
+            {
+                services.Remove(descriptor);
+            }
+
+            // Gỡ bỏ Hangfire BackgroundJobServerHostedService để tránh timeout khi Dispose host kiểm thử
+            var hangfireHostedServices = services.Where(d =>
+                d.ServiceType == typeof(IHostedService) &&
+                (d.ImplementationType?.FullName?.Contains("Hangfire", StringComparison.OrdinalIgnoreCase) == true ||
+                 d.ServiceType.FullName?.Contains("Hangfire", StringComparison.OrdinalIgnoreCase) == true)).ToList();
+
+            foreach (var descriptor in hangfireHostedServices)
             {
                 services.Remove(descriptor);
             }
@@ -187,5 +204,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         EnsureDatabaseSeeded();
         return CreateClient();
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await base.DisposeAsync();
+        }
+        catch (TaskCanceledException)
+        {
+            // Bỏ qua ngoại lệ timeout hủy tác vụ khi đóng host test
+        }
     }
 }

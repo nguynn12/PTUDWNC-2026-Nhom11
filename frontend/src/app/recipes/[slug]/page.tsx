@@ -1,9 +1,9 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getRecipeBySlug } from "@/lib/api/recipes";
+import { getRecipeBySlug, getRecipes } from "@/lib/api/recipes";
 import { RecipeDetail } from "@/components/recipe/RecipeDetail";
-import type { RecipeDetailDto } from "@/types/api";
+import type { RecipeDetailDto, RecipeSummaryDto } from "@/types/api";
 
 // ISR 300 giây (5 phút) theo đặc tả SRS Mục 5.1 (Dòng 1780)
 export const revalidate = 300;
@@ -25,14 +25,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       recipe.images?.[0]?.imageUrl ||
       "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80";
 
+    const isPublic = recipe.status === "Published" || recipe.status === 1;
+    const robots = isPublic
+      ? { index: true, follow: true }
+      : { index: false, follow: false, nocache: true };
+
     return {
       title: `${recipe.title} — Công Thức Nấu Ăn`,
       description:
         recipe.description ||
         `Hướng dẫn cách nấu món ${recipe.title} thơm ngon, chuẩn vị cùng thông tin dinh dưỡng chi tiết tại Culinary Blog.`,
+      alternates: {
+        canonical: `/recipes/${recipe.slug}`,
+      },
+      robots,
       openGraph: {
         title: `${recipe.title} — Công Thức Nấu Ăn | Culinary Blog`,
         description: recipe.description,
+        url: `/recipes/${recipe.slug}`,
         images: [{ url: heroImg, alt: recipe.title }],
       },
       twitter: {
@@ -50,6 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function RecipeDetailPage({ params }: PageProps) {
   const { slug } = await params;
   let recipe: RecipeDetailDto | null = null;
+  let relatedRecipes: RecipeSummaryDto[] = [];
 
   try {
     recipe = await getRecipeBySlug(slug);
@@ -62,5 +73,23 @@ export default async function RecipeDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <RecipeDetail recipe={recipe} />;
+  // Lấy tối đa 4 công thức liên quan cùng danh mục
+  if (recipe.categoryId) {
+    try {
+      const relatedRes = await getRecipes({
+        categoryId: recipe.categoryId,
+        pageSize: 5,
+        sortBy: "newest",
+      });
+      if (relatedRes?.data) {
+        relatedRecipes = relatedRes.data
+          .filter((r) => r.id !== recipe.id && r.slug !== recipe.slug)
+          .slice(0, 4);
+      }
+    } catch {
+      relatedRecipes = [];
+    }
+  }
+
+  return <RecipeDetail recipe={recipe} relatedRecipes={relatedRecipes} />;
 }

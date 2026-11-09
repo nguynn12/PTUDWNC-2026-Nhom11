@@ -23,12 +23,19 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
   const diffInfo = getDifficultyVariant(recipe.difficulty);
   const fallbackImage =
     recipe.primaryImageUrl ||
+    recipe.thumbnailUrl ||
     "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
+
+  const authorDisplayName =
+    recipe.author?.displayName ||
+    recipe.author?.userName ||
+    recipe.authorName ||
+    "Ẩm thực gia";
 
   const authorAvatar =
     recipe.author?.avatarUrl ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      recipe.author?.displayName || recipe.author?.userName || "Bếp Trưởng"
+      authorDisplayName
     )}&background=fed8c4&color=c85a17`;
 
   const totalTime =
@@ -38,6 +45,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
     30;
 
   return (
+    <article className="h-full" aria-label={recipe.title}>
     <Card className="group flex flex-col h-full overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] rounded-2xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       {/* Khối Ảnh bìa công thức với tỷ lệ 16:10 */}
       <Link
@@ -129,7 +137,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
               />
             </div>
             <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
-              {recipe.author?.displayName || recipe.author?.userName || "Ẩm thực gia"}
+              {authorDisplayName}
             </span>
           </div>
 
@@ -143,5 +151,6 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
         </div>
       </div>
     </Card>
+    </article>
   );
 }
