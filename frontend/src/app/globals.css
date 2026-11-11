@@ -12,25 +12,25 @@
    ========================================================================== */
 
 :root {
-  /* --- PALETTE ẨM THỰC CAO CẤP (WARM TERRACOTTA & BASIL HERB) --- */
-  --primary: #c85a17;
-  --primary-hover: #b04b0f;
-  --primary-active: #963e0b;
-  --primary-dark: #963e0b;
-  --primary-light: #fff2ea;
-  --primary-subtle: #fed8c4;
-  --primary-rgb: 200, 90, 23;
+  /* --- PALETTE ẨM THỰC: GỖ ÓC CHÓ CỔ ĐIỂN & KEM TRẮNG (WALNUT & CREAM) --- */
+  --primary: #5c3a21;
+  --primary-hover: #442a17;
+  --primary-active: #351f0f;
+  --primary-dark: #442a17;
+  --primary-light: #f5ece4;
+  --primary-subtle: #eedbc9;
+  --primary-rgb: 92, 58, 33;
 
-  --secondary: #2b7a4b;
-  --secondary-hover: #23653d;
-  --secondary-light: #ecf7f0;
-  --secondary-subtle: #cdecd7;
-  --secondary-rgb: 43, 122, 75;
+  --secondary: #a06d48;
+  --secondary-hover: #855837;
+  --secondary-light: #faf1e9;
+  --secondary-subtle: #f3dfcf;
+  --secondary-rgb: 160, 109, 72;
 
-  --accent: #2b7a4b;
+  --accent: #a06d48;
   --accent-light: var(--secondary-light);
-  --accent-amber: #d97706;
-  --accent-amber-light: #fef3c7;
+  --accent-amber: #c2884a;
+  --accent-amber-light: #fcf4eb;
 
   /* --- TRẠNG THÁI (STATUS & FEEDBACK) --- */
   --danger: #dc2626;
@@ -41,31 +41,31 @@
   --info: #2563eb;
   --info-light: #eff6ff;
 
-  /* --- NỀN VÀ BỀ MẶT (WARM PAPER & CREAM SURFACES) --- */
-  --bg-main: #fbf9f6;
+  /* --- NỀN VÀ BỀ MẶT (WARM WALNUT & CREAM SURFACES) --- */
+  --bg-main: #faf7f2;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
-  --bg-surface-alt: #f4efe8;
+  --bg-surface-alt: #f3ede4;
   --bg-card: #ffffff;
-  --bg-sidebar: #1e1713;
-  --bg-sidebar-hover: #2d241f;
-  --bg-sidebar-active: #c85a17;
-  --bg-overlay: rgba(26, 20, 16, 0.45);
+  --bg-sidebar: #1e130c;
+  --bg-sidebar-hover: #2c1e14;
+  --bg-sidebar-active: #5c3a21;
+  --bg-overlay: rgba(26, 17, 12, 0.45);
 
-  /* --- MÀU CHỮ & ĐỘ TƯƠNG PHẢN (ESPRESSO CHARCOAL) --- */
-  --text-primary: #1e1713;
-  --text-secondary: #5e5249;
-  --text-muted: #8a7c72;
-  --text-subtle: #b2a59b;
+  /* --- MÀU CHỮ & ĐỘ TƯƠNG PHẢN (ROASTED CHESTNUT & ESPRESSO) --- */
+  --text-primary: #24170d;
+  --text-secondary: #5a483a;
+  --text-muted: #8a786a;
+  --text-subtle: #b3a395;
   --text-inverse: #ffffff;
   --text-main: var(--text-primary);
   --text-light: var(--text-muted);
 
   /* --- ĐƯỜNG VIỀN (BORDER) --- */
-  --border-subtle: #eee7de;
-  --border-default: #e0d6ca;
-  --border-strong: #c8bcad;
-  --border-focus: #c85a17;
+  --border-subtle: #f0e5da;
+  --border-default: #e7d9cc;
+  --border-strong: #cfbeae;
+  --border-focus: #5c3a21;
   --border-color: var(--border-default);
   --border-light: var(--border-subtle);
 
@@ -88,8 +88,8 @@
   --shadow-md: 0 4px 12px rgba(45, 30, 20, 0.08), 0 2px 4px rgba(45, 30, 20, 0.04);
   --shadow-lg: 0 12px 24px -4px rgba(45, 30, 20, 0.1), 0 4px 8px -2px rgba(45, 30, 20, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(45, 30, 20, 0.12), 0 8px 10px -6px rgba(45, 30, 20, 0.05);
-  --shadow-hover: 0 16px 32px -6px rgba(200, 90, 23, 0.14), 0 6px 12px -2px rgba(45, 30, 20, 0.06);
-  --shadow-glow: 0 0 15px rgba(200, 90, 23, 0.25);
+  --shadow-hover: 0 16px 32px -6px rgba(92, 58, 33, 0.16), 0 6px 12px -2px rgba(45, 30, 20, 0.06);
+  --shadow-glow: 0 0 15px rgba(92, 58, 33, 0.25);
 
   /* --- BO GÓC (BORDER RADIUS) --- */
   --radius-sm: 6px;
@@ -111,21 +111,21 @@
   /* --- LAYOUT DIMENSIONS --- */
   --header-height: 72px;
   --container-max-width: 1240px;
-  --background: #fbf9f6;
-  --foreground: #1e1713;
+  --background: #faf7f2;
+  --foreground: #24170d;
   --card: #ffffff;
-  --card-foreground: #1e1713;
+  --card-foreground: #24170d;
   --popover: #ffffff;
-  --popover-foreground: #1e1713;
+  --popover-foreground: #24170d;
   --primary-foreground: #ffffff;
   --secondary-foreground: #ffffff;
-  --muted: #f4efe8;
-  --muted-foreground: #8a7c72;
-  --accent-foreground: #ffffff;
+  --muted: #f3ede4;
+  --muted-foreground: #8a786a;
+  --accent-foreground: #24170d;
   --destructive: #dc2626;
-  --border: #e0d6ca;
-  --input: #e0d6ca;
-  --ring: #c85a17;
+  --border: #e7d9cc;
+  --input: #e7d9cc;
+  --ring: #5c3a21;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -2213,24 +2213,24 @@
 }
 
 .dark {
-  --background: #1e1713;
-  --foreground: #fbf9f6;
-  --card: #28201a;
-  --card-foreground: #fbf9f6;
-  --popover: #28201a;
-  --popover-foreground: #fbf9f6;
-  --primary: #e06d28;
+  --background: #18110c;
+  --foreground: #faf7f2;
+  --card: #221812;
+  --card-foreground: #faf7f2;
+  --popover: #221812;
+  --popover-foreground: #faf7f2;
+  --primary: #c2884a;
   --primary-foreground: #ffffff;
-  --secondary: #3b9460;
+  --secondary: #8c5d3b;
   --secondary-foreground: #ffffff;
-  --muted: #382d26;
-  --muted-foreground: #b2a59b;
-  --accent: #382d26;
-  --accent-foreground: #fbf9f6;
+  --muted: #2f221a;
+  --muted-foreground: #ad9a8b;
+  --accent: #2f221a;
+  --accent-foreground: #faf7f2;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #44372f;
-  --input: #44372f;
-  --ring: #e06d28;
+  --border: #3d2c22;
+  --input: #3d2c22;
+  --ring: #c2884a;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);

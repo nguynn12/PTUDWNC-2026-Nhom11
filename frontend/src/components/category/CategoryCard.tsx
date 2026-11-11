@@ -45,8 +45,8 @@ export function CategoryCard({ category }: CategoryCardProps) {
           )}
 
           <Badge
-            variant="secondary"
-            className="mt-1 text-xs font-medium text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+            variant="outline"
+            className="mt-1 text-xs font-medium bg-[var(--primary-light)] text-[var(--primary)] border-[var(--border-default)] group-hover:bg-[var(--primary)] group-hover:text-[var(--text-inverse)] group-hover:border-[var(--primary)] transition-all duration-300 shadow-2xs"
           >
             {category.recipeCount || 0} công thức
           </Badge>
