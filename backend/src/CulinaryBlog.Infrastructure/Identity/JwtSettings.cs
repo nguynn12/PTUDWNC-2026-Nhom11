@@ -8,4 +8,5 @@ public class JwtSettings
     public int ExpiryMinutes { get; init; } = 15;
     public string Issuer { get; init; } = null!;
     public string Audience { get; init; } = null!;
+
 }

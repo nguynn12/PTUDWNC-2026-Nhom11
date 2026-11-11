@@ -7,6 +7,9 @@
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageVersion Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.25" />
+    <PackageVersion Include="Hangfire.MemoryStorage" Version="1.8.1.2" />
+    <PackageVersion Include="Hangfire.PostgreSql" Version="1.21.1" />
     <PackageVersion Include="MailKit" Version="4.18.2" />
     <PackageVersion Include="MediatR" Version="12.5.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
@@ -20,6 +23,7 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.14" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <!-- Dùng để seed dữ liệu ngẫu nhiên (ApplicationDbContextInitialiser) -->
@@ -27,9 +31,14 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="RedLock.net" Version="2.3.2" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.11" />
-    <PackageVersion Include="StackExchange.Redis" Version="3.4.31" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Seq" Version="9.1.0" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.31" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <!-- MinIO Object Storage & Image Processing (Lab 8 - Nguyen Phu Quy) -->
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.415.11" />
+    <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
 </Project>

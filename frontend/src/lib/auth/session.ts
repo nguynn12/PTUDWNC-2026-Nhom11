@@ -93,10 +93,13 @@ async function doRefresh(): Promise<boolean> {
     useAuthStore.getState().setSession(res);
     return true;
   } catch (error) {
-    if (error instanceof AppError && (error.status === 401 || error.status === 403)) {
-      useAuthStore.getState().clearSession(); // token hết hạn/bị thu hồi/tài khoản bị khoá
+    if (error instanceof AppError && error.status > 0) {
+      // Backend đã nhận request nhưng từ chối hoặc gặp lỗi server. Refresh token
+      // hiện tại không nên được tự động gửi lại vô hạn.
+      useAuthStore.getState().clearSession();
     } else {
-      useAuthStore.getState().markUnauthenticated(); // lỗi mạng: giữ token để thử lại sau
+      // Chỉ giữ token khi không kết nối được backend; có thể thử lại khi mạng hồi phục.
+      useAuthStore.getState().markUnauthenticated();
     }
     return false;
   }

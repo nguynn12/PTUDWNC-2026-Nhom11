@@ -30,8 +30,8 @@ public sealed class AuthExceptionHandler(
 
         var (statusCode, type, title, detail) = mapped.Value;
 
-        logger.LogWarning("Request {Path} bị từ chối với mã lỗi {ErrorCode} ({StatusCode})",
-            httpContext.Request.Path, type, statusCode);
+        logger.LogWarning(exception, "Request {Path} bị từ chối với mã lỗi {ErrorCode} ({StatusCode}): {Message}",
+            httpContext.Request.Path, type, statusCode, exception.Message);
 
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/problem+json";

@@ -33,6 +33,7 @@ export type ApiError = AppError;
 type FetchApiOptions = Omit<RequestInit, "headers"> & {
   headers?: Record<string, string>;
   ifMatch?: string | number | null;
+  onUploadProgress?: (progressEvent: import("axios").AxiosProgressEvent) => void;
 };
 
 /**
@@ -40,7 +41,7 @@ type FetchApiOptions = Omit<RequestInit, "headers"> & {
  * lỗi luôn là AppError (RFC 7807). Giữ chữ ký fetch cũ để RecipeApi không phải đổi.
  */
 export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {}): Promise<T> {
-  const { method = "GET", body, headers = {}, ifMatch, signal } = options;
+  const { method = "GET", body, headers = {}, ifMatch, signal, onUploadProgress } = options;
   const requestHeaders: Record<string, string> = { ...headers };
 
   // Body đã JSON.stringify sẵn: báo cho backend biết là JSON.
@@ -55,6 +56,7 @@ export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {
     data: body ?? undefined,
     headers: requestHeaders,
     signal: signal ?? undefined,
+    onUploadProgress,
   });
 
   // 204 No Content: giữ hành vi cũ trả về object rỗng.
@@ -81,7 +83,7 @@ export const RecipeApi = {
 
     const queryString = query.toString();
     const endpoint = `/recipes${queryString ? `?${queryString}` : ''}`;
-    
+
     try {
       const res = await fetchApi<PaginatedList<RecipeSummaryDto> | { data: RecipeSummaryDto[]; meta: Record<string, unknown> }>(endpoint);
       if (res && typeof res === 'object' && 'data' in res && Array.isArray((res as { data: RecipeSummaryDto[] }).data)) {
@@ -380,7 +382,8 @@ export const RecipeApi = {
     recipeId: string,
     file: File,
     altText?: string | null,
-    isPrimary = false
+    isPrimary = false,
+    onUploadProgress?: (percent: number) => void
   ): Promise<RecipeImageDto> {
     const formData = new FormData();
     formData.append('file', file);
@@ -393,6 +396,12 @@ export const RecipeApi = {
       return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images`, {
         method: 'POST',
         body: formData,
+        onUploadProgress: (e) => {
+          if (e.total && e.total > 0 && onUploadProgress) {
+            const percent = Math.min(100, Math.round((e.loaded / e.total) * 100));
+            onUploadProgress(percent);
+          }
+        },
       });
     } catch (error) {
       if (error instanceof ApiError && error.status !== 0) {
@@ -409,10 +418,11 @@ export const RecipeApi = {
     request: UpdateRecipeImageRequest
   ): Promise<RecipeImageDto> {
     try {
-      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
+      const response = await fetchApi<{ data: RecipeImageDto }>(`/recipes/${recipeId}/images/${imageId}`, {
         method: 'PATCH',
         body: JSON.stringify(request),
       });
+      return response.data;
     } catch (error) {
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
@@ -836,10 +846,10 @@ function updateMockRecipe(
       status: 409,
       message: 'Xung đột dữ liệu: Công thức đã bị thay đổi bởi một phiên làm việc khác.',
       problem: {
-      type: 'RECIPE_CONCURRENCY_CONFLICT',
-      title: 'Concurrency Conflict',
-      status: 409,
-      detail: `Token If-Match "${xmin}" không khớp với phiên bản hiện tại "${current.xmin}".`,
+        type: 'RECIPE_CONCURRENCY_CONFLICT',
+        title: 'Concurrency Conflict',
+        status: 409,
+        detail: `Token If-Match "${xmin}" không khớp với phiên bản hiện tại "${current.xmin}".`,
       },
     });
   }
@@ -1035,5 +1045,3 @@ function deleteMockImage(recipeId: string, imageId: string): void {
   }
   mockImagesMap[recipeId] = remaining;
 }
-
-

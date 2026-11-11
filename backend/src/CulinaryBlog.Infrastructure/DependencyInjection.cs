@@ -1,11 +1,16 @@
+using Amazon.S3;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Infrastructure.Identity;
+using CulinaryBlog.Infrastructure.Jobs;
 using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Interceptors;
 using CulinaryBlog.Infrastructure.Persistence.Repositories;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Repositories;
 using CulinaryBlog.Infrastructure.Services;
+using Hangfire;
+using Hangfire.MemoryStorage;
+using Hangfire.PostgreSql;
 using CulinaryBlog.Infrastructure.Services.Cache;
 using CulinaryBlog.Infrastructure.Services.Sitemap;
 using Microsoft.AspNetCore.Identity;
@@ -81,8 +86,23 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        // ── Dịch vụ lưu trữ tệp tin (Thành viên 4) ───────────────────────────────
-        services.AddScoped<IFileStorageService, FileStorageService>();
+        // ── Dịch vụ lưu trữ tệp tin & Xử lý hình ảnh MinIO S3 (Thành viên 4 - Lab 8) ──────
+        services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
+        services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var minioSettings = configuration.GetSection(MinioSettings.SectionName).Get<MinioSettings>() ?? new MinioSettings();
+            var s3Config = new AmazonS3Config
+            {
+                ServiceURL = minioSettings.Endpoint,
+                ForcePathStyle = minioSettings.ForcePathStyle,
+                UseHttp = minioSettings.Endpoint.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            };
+            return new AmazonS3Client(minioSettings.AccessKey, minioSettings.SecretKey, s3Config);
+        });
+
+        services.AddScoped<FileStorageService>();
+        services.AddScoped<IFileStorageService, MinioFileStorageService>();
+        services.AddScoped<IImageProcessingService, ImageProcessingService>();
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         services.AddDataProtection();
@@ -111,6 +131,7 @@ public static class DependencyInjection
 
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddScoped<IUserQueryService, UserQueryService>();
+        services.AddScoped<IAdminUserQueryService, AdminUserQueryService>();
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.AddScoped<IJwtService, JwtService>();
@@ -146,6 +167,43 @@ public static class DependencyInjection
         .AddJwtBearer(options => JwtBearerSetup.Configure(options, jwtSettings));
 
         services.AddAuthorization(AuthorizationPolicies.Configure);
+
+        // ── Hangfire Background Job Processing (Lab 8 TV3) ───────────────────────
+        services.AddScoped<IRecipePurgeService, RecipePurgeService>();
+        services.AddScoped<PurgeExpiredRecipesJob>();
+
+        var isTesting = configuration.GetValue<bool>("IsTesting")
+            || string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Testing", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Testing", StringComparison.OrdinalIgnoreCase)
+            || connectionString.Contains("fake_test_db", StringComparison.OrdinalIgnoreCase);
+
+        services.AddHangfire(config =>
+        {
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                  .UseSimpleAssemblyNameTypeSerializer()
+                  .UseRecommendedSerializerSettings();
+
+            if (isTesting)
+            {
+                config.UseMemoryStorage();
+            }
+            else
+            {
+                config.UsePostgreSqlStorage(options =>
+                {
+                    options.UseNpgsqlConnection(connectionString);
+                });
+            }
+        });
+
+        if (!isTesting)
+        {
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = Math.Min(Environment.ProcessorCount * 2, 4);
+                options.Queues = ["default", "critical"];
+            });
+        }
 
         return services;
     }

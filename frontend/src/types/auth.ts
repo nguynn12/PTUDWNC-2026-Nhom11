@@ -126,6 +126,50 @@ export interface ToggleUserStatusRequest {
   isActive: boolean;
 }
 
+export interface AdminUserDto {
+  id: string;
+  email: string;
+  displayName: string;
+  avatarUrl: string | null;
+  roles: UserRole[];
+  emailConfirmed: boolean;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface AdminUsersResponse {
+  data: AdminUserDto[];
+  meta: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}
+
+export interface SystemLogDto {
+  id: number;
+  userId: string | null;
+  method: string;
+  path: string;
+  statusCode: number;
+  level: "Information" | "Warning" | "Error";
+  message: string | null;
+  ipAddress: string | null;
+  durationMs: number;
+  createdAt: string;
+}
+
+export interface SystemLogsResponse {
+  data: SystemLogDto[];
+  meta: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}
+
 // ----------------------------------------------------------------------------
 // LỖI (RFC 7807, Phụ lục B)
 // ----------------------------------------------------------------------------

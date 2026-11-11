@@ -54,5 +54,9 @@ docs/buoi*.md
 docs/plans/buoi5/
 docs/plans/buoi6/
 docs/plans/buoi7/
+docs/plans/buoi8/
+docs/Lab*.*
+backups/
+*.dump
 
 

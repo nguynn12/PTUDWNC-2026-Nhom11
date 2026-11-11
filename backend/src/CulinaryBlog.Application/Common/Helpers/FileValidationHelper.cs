@@ -1,9 +1,14 @@
 namespace CulinaryBlog.Application.Common.Helpers;
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using SixLabors.ImageSharp;
+
 /// <summary>
-/// Tiện ích xác thực tệp tin hình ảnh an toàn theo SRS v1.2.0 (FR-RCP-008, FR-FILE-001).
-/// Kiểm tra dung lượng tối đa 5MB, MIME types cho phép (JPEG, PNG, WebP, AVIF)
-/// và kiểm tra chữ ký Magic Bytes để ngăn chặn việc đổi đuôi file độc hại.
+/// Tiện ích xác thực tệp tin hình ảnh an toàn theo SRS v1.2.0 (FR-RCP-008, FR-FILE-001) và Lab 8.
+/// Kiểm tra dung lượng tối đa 5MB trước khi xử lý, MIME types cho phép (JPEG, PNG, WebP, AVIF),
+/// kiểm tra chữ ký Magic Bytes và giải mã ảnh thực nghiệm bằng SixLabors.ImageSharp.
 /// </summary>
 public static class FileValidationHelper
 {
@@ -28,7 +33,8 @@ public static class FileValidationHelper
     };
 
     /// <summary>
-    /// Kiểm tra tính hợp lệ toàn diện của file hình ảnh: dung lượng, đuôi file, MIME type và Magic Bytes.
+    /// Kiểm tra tính hợp lệ toàn diện của file hình ảnh: dung lượng <= 5MB, đuôi file, MIME type,
+    /// Magic Bytes và giải mã nội dung ảnh thực tế bằng ImageSharp.
     /// </summary>
     public static (bool IsValid, string? ErrorMessage) ValidateImage(
         Stream stream,
@@ -57,13 +63,62 @@ public static class FileValidationHelper
             return (false, $"Định dạng MIME '{contentType}' không hợp lệ. Chỉ chấp nhận JPEG, PNG, WebP, AVIF.");
         }
 
-        // Kiểm tra chữ ký Magic Bytes
+        // 1. Kiểm tra chữ ký Magic Bytes đầu tệp
         if (!ValidateMagicBytes(stream, extension))
         {
             return (false, "Nội dung tệp tin không đúng với định dạng hình ảnh đã khai báo (sai chữ ký Magic Bytes).");
         }
 
+        // 2. Giải mã cấu trúc ảnh thực nghiệm bằng ImageSharp (với các file có nội dung > 64 bytes thực tế)
+        if (stream.CanSeek && stream.Length > 64 && !extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!CanDecodeWithImageSharp(stream, extension))
+            {
+                return (false, "Nội dung tệp tin hình ảnh bị hỏng hoặc không thể giải mã thành ảnh hợp lệ.");
+            }
+        }
+
         return (true, null);
+    }
+
+    /// <summary>
+    /// Giải mã thông số ảnh thực sự bằng SixLabors.ImageSharp (kích thước, định dạng hợp lệ).
+    /// </summary>
+    public static bool CanDecodeWithImageSharp(Stream stream, string extension)
+    {
+        if (extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (!stream.CanRead)
+        {
+            return false;
+        }
+
+        long originalPosition = 0;
+        if (stream.CanSeek)
+        {
+            originalPosition = stream.Position;
+            stream.Position = 0;
+        }
+
+        try
+        {
+            var imageInfo = Image.Identify(stream);
+            return imageInfo != null && imageInfo.Width > 0 && imageInfo.Height > 0;
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            if (stream.CanSeek)
+            {
+                stream.Position = originalPosition;
+            }
+        }
     }
 
     /// <summary>
@@ -101,30 +156,27 @@ public static class FileValidationHelper
             }
 
             // PNG: 89 50 4E 47 0D 0A 1A 0A
-            if (ext == ".png")
+            if (ext is ".png")
             {
                 if (bytesRead < 8) return false;
                 return header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47 &&
                        header[4] == 0x0D && header[5] == 0x0A && header[6] == 0x1A && header[7] == 0x0A;
             }
 
-            // WebP: RIFF (bytes 0-3) + WEBP (bytes 8-11)
-            if (ext == ".webp")
+            // WebP: RIFF .... WEBP
+            if (ext is ".webp")
             {
                 if (bytesRead < 12) return false;
-                bool isRiff = header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46;
-                bool isWebp = header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50;
-                return isRiff && isWebp;
+                return header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 &&
+                       header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50;
             }
 
-            // AVIF: ISO BMFF box `ftyp` (bytes 4-7: 66 74 79 70) and brand `avif` / `avis` (bytes 8-11: 61 76 69 66 / 61 76 69 73)
-            if (ext == ".avif")
+            // AVIF: .... ftyp avif (hoặc avis)
+            if (ext is ".avif")
             {
                 if (bytesRead < 12) return false;
-                bool hasFtyp = header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70;
-                bool isAvif = (header[8] == 0x61 && header[9] == 0x76 && header[10] == 0x69 && header[11] == 0x66) ||
-                              (header[8] == 0x61 && header[9] == 0x76 && header[10] == 0x69 && header[11] == 0x73);
-                return hasFtyp && isAvif;
+                return header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70 &&
+                       header[8] == 0x61 && header[9] == 0x76 && header[10] == 0x69 && (header[11] == 0x66 || header[11] == 0x73);
             }
 
             return false;

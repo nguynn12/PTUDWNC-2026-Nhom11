@@ -116,4 +116,32 @@ public class GetRecipeBySlugQueryTests
         Assert.Equal(expectedErrorCode, exception.ErrorCode);
         Assert.Contains(slug, exception.Message);
     }
+
+    [Fact]
+    public void GetRecipeBySlugResult_Redirect_ShouldSetRedirectSlugAndFlag()
+    {
+        // Act
+        var result = GetRecipeBySlugResult.Redirect("pho-bo-nam-dinh-moi");
+
+        // Assert
+        Assert.True(result.IsRedirect);
+        Assert.Equal("pho-bo-nam-dinh-moi", result.RedirectSlug);
+        Assert.Null(result.Recipe);
+    }
+
+    [Fact]
+    public void GetRecipeBySlugResult_Found_ShouldContainRecipeAndNotRedirect()
+    {
+        // Arrange
+        var dto = new RecipeDetailDto { Id = Guid.NewGuid(), Title = "Test Recipe", Slug = "test-recipe" };
+
+        // Act
+        var result = GetRecipeBySlugResult.Found(dto);
+
+        // Assert
+        Assert.False(result.IsRedirect);
+        Assert.Null(result.RedirectSlug);
+        Assert.NotNull(result.Recipe);
+        Assert.Equal("test-recipe", result.Recipe.Slug);
+    }
 }
