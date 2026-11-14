@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/axios";
+import { unwrap, type Envelope } from "@/lib/auth/envelope";
 import type {
   ForgotPasswordRequest,
   ResendConfirmationResponse,
@@ -34,26 +35,28 @@ export const authApi = {
     from?: string;
     to?: string;
   }) => apiClient.get<never, SystemLogsResponse>("/admin/system-logs", { params }),
-  me: () => apiClient.get<never, UserDto>("/auth/me"),
-  updateProfile: (body: UpdateProfileRequest) => apiClient.patch<never, UserDto>("/auth/me", body),
+  me: () => apiClient.get<never, Envelope<UserDto>>("/auth/me").then(unwrap),
+  updateProfile: (body: UpdateProfileRequest) =>
+    apiClient.patch<never, Envelope<UserDto>>("/auth/me", body).then(unwrap),
   /**
    * Xoá ảnh đại diện. PATCH /auth/me coi avatarUrl = null là "giữ nguyên" nhưng chuỗi rỗng là giá trị hợp lệ
    * (validator bỏ qua, ApplicationUser.UpdateProfile ghi lại chuỗi rỗng), nên "" là cách xoá hiện có.
    */
-  removeAvatar: () => apiClient.patch<never, UserDto>("/auth/me", { avatarUrl: "" } satisfies UpdateProfileRequest),
+  removeAvatar: () =>
+    apiClient.patch<never, Envelope<UserDto>>("/auth/me", { avatarUrl: "" } satisfies UpdateProfileRequest).then(unwrap),
   /** POST /auth/me/avatar (Bearer), multipart/form-data, trường "file" (JPG/PNG/WebP, tối đa 5 MB). */
   uploadAvatar: (file: File, onProgress?: (percent: number) => void) => {
     const form = new FormData();
     form.append("file", file);
-    return apiClient.post<never, UserDto>("/auth/me/avatar", form, {
+    return apiClient.post<never, Envelope<UserDto>>("/auth/me/avatar", form, {
       timeout: 60_000,
       onUploadProgress: (event) => {
         if (onProgress && event.total) onProgress(Math.round((event.loaded / event.total) * 100));
       },
-    });
+    }).then(unwrap);
   },
   resendConfirmation: (email: string) =>
-    apiClient.post<never, ResendConfirmationResponse>("/auth/email/resend", { email }),
+    apiClient.post<never, Envelope<ResendConfirmationResponse>>("/auth/email/resend", { email }).then(unwrap),
   confirmEmail: (userId: string, token: string) =>
     apiClient.post("/auth/email/confirm", { userId, token }).then(() => undefined),
   /** Luôn thành công (204) dù email có tồn tại hay không — backend chống dò tài khoản. */
