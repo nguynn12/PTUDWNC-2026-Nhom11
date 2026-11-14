@@ -30,3 +30,9 @@ public class ApiResponse<T>
     /// </summary>
     public static ApiResponse<T> Success(T data, object? meta = null) => new(data, meta);
 }
+
+/// <summary>Helper suy luận kiểu: <c>ApiResponse.From(dto)</c> = <c>ApiResponse&lt;T&gt;.Success(dto)</c>.</summary>
+public static class ApiResponse
+{
+    public static ApiResponse<T> From<T>(T data, object? meta = null) => ApiResponse<T>.Success(data, meta);
+}

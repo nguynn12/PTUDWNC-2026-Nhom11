@@ -36,6 +36,14 @@ public sealed class GlobalExceptionHandler(
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     )
             ),
+            // Lỗi theo từng trường (vd. currentPassword): trả kèm "errors" để form hiện lỗi đúng ô nhập.
+            CulinaryBlog.Application.Common.Exceptions.ValidationException fieldEx when fieldEx.Errors.Count > 0 => (
+                StatusCodes.Status422UnprocessableEntity,
+                fieldEx.ErrorCode ?? "UNPROCESSABLE_ENTITY",
+                "Unprocessable Entity",
+                fieldEx.Message,
+                fieldEx.Errors
+            ),
             BusinessRuleValidationException businessRuleEx => (
                 StatusCodes.Status422UnprocessableEntity,
                 businessRuleEx.ErrorCode ?? "BUSINESS_RULE_VIOLATION",

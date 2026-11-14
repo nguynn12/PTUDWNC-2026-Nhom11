@@ -14,6 +14,9 @@ public static class FileValidationHelper
 {
     public const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
 
+    /// <summary>Giới hạn số điểm ảnh (chống ảnh nén nhỏ nhưng giải nén rất lớn).</summary>
+    public const long MaxPixels = 40_000_000;
+
     private static readonly HashSet<string> AllowedMimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "image/jpeg",
@@ -69,13 +72,11 @@ public static class FileValidationHelper
             return (false, "Nội dung tệp tin không đúng với định dạng hình ảnh đã khai báo (sai chữ ký Magic Bytes).");
         }
 
-        // 2. Giải mã cấu trúc ảnh thực nghiệm bằng ImageSharp (với các file có nội dung > 64 bytes thực tế)
-        if (stream.CanSeek && stream.Length > 64 && !extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
+        // 2. Giải mã thông số ảnh thật cho MỌI tệp (kể cả ảnh rất nhỏ). AVIF mà ImageSharp không hỗ trợ
+        //    thì kiểm tra cấu trúc hộp ISO-BMFF (ftyp + brand avif/avis, kích thước hộp hợp lệ).
+        if (!CanDecodeWithImageSharp(stream, extension))
         {
-            if (!CanDecodeWithImageSharp(stream, extension))
-            {
-                return (false, "Nội dung tệp tin hình ảnh bị hỏng hoặc không thể giải mã thành ảnh hợp lệ.");
-            }
+            return (false, "Nội dung tệp tin hình ảnh bị hỏng hoặc không thể giải mã thành ảnh hợp lệ.");
         }
 
         return (true, null);
@@ -86,27 +87,24 @@ public static class FileValidationHelper
     /// </summary>
     public static bool CanDecodeWithImageSharp(Stream stream, string extension)
     {
-        if (extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (!stream.CanRead)
+        if (!stream.CanRead || !stream.CanSeek)
         {
             return false;
         }
 
-        long originalPosition = 0;
-        if (stream.CanSeek)
-        {
-            originalPosition = stream.Position;
-            stream.Position = 0;
-        }
+        var originalPosition = stream.Position;
+        stream.Position = 0;
 
         try
         {
+            if (extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
+            {
+                return HasValidAvifStructure(stream);
+            }
+
             var imageInfo = Image.Identify(stream);
-            return imageInfo != null && imageInfo.Width > 0 && imageInfo.Height > 0;
+            return imageInfo is { Width: > 0, Height: > 0 }
+                   && (long)imageInfo.Width * imageInfo.Height <= MaxPixels;
         }
         catch
         {
@@ -114,11 +112,52 @@ public static class FileValidationHelper
         }
         finally
         {
-            if (stream.CanSeek)
+            stream.Position = originalPosition;
+        }
+    }
+
+    /// <summary>
+    /// Kiểm tra hộp <c>ftyp</c> đầu tệp AVIF: kích thước hộp nằm trong tệp và brand chính hoặc
+    /// brand tương thích là <c>avif</c>/<c>avis</c>.
+    /// </summary>
+    private static bool HasValidAvifStructure(Stream stream)
+    {
+        Span<byte> head = stackalloc byte[8];
+        if (stream.Read(head) < 8 || !head.Slice(4, 4).SequenceEqual("ftyp"u8))
+        {
+            return false;
+        }
+
+        var boxSize = (long)System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(head);
+        // Tối thiểu: 8 (header) + 4 (major brand) + 4 (minor version); và không vượt quá tệp.
+        if (boxSize < 16 || boxSize > stream.Length)
+        {
+            return false;
+        }
+
+        var body = new byte[boxSize - 8];
+        if (stream.Read(body, 0, body.Length) != body.Length)
+        {
+            return false;
+        }
+
+        bool IsAvifBrand(ReadOnlySpan<byte> brand) => brand.SequenceEqual("avif"u8) || brand.SequenceEqual("avis"u8);
+
+        if (IsAvifBrand(body.AsSpan(0, 4)))
+        {
+            return true;
+        }
+
+        // Brand tương thích bắt đầu từ byte 8 của phần thân, mỗi brand 4 byte.
+        for (var i = 8; i + 4 <= body.Length; i += 4)
+        {
+            if (IsAvifBrand(body.AsSpan(i, 4)))
             {
-                stream.Position = originalPosition;
+                return true;
             }
         }
+
+        return false;
     }
 
     /// <summary>

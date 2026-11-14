@@ -140,12 +140,16 @@ public static class DependencyInjection
         var emailSettings = configuration.GetSection(EmailSettings.SectionName).Get<EmailSettings>();
         if (emailSettings?.IsConfigured == true)
         {
-            services.AddScoped<IEmailService, SmtpEmailService>();
+            services.AddKeyedScoped<IEmailService, SmtpEmailService>(EmailDispatchWorker.TransportKey);
         }
         else
         {
-            services.AddScoped<IEmailService, MockEmailService>();
+            services.AddKeyedScoped<IEmailService, MockEmailService>(EmailDispatchWorker.TransportKey);
         }
+        // OPS-08: handler chỉ xếp email vào hàng đợi; worker nền gửi qua transport ở trên và tự thử lại.
+        services.AddSingleton<EmailQueue>();
+        services.AddScoped<IEmailService, QueuedEmailService>();
+        services.AddHostedService<EmailDispatchWorker>();
         services.Configure<Services.ClientAppSettings>(configuration.GetSection(Services.ClientAppSettings.SectionName));
         services.AddScoped<IAccountEmailSender, Services.AccountEmailSender>();
         services.AddScoped<IClientInfoService, Services.ClientInfoService>();

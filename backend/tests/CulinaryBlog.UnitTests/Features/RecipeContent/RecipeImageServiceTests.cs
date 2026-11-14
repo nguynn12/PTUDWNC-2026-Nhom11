@@ -45,8 +45,10 @@ public class RecipeImageServiceTests
 
     private static MemoryStream CreateValidJpegStream()
     {
+        // Ảnh JPEG thật: FileValidationHelper giờ giải mã mọi ảnh (kể cả ảnh nhỏ).
+        using var image = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>(4, 4);
         var ms = new MemoryStream();
-        ms.Write(new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46 });
+        SixLabors.ImageSharp.ImageExtensions.SaveAsJpeg(image, ms);
         ms.Position = 0;
         return ms;
     }

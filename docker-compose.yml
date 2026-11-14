@@ -114,7 +114,22 @@ services:
       JwtSettings__Issuer: CulinaryBlogApi
       JwtSettings__Audience: CulinaryBlogClients
       JwtSettings__ExpiryMinutes: 15
-      ClientApp__BaseUrl: http://localhost:3000
+      ClientApp__BaseUrl: ${CLIENT_BASE_URL:-http://localhost:3000}
+      GoogleAuth__ClientId: ${GoogleAuth__ClientId:-}
+      Cors__AllowedOrigins__0: ${CLIENT_BASE_URL:-http://localhost:3000}
+      # OPS-01: máy sạch chạy compose phải tự có schema + dữ liệu mẫu
+      Database__AutoMigrate: "true"
+      # OPS-02: dùng tên dịch vụ trong mạng compose, không dùng localhost (là chính container api)
+      ConnectionStrings__Redis: redis:6379
+      Seq__ServerUrl: http://seq:80
+      # OPS-07: Seq nhận OTLP (trace + metric) ở /ingest/otlp
+      OpenTelemetry__OtlpEndpoint: http://seq:80/ingest/otlp
+      # OPS-08: để trống Email__Host thì dùng MockEmailService (chỉ ghi log), điền đủ để gửi SMTP thật
+      Email__Host: ${Email__Host:-}
+      Email__Port: ${Email__Port:-587}
+      Email__User: ${Email__User:-}
+      Email__Password: ${Email__Password:-}
+      Email__From: ${Email__From:-}
     ports:
       - "${API_PORT:-5000}:8080"
     depends_on:
@@ -122,20 +137,26 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      minio:
+      minio-init:
+        condition: service_completed_successfully
+      seq:
         condition: service_started
 
   web:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${CLIENT_BASE_URL:-http://localhost:3000}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GoogleAuth__ClientId:-}
     image: culinaryblog-web:latest
     container_name: culinary-blog-web
     restart: unless-stopped
     environment:
       NODE_ENV: production
       BACKEND_API_URL: http://api:8080
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: ${CLIENT_BASE_URL:-http://localhost:3000}
+      NEXT_PUBLIC_SITE_URL: ${CLIENT_BASE_URL:-http://localhost:3000}
     ports:
       - "${WEB_PORT:-3000}:3000"
     depends_on:

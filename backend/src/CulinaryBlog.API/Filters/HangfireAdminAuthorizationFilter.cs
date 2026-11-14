@@ -6,6 +6,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace CulinaryBlog.API.Filters;
 
+/// <summary>
+/// SEC-04: dashboard Hangfire chỉ cho Admin đã đăng nhập. Ngoại lệ DUY NHẤT: môi trường Development và kết nối từ
+/// loopback (127.0.0.1/::1) thì được vào không cần đăng nhập để tiện debug; ở Production/Staging ngoại lệ này không bao giờ bật.
+/// </summary>
 public class HangfireAdminAuthorizationFilter : IDashboardAuthorizationFilter
 {
     private readonly bool _allowAnonymousInDev;

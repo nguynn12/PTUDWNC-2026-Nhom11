@@ -70,8 +70,24 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddPresentation(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddCulinaryTelemetry(builder.Configuration);
+
+// Sau nginx/reverse proxy, RemoteIpAddress là IP của proxy => rate limit Auth (10 req/phút/IP) và IP đăng nhập
+// sẽ gom mọi người dùng vào một IP. Chỉ tin X-Forwarded-* khi kết nối đến từ mạng riêng (mạng compose);
+// client ngoài mạng đó không thể giả mạo IP bằng header.
+builder.Services.Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+        | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+    foreach (var cidr in new[] { "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "::1/128" })
+        options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(cidr));
+});
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 app.UseStaticFiles();
 
@@ -86,7 +102,14 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
     context.Response.Headers["X-Frame-Options"] = "DENY";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    context.Response.Headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
+    // API JSON thuần: CSP chặt nhất. Riêng giao diện tài liệu/vận hành (Scalar, OpenAPI, Hangfire) cần
+    // script/style/font nên được nới có chủ đích; các đường dẫn này chỉ phục vụ Development hoặc Admin.
+    context.Response.Headers["Content-Security-Policy"] = IsToolingPath(context.Request.Path)
+        ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
+          "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; " +
+          "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; " +
+          "img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'"
+        : "default-src 'none'; frame-ancestors 'none'";
     await next();
 });
 
@@ -131,7 +154,12 @@ if (app.Environment.IsDevelopment())
 
     app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
     app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+}
 
+// OPS-01: tự migrate + seed ở Development, hoặc ở môi trường chạy compose khi Database:AutoMigrate=true.
+// Ngoài Development, lỗi migrate là lỗi nghiêm trọng: ghi log rồi dừng ứng dụng để compose/orchestrator khởi động lại.
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Database:AutoMigrate"))
+{
     try
     {
         using var scope = app.Services.CreateScope();
@@ -150,6 +178,12 @@ if (app.Environment.IsDevelopment())
     catch (Exception ex)
     {
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        if (!app.Environment.IsDevelopment())
+        {
+            logger.LogCritical(ex, "Migrate/seed cơ sở dữ liệu thất bại, dừng ứng dụng.");
+            throw;
+        }
+
         logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
     }
 }
@@ -270,4 +304,10 @@ app.MapHealthEndpoints();
 
 app.Run();
 
-public partial class Program;
+public partial class Program
+{
+    private static readonly string[] ToolingPrefixes = ["/scalar", "/openapi", "/hangfire", "/docs"];
+
+    private static bool IsToolingPath(PathString path) =>
+        ToolingPrefixes.Any(prefix => path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase));
+}
