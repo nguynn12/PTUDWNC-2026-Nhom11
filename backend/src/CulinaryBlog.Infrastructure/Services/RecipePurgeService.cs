@@ -36,20 +36,23 @@ public class RecipePurgeService(
                 "RECIPE_NOT_DELETED");
         }
 
-        // Dọn dẹp các tệp ảnh liên quan trên bộ lưu trữ
+        // Dọn dẹp các tệp ảnh liên quan trên bộ lưu trữ (xóa cả Original, Medium, Thumbnail theo MEDIA-02)
         if (recipe.Images != null)
         {
             foreach (var img in recipe.Images)
             {
-                if (!string.IsNullOrWhiteSpace(img.OriginalUrl))
+                var urlsToDelete = new[] { img.OriginalUrl, img.MediumUrl, img.ThumbnailUrl }
+                    .Where(u => !string.IsNullOrWhiteSpace(u));
+
+                foreach (var url in urlsToDelete)
                 {
                     try
                     {
-                        await fileStorageService.DeleteAsync(img.OriginalUrl, cancellationToken);
+                        await fileStorageService.DeleteAsync(url!, cancellationToken);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogWarning(ex, "Không thể xóa tệp ảnh {Url} khi purge công thức {RecipeId}", img.OriginalUrl, recipeId);
+                        logger.LogWarning(ex, "Không thể xóa tệp ảnh {Url} khi purge công thức {RecipeId}", url, recipeId);
                     }
                 }
             }

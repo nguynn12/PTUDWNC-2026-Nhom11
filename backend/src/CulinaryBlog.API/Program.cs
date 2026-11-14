@@ -71,6 +71,12 @@ builder.Services.AddPresentation(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Cấu hình JsonStringEnumConverter cho Minimal APIs (hỗ trợ cả enum chuỗi "Medium" và số 2 theo FE-03)
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+
 var app = builder.Build();
 
 app.UseStaticFiles();
@@ -131,27 +137,27 @@ if (app.Environment.IsDevelopment())
 
     app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
     app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+}
 
-    try
-    {
-        using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+try
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
+    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
 
-        if (dbContext.Database.IsRelational())
-        {
-            await initialiser.InitialiseAsync();
-            await initialiser.SeedAsync();
-            await CategorySeeder.SeedAsync(dbContext);
-            await RecipeSeeder.SeedAsync(dbContext);
-            await RecipeDetailSeeder.SeedAsync(dbContext);
-        }
-    }
-    catch (Exception ex)
+    if (dbContext.Database.IsRelational())
     {
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
+        await initialiser.InitialiseAsync();
+        await initialiser.SeedAsync();
+        await CategorySeeder.SeedAsync(dbContext);
+        await RecipeSeeder.SeedAsync(dbContext);
+        await RecipeDetailSeeder.SeedAsync(dbContext);
     }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
 }
 
 app.UseAuthentication();

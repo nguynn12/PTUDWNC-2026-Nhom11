@@ -60,7 +60,34 @@ public sealed class UnpublishRecipeCommandHandler(
             }
         }
 
-        // 3. Chỉ công thức đang Published mới được Unpublish về Draft
+        // 3. Trạng thái hiện tại (Idempotent theo quyết định D8)
+        if (recipe.Status == RecipeStatus.Draft)
+        {
+            var currentXminVal = await dbContext.Recipes
+                .Where(r => r.Id == recipe.Id)
+                .Select(r => EF.Property<uint>(r, "xmin"))
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return new RecipeResponseDto
+            {
+                Id = recipe.Id,
+                Title = recipe.Title,
+                Slug = recipe.Slug,
+                Description = recipe.Description,
+                PrepTimeMinutes = recipe.PrepTimeMinutes,
+                CookTimeMinutes = recipe.CookTimeMinutes,
+                Servings = recipe.Servings,
+                Difficulty = recipe.Difficulty,
+                Status = recipe.Status,
+                CategoryId = recipe.CategoryId,
+                AuthorId = recipe.AuthorId,
+                PublishedAt = recipe.PublishedAt,
+                CreatedAt = recipe.CreatedAt,
+                UpdatedAt = recipe.UpdatedAt,
+                ConcurrencyToken = currentXminVal != 0 ? currentXminVal : null
+            };
+        }
+
         if (recipe.Status != RecipeStatus.Published)
         {
             throw new ConflictException("Chỉ có thể hủy xuất bản đối với công thức đang ở trạng thái Published.", "RECIPE_INVALID_STATUS_TRANSITION");

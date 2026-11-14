@@ -276,18 +276,21 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
       if (!recipeId) {
         const created = await RecipeApi.createRecipe(payload);
-        setRecipeId(created.id);
-        setXmin(created.xmin ?? null);
+        const resolvedId = created.id || (created as unknown as { data: { id: string } }).data?.id;
+        const resolvedToken = (created as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? created.xmin ?? null;
+        setRecipeId(resolvedId);
+        setXmin(resolvedToken);
         showSuccess(
           'Đã khởi tạo bản nháp công thức',
-          `Mã công thức: ${created.id.slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
+          `Mã công thức: ${(resolvedId || '').slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
         );
       } else {
         const updated = await RecipeApi.updateRecipe(recipeId, payload, xmin);
-        setXmin(updated.xmin ?? xmin);
+        const resolvedToken = (updated as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? updated.xmin ?? xmin;
+        setXmin(resolvedToken);
         showSuccess(
           'Đã cập nhật thông tin chung',
-          `Phiên bản đồng thời mới (xmin): ${updated.xmin ?? 'Updated'}`
+          `Phiên bản đồng thời mới: ${resolvedToken ?? 'Updated'}`
         );
       }
 

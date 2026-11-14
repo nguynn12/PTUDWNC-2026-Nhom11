@@ -116,6 +116,18 @@ public sealed class UpdateRecipeCommandHandler(
         recipe.Difficulty = request.Difficulty;
         recipe.UpdatedAt = DateTimeOffset.UtcNow;
 
+        if (request.Nutrition != null)
+        {
+            recipe.Nutrition ??= new CulinaryBlog.Domain.ValueObjects.RecipeNutrition();
+            recipe.Nutrition.Calories = request.Nutrition.Calories;
+            recipe.Nutrition.Protein = request.Nutrition.Protein;
+            recipe.Nutrition.Carbohydrates = request.Nutrition.Carbohydrates;
+            recipe.Nutrition.Fat = request.Nutrition.Fat;
+            recipe.Nutrition.Fiber = request.Nutrition.Fiber;
+            recipe.Nutrition.Sodium = request.Nutrition.Sodium;
+            recipe.Nutrition.Source = CulinaryBlog.Domain.Enums.NutritionSource.Manual;
+        }
+
         // 7. Cập nhật qua IRepository và commit qua IUnitOfWork
         recipeRepository.Update(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -148,7 +160,19 @@ public sealed class UpdateRecipeCommandHandler(
             PublishedAt = recipe.PublishedAt,
             CreatedAt = recipe.CreatedAt,
             UpdatedAt = recipe.UpdatedAt,
-            ConcurrencyToken = updatedXmin
+            ConcurrencyToken = updatedXmin,
+            Nutrition = recipe.Nutrition != null
+                ? new RecipeNutritionDto
+                {
+                    Calories = recipe.Nutrition.Calories,
+                    Protein = recipe.Nutrition.Protein,
+                    Carbohydrates = recipe.Nutrition.Carbohydrates,
+                    Fat = recipe.Nutrition.Fat,
+                    Fiber = recipe.Nutrition.Fiber,
+                    Sodium = recipe.Nutrition.Sodium,
+                    Source = recipe.Nutrition.Source.ToString()
+                }
+                : null
         };
     }
 }

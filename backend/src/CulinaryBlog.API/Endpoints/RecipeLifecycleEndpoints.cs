@@ -18,11 +18,31 @@ using Microsoft.AspNetCore.Mvc;
 /// </summary>
 public static class RecipeLifecycleEndpoints
 {
-    private static uint? ParseIfMatchHeader(string? ifMatch)
+    private static (uint? Token, IResult? Error) ParseRequiredIfMatch(string? ifMatch, uint? fallbackToken = null)
     {
-        if (string.IsNullOrWhiteSpace(ifMatch)) return null;
+        if (string.IsNullOrWhiteSpace(ifMatch))
+        {
+            if (fallbackToken.HasValue)
+            {
+                return (fallbackToken.Value, null);
+            }
+
+            return (null, Results.Problem(
+                title: "Precondition Required",
+                detail: "Header 'If-Match' là bắt buộc để thực hiện thao tác cập nhật đồng thời (Optimistic Concurrency Control).",
+                statusCode: StatusCodes.Status428PreconditionRequired));
+        }
+
         var cleanToken = ifMatch.Trim().Trim('"');
-        return uint.TryParse(cleanToken, out var parsed) ? parsed : null;
+        if (!uint.TryParse(cleanToken, out var parsed))
+        {
+            return (null, Results.Problem(
+                title: "Bad Request",
+                detail: $"Giá trị header If-Match '{ifMatch}' không hợp lệ. Concurrency token phải là số nguyên dương.",
+                statusCode: StatusCodes.Status400BadRequest));
+        }
+
+        return (parsed, null);
     }
 
     public static RouteGroupBuilder MapRecipeLifecycleEndpoints(this RouteGroupBuilder group)
@@ -43,7 +63,8 @@ public static class RecipeLifecycleEndpoints
                 CookTimeMinutes = request.CookTimeMinutes,
                 Servings = request.Servings,
                 Difficulty = request.Difficulty,
-                CategoryId = request.CategoryId
+                CategoryId = request.CategoryId,
+                Nutrition = request.Nutrition
             };
 
             var result = await sender.Send(command, cancellationToken);
@@ -62,7 +83,8 @@ public static class RecipeLifecycleEndpoints
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            uint? concurrencyToken = ParseIfMatchHeader(ifMatch) ?? request.ConcurrencyToken;
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch, request.ConcurrencyToken);
+            if (ifMatchError != null) return ifMatchError;
 
             var command = new UpdateRecipeCommand
             {
@@ -74,7 +96,8 @@ public static class RecipeLifecycleEndpoints
                 Servings = request.Servings,
                 Difficulty = request.Difficulty,
                 CategoryId = request.CategoryId,
-                ConcurrencyToken = concurrencyToken
+                ConcurrencyToken = concurrencyToken,
+                Nutrition = request.Nutrition
             };
 
             var result = await sender.Send(command, cancellationToken);
@@ -91,14 +114,16 @@ public static class RecipeLifecycleEndpoints
         .WithSummary("Cập nhật thông tin công thức nấu ăn kèm kiểm tra If-Match/xmin.");
 
         // 3. Xuất bản công thức nấu ăn -> Yêu cầu VerifiedAuthor (email confirmed hoặc Admin theo FR-AUTH-008)
-        recipes.MapMethods("/{id:guid}/publish", ["PATCH", "POST"], async (
+        recipes.MapMethods("/{id:guid}/publish", ["PATCH", "POST", "PUT"], async (
             Guid id,
             [FromHeader(Name = "If-Match")] string? ifMatch,
             HttpContext httpContext,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            uint? concurrencyToken = ParseIfMatchHeader(ifMatch);
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch);
+            if (ifMatchError != null) return ifMatchError;
+
             var result = await sender.Send(new PublishRecipeCommand(id, concurrencyToken), cancellationToken);
 
             if (result.ConcurrencyToken.HasValue)
@@ -113,14 +138,16 @@ public static class RecipeLifecycleEndpoints
         .WithSummary("Xuất bản công thức nấu ăn (Yêu cầu VerifiedAuthor/Admin). Hỗ trợ If-Match/ETag.");
 
         // 4. Hủy xuất bản công thức nấu ăn -> Yêu cầu VerifiedAuthor/Admin
-        recipes.MapMethods("/{id:guid}/unpublish", ["PATCH", "POST"], async (
+        recipes.MapMethods("/{id:guid}/unpublish", ["PATCH", "POST", "PUT"], async (
             Guid id,
             [FromHeader(Name = "If-Match")] string? ifMatch,
             HttpContext httpContext,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            uint? concurrencyToken = ParseIfMatchHeader(ifMatch);
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch);
+            if (ifMatchError != null) return ifMatchError;
+
             var result = await sender.Send(new UnpublishRecipeCommand(id, concurrencyToken), cancellationToken);
 
             if (result.ConcurrencyToken.HasValue)
@@ -135,14 +162,16 @@ public static class RecipeLifecycleEndpoints
         .WithSummary("Hủy xuất bản công thức nấu ăn (Yêu cầu VerifiedAuthor/Admin). Hỗ trợ If-Match/ETag.");
 
         // 5. Lưu trữ công thức nấu ăn -> Yêu cầu Author/Admin
-        recipes.MapMethods("/{id:guid}/archive", ["PATCH", "POST"], async (
+        recipes.MapMethods("/{id:guid}/archive", ["PATCH", "POST", "PUT"], async (
             Guid id,
             [FromHeader(Name = "If-Match")] string? ifMatch,
             HttpContext httpContext,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            uint? concurrencyToken = ParseIfMatchHeader(ifMatch);
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch);
+            if (ifMatchError != null) return ifMatchError;
+
             var result = await sender.Send(new ArchiveRecipeCommand(id, concurrencyToken), cancellationToken);
 
             if (result.ConcurrencyToken.HasValue)
@@ -157,14 +186,16 @@ public static class RecipeLifecycleEndpoints
         .WithSummary("Lưu trữ công thức nấu ăn (Yêu cầu Author). Hỗ trợ If-Match/ETag.");
 
         // 6. Khôi phục công thức từ lưu trữ -> Yêu cầu Author/Admin
-        recipes.MapMethods("/{id:guid}/unarchive", ["PATCH", "POST"], async (
+        recipes.MapMethods("/{id:guid}/unarchive", ["PATCH", "POST", "PUT"], async (
             Guid id,
             [FromHeader(Name = "If-Match")] string? ifMatch,
             HttpContext httpContext,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            uint? concurrencyToken = ParseIfMatchHeader(ifMatch);
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch);
+            if (ifMatchError != null) return ifMatchError;
+
             var result = await sender.Send(new UnarchiveRecipeCommand(id, concurrencyToken), cancellationToken);
 
             if (result.ConcurrencyToken.HasValue)
@@ -185,7 +216,9 @@ public static class RecipeLifecycleEndpoints
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            uint? concurrencyToken = ParseIfMatchHeader(ifMatch);
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch);
+            if (ifMatchError != null) return ifMatchError;
+
             await sender.Send(new DeleteRecipeCommand(id, concurrencyToken), cancellationToken);
             return Results.NoContent();
         })
@@ -226,7 +259,7 @@ public static class RecipeLifecycleEndpoints
         .WithSummary("Admin xem danh sách công thức đã bị xóa mềm trong thùng rác.");
 
         // 9. Khôi phục công thức từ thùng rác (trong thời hạn 30 ngày) -> Yêu cầu Admin
-        adminRecipes.MapPost("/{id:guid}/restore", async (
+        adminRecipes.MapMethods("/{id:guid}/restore", ["POST", "PUT"], async (
             Guid id,
             ISender sender,
             CancellationToken cancellationToken) =>
@@ -268,7 +301,8 @@ public record CreateRecipeRequest(
     int CookTimeMinutes,
     int Servings,
     RecipeDifficulty Difficulty,
-    Guid CategoryId);
+    Guid CategoryId,
+    CulinaryBlog.Application.Features.Recipes.DTOs.RecipeNutritionDto? Nutrition = null);
 
 public record UpdateRecipeRequest(
     string Title,
@@ -278,4 +312,5 @@ public record UpdateRecipeRequest(
     int Servings,
     RecipeDifficulty Difficulty,
     Guid CategoryId,
-    uint? ConcurrencyToken);
+    uint? ConcurrencyToken = null,
+    CulinaryBlog.Application.Features.Recipes.DTOs.RecipeNutritionDto? Nutrition = null);

@@ -22,4 +22,5 @@ public class RecipeResponseDto
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
     public uint? ConcurrencyToken { get; set; }
+    public RecipeNutritionDto? Nutrition { get; set; }
 }

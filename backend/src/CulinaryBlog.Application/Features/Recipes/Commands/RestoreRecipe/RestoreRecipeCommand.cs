@@ -4,6 +4,7 @@ using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Features.Recipes.DTOs;
 using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,9 +63,10 @@ public sealed class RestoreRecipeCommandHandler(
                 "RECIPE_RESTORE_WINDOW_EXPIRED");
         }
 
-        // 5. Khôi phục trạng thái
+        // 5. Khôi phục trạng thái về Draft theo quyết định D5 (khớp giao diện thông báo)
         recipe.IsDeleted = false;
         recipe.DeletedAt = null;
+        recipe.Status = RecipeStatus.Draft;
         recipe.UpdatedAt = DateTimeOffset.UtcNow;
 
         recipeRepository.Update(recipe);

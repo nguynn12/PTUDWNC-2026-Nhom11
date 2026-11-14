@@ -69,7 +69,19 @@ public sealed class CreateRecipeCommandHandler(
             Status = RecipeStatus.Draft,
             CategoryId = request.CategoryId,
             AuthorId = authorId,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            Nutrition = request.Nutrition != null
+                ? new CulinaryBlog.Domain.ValueObjects.RecipeNutrition
+                {
+                    Calories = request.Nutrition.Calories,
+                    Protein = request.Nutrition.Protein,
+                    Carbohydrates = request.Nutrition.Carbohydrates,
+                    Fat = request.Nutrition.Fat,
+                    Fiber = request.Nutrition.Fiber,
+                    Sodium = request.Nutrition.Sodium,
+                    Source = NutritionSource.Manual
+                }
+                : null
         };
 
         // 5. Thêm mới qua IRepository và commit qua IUnitOfWork
@@ -91,7 +103,8 @@ public sealed class CreateRecipeCommandHandler(
             AuthorId = recipe.AuthorId,
             PublishedAt = recipe.PublishedAt,
             CreatedAt = recipe.CreatedAt,
-            UpdatedAt = recipe.UpdatedAt
+            UpdatedAt = recipe.UpdatedAt,
+            Nutrition = request.Nutrition
         };
     }
 }

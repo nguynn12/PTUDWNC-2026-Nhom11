@@ -13,6 +13,8 @@ import {
   Users,
   Edit,
   ExternalLink,
+  Undo2,
+  FolderUp,
 } from 'lucide-react';
 import { RecipeApi, ApiError } from '@/lib/api-client';
 import { RecipeSummaryDto } from '@/lib/types';
@@ -134,6 +136,22 @@ export default function MyRecipesLifecyclePage() {
     }
   };
 
+  // 1b. Hạ công thức về Nháp (Unpublish)
+  const handleUnpublish = async (recipe: RecipeSummaryDto) => {
+    try {
+      setActionInProgress(recipe.id);
+      const updated = await RecipeApi.unpublishRecipe(recipe.id, recipe.xmin);
+      showSuccess(`Đã chuyển "${recipe.title}" về bản nháp`, 'Công thức tạm thời không còn hiển thị công khai.');
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Draft', xmin: updated?.xmin ?? r.xmin } : r))
+      );
+    } catch (err) {
+      handleLifecycleError(err, recipe);
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
   // 2. Lưu trữ công thức (Archive)
   const handleArchive = async (recipe: RecipeSummaryDto) => {
     try {
@@ -142,6 +160,22 @@ export default function MyRecipesLifecyclePage() {
       showSuccess(`Đã chuyển "${recipe.title}" vào lưu trữ`, 'Công thức tạm thời ẩn khỏi trang công khai.');
       setRecipes((prev) =>
         prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Archived', xmin: updated?.xmin ?? r.xmin } : r))
+      );
+    } catch (err) {
+      handleLifecycleError(err, recipe);
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // 2b. Bỏ lưu trữ công thức (Unarchive -> Draft)
+  const handleUnarchive = async (recipe: RecipeSummaryDto) => {
+    try {
+      setActionInProgress(recipe.id);
+      const updated = await RecipeApi.unarchiveRecipe(recipe.id, recipe.xmin);
+      showSuccess(`Đã bỏ lưu trữ "${recipe.title}"`, 'Công thức đã được chuyển về bản nháp.');
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Draft', xmin: updated?.xmin ?? r.xmin } : r))
       );
     } catch (err) {
       handleLifecycleError(err, recipe);
@@ -392,7 +426,7 @@ export default function MyRecipesLifecyclePage() {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {/* Nút Xuất bản (Publish) */}
-                          {(statusStr === 'DRAFT' || statusStr === '0' || statusStr === 'ARCHIVED' || statusStr === '2') && (
+                          {(statusStr === 'DRAFT' || statusStr === '0') && (
                             <Button
                               type="button"
                               variant="outline"
@@ -404,6 +438,22 @@ export default function MyRecipesLifecyclePage() {
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               <span className="hidden md:inline">Xuất bản</span>
+                            </Button>
+                          )}
+
+                          {/* Nút Hạ về Nháp (Unpublish) - FE-10 */}
+                          {(statusStr === 'PUBLISHED' || statusStr === '1') && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUnpublish(recipe)}
+                              disabled={isBusy}
+                              title="Hạ bài về bản nháp"
+                              className="h-8 gap-1 text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200"
+                            >
+                              <Undo2 className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Hạ nháp</span>
                             </Button>
                           )}
 
@@ -420,6 +470,22 @@ export default function MyRecipesLifecyclePage() {
                             >
                               <Archive className="w-3.5 h-3.5" />
                               <span className="hidden md:inline">Lưu trữ</span>
+                            </Button>
+                          )}
+
+                          {/* Nút Bỏ lưu trữ (Unarchive) - FE-10 */}
+                          {(statusStr === 'ARCHIVED' || statusStr === '2') && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUnarchive(recipe)}
+                              disabled={isBusy}
+                              title="Bỏ lưu trữ (chuyển về nháp)"
+                              className="h-8 gap-1 text-sky-700 hover:text-sky-800 hover:bg-sky-50 border-sky-200"
+                            >
+                              <FolderUp className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Bỏ lưu trữ</span>
                             </Button>
                           )}
 

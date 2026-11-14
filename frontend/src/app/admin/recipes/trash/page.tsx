@@ -53,7 +53,8 @@ export default function AdminTrashManagementPage() {
       setLoading(true);
       setLoadError(null);
       const res = await RecipeApi.getTrashedRecipes(1, 50);
-      setTrashedRecipes(res.items || []);
+      const list = res.items || (res as unknown as { data: RecipeSummaryDto[] }).data || (Array.isArray(res) ? res : []);
+      setTrashedRecipes(list);
     } catch (err) {
       const msg = (err as Error).message || 'Không thể tải danh sách thùng rác.';
       setLoadError(msg);
