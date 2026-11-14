@@ -27,6 +27,10 @@ EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+# FileStorageService (lưu local dự phòng) tạo wwwroot/uploads ngay khi khởi tạo; user non-root phải ghi được
+# thư mục này, nếu không mọi API upload (avatar, ảnh công thức) trả 500 trong container.
+RUN mkdir -p /app/wwwroot/uploads && chown -R app:app /app/wwwroot
+
 # Chạy với user non-root bảo mật theo NFR-SEC
 USER app
 

@@ -55,8 +55,7 @@ public static class HealthEndpoints
 
             // 2. Kiểm tra Redis Cache (TCP Socket check cổng 6379 hoặc connection string)
             var redisSw = Stopwatch.StartNew();
-            var redisHost = "localhost";
-            var redisPort = 6379;
+            var (redisHost, redisPort) = ResolveRedisEndpoint(configuration);
             var isRedisHealthy = false;
             try
             {
@@ -90,8 +89,7 @@ public static class HealthEndpoints
 
             // 3. Kiểm tra MinIO Storage (TCP Socket check cổng 9000)
             var minioSw = Stopwatch.StartNew();
-            var minioHost = "localhost";
-            var minioPort = 9000;
+            var (minioHost, minioPort) = ResolveMinioEndpoint(configuration);
             var isMinioHealthy = false;
             try
             {
@@ -170,10 +168,7 @@ public static class HealthEndpoints
                 if (!databaseReady)
                     return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
 
-                var redisHost = configuration["Redis:Host"] ?? "localhost";
-                var redisPort = int.TryParse(configuration["Redis:Port"], out var configuredPort)
-                    ? configuredPort
-                    : 6379;
+                var (redisHost, redisPort) = ResolveRedisEndpoint(configuration);
                 using var redis = new TcpClient();
                 var connection = redis.ConnectAsync(redisHost, redisPort);
                 var completed = await Task.WhenAny(connection, Task.Delay(1000, cancellationToken));
@@ -202,5 +197,34 @@ public static class HealthEndpoints
         .Produces(StatusCodes.Status503ServiceUnavailable);
 
         return group;
+    }
+
+    /// <summary>
+    /// Redis lấy từ cùng cấu hình mà ứng dụng dùng để kết nối (<c>ConnectionStrings:Redis</c>, dạng
+    /// "host:port,option=..."), sau đó mới tới <c>Redis:Host</c>/<c>Redis:Port</c>. Trong Docker đó là tên dịch vụ (redis).
+    /// </summary>
+    public static (string Host, int Port) ResolveRedisEndpoint(IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Redis") ?? configuration["Redis:ConnectionString"];
+        var first = connectionString?.Split(',')[0].Trim();
+        if (!string.IsNullOrWhiteSpace(first) && !first.Contains('='))
+        {
+            var separator = first.LastIndexOf(':');
+            if (separator > 0 && int.TryParse(first[(separator + 1)..], out var port))
+                return (first[..separator], port);
+            return (first, 6379);
+        }
+
+        var host = configuration["Redis:Host"];
+        var hasPort = int.TryParse(configuration["Redis:Port"], out var configuredPort);
+        return (string.IsNullOrWhiteSpace(host) ? "localhost" : host, hasPort ? configuredPort : 6379);
+    }
+
+    /// <summary>MinIO lấy từ <c>Minio:Endpoint</c> (URL), không hard-code localhost:9000.</summary>
+    public static (string Host, int Port) ResolveMinioEndpoint(IConfiguration configuration)
+    {
+        if (Uri.TryCreate(configuration["Minio:Endpoint"], UriKind.Absolute, out var uri))
+            return (uri.Host, uri.Port);
+        return ("localhost", 9000);
     }
 }
