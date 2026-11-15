@@ -170,6 +170,20 @@ public class SearchRecipesQueryTests
     }
 
     [Fact]
+    public void Validator_ShouldHaveError_WhenDifficultyIsOutOfEnumRange()
+    {
+        // Arrange
+        var query = new SearchRecipesQuery(Q: "Món ngon", Difficulty: (RecipeDifficulty)99);
+
+        // Act
+        var result = _validator.TestValidate(query);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.Difficulty)
+            .WithErrorMessage("Mức độ khó không hợp lệ.");
+    }
+
+    [Fact]
     public void Validator_ShouldHaveError_WhenMinCaloriesGreaterThanMaxCalories()
     {
         // Arrange

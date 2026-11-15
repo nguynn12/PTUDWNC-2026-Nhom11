@@ -219,11 +219,17 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
 
         return normalizedSortBy switch
         {
-            "publishedat" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
+            "publishedat" or "newest" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
+            "createdat" => isAsc ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt),
+            "preptime" => isAsc ? query.OrderBy(r => r.PrepTimeMinutes) : query.OrderByDescending(r => r.PrepTimeMinutes),
             "cooktime" => isAsc ? query.OrderBy(r => r.CookTimeMinutes) : query.OrderByDescending(r => r.CookTimeMinutes),
+            "servings" => isAsc ? query.OrderBy(r => r.Servings) : query.OrderByDescending(r => r.Servings),
             "totaltime" => isAsc
                 ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
                 : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
+            "quickest" => isAsc
+                ? query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes)
+                : query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes),
             "calories" => isAsc
                 ? query.OrderBy(r => r.Nutrition != null ? r.Nutrition.Calories : 0)
                 : query.OrderByDescending(r => r.Nutrition != null ? r.Nutrition.Calories : 0),
