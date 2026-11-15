@@ -5,6 +5,7 @@ using CulinaryBlog.Domain.Exceptions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -101,6 +102,19 @@ public sealed class AuthExceptionHandlerTests
         Assert.Equal(
             "Mật khẩu phải có ký tự đặc biệt.",
             body.GetProperty("errors").GetProperty("password")[0].GetString());
+    }
+
+    [Fact]
+    public async Task DbUpdateException_DuplicateKey_DoGlobalExceptionHandlerTra409()
+    {
+        var innerEx = new Exception("duplicate key value violates unique constraint \"IDX_Category_Name_Active\"");
+        var dbUpdateEx = new DbUpdateException("An error occurred while saving the entity changes.", innerEx);
+
+        var (status, body, handledByAuth) = await HandleAsync(dbUpdateEx);
+
+        Assert.False(handledByAuth);
+        Assert.Equal(StatusCodes.Status409Conflict, status);
+        Assert.Equal("CATEGORY_NAME_EXISTS", body.GetProperty("type").GetString());
     }
 
     private static async Task<(int Status, JsonElement Body, bool HandledByAuth)> HandleAsync(Exception exception)

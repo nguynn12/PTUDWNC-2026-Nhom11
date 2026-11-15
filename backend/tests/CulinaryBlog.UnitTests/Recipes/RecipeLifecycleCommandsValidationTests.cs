@@ -46,7 +46,7 @@ public class RecipeLifecycleCommandsValidationTests
         var command = new CreateRecipeCommand
         {
             Title = title,
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn thơm ngon",
             PrepTimeMinutes = 15,
             CookTimeMinutes = 30,
             Servings = 4,
@@ -60,6 +60,120 @@ public class RecipeLifecycleCommandsValidationTests
         // Assert
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Title));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenTitleIsShorterThan3Characters()
+    {
+        // Arrange (D6: Tiêu đề 3 - 200 ký tự)
+        var command = new CreateRecipeCommand
+        {
+            Title = "Ab",
+            Description = "Mô tả chi tiết món ăn thơm ngon",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Title));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenTitleExceeds200Characters()
+    {
+        // Arrange (D6: Tiêu đề 3 - 200 ký tự)
+        var command = new CreateRecipeCommand
+        {
+            Title = new string('A', 201),
+            Description = "Mô tả chi tiết món ăn thơm ngon",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Title));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenDescriptionIsShorterThan10Characters()
+    {
+        // Arrange (D6: Mô tả 10 - 2000 ký tự)
+        var command = new CreateRecipeCommand
+        {
+            Title = "Phở Bò",
+            Description = "Quá ngắn",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Description));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenDescriptionExceeds2000Characters()
+    {
+        // Arrange (D6: Mô tả 10 - 2000 ký tự)
+        var command = new CreateRecipeCommand
+        {
+            Title = "Phở Bò",
+            Description = new string('D', 2001),
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Description));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldPass_WhenDescriptionIs2000Characters()
+    {
+        // Arrange (D6: Cho phép mô tả dài tới 2000 ký tự)
+        var command = new CreateRecipeCommand
+        {
+            Title = "Món Ăn Chi Tiết",
+            Description = new string('X', 2000),
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.True(result.IsValid);
     }
 
     [Fact]
@@ -114,7 +228,7 @@ public class RecipeLifecycleCommandsValidationTests
         var command = new CreateRecipeCommand
         {
             Title = "Món Lỗi Thời Gian",
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn thơm ngon",
             PrepTimeMinutes = 10,
             CookTimeMinutes = -5,
             Servings = 2,
@@ -137,7 +251,7 @@ public class RecipeLifecycleCommandsValidationTests
         var command = new CreateRecipeCommand
         {
             Title = "Món Ăn Không Danh Mục",
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn thơm ngon",
             PrepTimeMinutes = 15,
             CookTimeMinutes = 20,
             Servings = 2,
@@ -161,7 +275,7 @@ public class RecipeLifecycleCommandsValidationTests
         {
             Id = Guid.Empty,
             Title = "Tiêu đề cập nhật",
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn thơm ngon",
             PrepTimeMinutes = 10,
             CookTimeMinutes = 20,
             Servings = 2,
