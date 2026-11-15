@@ -37,6 +37,9 @@ public static class UploadRateLimiting
         var httpContext = context.HttpContext;
         httpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
 
+        httpContext.Response.Headers["X-RateLimit-Limit"] = PermitLimit.ToString();
+        httpContext.Response.Headers["X-RateLimit-Remaining"] = "0";
+
         if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
         {
             httpContext.Response.Headers.RetryAfter = ((int)Math.Ceiling(retryAfter.TotalSeconds)).ToString(

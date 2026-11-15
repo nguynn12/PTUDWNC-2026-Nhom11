@@ -39,6 +39,7 @@ public static class RecipeEndpoints
             bool? mine,
             RecipeStatus? status,
             string? q,
+            string? authorId,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -56,7 +57,8 @@ public static class RecipeEndpoints
                 SortOrder: sortOrder,
                 Mine: mine,
                 Status: status,
-                Q: q);
+                Q: q,
+                AuthorId: authorId);
 
             var result = await sender.Send(query, cancellationToken);
 

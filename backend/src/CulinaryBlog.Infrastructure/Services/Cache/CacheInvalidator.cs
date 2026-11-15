@@ -37,6 +37,10 @@ public class CacheInvalidator : ICacheInvalidator
         // 4. Xóa cache kết quả tìm kiếm (để tránh trả về dữ liệu cũ)
         await _cacheService.RemoveByPrefixAsync(CacheConstants.SearchPrefix, cancellationToken);
 
+        // 5. [API-09] Xóa cache danh mục vì RecipeCount của Category bị thay đổi khi Recipe thêm/sửa trạng thái/xóa
+        await _cacheService.RemoveAsync(CacheConstants.CategoryAllKey, cancellationToken);
+        await _cacheService.RemoveByPrefixAsync(CacheConstants.CategoryPrefix, cancellationToken);
+
         _logger.LogInformation("Hoàn tất invalidate cache cho RecipeId={RecipeId}", recipeId);
     }
 
@@ -52,7 +56,12 @@ public class CacheInvalidator : ICacheInvalidator
         }
 
         await _cacheService.RemoveByPrefixAsync(CacheConstants.CategoryPrefix, cancellationToken);
-        _logger.LogInformation("Hoàn tất invalidate cache cho danh mục");
+
+        // [API-10] Khi danh mục đổi tên/thông tin, danh sách công thức đang hiển thị CategoryName cũng cần được làm mới
+        await _cacheService.RemoveByPrefixAsync(CacheConstants.RecipeListPrefix, cancellationToken);
+        await _cacheService.RemoveByPrefixAsync(CacheConstants.SearchPrefix, cancellationToken);
+
+        _logger.LogInformation("Hoàn tất invalidate cache cho danh mục và danh sách công thức liên quan");
     }
 
     public async Task InvalidateSearchAsync(CancellationToken cancellationToken = default)

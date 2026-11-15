@@ -139,6 +139,13 @@ public sealed class GlobalExceptionHandler(
                 "Dữ liệu đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.",
                 null
             ),
+            DbUpdateException dbUpdateEx when IsUniqueConstraintViolation(dbUpdateEx) => (
+                StatusCodes.Status409Conflict,
+                GetUniqueViolationErrorCode(dbUpdateEx),
+                "Conflict",
+                "Dữ liệu đã tồn tại trong hệ thống (vi phạm ràng buộc duy nhất).",
+                null
+            ),
             LockedException lockedEx => (
                 StatusCodes.Status423Locked,
                 string.IsNullOrWhiteSpace(lockedEx.ErrorCode) ? ErrorCodes.AuthAccountLocked : lockedEx.ErrorCode,
@@ -178,5 +185,34 @@ public sealed class GlobalExceptionHandler(
         }
 
         return char.ToLowerInvariant(str[0]) + str[1..];
+    }
+    private static bool IsUniqueConstraintViolation(DbUpdateException ex)
+    {
+        if (ex.InnerException is Npgsql.PostgresException pgEx && pgEx.SqlState == "23505")
+        {
+            return true;
+        }
+
+        var message = (ex.InnerException?.Message ?? ex.Message).ToLowerInvariant();
+        return message.Contains("unique") || message.Contains("duplicate") || message.Contains("23505");
+    }
+
+    private static string GetUniqueViolationErrorCode(DbUpdateException ex)
+    {
+        if (ex.InnerException is Npgsql.PostgresException pgEx)
+        {
+            if (pgEx.ConstraintName?.Contains("Category", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return "CATEGORY_NAME_EXISTS";
+            }
+        }
+
+        var fullText = ((ex.InnerException?.Message ?? "") + " " + ex.Message).ToLowerInvariant();
+        if (fullText.Contains("category"))
+        {
+            return "CATEGORY_NAME_EXISTS";
+        }
+
+        return "CONFLICT_ERROR";
     }
 }

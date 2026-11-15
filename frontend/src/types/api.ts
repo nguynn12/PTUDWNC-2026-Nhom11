@@ -4,11 +4,11 @@
 // ============================================================================
 
 // ----------------------------------------------------------------------------
-// ENUMS & CONSTANTS
+// ENUMS & CONSTANTS (Chuẩn hóa wire format D2 / FE-03)
 // ----------------------------------------------------------------------------
-export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 0 | 1 | 2 | 3 | 4;
-export type DifficultyLevel = RecipeDifficulty | number;
-export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | number;
+export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 1 | 2 | 3 | 4 | number;
+export type DifficultyLevel = RecipeDifficulty;
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2 | number;
 
 // ----------------------------------------------------------------------------
 // COMMON RESPONSE & PAGINATION
@@ -191,7 +191,6 @@ export interface RecipeSummaryDto {
   createdAt: string;
   updatedAt?: string | null;
   xmin?: string | number | null; // Concurrency token phục vụ If-Match
-  concurrencyToken?: string | number | null; // Concurrency token chuẩn hóa backend & frontend
   isDeleted?: boolean;
   deletedAt?: string | null;
   nutrition?: RecipeNutritionDto | null;
@@ -224,7 +223,6 @@ export interface RecipeDetailDto {
   updatedAt?: string | null;
   rowVersion?: string;
   xmin?: string | number | null;
-  concurrencyToken?: string | number | null;
 }
 
 export interface RecipeFullDetailDto extends RecipeDetailDto {

@@ -1,104 +1,85 @@
 /**
- * Ánh xạ chuẩn hóa giữa Enum hiển thị (UI) và Enum số nguyên của Backend (C# .NET)
- * theo quyết định D2 trong docs/decisions/ và KE_HOACH_SUA_LOI_TRUOC_DEMO.md.
- *
- * Difficulty:
- *  1: Easy (Dễ)
- *  2: Medium (Trung bình)
- *  3: Hard (Khó)
- *  4: Expert (Chuyên gia)
- *
- * Status:
- *  0: Draft (Bản nháp)
- *  1: Published (Đã xuất bản)
- *  2: Archived (Đã lưu trữ)
+ * Chuẩn hóa Enum qua wire format (FE-03, API-12, D2).
+ * Backend serialize enum dạng số:
+ * - RecipeDifficulty: Easy=1, Medium=2, Hard=3, Expert=4
+ * - RecipeStatus: Draft=0, Published=1, Archived=2
  */
 
-export const RecipeDifficulty = {
-  Easy: 1,
-  Medium: 2,
-  Hard: 3,
-  Expert: 4,
-} as const;
+export enum RecipeDifficultyEnum {
+  Easy = 1,
+  Medium = 2,
+  Hard = 3,
+  Expert = 4,
+}
 
-export type RecipeDifficultyValue = (typeof RecipeDifficulty)[keyof typeof RecipeDifficulty];
+export enum RecipeStatusEnum {
+  Draft = 0,
+  Published = 1,
+  Archived = 2,
+}
 
-export const RecipeStatus = {
-  Draft: 0,
-  Published: 1,
-  Archived: 2,
-} as const;
+export const DIFFICULTY_LABELS: Record<number, string> = {
+  [RecipeDifficultyEnum.Easy]: "Dễ",
+  [RecipeDifficultyEnum.Medium]: "Vừa",
+  [RecipeDifficultyEnum.Hard]: "Khó",
+  [RecipeDifficultyEnum.Expert]: "Chuyên gia",
+};
 
-export type RecipeStatusValue = (typeof RecipeStatus)[keyof typeof RecipeStatus];
+export const DIFFICULTY_VARIANTS: Record<number, "easy" | "medium" | "hard"> = {
+  [RecipeDifficultyEnum.Easy]: "easy",
+  [RecipeDifficultyEnum.Medium]: "medium",
+  [RecipeDifficultyEnum.Hard]: "hard",
+  [RecipeDifficultyEnum.Expert]: "hard",
+};
 
 /**
- * Chuyển đổi giá trị difficulty (chuỗi hoặc số) sang số nguyên tương ứng (1..4).
+ * Chuyển đổi bất kỳ giá trị difficulty (chuỗi tên hoặc số) sang enum số (1..4) hoặc undefined
  */
-export function toDifficultyNumber(val: unknown): number {
-  if (typeof val === 'number') {
-    if (val === 0) return 1; // UI cũ dùng 0 là Easy -> 1
-    if (val >= 1 && val <= 4) return val;
-    return 1;
-  }
-  if (typeof val === 'string') {
-    const lower = val.trim().toLowerCase();
-    if (lower === 'easy' || lower === 'dễ') return 1;
-    if (lower === 'medium' || lower === 'trung bình') return 2;
-    if (lower === 'hard' || lower === 'khó') return 3;
-    if (lower === 'expert' || lower === 'chuyên gia') return 4;
-  }
-  return 1;
+export function toDifficultyNumber(val: unknown): number | undefined {
+  if (val === undefined || val === null || val === "") return undefined;
+  if (typeof val === "number" && val >= 1 && val <= 4) return val;
+  const s = String(val).trim().toLowerCase();
+  if (s === "1" || s === "easy") return RecipeDifficultyEnum.Easy;
+  if (s === "2" || s === "medium") return RecipeDifficultyEnum.Medium;
+  if (s === "3" || s === "hard") return RecipeDifficultyEnum.Hard;
+  if (s === "4" || s === "expert") return RecipeDifficultyEnum.Expert;
+  return undefined;
 }
 
 /**
- * Chuyển đổi số nguyên difficulty sang chuỗi nhãn hiển thị tiếng Việt.
+ * Lấy nhãn hiển thị tiếng Việt cho độ khó
  */
-export function toDifficultyLabel(val: unknown): string {
-  const num = toDifficultyNumber(val);
-  switch (num) {
-    case 1:
-      return 'Dễ';
-    case 2:
-      return 'Trung bình';
-    case 3:
-      return 'Khó';
-    case 4:
-      return 'Chuyên gia';
-    default:
-      return 'Dễ';
-  }
+export function getDifficultyLabel(diff: unknown): string {
+  const num = toDifficultyNumber(diff);
+  return num ? DIFFICULTY_LABELS[num] || "Vừa" : "Vừa";
 }
 
 /**
- * Chuyển đổi trạng thái status (chuỗi hoặc số) sang số nguyên tương ứng (0..2).
+ * Lấy badge variant ("easy" | "medium" | "hard") cho độ khó
  */
-export function toStatusNumber(val: unknown): number {
-  if (typeof val === 'number') {
-    if (val >= 0 && val <= 2) return val;
-    return 0;
-  }
-  if (typeof val === 'string') {
-    const lower = val.trim().toLowerCase();
-    if (lower === 'draft' || lower === 'bản nháp') return 0;
-    if (lower === 'published' || lower === 'đã xuất bản') return 1;
-    if (lower === 'archived' || lower === 'đã lưu trữ') return 2;
-  }
+export function getDifficultyVariant(diff: unknown): {
+  label: string;
+  variant: "easy" | "medium" | "hard";
+} {
+  const num = toDifficultyNumber(diff);
+  if (num === RecipeDifficultyEnum.Easy) return { label: "Dễ", variant: "easy" };
+  if (num === RecipeDifficultyEnum.Hard) return { label: "Khó", variant: "hard" };
+  if (num === RecipeDifficultyEnum.Expert) return { label: "Chuyên gia", variant: "hard" };
+  return { label: "Vừa", variant: "medium" };
+}
+
+export const RecipeDifficulty = RecipeDifficultyEnum;
+export type RecipeDifficultyValue = 1 | 2 | 3 | 4;
+export const RecipeStatus = RecipeStatusEnum;
+export type RecipeStatusValue = 0 | 1 | 2;
+export const toDifficultyLabel = getDifficultyLabel;
+
+export function toStatusNumber(value: unknown): RecipeStatusValue {
+  if (value === 1 || value === '1' || value === 'Published') return 1;
+  if (value === 2 || value === '2' || value === 'Archived') return 2;
   return 0;
 }
 
-/**
- * Chuyển đổi số nguyên status sang chuỗi nhãn hiển thị tiếng Việt.
- */
-export function toStatusLabel(val: unknown): string {
-  const num = toStatusNumber(val);
-  switch (num) {
-    case 0:
-      return 'Bản nháp';
-    case 1:
-      return 'Đã xuất bản';
-    case 2:
-      return 'Đã lưu trữ';
-    default:
-      return 'Bản nháp';
-  }
+export function toStatusLabel(value: unknown): string {
+  return ['Bản nháp', 'Đã xuất bản', 'Đã lưu trữ'][toStatusNumber(value)];
 }

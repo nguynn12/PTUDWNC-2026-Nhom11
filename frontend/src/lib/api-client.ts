@@ -1,4 +1,5 @@
 import { apiRequest } from './api/axios';
+import { toDifficultyNumber } from './enums';
 import { AppError } from './errors';
 import {
   RecipeSummaryDto,
@@ -291,9 +292,13 @@ export const RecipeApi = {
   // Tạo mới thông tin chung của công thức (Bước 1 Wizard)
   async createRecipe(payload: CreateRecipePayload): Promise<RecipeSummaryDto> {
     try {
+      const body = {
+        ...payload,
+        difficulty: toDifficultyNumber(payload.difficulty) ?? payload.difficulty,
+      };
       return await fetchApi<RecipeSummaryDto>('/recipes', {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       });
     } catch (error) {
       if (!USE_MOCK) throw error;
@@ -311,9 +316,13 @@ export const RecipeApi = {
     xmin?: string | number | null
   ): Promise<RecipeSummaryDto> {
     try {
+      const body = {
+        ...payload,
+        difficulty: toDifficultyNumber(payload.difficulty) ?? payload.difficulty,
+      };
       return await fetchApi<RecipeSummaryDto>(`/recipes/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
         ifMatch: xmin,
       });
     } catch (error) {

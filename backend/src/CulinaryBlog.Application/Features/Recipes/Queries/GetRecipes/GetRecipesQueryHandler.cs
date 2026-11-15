@@ -53,7 +53,10 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var cacheKey = $"{CacheConstants.RecipeListPrefix}p{page}_ps{pageSize}_c{request.CategoryId}_d{request.Difficulty}_s{request.SortBy}_{request.SortOrder}_pt{request.MaxPrepTime}_ct{request.MaxCookTime}_tt{request.MaxTotalTime}_minc{request.MinCalories}_maxc{request.MaxCalories}";
 
-        if (_cacheService != null && request.Mine != true)
+        // API-07: Chỉ đọc và lưu cache công khai khi truy vấn danh sách công khai (Published) cho khách
+        var isPublicListing = request.Mine != true && string.IsNullOrWhiteSpace(request.AuthorId) && (!request.Status.HasValue || request.Status == RecipeStatus.Published);
+
+        if (_cacheService != null && isPublicListing)
         {
             var cached = await _cacheService.GetAsync<PagedResult<RecipeSummaryDto>>(cacheKey, cancellationToken);
             if (cached != null)
@@ -86,6 +89,11 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         else
         {
             query = query.Where(r => r.Status == RecipeStatus.Published);
+            // API-14: Hỗ trợ lọc theo AuthorId cụ thể
+            if (!string.IsNullOrWhiteSpace(request.AuthorId))
+            {
+                query = query.Where(r => r.AuthorId == request.AuthorId);
+            }
         }
 
         // Tìm theo tên trong danh sách riêng, trước khi đếm và phân trang.
@@ -202,7 +210,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var result = new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
 
-        if (_cacheService != null && request.Mine != true)
+        if (_cacheService != null && isPublicListing)
         {
             await _cacheService.SetAsync(cacheKey, result, CacheConstants.RecipeListDuration, cancellationToken);
         }
@@ -223,10 +231,15 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             "publishedat" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
             "createdat" or "newest" => isAsc ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt),
             "updatedat" => isAsc ? query.OrderBy(r => r.UpdatedAt ?? r.CreatedAt) : query.OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt),
+            "preptime" => isAsc ? query.OrderBy(r => r.PrepTimeMinutes) : query.OrderByDescending(r => r.PrepTimeMinutes),
             "cooktime" => isAsc ? query.OrderBy(r => r.CookTimeMinutes) : query.OrderByDescending(r => r.CookTimeMinutes),
+            "servings" => isAsc ? query.OrderBy(r => r.Servings) : query.OrderByDescending(r => r.Servings),
             "totaltime" => isAsc
                 ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
                 : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
+            "quickest" => isAsc
+                ? query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes)
+                : query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes),
             "calories" => isAsc
                 ? query.OrderBy(r => r.Nutrition != null ? r.Nutrition.Calories : 0)
                 : query.OrderByDescending(r => r.Nutrition != null ? r.Nutrition.Calories : 0),

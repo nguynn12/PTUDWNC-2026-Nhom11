@@ -129,11 +129,11 @@ export function RecipeFilterSidebar({ categories }: RecipeFilterSidebarProps) {
         </span>
         <div className="grid grid-cols-3 gap-2">
           {[
-            { value: "Easy", label: "Dễ", variant: "easy" as const },
-            { value: "Medium", label: "Vừa", variant: "medium" as const },
-            { value: "Hard", label: "Khó", variant: "hard" as const },
+            { value: "1", label: "Dễ", variant: "easy" as const },
+            { value: "2", label: "Vừa", variant: "medium" as const },
+            { value: "3", label: "Khó", variant: "hard" as const },
           ].map((item) => {
-            const isSelected = difficulty === item.value;
+            const isSelected = difficulty === item.value || (item.value === "1" && difficulty === "Easy") || (item.value === "2" && difficulty === "Medium") || (item.value === "3" && difficulty === "Hard");
             return (
               <button
                 key={item.value}
