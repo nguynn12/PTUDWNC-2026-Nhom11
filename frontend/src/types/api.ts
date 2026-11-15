@@ -4,11 +4,11 @@
 // ============================================================================
 
 // ----------------------------------------------------------------------------
-// ENUMS & CONSTANTS
+// ENUMS & CONSTANTS (Chuẩn hóa wire format D2 / FE-03)
 // ----------------------------------------------------------------------------
-export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
-export type DifficultyLevel = RecipeDifficulty | number;
-export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | number;
+export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 1 | 2 | 3 | 4 | number;
+export type DifficultyLevel = RecipeDifficulty;
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2 | number;
 
 // ----------------------------------------------------------------------------
 // COMMON RESPONSE & PAGINATION

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 
 import { useAuthStore } from "@/store/auth-store";
+import { getDifficultyVariant } from "@/lib/enums";
 import type { RecipeDetailDto, RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
 
 
@@ -56,9 +57,10 @@ function getDifficultyBadge(diff: RecipeDifficulty | number): {
   label: string;
   variant: "easy" | "medium" | "hard";
 } {
-  if (diff === "Easy" || diff === 0) return { label: "Độ khó: Dễ", variant: "easy" };
-  if (diff === "Hard" || diff === 2) return { label: "Độ khó: Khó", variant: "hard" };
-  return { label: "Độ khó: Vừa", variant: "medium" };
+  const info = getDifficultyVariant(diff);
+  return { label: `Độ khó: ${info.label}`, variant: info.variant };
+
+
 }
 
 export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps) {

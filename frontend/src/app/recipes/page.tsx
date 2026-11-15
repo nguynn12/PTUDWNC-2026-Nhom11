@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { toDifficultyNumber } from "@/lib/enums";
 import { getRecipes } from "@/lib/api/recipes";
 import { getCategories } from "@/lib/api/categories";
 import { RecipeFilterSidebar } from "@/components/recipe/RecipeFilterSidebar";
@@ -12,7 +13,7 @@ import type {
   RecipeSummaryDto,
   CategoryDto,
   GetRecipesParams,
-  RecipeDifficulty,
+
 } from "@/types/api";
 
 // Đánh dấu Server-Side Rendering (SSR) động theo URL searchParams (SRS Mục 5.1)
@@ -47,7 +48,7 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
   const page = Math.max(1, Number(resolvedParams.page) || 1);
   const pageSize = 12;
   const categoryId = resolvedParams.categoryId || undefined;
-  const difficulty = (resolvedParams.difficulty as RecipeDifficulty) || undefined;
+  const difficulty = toDifficultyNumber(resolvedParams.difficulty);
   const maxTotalTime = resolvedParams.maxTotalTime ? Number(resolvedParams.maxTotalTime) : undefined;
   const minCalories = resolvedParams.minCalories ? Number(resolvedParams.minCalories) : undefined;
   const maxCalories = resolvedParams.maxCalories ? Number(resolvedParams.maxCalories) : undefined;

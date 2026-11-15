@@ -3,21 +3,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
+import { getDifficultyVariant } from "@/lib/enums";
+import type { RecipeSummaryDto } from "@/types/api";
 
 interface RecipeCardProps {
   recipe: RecipeSummaryDto;
   priority?: boolean;
 }
 
-function getDifficultyVariant(diff: RecipeDifficulty | number): {
-  label: string;
-  variant: "easy" | "medium" | "hard";
-} {
-  if (diff === "Easy" || diff === 0) return { label: "Dễ", variant: "easy" };
-  if (diff === "Hard" || diff === 2) return { label: "Khó", variant: "hard" };
-  return { label: "Vừa", variant: "medium" };
-}
 
 export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
   const diffInfo = getDifficultyVariant(recipe.difficulty);

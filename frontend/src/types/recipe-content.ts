@@ -10,9 +10,9 @@ import type { ApiProblemDetails, RecipeAuthorDto } from "./api";
 // ENUMS & ĐỘ KHÓ / TRẠNG THÁI CÔNG THỨC
 // ----------------------------------------------------------------------------
 
-export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
-export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2;
-export type DifficultyLevel = RecipeDifficulty | number;
+export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 1 | 2 | 3 | 4 | number;
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2 | number;
+export type DifficultyLevel = RecipeDifficulty;
 
 // ----------------------------------------------------------------------------
 // 1. NGUYÊN LIỆU CÔNG THỨC (FR-RCP-009, Quyết định E1 & E2)
