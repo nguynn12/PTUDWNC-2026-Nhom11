@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 /// <summary>
 /// Cấu hình EF Core Fluent API cho thực thể RecipeImage (bảng RecipeImages).
-/// Tuân thủ đặc tả SRS v1.2.0 (mục 7.5) và quyết định kiến trúc E6, E7.
+/// Tuân thủ đặc tả SRS v1.2.0 (mục 7.5), quyết định kiến trúc E6, E7 và kế hoạch sửa lỗi API-18.
 /// Phụ trách: Thành viên 4.
 /// </summary>
 public class RecipeImageConfiguration : IEntityTypeConfiguration<RecipeImage>
@@ -73,8 +73,11 @@ public class RecipeImageConfiguration : IEntityTypeConfiguration<RecipeImage>
         builder.HasIndex(img => img.RecipeId)
             .HasDatabaseName("IX_RecipeImages_RecipeId");
 
-        builder.HasIndex(img => new { img.RecipeId, img.IsPrimary })
-            .HasDatabaseName("IX_RecipeImages_RecipeId_IsPrimary");
+        // API-18: Đảm bảo chỉ có tối đa 1 ảnh chính (IsPrimary = true) cho mỗi công thức (khi IsDeleted = false)
+        builder.HasIndex(img => img.RecipeId)
+            .IsUnique()
+            .HasFilter("\"IsPrimary\" = true AND \"IsDeleted\" = false")
+            .HasDatabaseName("IX_RecipeImages_RecipeId_Primary_Unique");
 
         builder.HasIndex(img => new { img.RecipeId, img.OrderIndex })
             .HasDatabaseName("IX_RecipeImages_RecipeId_OrderIndex");

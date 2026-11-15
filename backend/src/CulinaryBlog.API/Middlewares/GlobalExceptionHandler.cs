@@ -155,9 +155,16 @@ public sealed class GlobalExceptionHandler(
             ),
             BadRequestException badRequestEx => (
                 StatusCodes.Status400BadRequest,
-                ErrorCodes.MalformedRequest,
+                string.IsNullOrWhiteSpace(badRequestEx.ErrorCode) ? ErrorCodes.MalformedRequest : badRequestEx.ErrorCode,
                 "Bad Request",
                 badRequestEx.Message,
+                null
+            ),
+            ServiceUnavailableException unavailable => (
+                StatusCodes.Status503ServiceUnavailable,
+                unavailable.ErrorCode ?? "SERVICE_UNAVAILABLE",
+                "Service Unavailable",
+                unavailable.Message,
                 null
             ),
             CulinaryBlog.Domain.Exceptions.DomainException domainEx => (

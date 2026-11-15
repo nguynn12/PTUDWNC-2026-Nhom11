@@ -143,6 +143,38 @@ public class MinioFileStorageServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task UploadAsync_WhenMinioEnabledAndFails_ShouldThrowServiceUnavailableException()
+    {
+        // MEDIA-03: Khi MinIO bật mà lỗi kết nối, phải ném ServiceUnavailableException (503), không fallback local
+        var enabledSettings = new MinioSettings
+        {
+            Enabled = true,
+            Endpoint = "http://127.0.0.1:59999", // Unreachable port
+            PublicUrl = "http://127.0.0.1:59999",
+            BucketName = "culinary-blog"
+        };
+        var s3Config = new AmazonS3Config
+        {
+            ServiceURL = enabledSettings.Endpoint,
+            ForcePathStyle = true,
+            Timeout = TimeSpan.FromMilliseconds(500),
+            MaxErrorRetry = 0
+        };
+        var failingClient = new AmazonS3Client("dummy", "dummy", s3Config);
+        var service = new MinioFileStorageService(
+            failingClient,
+            Options.Create(enabledSettings),
+            NullLogger<MinioFileStorageService>.Instance,
+            _fallbackService);
+
+        var content = "Failing upload content";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        await Assert.ThrowsAsync<CulinaryBlog.Application.Common.Exceptions.ServiceUnavailableException>(() =>
+            service.UploadAsync(stream, "dish.jpg", "image/jpeg", "recipes/fail", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
     public async Task DeleteAsync_EmptyUrl_ShouldCompleteWithoutThrowing()
     {
         // Act & Assert (Idempotent)

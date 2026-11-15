@@ -1,9 +1,11 @@
 namespace CulinaryBlog.UnitTests.Features.RecipeContent;
 
+using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Features.RecipeImages.DTOs;
 using CulinaryBlog.Application.Features.RecipeImages.Services;
 using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Domain.Enums;
 using CulinaryBlog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -76,7 +78,7 @@ public class RecipeImageServiceTests
         // Arrange
         using var context = CreateInMemoryDbContext();
         var recipeId = Guid.NewGuid();
-        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Nem Rán", Description = "Nem rán giòn", AuthorId = "user1" });
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Nem Rán", Description = "Nem rán giòn", AuthorId = "user1", Status = RecipeStatus.Published });
         context.RecipeImages.AddRange(
             new RecipeImage { Id = Guid.NewGuid(), RecipeId = recipeId, OriginalUrl = "url1", IsPrimary = false, OrderIndex = 0 },
             new RecipeImage { Id = Guid.NewGuid(), RecipeId = recipeId, OriginalUrl = "url2", IsPrimary = true, OrderIndex = 1 },
@@ -93,6 +95,19 @@ public class RecipeImageServiceTests
         Assert.Equal(3, result.Count);
         Assert.True(result[0].IsPrimary);
         Assert.Equal("url2", result[0].OriginalUrl);
+    }
+
+    [Fact]
+    public async Task GetImagesAsync_WhenDraftAndNotOwner_ShouldThrowForbiddenException()
+    {
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Chả Giò", Description = "Chả giò tôm thịt", AuthorId = "user1", Status = RecipeStatus.Draft });
+        await context.SaveChangesAsync();
+
+        var service = new RecipeImageService(context, new FakeFileStorageService());
+
+        await Assert.ThrowsAsync<ForbiddenException>(() => service.GetImagesAsync(recipeId, currentUserId: "user2", isAdmin: false));
     }
 
     [Fact]
@@ -251,4 +266,34 @@ public class RecipeImageServiceTests
         Assert.Equal(result.MediumUrl, savedImage.MediumUrl);
     }
 
+    [Fact]
+    public async Task UploadImageAsync_WhenConcurrencyTokenMismatch_ShouldThrowConflictException()
+    {
+        // Arrange
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        var recipe = new Recipe { Id = recipeId, Title = "Bánh Xèo", Description = "Bánh xèo miền Tây", AuthorId = "user1" };
+        context.Recipes.Add(recipe);
+        await context.SaveChangesAsync();
+
+        context.Entry(recipe).Property<uint>("xmin").CurrentValue = 300u;
+        await context.SaveChangesAsync();
+
+        var service = new RecipeImageService(context, new FakeFileStorageService());
+        using var stream = CreateValidJpegStream();
+
+        // Act & Assert - API-03
+        await Assert.ThrowsAsync<ConflictException>(() =>
+            service.UploadImageAsync(
+                recipeId,
+                stream,
+                "banhxeo.jpg",
+                "image/jpeg",
+                stream.Length,
+                "Ảnh bánh xèo",
+                true,
+                currentUserId: "user1",
+                isAdmin: false,
+                concurrencyToken: 299u));
+    }
 }

@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
+using CulinaryBlog.Application.Common.Exceptions;
 using Amazon.S3.Model;
 using CulinaryBlog.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -85,14 +86,8 @@ public class MinioFileStorageService : IFileStorageService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Lỗi khi tải file lên MinIO ({ObjectKey}), tự động chuyển sang Fallback Local Storage.", objectKey);
-            
-            if (stream.CanSeek)
-            {
-                stream.Position = 0;
-            }
-
-            return await _fallbackLocalStorage.UploadAsync(stream, fileName, contentType, folder, cancellationToken);
+            _logger.LogError(ex, "Lỗi khi tải file lên MinIO ({ObjectKey}). Ném ServiceUnavailableException (503) theo MEDIA-03.", objectKey);
+            throw new ServiceUnavailableException("Dịch vụ lưu trữ tệp tin (Object Storage) tạm thời không khả dụng. Vui lòng kiểm tra dịch vụ MinIO và thử lại sau.", ex, "STORAGE_SERVICE_UNAVAILABLE");
         }
     }
 
@@ -118,27 +113,37 @@ public class MinioFileStorageService : IFileStorageService
             return;
         }
 
-        try
+        const int maxRetries = 3;
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
-            var deleteRequest = new DeleteObjectRequest
+            try
             {
-                BucketName = _settings.BucketName,
-                Key = objectKey
-            };
+                var deleteRequest = new DeleteObjectRequest
+                {
+                    BucketName = _settings.BucketName,
+                    Key = objectKey
+                };
 
-            await _s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
-            _logger.LogInformation("Đã xóa tệp tin khỏi MinIO thành công: Bucket={Bucket}, Key={Key}", _settings.BucketName, objectKey);
-        }
-        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound || ex.ErrorCode == "NoSuchKey")
-        {
-            // Idempotent: Theo đặc tả SRS FR-FILE-002, nếu object không tồn tại trên MinIO thì không throw exception
-            _logger.LogInformation("Tệp tin không tồn tại trên MinIO, bỏ qua xóa (Idempotent): Key={Key}", objectKey);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Lỗi khi xóa tệp tin khỏi MinIO: Key={Key}", objectKey);
-            // Để caller/job giữ metadata và retry; chỉ NotFound được coi là đã xóa thành công.
-            throw;
+                await _s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
+                _logger.LogInformation("Đã xóa tệp tin khỏi MinIO thành công: Bucket={Bucket}, Key={Key}", _settings.BucketName, objectKey);
+                return;
+            }
+            catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound || ex.ErrorCode == "NoSuchKey")
+            {
+                // Idempotent: Theo đặc tả SRS FR-FILE-002, nếu object không tồn tại trên MinIO thì không throw exception
+                _logger.LogInformation("Tệp tin không tồn tại trên MinIO, bỏ qua xóa (Idempotent): Key={Key}", objectKey);
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (attempt == maxRetries)
+                {
+                    _logger.LogWarning(ex, "Lỗi sau {MaxRetries} lần thử khi xóa tệp tin khỏi MinIO: Key={Key}", maxRetries, objectKey);
+                    throw;
+                }
+                _logger.LogWarning("Thử lại lần {Attempt}/{MaxRetries} khi xóa tệp tin khỏi MinIO: Key={Key}", attempt, maxRetries, objectKey);
+                await Task.Delay(TimeSpan.FromMilliseconds(300 * attempt), cancellationToken);
+            }
         }
     }
 
