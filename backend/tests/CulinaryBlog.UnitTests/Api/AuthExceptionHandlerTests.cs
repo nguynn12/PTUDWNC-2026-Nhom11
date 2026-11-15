@@ -1,4 +1,6 @@
 using System.Text.Json;
+using CulinaryBlog.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Domain.Exceptions;
@@ -101,6 +103,40 @@ public sealed class AuthExceptionHandlerTests
         Assert.Equal(
             "Mật khẩu phải có ký tự đặc biệt.",
             body.GetProperty("errors").GetProperty("password")[0].GetString());
+    }
+
+    [Theory]
+    [InlineData("expired", 401)]
+    [InlineData("revoked", 401)]
+    [InlineData("json", 400)]
+    [InlineData("locked", 423)]
+    [InlineData("conflict", 409)]
+    [InlineData("file", 422)]
+    [InlineData("unexpected", 500)]
+    public async Task AuditStatus_MatchesActualExceptionResponse(string scenario, int expectedStatus)
+    {
+        Exception exception = scenario switch
+        {
+            "expired" => new RefreshTokenExpiredException(),
+            "revoked" => new RefreshTokenRevokedException(),
+            "json" => new BadHttpRequestException("Invalid JSON"),
+            "locked" => new LockedException("Locked"),
+            "conflict" => new DbUpdateConcurrencyException(),
+            "file" => new CulinaryBlog.Application.Common.Exceptions.BusinessRuleValidationException("Invalid image", ErrorCodes.FileMimeInvalid),
+            _ => new InvalidOperationException("Unexpected")
+        };
+        using var db = new CulinaryBlogDbContext(new DbContextOptionsBuilder<CulinaryBlogDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
+        var context = new DefaultHttpContext();
+        context.Request.Path = "/api/v1/test";
+        var audit = new SystemAuditLoggingMiddleware(_ => Task.FromException(exception),
+            NullLogger<SystemAuditLoggingMiddleware>.Instance);
+
+        var thrown = await Record.ExceptionAsync(() => audit.InvokeAsync(context, db));
+        Assert.Same(exception, thrown);
+        var (status, _, _) = await HandleAsync(exception);
+        Assert.Equal(expectedStatus, status);
+        Assert.Equal(status, (await db.SystemLogs.SingleAsync()).StatusCode);
     }
 
     private static async Task<(int Status, JsonElement Body, bool HandledByAuth)> HandleAsync(Exception exception)

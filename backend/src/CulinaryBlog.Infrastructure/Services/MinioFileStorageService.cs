@@ -137,7 +137,8 @@ public class MinioFileStorageService : IFileStorageService
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Lỗi khi xóa tệp tin khỏi MinIO: Key={Key}", objectKey);
-            // Vẫn an toàn không làm crash luồng chính nếu lỗi mạng
+            // Để caller/job giữ metadata và retry; chỉ NotFound được coi là đã xóa thành công.
+            throw;
         }
     }
 

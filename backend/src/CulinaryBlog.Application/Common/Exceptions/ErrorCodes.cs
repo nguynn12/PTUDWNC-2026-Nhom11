@@ -9,6 +9,7 @@ public static class ErrorCodes
 {
     // ── Chung ────────────────────────────────────────────────────────────────
     public const string MalformedRequest = "MALFORMED_REQUEST";
+    public const string PreconditionRequired = "PRECONDITION_REQUIRED";
     public const string ValidationError = "VALIDATION_ERROR";
     public const string RateLimitExceeded = "RATE_LIMIT_EXCEEDED";
 

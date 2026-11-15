@@ -18,27 +18,28 @@ using Microsoft.AspNetCore.Mvc;
 /// </summary>
 public static class RecipeLifecycleEndpoints
 {
-    private static (uint? Token, IResult? Error) ParseRequiredIfMatch(string? ifMatch, uint? fallbackToken = null)
+    private static (uint? Token, IResult? Error) ParseRequiredIfMatch(string? ifMatch)
     {
         if (string.IsNullOrWhiteSpace(ifMatch))
         {
-            if (fallbackToken.HasValue)
-            {
-                return (fallbackToken.Value, null);
-            }
-
             return (null, Results.Problem(
+                type: CulinaryBlog.Application.Common.Exceptions.ErrorCodes.PreconditionRequired,
                 title: "Precondition Required",
                 detail: "Header 'If-Match' là bắt buộc để thực hiện thao tác cập nhật đồng thời (Optimistic Concurrency Control).",
                 statusCode: StatusCodes.Status428PreconditionRequired));
         }
 
-        var cleanToken = ifMatch.Trim().Trim('"');
-        if (!uint.TryParse(cleanToken, out var parsed))
+        if (!System.Net.Http.Headers.EntityTagHeaderValue.TryParse(ifMatch.Trim(), out var etag) ||
+            etag.IsWeak || etag.Tag.Length < 3 ||
+            !uint.TryParse(etag.Tag.AsSpan(1, etag.Tag.Length - 2),
+                System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var parsed) ||
+            parsed == 0 ||
+            etag.Tag != $"\"{parsed.ToString(System.Globalization.CultureInfo.InvariantCulture)}\"")
         {
             return (null, Results.Problem(
+                type: CulinaryBlog.Application.Common.Exceptions.ErrorCodes.MalformedRequest,
                 title: "Bad Request",
-                detail: $"Giá trị header If-Match '{ifMatch}' không hợp lệ. Concurrency token phải là số nguyên dương.",
+                detail: "If-Match phải chứa một strong ETag dạng \"123\" với token nguyên dương. Vui lòng tải lại dữ liệu.",
                 statusCode: StatusCodes.Status400BadRequest));
         }
 
@@ -49,9 +50,30 @@ public static class RecipeLifecycleEndpoints
     {
         var recipes = group.MapGroup("/recipes");
 
+        // 0. Lấy chi tiết công thức theo ID phục vụ màn hình chỉnh sửa (Yêu cầu Author/Admin)
+        recipes.MapGet("/{id:guid}", async (
+            Guid id,
+            ISender sender,
+            HttpContext httpContext,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await sender.Send(new CulinaryBlog.Application.Features.Recipes.Queries.GetRecipeById.GetRecipeByIdQuery(id), cancellationToken);
+
+            if (result.ConcurrencyToken.HasValue)
+            {
+                httpContext.Response.Headers.ETag = $"\"{result.ConcurrencyToken.Value}\"";
+            }
+
+            return Results.Ok(new { data = result });
+        })
+        .RequireAuthorization(Roles.Author)
+        .WithName("GetRecipeById")
+        .WithSummary("Lấy chi tiết công thức theo ID phục vụ chỉnh sửa (Author/Admin).");
+
         // 1. Tạo mới công thức (trạng thái Draft) -> Yêu cầu role Author/Admin
         recipes.MapPost("/", async (
             CreateRecipeRequest request,
+            HttpContext httpContext,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
@@ -68,6 +90,12 @@ public static class RecipeLifecycleEndpoints
             };
 
             var result = await sender.Send(command, cancellationToken);
+
+            if (result.ConcurrencyToken.HasValue)
+            {
+                httpContext.Response.Headers.ETag = $"\"{result.ConcurrencyToken.Value}\"";
+            }
+
             return Results.Created($"/api/v1/recipes/{result.Id}", new { data = result });
         })
         .RequireAuthorization(Roles.Author)
@@ -83,7 +111,7 @@ public static class RecipeLifecycleEndpoints
             ISender sender,
             CancellationToken cancellationToken) =>
         {
-            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch, request.ConcurrencyToken);
+            var (concurrencyToken, ifMatchError) = ParseRequiredIfMatch(ifMatch);
             if (ifMatchError != null) return ifMatchError;
 
             var command = new UpdateRecipeCommand

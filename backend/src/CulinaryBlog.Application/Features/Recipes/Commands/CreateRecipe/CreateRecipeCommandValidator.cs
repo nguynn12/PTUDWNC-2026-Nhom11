@@ -33,5 +33,32 @@ public sealed class CreateRecipeCommandValidator : AbstractValidator<CreateRecip
 
         RuleFor(v => v.CategoryId)
             .NotEmpty().WithMessage("Danh mục món ăn không được để trống.");
+
+        When(v => v.Nutrition != null, () =>
+        {
+            RuleFor(v => v.Nutrition!.Calories)
+                .GreaterThanOrEqualTo(0).WithMessage("Lượng Calories không được âm.")
+                .LessThanOrEqualTo(999999.99m).WithMessage("Lượng Calories vượt quá giới hạn cho phép.");
+
+            RuleFor(v => v.Nutrition!.Protein)
+                .GreaterThanOrEqualTo(0).WithMessage("Lượng Protein không được âm.")
+                .LessThanOrEqualTo(999999.99m).WithMessage("Lượng Protein vượt quá giới hạn cho phép.");
+
+            RuleFor(v => v.Nutrition!.Carbohydrates)
+                .GreaterThanOrEqualTo(0).WithMessage("Lượng Carbohydrates không được âm.")
+                .LessThanOrEqualTo(999999.99m).WithMessage("Lượng Carbohydrates vượt quá giới hạn cho phép.");
+
+            RuleFor(v => v.Nutrition!.Fat)
+                .GreaterThanOrEqualTo(0).WithMessage("Lượng Fat không được âm.")
+                .LessThanOrEqualTo(999999.99m).WithMessage("Lượng Fat vượt quá giới hạn cho phép.");
+
+            RuleFor(v => v.Nutrition!.Fiber)
+                .GreaterThanOrEqualTo(0).WithMessage("Lượng Fiber không được âm.")
+                .LessThanOrEqualTo(999999.99m).WithMessage("Lượng Fiber vượt quá giới hạn cho phép.");
+
+            RuleFor(v => v.Nutrition!.Sodium)
+                .GreaterThanOrEqualTo(0).WithMessage("Lượng Sodium không được âm.")
+                .LessThanOrEqualTo(999999.99m).WithMessage("Lượng Sodium vượt quá giới hạn cho phép.");
+        });
     }
 }

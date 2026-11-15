@@ -29,19 +29,9 @@ public sealed class SystemAuditLoggingMiddleware(
         finally
         {
             stopwatch.Stop();
-            var statusCode = requestException switch
-            {
-                null => context.Response.StatusCode,
-                CulinaryBlog.Application.Common.Exceptions.NotFoundException => StatusCodes.Status404NotFound,
-                CulinaryBlog.Application.Common.Exceptions.ForbiddenException => StatusCodes.Status403Forbidden,
-                CulinaryBlog.Application.Common.Exceptions.UnauthorizedException => StatusCodes.Status401Unauthorized,
-                CulinaryBlog.Application.Common.Exceptions.ConflictException => StatusCodes.Status409Conflict,
-                CulinaryBlog.Application.Common.Exceptions.ValidationException => StatusCodes.Status422UnprocessableEntity,
-                FluentValidation.ValidationException => StatusCodes.Status422UnprocessableEntity,
-                CulinaryBlog.Application.Common.Exceptions.BusinessRuleValidationException => StatusCodes.Status422UnprocessableEntity,
-                CulinaryBlog.Application.Common.Exceptions.BadRequestException => StatusCodes.Status400BadRequest,
-                _ => context.Response.StatusCode >= 400 ? context.Response.StatusCode : StatusCodes.Status500InternalServerError
-            };
+            var statusCode = requestException is null
+                ? context.Response.StatusCode
+                : GlobalExceptionHandler.Map(requestException).StatusCode;
 
             var level = statusCode >= 500
                 ? "Error"

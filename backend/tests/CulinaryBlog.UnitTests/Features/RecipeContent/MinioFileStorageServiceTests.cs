@@ -17,6 +17,27 @@ using Xunit;
 /// </summary>
 public class MinioFileStorageServiceTests : IDisposable
 {
+    private sealed class DeleteFailureClient(bool missing) : AmazonS3Client("dummy", "dummy",
+        new AmazonS3Config { ServiceURL = "http://localhost:9000", ForcePathStyle = true })
+    {
+        public override Task<DeleteObjectResponse> DeleteObjectAsync(DeleteObjectRequest request,
+            CancellationToken cancellationToken = default) => Task.FromException<DeleteObjectResponse>(missing
+                ? new AmazonS3Exception("Missing") { StatusCode = System.Net.HttpStatusCode.NotFound }
+                : new IOException("Storage unavailable"));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task DeleteAsync_OnlyMissingObjectsAreSuccess_OtherFailuresReachRetry(bool missing)
+    {
+        using var client = new DeleteFailureClient(missing);
+        var service = new MinioFileStorageService(client, Options.Create(_settings),
+            NullLogger<MinioFileStorageService>.Instance, _fallbackService);
+        if (missing) await service.DeleteAsync("recipes/missing.jpg");
+        else await Assert.ThrowsAsync<IOException>(() => service.DeleteAsync("recipes/existing.jpg"));
+    }
+
     private readonly string _testTempDir;
     private readonly FileStorageService _fallbackService;
     private readonly MinioSettings _settings;

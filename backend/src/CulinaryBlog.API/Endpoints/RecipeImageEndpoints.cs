@@ -43,15 +43,20 @@ public static class RecipeImageEndpoints
             HttpContext httpContext,
             CancellationToken ct) =>
         {
-            if (file == null || file.Length == 0)
+            if (file == null)
             {
                 throw new BadRequestException("Tệp tin hình ảnh không được để trống.");
+            }
+
+            if (file.Length == 0)
+            {
+                throw new BusinessRuleValidationException("Tệp tin hình ảnh rỗng.", ErrorCodes.FileMimeInvalid);
             }
 
             // Kiểm tra giới hạn 5 MB trước khi đọc luồng vào bộ nhớ theo SRS và Lab 8
             if (file.Length > 5 * 1024 * 1024)
             {
-                throw new BadRequestException("Dung lượng tệp tin vượt quá giới hạn tối đa cho phép là 5MB.");
+                throw new BusinessRuleValidationException("Dung lượng tệp tin vượt quá giới hạn tối đa cho phép là 5MB.", ErrorCodes.FileSizeExceeded);
             }
 
             var (userId, isAdmin) = ExtractUserContext(user, httpContext);

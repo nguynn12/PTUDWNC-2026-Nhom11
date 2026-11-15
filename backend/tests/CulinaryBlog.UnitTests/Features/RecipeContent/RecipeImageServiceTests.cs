@@ -10,6 +10,23 @@ using Xunit;
 
 public class RecipeImageServiceTests
 {
+    [Theory]
+    [InlineData(0, "FILE_MIME_INVALID")]
+    [InlineData(4, "FILE_MIME_INVALID")]
+    [InlineData(5242881, "FILE_SIZE_EXCEEDED")]
+    public async Task UploadImage_InvalidContent_ReturnsBusinessValidationWithFileCode(int length, string code)
+    {
+        using var db = CreateInMemoryDbContext();
+        var id = Guid.NewGuid();
+        db.Recipes.Add(new Recipe { Id = id, Title = "Test recipe", AuthorId = "user1" });
+        await db.SaveChangesAsync();
+        var service = new RecipeImageService(db, new FakeFileStorageService());
+        using var stream = new MemoryStream(new byte[length]);
+        var error = await Assert.ThrowsAsync<CulinaryBlog.Application.Common.Exceptions.BusinessRuleValidationException>(() =>
+            service.UploadImageAsync(id, stream, "image.jpg", "image/jpeg", length, null, null, "user1", false));
+        Assert.Equal(code, error.ErrorCode);
+    }
+
     private class FakeFileStorageService : IFileStorageService
     {
         public Task<string> UploadAsync(Stream stream, string fileName, string contentType, string? folder = null, CancellationToken cancellationToken = default)

@@ -147,11 +147,17 @@ try
 
     if (dbContext.Database.IsRelational())
     {
+        // 1. Áp dụng schema migration cho mọi môi trường (kể cả Production trong container)
         await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
-        await CategorySeeder.SeedAsync(dbContext);
-        await RecipeSeeder.SeedAsync(dbContext);
-        await RecipeDetailSeeder.SeedAsync(dbContext);
+
+        // 2. Chỉ nạp dữ liệu mẫu Bogus ở môi trường Development hoặc khi có cờ bật chủ đích
+        if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("SeedData:Enabled"))
+        {
+            await initialiser.SeedAsync();
+            await CategorySeeder.SeedAsync(dbContext);
+            await RecipeSeeder.SeedAsync(dbContext);
+            await RecipeDetailSeeder.SeedAsync(dbContext);
+        }
     }
 }
 catch (Exception ex)
@@ -169,7 +175,7 @@ if (!app.Environment.IsEnvironment("Testing"))
 {
     app.UseHangfireDashboard("/hangfire", new DashboardOptions
     {
-        Authorization = [new HangfireAdminAuthorizationFilter(allowAnonymousInDev: true)],
+        Authorization = [new HangfireAdminAuthorizationFilter()],
         DashboardTitle = "Culinary Blog - Background Jobs"
     });
 

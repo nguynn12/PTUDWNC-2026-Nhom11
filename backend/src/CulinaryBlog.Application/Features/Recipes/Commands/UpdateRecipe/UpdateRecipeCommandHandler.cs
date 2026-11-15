@@ -127,6 +127,10 @@ public sealed class UpdateRecipeCommandHandler(
             recipe.Nutrition.Sodium = request.Nutrition.Sodium;
             recipe.Nutrition.Source = CulinaryBlog.Domain.Enums.NutritionSource.Manual;
         }
+        else
+        {
+            recipe.Nutrition = null;
+        }
 
         // 7. Cập nhật qua IRepository và commit qua IUnitOfWork
         recipeRepository.Update(recipe);

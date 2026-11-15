@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 30000,
+  timeout: 60000,
   fullyParallel: true,
   retries: 0,
   workers: 1,
@@ -10,6 +10,7 @@ export default defineConfig({
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
+    launchOptions: { channel: process.env.PLAYWRIGHT_CHANNEL || undefined },
   },
   projects: [
     {

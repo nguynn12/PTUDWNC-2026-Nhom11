@@ -22,7 +22,40 @@ public sealed class GlobalExceptionHandler(
     {
         logger.LogError(exception, "Đã xảy ra ngoại lệ khi xử lý request: {Path}", httpContext.Request.Path);
 
-        var (statusCode, type, title, detail, errors) = exception switch
+        var (statusCode, type, title, detail, errors) = Map(exception);
+
+        httpContext.Response.StatusCode = statusCode;
+        httpContext.Response.ContentType = "application/problem+json";
+
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Type = type,
+            Title = title,
+            Detail = detail,
+            Instance = httpContext.Request.Path
+        };
+
+        if (errors != null)
+        {
+            problemDetails.Extensions["errors"] = errors;
+        }
+
+        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+        {
+            HttpContext = httpContext,
+            ProblemDetails = problemDetails
+        });
+    }
+
+    public static (int StatusCode, string Type, string Title, string Detail, IDictionary<string, string[]>? Errors) Map(Exception exception)
+    {
+        if (AuthExceptionHandler.Map(exception) is { } authError)
+        {
+            return (authError.StatusCode, authError.Type, authError.Title, authError.Detail, null);
+        }
+
+        return exception switch
         {
             FluentValidation.ValidationException validationEx => (
                 StatusCodes.Status422UnprocessableEntity,
@@ -35,6 +68,13 @@ public sealed class GlobalExceptionHandler(
                         g => ToCamelCase(g.Key),
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     )
+            ),
+            CulinaryBlog.Application.Common.Exceptions.ValidationException appValEx => (
+                StatusCodes.Status422UnprocessableEntity,
+                "VALIDATION_ERROR",
+                "Unprocessable Entity",
+                appValEx.Message,
+                appValEx.Errors.ToDictionary(g => ToCamelCase(g.Key), g => g.Value)
             ),
             BusinessRuleValidationException businessRuleEx => (
                 StatusCodes.Status422UnprocessableEntity,
@@ -78,6 +118,13 @@ public sealed class GlobalExceptionHandler(
                 forbiddenEx.Message,
                 null
             ),
+            UnauthorizedException unauthorizedEx => (
+                StatusCodes.Status401Unauthorized,
+                string.IsNullOrWhiteSpace(unauthorizedEx.ErrorCode) ? "UNAUTHORIZED" : unauthorizedEx.ErrorCode,
+                "Unauthorized",
+                unauthorizedEx.Message,
+                null
+            ),
             ConflictException conflictEx => (
                 StatusCodes.Status409Conflict,
                 string.IsNullOrWhiteSpace(conflictEx.ErrorCode) ? "CONFLICT_ERROR" : conflictEx.ErrorCode,
@@ -90,6 +137,20 @@ public sealed class GlobalExceptionHandler(
                 "RECIPE_CONCURRENCY_CONFLICT",
                 "Conflict",
                 "Dữ liệu đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.",
+                null
+            ),
+            LockedException lockedEx => (
+                StatusCodes.Status423Locked,
+                string.IsNullOrWhiteSpace(lockedEx.ErrorCode) ? ErrorCodes.AuthAccountLocked : lockedEx.ErrorCode,
+                "Locked",
+                lockedEx.Message,
+                null
+            ),
+            BadRequestException badRequestEx => (
+                StatusCodes.Status400BadRequest,
+                ErrorCodes.MalformedRequest,
+                "Bad Request",
+                badRequestEx.Message,
                 null
             ),
             CulinaryBlog.Domain.Exceptions.DomainException domainEx => (
@@ -107,29 +168,6 @@ public sealed class GlobalExceptionHandler(
                 null
             )
         };
-
-        httpContext.Response.StatusCode = statusCode;
-        httpContext.Response.ContentType = "application/problem+json";
-
-        var problemDetails = new ProblemDetails
-        {
-            Status = statusCode,
-            Type = type,
-            Title = title,
-            Detail = detail,
-            Instance = httpContext.Request.Path
-        };
-
-        if (errors != null)
-        {
-            problemDetails.Extensions["errors"] = errors;
-        }
-
-        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
-        {
-            HttpContext = httpContext,
-            ProblemDetails = problemDetails
-        });
     }
 
     private static string ToCamelCase(string str)

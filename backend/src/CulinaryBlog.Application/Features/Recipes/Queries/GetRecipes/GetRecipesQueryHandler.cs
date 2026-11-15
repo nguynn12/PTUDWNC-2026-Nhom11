@@ -1,6 +1,8 @@
 namespace CulinaryBlog.Application.Features.Recipes.Queries.GetRecipes;
 
 using CulinaryBlog.Application.Common.Constants;
+using CulinaryBlog.Application.Common.Exceptions;
+using CulinaryBlog.Application.Common.Helpers;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Application.Features.Recipes.DTOs;
@@ -86,6 +88,20 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             query = query.Where(r => r.Status == RecipeStatus.Published);
         }
 
+        // Tìm theo tên trong danh sách riêng, trước khi đếm và phân trang.
+        if (request.Mine == true && !string.IsNullOrWhiteSpace(request.Q))
+        {
+            var searchTerm = request.Q.Trim().ToLowerInvariant();
+            if (searchTerm.Length > 100)
+            {
+                throw new BusinessRuleValidationException("Từ khóa không được vượt quá 100 ký tự.", ErrorCodes.ValidationError);
+            }
+
+            var slugTerm = SlugHelper.GenerateSlug(searchTerm);
+            query = query.Where(r => r.Title.ToLower().Contains(searchTerm) ||
+                (slugTerm != "" && r.Slug.Contains(slugTerm)));
+        }
+
         // 3. Áp dụng các bộ lọc đa tiêu chí (kết hợp bằng toán tử AND theo FR-SRCH-002)
         if (request.CategoryId.HasValue)
         {
@@ -128,7 +144,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         if (total == 0)
         {
             var emptyResult = new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
-            if (_cacheService != null)
+            if (_cacheService != null && request.Mine != true)
             {
                 await _cacheService.SetAsync(cacheKey, emptyResult, CacheConstants.RecipeListDuration, cancellationToken);
             }
@@ -166,7 +182,8 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
                 AuthorId = r.AuthorId,
                 AuthorName = null,
                 PublishedAt = r.PublishedAt,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                ConcurrencyToken = EF.Property<uint>(r, "xmin") != 0 ? EF.Property<uint>(r, "xmin") : null
             })
             .ToListAsync(cancellationToken);
 

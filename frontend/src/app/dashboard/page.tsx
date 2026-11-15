@@ -38,7 +38,7 @@ export default function DashboardOverviewPage() {
     try {
       setLoading(true);
       const [m, rec] = await Promise.all([
-        RecipeApi.getDashboardMetrics(),
+        RecipeApi.getDashboardMetrics(isAdmin),
         RecipeApi.getMyRecipes({ pageSize: 5 }),
       ]);
       setMetrics(m);

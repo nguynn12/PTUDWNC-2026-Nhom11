@@ -54,9 +54,14 @@ export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {
   // Body đã JSON.stringify sẵn: báo cho backend biết là JSON.
   if (typeof body === "string") requestHeaders["Content-Type"] = "application/json";
 
-  // Gắn Concurrency Token If-Match nếu có
+  // Gắn Concurrency Token If-Match nếu có (chuẩn hóa cú pháp ETag quotes)
   if (ifMatch !== undefined && ifMatch !== null && String(ifMatch).trim() !== "") {
-    requestHeaders["If-Match"] = `"${ifMatch}"`;
+    const rawToken = String(ifMatch).trim();
+    if (!/^(?:[1-9]\d*|"[1-9]\d*")$/.test(rawToken)) {
+      throw new ApiError({ status: 400, code: 'MALFORMED_REQUEST', message: 'Phiên bản công thức không hợp lệ. Vui lòng tải lại dữ liệu.' });
+    }
+    const cleanToken = rawToken.replace(/^"|"$/g, '');
+    requestHeaders["If-Match"] = `"${cleanToken}"`;
   }
 
   const rawData = await apiRequest<unknown>({
@@ -73,15 +78,37 @@ export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {
   // Quyết định D1: Xử lý unwrap vỏ bọc { data: ... } đồng nhất cho toàn hệ thống
   if (typeof rawData === "object" && rawData !== null && "data" in rawData) {
     const obj = rawData as Record<string, unknown>;
+
+    // Đồng bộ hai chiều giữa concurrencyToken và xmin trên đối tượng đơn lẻ
+    if (obj.data && typeof obj.data === "object" && !Array.isArray(obj.data)) {
+      const entity = obj.data as Record<string, unknown>;
+      if (entity.concurrencyToken !== undefined && entity.xmin === undefined) {
+        entity.xmin = entity.concurrencyToken;
+      } else if (entity.xmin !== undefined && entity.concurrencyToken === undefined) {
+        entity.concurrencyToken = entity.xmin;
+      }
+    }
+
     // Trường hợp danh sách phân trang có { data: [...], meta: {...} }:
     // Trả về cả hai đồng thời bổ sung alias items = data (sửa FE-08 thùng rác)
     if ("meta" in obj && Array.isArray(obj.data)) {
       const meta = (obj.meta || {}) as Record<string, unknown>;
+      for (const item of obj.data) {
+        if (item && typeof item === "object") {
+          const rec = item as Record<string, unknown>;
+          if (rec.concurrencyToken !== undefined && rec.xmin === undefined) {
+            rec.xmin = rec.concurrencyToken;
+          } else if (rec.xmin !== undefined && rec.concurrencyToken === undefined) {
+            rec.concurrencyToken = rec.xmin;
+          }
+        }
+      }
       return {
         ...obj,
         items: obj.data,
         totalCount: meta.totalCount ?? meta.total ?? obj.data.length,
         pageNumber: meta.pageNumber ?? meta.page ?? 1,
+        page: meta.pageNumber ?? meta.page ?? 1,
         pageSize: meta.pageSize ?? obj.data.length,
         totalPages: meta.totalPages ?? 1,
         hasNextPage: meta.hasNextPage ?? false,
@@ -125,6 +152,7 @@ export const RecipeApi = {
           items: envelope.data,
           totalCount: envelope.meta?.total || envelope.meta?.totalCount || envelope.data.length,
           page: envelope.meta?.page || 1,
+          pageIndex: envelope.meta?.page || 1,
           totalPages: envelope.meta?.totalPages || 1,
           hasNextPage: (envelope.meta?.page || 1) < (envelope.meta?.totalPages || 1),
           hasPreviousPage: (envelope.meta?.page || 1) > 1,
@@ -201,31 +229,32 @@ export const RecipeApi = {
     });
   },
 
-  // 9. Lấy dữ liệu thống kê Dashboard
-  async getDashboardMetrics(): Promise<DashboardMetrics> {
+  // 9. Lấy dữ liệu thống kê Dashboard với số đếm thật từ PostgreSQL
+  async getDashboardMetrics(includeTrash = false): Promise<DashboardMetrics> {
     try {
-      const all = await this.getMyRecipes({ pageSize: 100 });
-      const trash = await this.getTrashedRecipes(1, 100);
-
-      const items = all.items || [];
-      const published = items.filter(r => r.status === 'Published' || r.status === 1).length;
-      const draft = items.filter(r => r.status === 'Draft' || r.status === 0).length;
-      const archived = items.filter(r => r.status === 'Archived' || r.status === 2).length;
+      const [allRes, pubRes, draftRes, archRes, trashRes] = await Promise.all([
+        this.getMyRecipes({ pageSize: 1 }),
+        this.getMyRecipes({ pageSize: 1, status: 'Published' }),
+        this.getMyRecipes({ pageSize: 1, status: 'Draft' }),
+        this.getMyRecipes({ pageSize: 1, status: 'Archived' }),
+        includeTrash ? this.getTrashedRecipes(1, 1) : Promise.resolve({ totalCount: 0, items: [] }),
+      ]);
 
       return {
-        totalRecipes: items.length,
-        publishedCount: published,
-        draftCount: draft,
-        archivedCount: archived,
-        trashCount: trash.totalCount || trash.items?.length || 0,
+        totalRecipes: allRes.totalCount ?? 0,
+        publishedCount: pubRes.totalCount ?? 0,
+        draftCount: draftRes.totalCount ?? 0,
+        archivedCount: archRes.totalCount ?? 0,
+        trashCount: trashRes.totalCount ?? (trashRes as unknown as { total?: number })?.total ?? trashRes.items?.length ?? 0,
       };
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return {
-        totalRecipes: 12,
-        publishedCount: 8,
-        draftCount: 3,
-        archivedCount: 1,
-        trashCount: 2,
+        totalRecipes: 0,
+        publishedCount: 0,
+        draftCount: 0,
+        archivedCount: 0,
+        trashCount: 0,
       };
     }
   },
@@ -238,24 +267,18 @@ export const RecipeApi = {
   // Lấy danh sách Danh mục (Categories)
   async getCategories(): Promise<CategoryOptionDto[]> {
     try {
-      const res = await fetchApi<CategoryOptionDto[] | { data: CategoryOptionDto[] }>('/categories');
-      if (res && typeof res === 'object' && 'data' in res && Array.isArray(res.data)) {
-        return res.data;
-      }
-      return Array.isArray(res) ? res : mockCategories;
-    } catch {
+      const res = await fetchApi<CategoryOptionDto[]>('/categories');
+      return Array.isArray(res) ? res : [];
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return mockCategories;
     }
   },
 
-  // Lấy chi tiết đầy đủ công thức (kèm Ingredients, Steps, Images, Nutrition, xmin)
+  // Lấy chi tiết đầy đủ công thức (kèm Ingredients, Steps, Images, Nutrition, xmin, concurrencyToken)
   async getRecipeFullDetail(id: string): Promise<RecipeFullDetailDto> {
     try {
-      const res = await fetchApi<RecipeFullDetailDto | { data: RecipeFullDetailDto }>(`/recipes/${id}`);
-      if (res && typeof res === 'object' && 'data' in res && (res as { data: RecipeFullDetailDto }).data) {
-        return (res as { data: RecipeFullDetailDto }).data;
-      }
-      return res as RecipeFullDetailDto;
+      return await fetchApi<RecipeFullDetailDto>(`/recipes/${id}`);
     } catch (error) {
       if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
@@ -313,6 +336,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -335,6 +359,7 @@ export const RecipeApi = {
         }
       );
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -349,6 +374,7 @@ export const RecipeApi = {
         method: 'DELETE',
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -364,6 +390,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -383,6 +410,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -401,6 +429,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -415,6 +444,7 @@ export const RecipeApi = {
         method: 'DELETE',
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -449,6 +479,7 @@ export const RecipeApi = {
         },
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -463,12 +494,12 @@ export const RecipeApi = {
     request: UpdateRecipeImageRequest
   ): Promise<RecipeImageDto> {
     try {
-      const response = await fetchApi<{ data: RecipeImageDto }>(`/recipes/${recipeId}/images/${imageId}`, {
+      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
         method: 'PATCH',
         body: JSON.stringify(request),
       });
-      return response.data;
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -483,6 +514,7 @@ export const RecipeApi = {
         method: 'DELETE',
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }

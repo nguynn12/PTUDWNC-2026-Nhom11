@@ -88,6 +88,12 @@ public sealed class CreateRecipeCommandHandler(
         recipeRepository.Add(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Lấy concurrency token xmin thực tế sau khi lưu vào database
+        var currentXmin = await dbContext.Recipes
+            .Where(r => r.Id == recipe.Id)
+            .Select(r => EF.Property<uint>(r, "xmin"))
+            .FirstOrDefaultAsync(cancellationToken);
+
         return new RecipeResponseDto
         {
             Id = recipe.Id,
@@ -104,7 +110,17 @@ public sealed class CreateRecipeCommandHandler(
             PublishedAt = recipe.PublishedAt,
             CreatedAt = recipe.CreatedAt,
             UpdatedAt = recipe.UpdatedAt,
-            Nutrition = request.Nutrition
+            ConcurrencyToken = currentXmin != 0 ? currentXmin : null,
+            Nutrition = recipe.Nutrition != null ? new RecipeNutritionDto
+            {
+                Calories = recipe.Nutrition.Calories,
+                Protein = recipe.Nutrition.Protein,
+                Carbohydrates = recipe.Nutrition.Carbohydrates,
+                Fat = recipe.Nutrition.Fat,
+                Fiber = recipe.Nutrition.Fiber,
+                Sodium = recipe.Nutrition.Sodium,
+                Source = recipe.Nutrition.Source.ToString()
+            } : null
         };
     }
 }

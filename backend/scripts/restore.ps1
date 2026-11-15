@@ -1,67 +1,63 @@
 <#
 .SYNOPSIS
-    Script phục hồi cơ sở dữ liệu PostgreSQL cho Culinary Blog (NFR-REL-002, Lab 8 TV3).
+    Phục hồi PostgreSQL từ custom archive đã kiểm tra (NFR-REL-003, Lab 8 TV3).
 .DESCRIPTION
-    Thực hiện pg_restore phục hồi cơ sở dữ liệu từ tệp snapshot định dạng .dump.
+    Database đích phải được chỉ định rõ và đã tồn tại. Restore dùng một transaction;
+    lỗi kết thúc với mã khác 0. Không đưa dữ liệu nhị phân qua pipeline văn bản.
 .EXAMPLE
-    .\restore.ps1 -BackupFilePath "./backups/backup_culinary_db_20261103.dump" -Database "culinary_db"
+    .\restore.ps1 -BackupFilePath "C:/backups/backup.dump" -Database "culinary_restore_check"
 #>
-
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory = $true)]
-    [string]$BackupFilePath,
+    [Parameter(Mandatory = $true)][string]$BackupFilePath,
+    [Parameter(Mandatory = $true)][ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Database,
     [string]$HostName = "localhost",
     [int]$Port = 5432,
-    [string]$Database = "culinary_db",
-    [string]$UserName = "postgres",
+    [string]$UserName = $(if ($env:POSTGRES_USER) { $env:POSTGRES_USER } else { "culinary_blog" }),
     [string]$Password = $env:PGPASSWORD,
-    [string]$DockerContainer = "culinary_postgres"
+    [string]$DockerContainer = "culinary-blog-postgres"
 )
-
 $ErrorActionPreference = "Stop"
-
-if (-not (Test-Path $BackupFilePath)) {
-    Write-Error "Không tìm thấy tệp sao lưu: $BackupFilePath"
+$resolvedArchive = (Resolve-Path -LiteralPath $BackupFilePath).Path
+$stream = [System.IO.File]::OpenRead($resolvedArchive)
+try {
+    $header = New-Object byte[] 5
+    if ($stream.Read($header, 0, 5) -ne 5 -or [System.Text.Encoding]::ASCII.GetString($header) -ne 'PGDMP') {
+        throw "File không phải PostgreSQL custom archive. Chưa thay đổi database."
+    }
 }
-
-Write-Host "====================================================" -ForegroundColor Cyan
-Write-Host "   CULINARY BLOG - POSTGRESQL DATABASE RESTORE" -ForegroundColor Cyan
-Write-Host "====================================================" -ForegroundColor Cyan
-Write-Host "Tệp phục hồi:   $BackupFilePath"
-Write-Host "Cơ sở dữ liệu:  $Database"
-Write-Host "----------------------------------------------------"
-
+finally { $stream.Dispose() }
+$previousPassword = $env:PGPASSWORD
 $restoreSuccess = $false
 $pgRestoreCmd = Get-Command "pg_restore" -ErrorAction SilentlyContinue
-
-if ($pgRestoreCmd) {
-    if (-not [string]::IsNullOrEmpty($Password)) {
-        $env:PGPASSWORD = $Password
-    }
-    try {
-        & pg_restore -h $HostName -p $Port -U $UserName -d $Database -c -v $BackupFilePath
-        $restoreSuccess = ($LASTEXITCODE -eq 0)
-    }
-    catch {
-        Write-Warning "[WARN] Lỗi khi chạy pg_restore trực tiếp: $_"
-    }
-}
-
-if (-not $restoreSuccess) {
-    $dockerCmd = Get-Command "docker" -ErrorAction SilentlyContinue
-    if ($dockerCmd) {
-        Write-Host "[INFO] Thử phục hồi qua Docker container '$DockerContainer'..." -ForegroundColor Yellow
+$dockerCmd = Get-Command "docker" -ErrorAction SilentlyContinue
+$containerDump = "/tmp/culinary-restore-$([Guid]::NewGuid().ToString('N')).dump"
+try {
+    if (-not [string]::IsNullOrEmpty($Password)) { $env:PGPASSWORD = $Password }
+    if ($pgRestoreCmd) {
         try {
-            Get-Content $BackupFilePath -Raw | docker exec -i $DockerContainer pg_restore -U $UserName -d $Database -c
+            & $pgRestoreCmd.Source --list $resolvedArchive | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Không đọc được archive." }
+            & $pgRestoreCmd.Source -h $HostName -p $Port -U $UserName -d $Database -w --clean --if-exists --single-transaction --exit-on-error --no-owner --no-privileges $resolvedArchive
+            if ($LASTEXITCODE -ne 0) { throw "pg_restore thất bại; transaction đã rollback." }
             $restoreSuccess = $true
         }
-        catch {
-            Write-Warning "[WARN] Lỗi khi phục hồi qua Docker: $_"
-        }
+        catch { Write-Warning "Phục hồi cục bộ thất bại: $_" }
     }
+    if (-not $restoreSuccess -and $dockerCmd) {
+        try {
+            & $dockerCmd.Source cp $resolvedArchive "${DockerContainer}:$containerDump"
+            if ($LASTEXITCODE -ne 0) { throw "Không sao chép được archive vào Docker." }
+            & $dockerCmd.Source exec $DockerContainer pg_restore --list $containerDump | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Không đọc được archive trong Docker." }
+            & $dockerCmd.Source exec $DockerContainer pg_restore -U $UserName -d $Database -w --clean --if-exists --single-transaction --exit-on-error --no-owner --no-privileges $containerDump
+            if ($LASTEXITCODE -ne 0) { throw "pg_restore trong Docker thất bại; transaction đã rollback." }
+            $restoreSuccess = $true
+        }
+        catch { Write-Warning "Phục hồi Docker thất bại: $_" }
+        finally { & $dockerCmd.Source exec $DockerContainer rm -f -- $containerDump | Out-Null }
+    }
+    if (-not $restoreSuccess) { throw "Phục hồi thất bại. Không báo thành công khi pg_restore lỗi." }
+    Write-Host "[SUCCESS] Đã phục hồi archive vào database '$Database'."
 }
-
-Write-Host "[INFO] Hoàn tất quá trình phục hồi (Status: $(if ($restoreSuccess) {'Thành công'} else {'Hoàn tất (Kiểm tra logs)'}))." -ForegroundColor Green
-Write-Host "====================================================" -ForegroundColor Cyan
-
+finally { $env:PGPASSWORD = $previousPassword }

@@ -5,12 +5,53 @@ using CulinaryBlog.Application.Features.Recipes.Queries.SearchRecipes;
 using CulinaryBlog.Domain.Enums;
 using FluentValidation.TestHelper;
 using Xunit;
+using CulinaryBlog.Application.Common.Interfaces;
+using CulinaryBlog.Application.Common.Models;
+using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 /// <summary>
 /// Unit Tests kiểm tra tính toàn vẹn của SearchRecipesQuery và các quy tắc kiểm thực của SearchRecipesQueryValidator (FR-SRCH-001/002/003/004).
 /// </summary>
 public class SearchRecipesQueryTests
 {
+    [Theory]
+    [InlineData("newest", "desc", "A")]
+    [InlineData("newest", "asc", "B")]
+    [InlineData("quickest", "asc", "A")]
+    [InlineData("quickest", "desc", "B")]
+    [InlineData("prepTime", "asc", "B")]
+    [InlineData("prepTime", "desc", "A")]
+    [InlineData("createdAt", "desc", "A")]
+    [InlineData("servings", "desc", "B")]
+    public async Task Handler_SortsAcceptedFieldsBeforePaging(string sortBy, string order, string first)
+    {
+        using var db = new CulinaryBlogDbContext(new DbContextOptionsBuilder<CulinaryBlogDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
+        var now = DateTimeOffset.UtcNow;
+        var categoryId = Guid.NewGuid();
+        db.Categories.Add(new Category { Id = categoryId, Name = "Món kiểm thử", Slug = "mon-kiem-thu" });
+        db.Recipes.AddRange(
+            new Recipe { Title = "Mon sort A", Slug = "mon-sort-a", AuthorId = "author", CategoryId = categoryId, Status = RecipeStatus.Published,
+                PublishedAt = now, CreatedAt = now, PrepTimeMinutes = 30, CookTimeMinutes = 1, Servings = 1 },
+            new Recipe { Title = "Mon sort B", Slug = "mon-sort-b", AuthorId = "author", CategoryId = categoryId, Status = RecipeStatus.Published,
+                PublishedAt = now.AddDays(-1), CreatedAt = now.AddDays(-1), PrepTimeMinutes = 10, CookTimeMinutes = 30, Servings = 4 });
+        await db.SaveChangesAsync();
+        var handler = new SearchRecipesQueryHandler(db, new NoAuthors(), NullLogger<SearchRecipesQueryHandler>.Instance);
+        var result = await handler.Handle(new SearchRecipesQuery(Q: "Mon sort", PageSize: 1, SortBy: sortBy, SortOrder: order), default);
+        Assert.Equal(2, result.Total);
+        Assert.Equal("Mon sort " + first, Assert.Single(result.Items).Title);
+    }
+
+    private sealed class NoAuthors : IUserQueryService
+    {
+        public Task<IReadOnlyDictionary<string, AuthorSummary>> GetAuthorSummariesAsync(
+            IEnumerable<string> userIds, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyDictionary<string, AuthorSummary>>(new Dictionary<string, AuthorSummary>());
+    }
+
     private readonly SearchRecipesQueryValidator _validator = new();
 
     [Fact]

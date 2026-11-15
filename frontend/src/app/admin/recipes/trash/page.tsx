@@ -42,19 +42,29 @@ export default function AdminTrashManagementPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
+  // Phân trang Server-side
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   // State cho Purge Confirm Modal
   const [purgeConfirmState, setPurgeConfirmState] = useState<{
     isOpen: boolean;
     recipe?: RecipeSummaryDto;
   }>({ isOpen: false });
 
-  const loadTrash = async () => {
+  const loadTrash = async (targetPage = page) => {
     try {
       setLoading(true);
       setLoadError(null);
-      const res = await RecipeApi.getTrashedRecipes(1, 50);
-      const list = res.items || (res as unknown as { data: RecipeSummaryDto[] }).data || (Array.isArray(res) ? res : []);
-      setTrashedRecipes(list);
+      let res = await RecipeApi.getTrashedRecipes(targetPage, pageSize);
+      const resolvedPage = Math.min(targetPage, Math.max(1, res.totalPages || 1));
+      if (resolvedPage !== targetPage) res = await RecipeApi.getTrashedRecipes(resolvedPage, pageSize);
+      setTrashedRecipes(res.items || []);
+      setTotalPages(res.totalPages || 1);
+      setTotalCount(res.totalCount || 0);
+      setPage(resolvedPage);
     } catch (err) {
       const msg = (err as Error).message || 'Không thể tải danh sách thùng rác.';
       setLoadError(msg);
@@ -74,7 +84,7 @@ export default function AdminTrashManagementPage() {
       setActionInProgress(recipe.id);
       await RecipeApi.restoreRecipe(recipe.id);
       showSuccess(`Đã khôi phục "${recipe.title}" thành công!`, 'Công thức đã được đưa về trạng thái Bản nháp.');
-      setTrashedRecipes((prev) => prev.filter((r) => r.id !== recipe.id));
+      await loadTrash();
     } catch (err) {
       showError('Khôi phục thất bại', (err as Error).message);
     } finally {
@@ -92,7 +102,7 @@ export default function AdminTrashManagementPage() {
       setPurgeConfirmState({ isOpen: false });
       await RecipeApi.purgeRecipe(recipe.id);
       showSuccess(`Đã xóa vĩnh viễn "${recipe.title}"`, 'Dữ liệu đã được xóa hoàn toàn khỏi hệ thống.');
-      setTrashedRecipes((prev) => prev.filter((r) => r.id !== recipe.id));
+      await loadTrash();
     } catch (err) {
       showError('Xóa vĩnh viễn thất bại', (err as Error).message);
     } finally {
@@ -129,7 +139,7 @@ export default function AdminTrashManagementPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={loadTrash}
+            onClick={() => loadTrash()}
             disabled={loading}
             className="gap-2 shadow-xs"
           >
@@ -269,6 +279,43 @@ export default function AdminTrashManagementPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* PHÂN TRANG SERVER-SIDE */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          <p className="text-sm text-muted-foreground">
+            Hiển thị trang <span className="font-medium text-foreground">{page}</span> / <span className="font-medium text-foreground">{totalPages}</span> (Tổng cộng <span className="font-medium text-foreground">{totalCount}</span> công thức đã xóa)
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page <= 1 || loading}
+              onClick={() => {
+                const prev = page - 1;
+                setPage(prev);
+                loadTrash(prev);
+              }}
+            >
+              Trang trước
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages || loading}
+              onClick={() => {
+                const next = page + 1;
+                setPage(next);
+                loadTrash(next);
+              }}
+            >
+              Trang sau
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* MODAL XÁC NHẬN XÓA VĨNH VIỄN */}
       <ConfirmDialog
