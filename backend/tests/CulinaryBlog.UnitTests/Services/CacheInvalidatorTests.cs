@@ -45,6 +45,9 @@ public class CacheInvalidatorTests
         Assert.Contains($"{CacheConstants.RecipeSlugPrefix}{slug}", mockCache.RemovedKeys);
         Assert.Contains(CacheConstants.RecipeListPrefix, mockCache.RemovedPrefixes);
         Assert.Contains(CacheConstants.SearchPrefix, mockCache.RemovedPrefixes);
+        // API-09: Xóa cache danh mục để cập nhật RecipeCount
+        Assert.Contains(CacheConstants.CategoryAllKey, mockCache.RemovedKeys);
+        Assert.Contains(CacheConstants.CategoryPrefix, mockCache.RemovedPrefixes);
     }
 
     [Fact]
@@ -59,6 +62,9 @@ public class CacheInvalidatorTests
         Assert.Contains(CacheConstants.CategoryAllKey, mockCache.RemovedKeys);
         Assert.Contains($"{CacheConstants.CategoryPrefix}{slug}", mockCache.RemovedKeys);
         Assert.Contains(CacheConstants.CategoryPrefix, mockCache.RemovedPrefixes);
+        // API-10: Xóa cache danh sách công thức đang hiển thị tên danh mục
+        Assert.Contains(CacheConstants.RecipeListPrefix, mockCache.RemovedPrefixes);
+        Assert.Contains(CacheConstants.SearchPrefix, mockCache.RemovedPrefixes);
     }
 
     [Fact]

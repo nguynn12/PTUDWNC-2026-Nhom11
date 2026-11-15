@@ -51,7 +51,10 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var cacheKey = $"{CacheConstants.RecipeListPrefix}p{page}_ps{pageSize}_c{request.CategoryId}_d{request.Difficulty}_s{request.SortBy}_{request.SortOrder}_pt{request.MaxPrepTime}_ct{request.MaxCookTime}_tt{request.MaxTotalTime}_minc{request.MinCalories}_maxc{request.MaxCalories}";
 
-        if (_cacheService != null && request.Mine != true)
+        // API-07: Chỉ đọc và lưu cache công khai khi truy vấn danh sách công khai (Published) cho khách
+        var isPublicListing = request.Mine != true && (!request.Status.HasValue || request.Status == RecipeStatus.Published);
+
+        if (_cacheService != null && isPublicListing)
         {
             var cached = await _cacheService.GetAsync<PagedResult<RecipeSummaryDto>>(cacheKey, cancellationToken);
             if (cached != null)
@@ -185,7 +188,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var result = new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
 
-        if (_cacheService != null && request.Mine != true)
+        if (_cacheService != null && isPublicListing)
         {
             await _cacheService.SetAsync(cacheKey, result, CacheConstants.RecipeListDuration, cancellationToken);
         }
