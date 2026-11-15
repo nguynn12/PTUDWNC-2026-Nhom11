@@ -1,5 +1,6 @@
 import { apiRequest } from "@/lib/api/axios";
 import { AppError } from "@/lib/errors";
+import { unwrap, type Envelope } from "@/lib/auth/envelope";
 import type {
   AuthResponseDto,
   ChangePasswordRequest,
@@ -13,7 +14,7 @@ import { readRefreshToken, STORAGE_KEY_REFRESH_TOKEN, useAuthStore } from "@/sto
 
 /** Các API phiên đăng nhập (/auth/login, /auth/refresh...) không gắn token để tránh vòng lặp refresh. */
 function post<T>(path: string, body: unknown): Promise<T> {
-  return apiRequest<T>({ url: path, method: "POST", data: body, skipAuth: true });
+  return apiRequest<Envelope<T>>({ url: path, method: "POST", data: body, skipAuth: true }).then(unwrap);
 }
 
 const REFRESH_MARGIN_MS = 60_000;
@@ -42,11 +43,11 @@ export async function register(body: RegisterRequest) {
  * nên lưu lại phiên mới ngay (các tab/thiết bị khác sẽ bị đăng xuất ở lần refresh tiếp theo).
  */
 export async function changePassword(currentPassword: string, newPassword: string) {
-  const res = await apiRequest<AuthResponseDto>({
+  const res = await apiRequest<Envelope<AuthResponseDto>>({
     url: "/auth/password/change",
     method: "POST",
     data: { currentPassword, newPassword } satisfies ChangePasswordRequest,
-  });
+  }).then(unwrap);
   useAuthStore.getState().setSession(res);
   return res.user;
 }

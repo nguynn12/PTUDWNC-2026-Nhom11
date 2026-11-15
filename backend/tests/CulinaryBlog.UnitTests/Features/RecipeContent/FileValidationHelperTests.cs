@@ -1,6 +1,8 @@
 namespace CulinaryBlog.UnitTests.Features.RecipeContent;
 
 using System.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using CulinaryBlog.Application.Common.Helpers;
 using Xunit;
 
@@ -13,8 +15,8 @@ public class FileValidationHelperTests
     [Fact]
     public void ValidateImage_ValidJpegStream_ShouldReturnValid()
     {
-        // Arrange: Header chuẩn của JPEG: FF D8 FF E0
-        var jpegBytes = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x60 };
+        // Arrange: ảnh JPEG thật 1x1 (ảnh rất nhỏ cũng phải được giải mã)
+        var jpegBytes = EncodeImage("jpg");
         using var stream = new MemoryStream(jpegBytes);
 
         // Act
@@ -28,8 +30,8 @@ public class FileValidationHelperTests
     [Fact]
     public void ValidateImage_ValidPngStream_ShouldReturnValid()
     {
-        // Arrange: Header chuẩn của PNG: 89 50 4E 47 0D 0A 1A 0A
-        var pngBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52 };
+        // Arrange: ảnh PNG thật 1x1
+        var pngBytes = EncodeImage("png");
         using var stream = new MemoryStream(pngBytes);
 
         // Act
@@ -43,13 +45,8 @@ public class FileValidationHelperTests
     [Fact]
     public void ValidateImage_ValidWebPStream_ShouldReturnValid()
     {
-        // Arrange: Header chuẩn của WebP: 'RIFF' + 4 bytes size + 'WEBP'
-        var webpBytes = new byte[] {
-            0x52, 0x49, 0x46, 0x46, // RIFF
-            0x24, 0x00, 0x00, 0x00, // Size
-            0x57, 0x45, 0x42, 0x50, // WEBP
-            0x56, 0x50, 0x38, 0x20  // VP8 
-        };
+        // Arrange: ảnh WebP thật 1x1
+        var webpBytes = EncodeImage("webp");
         using var stream = new MemoryStream(webpBytes);
 
         // Act
@@ -63,13 +60,8 @@ public class FileValidationHelperTests
     [Fact]
     public void ValidateImage_ValidAvifStream_ShouldReturnValid()
     {
-        // Arrange: Header chuẩn của AVIF: 4 bytes box size + 'ftyp' (66 74 79 70) + 'avif' (61 76 69 66)
-        var avifBytes = new byte[] {
-            0x00, 0x00, 0x00, 0x20, // Box size
-            0x66, 0x74, 0x79, 0x70, // ftyp
-            0x61, 0x76, 0x69, 0x66, // avif
-            0x00, 0x00, 0x00, 0x00
-        };
+        // Arrange: hộp ftyp AVIF hợp lệ (kích thước 24 byte, brand avif + brand tương thích mif1)
+        var avifBytes = BuildAvif(majorBrand: "avif", compatibleBrand: "mif1");
         using var stream = new MemoryStream(avifBytes);
 
         // Act
@@ -137,5 +129,79 @@ public class FileValidationHelperTests
         // Assert
         Assert.False(isValid);
         Assert.Contains("Magic Bytes", errorMessage);
+    }
+
+    [Fact]
+    public void ValidateImage_PngMagicBytesButGarbageBody_ShouldFailDecode()
+    {
+        // Đúng chữ ký PNG nhưng thân là rác, dưới 64 byte: trước đây bị bỏ qua bước giải mã.
+        var fake = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52 };
+        using var stream = new MemoryStream(fake);
+
+        var (isValid, errorMessage) = FileValidationHelper.ValidateImage(stream, "fake.png", "image/png", fake.Length);
+
+        Assert.False(isValid);
+        Assert.Contains("giải mã", errorMessage);
+    }
+
+    [Fact]
+    public void ValidateImage_AvifBoxSizeExceedsFile_ShouldReturnInvalid()
+    {
+        var bytes = BuildAvif("avif", "mif1");
+        bytes[3] = 0xFF; // kích thước hộp ftyp lớn hơn tệp
+        using var stream = new MemoryStream(bytes);
+
+        var (isValid, _) = FileValidationHelper.ValidateImage(stream, "bad.avif", "image/avif", bytes.Length);
+
+        Assert.False(isValid);
+    }
+
+    [Fact]
+    public void ValidateImage_AvifWithoutAvifBrand_ShouldReturnInvalid()
+    {
+        // Đúng "ftyp" nhưng brand là heic: magic bytes cũ chỉ so 3 byte đầu brand nên vẫn lọt nếu bắt đầu "avi".
+        var bytes = BuildAvif("heic", "mif1");
+        using var stream = new MemoryStream(bytes);
+
+        var (isValid, _) = FileValidationHelper.ValidateImage(stream, "x.avif", "image/avif", bytes.Length);
+
+        Assert.False(isValid);
+    }
+
+    [Fact]
+    public void ValidateImage_ExceedsPixelLimit_ShouldReturnInvalid()
+    {
+        using var image = new Image<Rgba32>(7000, 7000); // 49 triệu điểm ảnh > 40 triệu
+        using var ms = new MemoryStream();
+        image.SaveAsPng(ms);
+        ms.Position = 0;
+
+        var (isValid, _) = FileValidationHelper.ValidateImage(ms, "huge.png", "image/png", ms.Length);
+
+        Assert.False(isValid);
+    }
+
+    private static byte[] EncodeImage(string ext)
+    {
+        using var image = new Image<Rgba32>(1, 1);
+        using var ms = new MemoryStream();
+        switch (ext)
+        {
+            case "jpg": image.SaveAsJpeg(ms); break;
+            case "png": image.SaveAsPng(ms); break;
+            default: image.SaveAsWebp(ms); break;
+        }
+        return ms.ToArray();
+    }
+
+    /// <summary>Hộp ftyp 24 byte: size, "ftyp", major brand, minor version, 1 compatible brand.</summary>
+    private static byte[] BuildAvif(string majorBrand, string compatibleBrand)
+    {
+        var bytes = new byte[24];
+        bytes[3] = 24;
+        "ftyp"u8.CopyTo(bytes.AsSpan(4));
+        System.Text.Encoding.ASCII.GetBytes(majorBrand).CopyTo(bytes, 8);
+        System.Text.Encoding.ASCII.GetBytes(compatibleBrand).CopyTo(bytes, 16);
+        return bytes;
     }
 }

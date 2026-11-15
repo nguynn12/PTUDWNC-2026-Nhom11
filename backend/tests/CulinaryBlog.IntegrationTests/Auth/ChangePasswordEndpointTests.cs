@@ -34,10 +34,26 @@ public sealed class ChangePasswordEndpointTests(CustomWebApplicationFactory fact
             new { currentPassword = "OldPassword1!", newPassword = "NewPassword1!" });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var body = await response.Content.ReadFromJsonAsync<AuthResponseContract>();
-        Assert.NotNull(body);
-        Assert.False(string.IsNullOrWhiteSpace(body!.AccessToken));
-        Assert.False(string.IsNullOrWhiteSpace(body.RefreshToken));
+        var body = await response.Content.ReadFromJsonAsync<Envelope>();
+        Assert.NotNull(body?.Data);
+        Assert.False(string.IsNullOrWhiteSpace(body!.Data.AccessToken));
+        Assert.False(string.IsNullOrWhiteSpace(body.Data.RefreshToken));
+    }
+
+    [Fact]
+    public async Task ChangePassword_SaiMatKhauHienTai_Tra422KemLoiTheoTruong()
+    {
+        await EnsureAuthorIdentityAsync();
+        var client = factory.CreateAuthorClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/v1/auth/password/change",
+            new { currentPassword = "Wrong1!password", newPassword = "NewPassword1!" });
+
+        // 422 (không phải 401) để frontend không coi là phiên hết hạn và đăng xuất người dùng.
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Contains("currentPassword", body);
     }
 
     private async Task EnsureAuthorIdentityAsync()
@@ -58,4 +74,7 @@ public sealed class ChangePasswordEndpointTests(CustomWebApplicationFactory fact
     }
 
     private sealed record AuthResponseContract(string AccessToken, string RefreshToken);
+
+    // D1: response có body luôn là { data, meta }
+    private sealed record Envelope(AuthResponseContract Data);
 }

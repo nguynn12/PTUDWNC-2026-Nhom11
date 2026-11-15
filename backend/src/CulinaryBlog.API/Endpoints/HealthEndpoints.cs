@@ -154,6 +154,29 @@ public static class HealthEndpoints
 
         return group;
     }
+    public static (string Host, int Port) ResolveRedisEndpoint(IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Redis")
+            ?? configuration["Redis:ConnectionString"];
+        if (!string.IsNullOrWhiteSpace(connectionString))
+        {
+            var options = ConfigurationOptions.Parse(connectionString);
+            return options.EndPoints.First() switch
+            {
+                DnsEndPoint dns => (dns.Host, dns.Port == 0 ? 6379 : dns.Port),
+                IPEndPoint ip => (ip.Address.ToString(), ip.Port == 0 ? 6379 : ip.Port),
+                _ => ("localhost", 6379)
+            };
+        }
+
+        return (configuration["Redis:Host"] ?? "localhost",
+            int.TryParse(configuration["Redis:Port"], out var port) ? port : 6379);
+    }
+
+    public static (string Host, int Port) ResolveMinioEndpoint(IConfiguration configuration) =>
+        Uri.TryCreate(configuration["Minio:Endpoint"], UriKind.Absolute, out var uri)
+            ? (uri.Host, uri.Port) : ("localhost", 9000);
+
     private static async Task<(string Endpoint, bool Healthy)> CheckRedisAsync(
         IConfiguration configuration, CancellationToken cancellationToken)
     {

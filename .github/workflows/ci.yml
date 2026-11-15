@@ -29,8 +29,31 @@ jobs:
       - name: Build solution
         run: dotnet build backend/CulinaryBlog.slnx --no-restore -c Release
 
+      # QA-03: thu coverage thật (coverlet.collector có sẵn trong 2 project test), không chỉ chạy test.
       - name: Run Tests & Coverage
-        run: dotnet test backend/CulinaryBlog.slnx --no-build -c Release --verbosity normal
+        run: >
+          dotnet test backend/CulinaryBlog.slnx --no-build -c Release --verbosity normal
+          --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:coverage-report -reporttypes:"MarkdownSummaryGithub;Cobertura"
+          cat coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: coverage-report/
+
+      # QA-06: NuGet Audit KHÔNG bị tắt hẳn nhưng cảnh báo NU1901-NU1904 đang bị NoWarn trong
+      # backend/Directory.Build.props (do ImageSharp). Liệt kê lỗ hổng ra log để không bị "im lặng bỏ qua".
+      - name: NuGet vulnerability report (informational)
+        run: dotnet list backend/CulinaryBlog.slnx package --vulnerable --include-transitive
+        continue-on-error: true
 
   frontend:
     name: Frontend (Next.js 16 / React 19)
@@ -63,3 +86,54 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5000/api
           NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+  # QA-04: chạy Playwright (frontend/e2e). Các spec hiện chạy trên giao diện, không dựng backend/PostgreSQL
+  # trong job này, nên để continue-on-error cho tới khi có môi trường e2e đầy đủ (docker compose).
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: frontend
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+      - name: Start app
+        run: npm start &
+        env:
+          BACKEND_API_URL: http://localhost:5000
+
+      - name: Wait for app
+        run: npx --yes wait-on http://localhost:3000 --timeout 60000
+
+      - name: Run Playwright
+        run: npm run test:e2e
+
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: frontend/test-results/

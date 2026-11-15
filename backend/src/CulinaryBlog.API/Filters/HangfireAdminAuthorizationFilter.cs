@@ -3,6 +3,9 @@ using Hangfire.Dashboard;
 
 namespace CulinaryBlog.API.Filters;
 
+/// <summary>
+/// Dashboard Hangfire chỉ cho Admin đã đăng nhập ở mọi môi trường.
+/// </summary>
 public class HangfireAdminAuthorizationFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
