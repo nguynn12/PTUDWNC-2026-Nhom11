@@ -51,6 +51,7 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
         // Eager load: Category, Ingredients, Steps, Images (và Nutrition là owned entity)
         var recipe = await _dbContext.Recipes
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(r => r.Category)
             .Include(r => r.Ingredients.Where(i => !i.IsDeleted))
             .Include(r => r.Steps.Where(s => !s.IsDeleted))

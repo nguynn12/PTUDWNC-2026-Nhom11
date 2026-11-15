@@ -4,6 +4,7 @@ using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Features.RecipeSteps.DTOs;
 using CulinaryBlog.Application.Features.RecipeSteps.Services;
 using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Domain.Enums;
 using CulinaryBlog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -25,7 +26,7 @@ public class RecipeStepServiceTests
         // Arrange
         using var context = CreateInMemoryDbContext();
         var recipeId = Guid.NewGuid();
-        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Bánh Mì", Description = "Bánh mì pate", AuthorId = "user1" });
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Bánh Mì", Description = "Bánh mì pate", AuthorId = "user1", Status = RecipeStatus.Published });
         context.RecipeSteps.AddRange(
             new RecipeStep { Id = Guid.NewGuid(), RecipeId = recipeId, StepNumber = 3, Description = "Nướng bánh mì" },
             new RecipeStep { Id = Guid.NewGuid(), RecipeId = recipeId, StepNumber = 1, Description = "Nhào bột" },
@@ -46,6 +47,48 @@ public class RecipeStepServiceTests
         Assert.Equal(3, result[2].StepNumber);
     }
 
+    [Fact]
+    public async Task GetStepsAsync_WhenDraftAndNotOwner_ShouldThrowForbiddenException()
+    {
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Bánh Cuốn", Description = "Bánh cuốn nóng", AuthorId = "user1", Status = RecipeStatus.Draft });
+        await context.SaveChangesAsync();
+
+        var service = new RecipeStepService(context);
+
+        await Assert.ThrowsAsync<ForbiddenException>(() => service.GetStepsAsync(recipeId, currentUserId: "user2", isAdmin: false));
+    }
+
+    [Fact]
+    public async Task AddStepAsync_WhenClientProvidesStepNumber_ShouldIgnoreAndAssignServerMaxPlusOne()
+    {
+        // Arrange
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Gà Rang Muối", Description = "Món gà", AuthorId = "user1" });
+        var step1 = new RecipeStep { Id = Guid.NewGuid(), RecipeId = recipeId, StepNumber = 1, Description = "Sơ chế gà" };
+        var step2 = new RecipeStep { Id = Guid.NewGuid(), RecipeId = recipeId, StepNumber = 2, Description = "Rang gà chín" };
+        context.RecipeSteps.AddRange(step1, step2);
+        await context.SaveChangesAsync();
+
+        var service = new RecipeStepService(context);
+
+        // Client cố tình gửi StepNumber = 2
+        var request = new CreateRecipeStepRequest
+        {
+            StepNumber = 2,
+            Title = "Ướp gia vị",
+            Description = "Ướp gà với sả ớt"
+        };
+
+        // Act
+        var result = await service.AddStepAsync(recipeId, request, currentUserId: "user1", isAdmin: false);
+
+        // Assert - API-17: Server tự sinh liên tục max + 1 = 3, bỏ qua số client
+        Assert.Equal(3, result.StepNumber);
+        Assert.Equal("Ướp gia vị", result.Title);
+    }
     [Fact]
     public async Task AddStepAsync_WhenNoStepNumber_ShouldAssignMaxPlusOne()
     {
@@ -74,40 +117,6 @@ public class RecipeStepServiceTests
         Assert.Equal(15, result.DurationMinutes);
     }
 
-    [Fact]
-    public async Task AddStepAsync_WhenInterleaving_ShouldShiftSubsequentSteps()
-    {
-        // Arrange
-        using var context = CreateInMemoryDbContext();
-        var recipeId = Guid.NewGuid();
-        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Gà Rang Muối", Description = "Món gà", AuthorId = "user1" });
-        var step1 = new RecipeStep { Id = Guid.NewGuid(), RecipeId = recipeId, StepNumber = 1, Description = "Sơ chế gà" };
-        var step2 = new RecipeStep { Id = Guid.NewGuid(), RecipeId = recipeId, StepNumber = 2, Description = "Rang gà chín" };
-        context.RecipeSteps.AddRange(step1, step2);
-        await context.SaveChangesAsync();
-
-        var service = new RecipeStepService(context);
-
-        // Chèn vào vị trí StepNumber = 2 (Ướp gà)
-        var request = new CreateRecipeStepRequest
-        {
-            StepNumber = 2,
-            Title = "Ướp gia vị",
-            Description = "Ướp gà với sả ớt"
-        };
-
-        // Act
-        var result = await service.AddStepAsync(recipeId, request, currentUserId: "user1", isAdmin: false);
-
-        // Assert
-        Assert.Equal(2, result.StepNumber);
-        Assert.Equal("Ướp gia vị", result.Title);
-
-        // Kiểm tra bước cũ số 2 đã được dịch chuyển thành số 3
-        var oldStep2 = await context.RecipeSteps.FirstOrDefaultAsync(s => s.Id == step2.Id);
-        Assert.NotNull(oldStep2);
-        Assert.Equal(3, oldStep2.StepNumber);
-    }
 
     [Fact]
     public async Task ReorderStepsAsync_WhenValid_ShouldRenumber1ToN()
@@ -176,5 +185,30 @@ public class RecipeStepServiceTests
 
         Assert.Equal(s3.Id, activeSteps[1].Id);
         Assert.Equal(2, activeSteps[1].StepNumber); // Đã tự động renumber từ 3 thành 2
+    }
+
+    [Fact]
+    public async Task AddStepAsync_WhenConcurrencyTokenMismatch_ShouldThrowConflictException()
+    {
+        // Arrange
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        var recipe = new Recipe { Id = recipeId, Title = "Bún Bò", Description = "Bún bò Huế", AuthorId = "user1" };
+        context.Recipes.Add(recipe);
+        await context.SaveChangesAsync();
+
+        context.Entry(recipe).Property<uint>("xmin").CurrentValue = 100u;
+        await context.SaveChangesAsync();
+
+        var service = new RecipeStepService(context);
+        var request = new CreateRecipeStepRequest
+        {
+            Title = "Bước 1",
+            Description = "Nấu nước dùng"
+        };
+
+        // Act & Assert - API-03: Mismatch concurrency token (client sends 99 != db 100)
+        await Assert.ThrowsAsync<ConflictException>(() =>
+            service.AddStepAsync(recipeId, request, currentUserId: "user1", isAdmin: false, concurrencyToken: 99u));
     }
 }

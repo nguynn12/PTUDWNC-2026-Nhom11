@@ -36,6 +36,17 @@ public sealed class GlobalExceptionHandler(
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     )
             ),
+            CulinaryBlog.Application.Common.Exceptions.ValidationException appValidationEx => (
+                StatusCodes.Status422UnprocessableEntity,
+                "VALIDATION_ERROR",
+                "Unprocessable Entity",
+                appValidationEx.Message,
+                appValidationEx.Errors != null && appValidationEx.Errors.Any()
+                    ? appValidationEx.Errors.ToDictionary(
+                        k => ToCamelCase(k.Key),
+                        v => v.Value)
+                    : null
+            ),
             BusinessRuleValidationException businessRuleEx => (
                 StatusCodes.Status422UnprocessableEntity,
                 businessRuleEx.ErrorCode ?? "BUSINESS_RULE_VIOLATION",
@@ -90,6 +101,20 @@ public sealed class GlobalExceptionHandler(
                 "RECIPE_CONCURRENCY_CONFLICT",
                 "Conflict",
                 "Dữ liệu đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.",
+                null
+            ),
+            BadRequestException badRequestEx => (
+                StatusCodes.Status400BadRequest,
+                string.IsNullOrWhiteSpace(badRequestEx.ErrorCode) ? "BAD_REQUEST" : badRequestEx.ErrorCode,
+                "Bad Request",
+                badRequestEx.Message,
+                null
+            ),
+            ServiceUnavailableException serviceUnavailableEx => (
+                StatusCodes.Status503ServiceUnavailable,
+                serviceUnavailableEx.ErrorCode ?? "SERVICE_UNAVAILABLE",
+                "Service Unavailable",
+                serviceUnavailableEx.Message,
                 null
             ),
             CulinaryBlog.Domain.Exceptions.DomainException domainEx => (
