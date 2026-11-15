@@ -17,17 +17,20 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUserQueryService _userQueryService;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<GetRecipeBySlugQueryHandler> _logger;
     private readonly ICacheService? _cacheService;
 
     public GetRecipeBySlugQueryHandler(
         IApplicationDbContext dbContext,
         IUserQueryService userQueryService,
+        ICurrentUserService currentUserService,
         ILogger<GetRecipeBySlugQueryHandler> logger,
         ICacheService? cacheService = null)
     {
         _dbContext = dbContext;
         _userQueryService = userQueryService;
+        _currentUserService = currentUserService;
         _logger = logger;
         _cacheService = cacheService;
     }
@@ -36,6 +39,8 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
     {
         var slug = request.Slug.Trim().ToLowerInvariant();
         var slugCacheKey = $"{CacheConstants.RecipeSlugPrefix}{slug}";
+        var currentUserId = _currentUserService.UserId;
+        var isAdmin = _currentUserService.IsAdmin;
 
         if (_cacheService != null)
         {
@@ -55,7 +60,7 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
             .Include(r => r.Ingredients.Where(i => !i.IsDeleted))
             .Include(r => r.Steps.Where(s => !s.IsDeleted))
             .Include(r => r.Images.Where(img => !img.IsDeleted))
-            .FirstOrDefaultAsync(r => r.Slug == slug && !r.IsDeleted && r.Status == RecipeStatus.Published, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Slug == slug && !r.IsDeleted, cancellationToken);
 
         if (recipe is null)
         {
@@ -77,7 +82,21 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
                 }
             }
 
-            _logger.LogWarning("Không tìm thấy Recipe nào đang Published với Slug: '{Slug}'", slug);
+            _logger.LogWarning("Không tìm thấy Recipe nào với Slug: '{Slug}'", slug);
+            return GetRecipeBySlugResult.NotFound();
+        }
+
+        // Kiểm tra quyền truy cập công thức (API-01):
+        // 1. Nếu công thức đã xuất bản (Published): Công khai cho tất cả người dùng (bao gồm khách vãng lai).
+        // 2. Nếu công thức ở trạng thái Draft hoặc Archived: Chỉ chủ sở hữu (AuthorId) hoặc Admin mới được phép xem.
+        var canView = recipe.Status == RecipeStatus.Published
+            || (!string.IsNullOrEmpty(currentUserId) && recipe.AuthorId == currentUserId)
+            || isAdmin;
+
+        if (!canView)
+        {
+            _logger.LogWarning("Người dùng '{UserId}' (Admin={IsAdmin}) không có quyền xem Recipe '{Slug}' ở trạng thái {Status}",
+                currentUserId ?? "Guest", isAdmin, slug, recipe.Status);
             return GetRecipeBySlugResult.NotFound();
         }
 
@@ -166,7 +185,8 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
                 .ToList()
         };
 
-        if (_cacheService != null)
+        // Chỉ lưu vào Redis Cache công khai khi công thức đang ở trạng thái Published (API-01, API-07)
+        if (_cacheService != null && recipe.Status == RecipeStatus.Published)
         {
             await _cacheService.SetAsync(slugCacheKey, dto, CacheConstants.RecipeDetailDuration, cancellationToken);
             await _cacheService.SetAsync($"{CacheConstants.RecipeDetailPrefix}{recipe.Id}", dto, CacheConstants.RecipeDetailDuration, cancellationToken);

@@ -84,16 +84,55 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
     }
 
     [Fact]
-    public async Task GetRecipeBySlug_DraftRecipe_ReturnsNotFound()
+    public async Task GetRecipeBySlug_DraftRecipe_ByGuest_ReturnsNotFound()
     {
         // Arrange
         var client = _factory.CreateGuestClient();
 
-        // Act: Cố tình truy cập công thức Draft qua đường dẫn công khai
+        // Act: Khách vãng lai cố tình truy cập công thức Draft -> 404 Not Found
         var response = await client.GetAsync("/api/v1/recipes/goi-cuon-tom-thit-bi-mat");
 
-        // Assert: FR-RCP-002 bảo mật không được để lộ công thức nháp -> 404 Not Found
+        // Assert: Không được để lộ công thức nháp cho khách vãng lai
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetRecipeBySlug_DraftRecipe_ByOwner_ReturnsOkWithDetails()
+    {
+        // Arrange: Đăng nhập với tư cách tác giả sở hữu bài nháp (AuthorUserId)
+        var client = _factory.CreateAuthorClient();
+
+        // Act: Tác giả xem bài nháp của chính mình (API-01)
+        var response = await client.GetAsync("/api/v1/recipes/goi-cuon-tom-thit-bi-mat");
+
+        // Assert: Cho phép tác giả xem chi tiết bài Draft để kiểm tra/chỉnh sửa
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var envelope = await response.Content.ReadFromJsonAsync<ApiResponse<RecipeDetailDto>>(JsonOptions);
+        Assert.NotNull(envelope);
+        Assert.NotNull(envelope.Data);
+        Assert.Equal("Gỏi Cuốn Tôm Thịt Bí Mật", envelope.Data.Title);
+        Assert.Equal("goi-cuon-tom-thit-bi-mat", envelope.Data.Slug);
+        Assert.Equal("Draft", envelope.Data.Status);
+    }
+
+    [Fact]
+    public async Task GetRecipeBySlug_DraftRecipe_ByAdmin_ReturnsOkWithDetails()
+    {
+        // Arrange: Đăng nhập với tư cách Quản trị viên (Admin)
+        var client = _factory.CreateAdminClient();
+
+        // Act: Admin xem bài nháp của bất kỳ ai để kiểm duyệt (API-01)
+        var response = await client.GetAsync("/api/v1/recipes/goi-cuon-tom-thit-bi-mat");
+
+        // Assert: Cho phép Admin xem chi tiết bài Draft
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var envelope = await response.Content.ReadFromJsonAsync<ApiResponse<RecipeDetailDto>>(JsonOptions);
+        Assert.NotNull(envelope);
+        Assert.NotNull(envelope.Data);
+        Assert.Equal("Gỏi Cuốn Tôm Thịt Bí Mật", envelope.Data.Title);
+        Assert.Equal("goi-cuon-tom-thit-bi-mat", envelope.Data.Slug);
     }
 
     [Fact]
