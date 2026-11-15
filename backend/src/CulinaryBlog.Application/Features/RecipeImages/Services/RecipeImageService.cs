@@ -79,7 +79,10 @@ public class RecipeImageService : IRecipeImageService
         var (isValid, errorMessage) = FileValidationHelper.ValidateImage(stream, fileName, contentType, length);
         if (!isValid)
         {
-            throw new BadRequestException(errorMessage ?? "Tệp tin hình ảnh không hợp lệ.");
+            var errorCode = length > FileValidationHelper.MaxFileSizeBytes
+                ? ErrorCodes.FileSizeExceeded
+                : ErrorCodes.FileMimeInvalid;
+            throw new BusinessRuleValidationException(errorMessage ?? "Tệp tin hình ảnh không hợp lệ.", errorCode);
         }
 
         if (!string.IsNullOrWhiteSpace(altText) && altText.Length > 200)

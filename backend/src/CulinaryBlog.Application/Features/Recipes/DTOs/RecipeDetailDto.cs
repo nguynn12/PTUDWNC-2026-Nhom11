@@ -20,6 +20,7 @@ public class RecipeDetailDto
     public DateTimeOffset? PublishedAt { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; init; }
+    public uint? ConcurrencyToken { get; init; }
 
     public CategoryDto? Category { get; init; }
     public RecipeAuthorDto? Author { get; init; }

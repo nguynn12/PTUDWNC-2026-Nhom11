@@ -35,5 +35,6 @@ public record GetRecipesQuery(
     string? SortBy = null,
     string? SortOrder = null,
     bool? Mine = null,
-    RecipeStatus? Status = null
+    RecipeStatus? Status = null,
+    string? Q = null
 ) : IRequest<PagedResult<RecipeSummaryDto>>;

@@ -62,10 +62,32 @@ public sealed class PublishRecipeCommandHandler(
             }
         }
 
-        // Kiểm tra trạng thái hiện tại
+        // Kiểm tra trạng thái hiện tại (Idempotent theo quyết định D8)
         if (recipe.Status == RecipeStatus.Published)
         {
-            throw new ConflictException("Công thức đã ở trạng thái xuất bản.", "RECIPE_ALREADY_PUBLISHED");
+            var currentXminVal = await dbContext.Recipes
+                .Where(r => r.Id == recipe.Id)
+                .Select(r => EF.Property<uint>(r, "xmin"))
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return new RecipeResponseDto
+            {
+                Id = recipe.Id,
+                Title = recipe.Title,
+                Slug = recipe.Slug,
+                Description = recipe.Description,
+                PrepTimeMinutes = recipe.PrepTimeMinutes,
+                CookTimeMinutes = recipe.CookTimeMinutes,
+                Servings = recipe.Servings,
+                Difficulty = recipe.Difficulty,
+                Status = recipe.Status,
+                CategoryId = recipe.CategoryId,
+                AuthorId = recipe.AuthorId,
+                PublishedAt = recipe.PublishedAt,
+                CreatedAt = recipe.CreatedAt,
+                UpdatedAt = recipe.UpdatedAt,
+                ConcurrencyToken = currentXminVal != 0 ? currentXminVal : null
+            };
         }
 
         // Kiểm tra điều kiện xuất bản theo RESOLVED-CONFLICTS C5: >= 1 nguyên liệu và >= 1 bước thực hiện

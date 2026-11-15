@@ -22,4 +22,5 @@ public class RecipeSummaryDto
     public string? AuthorName { get; set; }
     public DateTimeOffset? PublishedAt { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
+    public uint? ConcurrencyToken { get; init; }
 }

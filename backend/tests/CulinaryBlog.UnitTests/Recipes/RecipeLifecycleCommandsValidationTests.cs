@@ -46,7 +46,7 @@ public class RecipeLifecycleCommandsValidationTests
         var command = new CreateRecipeCommand
         {
             Title = title,
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn hợp lệ",
             PrepTimeMinutes = 15,
             CookTimeMinutes = 30,
             Servings = 4,
@@ -60,6 +60,74 @@ public class RecipeLifecycleCommandsValidationTests
         // Assert
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Title));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenTitleTooShort()
+    {
+        // Arrange: Title < 3 ký tự theo D6
+        var command = new CreateRecipeCommand
+        {
+            Title = "AB",
+            Description = "Mô tả chi tiết món ăn hợp lệ",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Title));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenDescriptionTooShort()
+    {
+        // Arrange: Description < 10 ký tự theo D6
+        var command = new CreateRecipeCommand
+        {
+            Title = "Phở Bò",
+            Description = "Ngắn",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateRecipeCommand.Description));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldPass_WhenDescriptionUpTo2000Chars()
+    {
+        // Arrange: Description lên đến 2000 ký tự theo D6
+        var command = new CreateRecipeCommand
+        {
+            Title = "Phở Bò Hà Nội",
+            Description = new string('A', 1500),
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 30,
+            Servings = 4,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.True(result.IsValid);
     }
 
     [Fact]
@@ -114,7 +182,7 @@ public class RecipeLifecycleCommandsValidationTests
         var command = new CreateRecipeCommand
         {
             Title = "Món Lỗi Thời Gian",
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn hợp lệ",
             PrepTimeMinutes = 10,
             CookTimeMinutes = -5,
             Servings = 2,
@@ -137,7 +205,7 @@ public class RecipeLifecycleCommandsValidationTests
         var command = new CreateRecipeCommand
         {
             Title = "Món Ăn Không Danh Mục",
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn hợp lệ",
             PrepTimeMinutes = 15,
             CookTimeMinutes = 20,
             Servings = 2,
@@ -161,7 +229,7 @@ public class RecipeLifecycleCommandsValidationTests
         {
             Id = Guid.Empty,
             Title = "Tiêu đề cập nhật",
-            Description = "Mô tả",
+            Description = "Mô tả chi tiết món ăn hợp lệ",
             PrepTimeMinutes = 10,
             CookTimeMinutes = 20,
             Servings = 2,
@@ -175,5 +243,115 @@ public class RecipeLifecycleCommandsValidationTests
         // Assert
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(UpdateRecipeCommand.Id));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldPass_WhenNutritionIsNull()
+    {
+        // Arrange
+        var command = new CreateRecipeCommand
+        {
+            Title = "Cơm Tấm Sườn Nướng",
+            Description = "Món ăn ngon đậm đà phong vị miền Nam",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 20,
+            Servings = 2,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid(),
+            Nutrition = null
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldPass_WhenNutritionIsValid()
+    {
+        // Arrange
+        var command = new CreateRecipeCommand
+        {
+            Title = "Cơm Tấm Sườn Nướng",
+            Description = "Món ăn ngon đậm đà phong vị miền Nam",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 20,
+            Servings = 2,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid(),
+            Nutrition = new CulinaryBlog.Application.Features.Recipes.DTOs.RecipeNutritionDto
+            {
+                Calories = 550,
+                Protein = 35.5m,
+                Carbohydrates = 60,
+                Fat = 18.2m,
+                Fiber = 4.5m,
+                Sodium = 650
+            }
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenNutritionHasNegativeValues()
+    {
+        // Arrange
+        var command = new CreateRecipeCommand
+        {
+            Title = "Cơm Tấm Sườn Nướng",
+            Description = "Món ăn ngon đậm đà phong vị miền Nam",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 20,
+            Servings = 2,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid(),
+            Nutrition = new CulinaryBlog.Application.Features.Recipes.DTOs.RecipeNutritionDto
+            {
+                Calories = -10,
+                Protein = -5
+            }
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains(nameof(command.Nutrition.Calories)));
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains(nameof(command.Nutrition.Protein)));
+    }
+
+    [Fact]
+    public void CreateRecipeCommandValidator_ShouldFail_WhenNutritionExceedsLimit()
+    {
+        // Arrange
+        var command = new CreateRecipeCommand
+        {
+            Title = "Cơm Tấm Sườn Nướng",
+            Description = "Món ăn ngon đậm đà phong vị miền Nam",
+            PrepTimeMinutes = 15,
+            CookTimeMinutes = 20,
+            Servings = 2,
+            Difficulty = RecipeDifficulty.Easy,
+            CategoryId = Guid.NewGuid(),
+            Nutrition = new CulinaryBlog.Application.Features.Recipes.DTOs.RecipeNutritionDto
+            {
+                Calories = 1000000m // Vượt quá 999,999.99 (precision 8,2)
+            }
+        };
+
+        // Act
+        var result = _createValidator.Validate(command);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains(nameof(command.Nutrition.Calories)));
     }
 }

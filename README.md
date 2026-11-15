@@ -6,16 +6,31 @@ Dự án nhóm môn **Phát triển Ứng dụng Web Nâng cao**, xây dựng n�
 
 Hệ thống được đóng gói hoàn chỉnh bằng **Docker Compose full-stack 7 services** (PostgreSQL, Redis, MinIO S3, Seq, .NET 10 API, Next.js Web, Nginx reverse proxy).
 
-### 1. Chuẩn bị file môi trường
-`powershell
-# Sao chép file cấu hình mẫu sang .env
-cp .env.example .env
-`
+### 1. Chuẩn bị file môi trường và mật khẩu Seq
+
+Sao chép mẫu nếu chưa có `.env`, rồi tạo hash cho mật khẩu Admin Seq. `.env` đã được Git bỏ qua; giữ nguyên file đang có khi cập nhật dự án.
+
+```powershell
+if (-not (Test-Path -LiteralPath .env)) { Copy-Item -LiteralPath .env.example -Destination .env }
+$envText = Get-Content -LiteralPath .env -Raw
+if ($envText -notmatch '(?m)^SEQ_ADMIN_PASSWORD_HASH=\S+') {
+    $seqPassword = Read-Host 'Mat khau Admin Seq' -AsSecureString
+    $seqHash = ([PSCredential]::new('admin', $seqPassword)).GetNetworkCredential().Password | docker run --rm -i datalust/seq:latest config hash
+    if ($LASTEXITCODE -ne 0) { throw 'Khong tao duoc hash Seq' }
+    if ($envText -match '(?m)^SEQ_ADMIN_PASSWORD_HASH=') { $envText = $envText -replace '(?m)^SEQ_ADMIN_PASSWORD_HASH=.*$', ('SEQ_ADMIN_PASSWORD_HASH=' + $seqHash.Trim()) } else { $envText += [Environment]::NewLine + 'SEQ_ADMIN_PASSWORD_HASH=' + $seqHash.Trim() + [Environment]::NewLine }
+    [System.IO.File]::WriteAllText((Resolve-Path -LiteralPath .env).Path, $envText, [System.Text.UTF8Encoding]::new($false))
+}
+```
+
+Đăng nhập Seq bằng user `admin` và mật khẩu vừa nhập. Hash chỉ khởi tạo tài khoản trên volume mới; đổi hash không đặt lại mật khẩu của volume đã có. Không xóa volume để sửa lỗi khởi động.
 
 ### 2. Khởi chạy toàn bộ hệ thống
-`powershell
+
+```powershell
 docker compose up -d --build
-`
+```
+
+API trong Docker gửi log đến `http://seq:5341`; API chạy bằng `dotnet run` dùng `http://localhost:5341`. Seq có health check và API chờ Seq healthy trước khi khởi động.
 
 ### 3. Địa chỉ truy cập các dịch vụ
 | Dịch vụ | Địa chỉ URL | Ghi chú |

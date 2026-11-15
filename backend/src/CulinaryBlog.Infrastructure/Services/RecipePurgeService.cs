@@ -17,7 +17,10 @@ public class RecipePurgeService(
     IFileStorageService fileStorageService,
     ILogger<RecipePurgeService> logger) : IRecipePurgeService
 {
-    public async Task<bool> PurgeRecipeAsync(Guid recipeId, CancellationToken cancellationToken = default)
+    public Task<bool> PurgeRecipeAsync(Guid recipeId, CancellationToken cancellationToken = default) =>
+        PurgeRecipeCoreAsync(recipeId, null, cancellationToken);
+
+    private async Task<bool> PurgeRecipeCoreAsync(Guid recipeId, DateTimeOffset? cutoff, CancellationToken cancellationToken)
     {
         var recipe = await dbContext.Recipes
             .IgnoreQueryFilters()
@@ -26,8 +29,13 @@ public class RecipePurgeService(
 
         if (recipe == null)
         {
+            if (cutoff.HasValue) return false;
             throw new NotFoundException("Recipe", recipeId, "RECIPE_NOT_FOUND");
         }
+
+        // Job kiểm tra lại sau khi lấy danh sách: bài đã restore/xóa lại gần đây không được purge.
+        if (cutoff.HasValue && (!recipe.IsDeleted || !recipe.DeletedAt.HasValue || recipe.DeletedAt > cutoff))
+            return false;
 
         if (!recipe.IsDeleted)
         {
@@ -36,20 +44,24 @@ public class RecipePurgeService(
                 "RECIPE_NOT_DELETED");
         }
 
-        // Dọn dẹp các tệp ảnh liên quan trên bộ lưu trữ
+        // Dọn dẹp các tệp ảnh liên quan trên bộ lưu trữ (xóa cả Original, Medium, Thumbnail theo MEDIA-02)
         if (recipe.Images != null)
         {
             foreach (var img in recipe.Images)
             {
-                if (!string.IsNullOrWhiteSpace(img.OriginalUrl))
+                var urlsToDelete = new[] { img.OriginalUrl, img.MediumUrl, img.ThumbnailUrl }
+                    .Where(u => !string.IsNullOrWhiteSpace(u)).Distinct(StringComparer.Ordinal);
+
+                foreach (var url in urlsToDelete)
                 {
                     try
                     {
-                        await fileStorageService.DeleteAsync(img.OriginalUrl, cancellationToken);
+                        await fileStorageService.DeleteAsync(url!, cancellationToken);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogWarning(ex, "Không thể xóa tệp ảnh {Url} khi purge công thức {RecipeId}", img.OriginalUrl, recipeId);
+                        logger.LogWarning(ex, "Không thể xóa tệp ảnh {Url} khi purge công thức {RecipeId}", url, recipeId);
+                        throw; // Giữ bản ghi và URL ảnh để job có thể retry.
                     }
                 }
             }
@@ -73,16 +85,18 @@ public class RecipePurgeService(
             .ToListAsync(cancellationToken);
 
         var purgedCount = 0;
+        var failures = new List<Exception>();
         foreach (var id in expiredRecipeIds)
         {
             try
             {
-                await PurgeRecipeAsync(id, cancellationToken);
-                purgedCount++;
+                if (await PurgeRecipeCoreAsync(id, cutoff, cancellationToken)) purgedCount++;
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Lỗi xảy ra khi tự động purge công thức quá hạn {RecipeId}", id);
+                failures.Add(ex);
             }
         }
 
@@ -91,6 +105,8 @@ public class RecipePurgeService(
             purgedCount,
             expiredRecipeIds.Count);
 
+        if (failures.Count > 0)
+            throw new AggregateException("Một số công thức chưa được purge; yêu cầu Hangfire retry.", failures);
         return purgedCount;
     }
 }

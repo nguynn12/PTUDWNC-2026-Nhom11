@@ -129,7 +129,7 @@ export function SearchClient() {
   });
 
   const recipes = data?.data || [];
-  const totalCount = data?.meta?.totalCount || recipes.length;
+  const totalCount = data?.meta?.totalCount ?? data?.meta?.total ?? recipes.length;
   const totalPages = data?.meta?.totalPages || 1;
   const isQueryTooShort = debouncedQuery.length < 2;
 

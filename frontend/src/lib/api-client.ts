@@ -37,8 +37,15 @@ type FetchApiOptions = Omit<RequestInit, "headers"> & {
 };
 
 /**
+ * Cờ điều khiển Mock Fallback (Quyết định D10).
+ * Mặc định tắt (false) để giao diện hiển thị lỗi thật khi gọi API thất bại.
+ */
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+
+/**
  * Gọi API qua client chung `apiClient` (lib/api/axios.ts): tự gắn Bearer token, tự refresh khi 401,
  * lỗi luôn là AppError (RFC 7807). Giữ chữ ký fetch cũ để RecipeApi không phải đổi.
+ * Tự động unwrap vỏ bọc `{ data }` theo Quyết định D1.
  */
 export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {}): Promise<T> {
   const { method = "GET", body, headers = {}, ifMatch, signal, onUploadProgress } = options;
@@ -47,10 +54,17 @@ export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {
   // Body đã JSON.stringify sẵn: báo cho backend biết là JSON.
   if (typeof body === "string") requestHeaders["Content-Type"] = "application/json";
 
-  // Gắn Concurrency Token If-Match nếu có
-  if (ifMatch !== undefined && ifMatch !== null) requestHeaders["If-Match"] = `"${ifMatch}"`;
+  // Gắn Concurrency Token If-Match nếu có (chuẩn hóa cú pháp ETag quotes)
+  if (ifMatch !== undefined && ifMatch !== null && String(ifMatch).trim() !== "") {
+    const rawToken = String(ifMatch).trim();
+    if (!/^(?:[1-9]\d*|"[1-9]\d*")$/.test(rawToken)) {
+      throw new ApiError({ status: 400, code: 'MALFORMED_REQUEST', message: 'Phiên bản công thức không hợp lệ. Vui lòng tải lại dữ liệu.' });
+    }
+    const cleanToken = rawToken.replace(/^"|"$/g, '');
+    requestHeaders["If-Match"] = `"${cleanToken}"`;
+  }
 
-  const data = await apiRequest<T | "">({
+  const rawData = await apiRequest<unknown>({
     url: endpoint.startsWith("/") ? endpoint : `/${endpoint}`,
     method,
     data: body ?? undefined,
@@ -59,8 +73,53 @@ export async function fetchApi<T>(endpoint: string, options: FetchApiOptions = {
     onUploadProgress,
   });
 
-  // 204 No Content: giữ hành vi cũ trả về object rỗng.
-  return (data === "" ? {} : data) as T;
+  if (rawData === "" || rawData === null || rawData === undefined) return {} as T;
+
+  // Quyết định D1: Xử lý unwrap vỏ bọc { data: ... } đồng nhất cho toàn hệ thống
+  if (typeof rawData === "object" && rawData !== null && "data" in rawData) {
+    const obj = rawData as Record<string, unknown>;
+
+    // Đồng bộ hai chiều giữa concurrencyToken và xmin trên đối tượng đơn lẻ
+    if (obj.data && typeof obj.data === "object" && !Array.isArray(obj.data)) {
+      const entity = obj.data as Record<string, unknown>;
+      if (entity.concurrencyToken !== undefined && entity.xmin === undefined) {
+        entity.xmin = entity.concurrencyToken;
+      } else if (entity.xmin !== undefined && entity.concurrencyToken === undefined) {
+        entity.concurrencyToken = entity.xmin;
+      }
+    }
+
+    // Trường hợp danh sách phân trang có { data: [...], meta: {...} }:
+    // Trả về cả hai đồng thời bổ sung alias items = data (sửa FE-08 thùng rác)
+    if ("meta" in obj && Array.isArray(obj.data)) {
+      const meta = (obj.meta || {}) as Record<string, unknown>;
+      for (const item of obj.data) {
+        if (item && typeof item === "object") {
+          const rec = item as Record<string, unknown>;
+          if (rec.concurrencyToken !== undefined && rec.xmin === undefined) {
+            rec.xmin = rec.concurrencyToken;
+          } else if (rec.xmin !== undefined && rec.concurrencyToken === undefined) {
+            rec.concurrencyToken = rec.xmin;
+          }
+        }
+      }
+      return {
+        ...obj,
+        items: obj.data,
+        totalCount: meta.totalCount ?? meta.total ?? obj.data.length,
+        pageNumber: meta.pageNumber ?? meta.page ?? 1,
+        page: meta.pageNumber ?? meta.page ?? 1,
+        pageSize: meta.pageSize ?? obj.data.length,
+        totalPages: meta.totalPages ?? 1,
+        hasNextPage: meta.hasNextPage ?? false,
+        hasPreviousPage: meta.hasPreviousPage ?? false,
+      } as unknown as T;
+    }
+    // Trường hợp mutation hoặc detail trả về { data: X }:
+    return obj.data as T;
+  }
+
+  return rawData as T;
 }
 
 // ==========================================
@@ -76,6 +135,7 @@ export const RecipeApi = {
     search?: string;
   } = {}): Promise<PaginatedList<RecipeSummaryDto>> {
     const query = new URLSearchParams();
+    query.set('mine', 'true'); // FE-01: Bắt buộc gửi mine=true để backend lọc bài của tác giả hiện tại
     if (params.page) query.set('page', params.page.toString());
     if (params.pageSize) query.set('pageSize', params.pageSize.toString());
     if (params.status !== undefined && params.status !== '') query.set('status', params.status.toString());
@@ -92,38 +152,47 @@ export const RecipeApi = {
           items: envelope.data,
           totalCount: envelope.meta?.total || envelope.meta?.totalCount || envelope.data.length,
           page: envelope.meta?.page || 1,
+          pageIndex: envelope.meta?.page || 1,
           totalPages: envelope.meta?.totalPages || 1,
           hasNextPage: (envelope.meta?.page || 1) < (envelope.meta?.totalPages || 1),
           hasPreviousPage: (envelope.meta?.page || 1) > 1,
         };
       }
       return res as PaginatedList<RecipeSummaryDto>;
-    } catch {
-      // Dữ liệu mẫu (Demo Data Fallback) khi chưa kết nối backend trực tiếp
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return getMockRecipesList(params);
     }
   },
 
-  // 2. Xuất bản công thức (Draft -> Published) kèm If-Match
+  // 2. Xuất bản công thức (Draft -> Published) kèm If-Match (FE-06: PATCH)
   async publishRecipe(id: string, xmin?: string | number | null): Promise<RecipeSummaryDto> {
     return await fetchApi<RecipeSummaryDto>(`/recipes/${id}/publish`, {
-      method: 'PUT',
+      method: 'PATCH',
       ifMatch: xmin,
     });
   },
 
-  // 3. Lưu trữ công thức (Published -> Archived) kèm If-Match
+  // 2b. Hạ công thức về Draft (Published -> Draft) kèm If-Match (FE-06: PATCH)
+  async unpublishRecipe(id: string, xmin?: string | number | null): Promise<RecipeSummaryDto> {
+    return await fetchApi<RecipeSummaryDto>(`/recipes/${id}/unpublish`, {
+      method: 'PATCH',
+      ifMatch: xmin,
+    });
+  },
+
+  // 3. Lưu trữ công thức (Published -> Archived) kèm If-Match (FE-06: PATCH)
   async archiveRecipe(id: string, xmin?: string | number | null): Promise<RecipeSummaryDto> {
     return await fetchApi<RecipeSummaryDto>(`/recipes/${id}/archive`, {
-      method: 'PUT',
+      method: 'PATCH',
       ifMatch: xmin,
     });
   },
 
-  // 4. Bỏ lưu trữ công thức (Archived -> Draft) kèm If-Match
+  // 4. Bỏ lưu trữ công thức (Archived -> Draft) kèm If-Match (FE-06: PATCH)
   async unarchiveRecipe(id: string, xmin?: string | number | null): Promise<RecipeSummaryDto> {
     return await fetchApi<RecipeSummaryDto>(`/recipes/${id}/unarchive`, {
-      method: 'PUT',
+      method: 'PATCH',
       ifMatch: xmin,
     });
   },
@@ -140,15 +209,16 @@ export const RecipeApi = {
   async getTrashedRecipes(page = 1, pageSize = 10): Promise<PaginatedList<RecipeSummaryDto>> {
     try {
       return await fetchApi<PaginatedList<RecipeSummaryDto>>(`/admin/recipes/trash?page=${page}&pageSize=${pageSize}`);
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return getMockTrashList(page, pageSize);
     }
   },
 
-  // 7. Khôi phục công thức từ thùng rác (Admin)
+  // 7. Khôi phục công thức từ thùng rác (Admin) (FE-07: POST)
   async restoreRecipe(id: string): Promise<RecipeSummaryDto> {
     return await fetchApi<RecipeSummaryDto>(`/admin/recipes/${id}/restore`, {
-      method: 'PUT',
+      method: 'POST',
     });
   },
 
@@ -159,31 +229,32 @@ export const RecipeApi = {
     });
   },
 
-  // 9. Lấy dữ liệu thống kê Dashboard
-  async getDashboardMetrics(): Promise<DashboardMetrics> {
+  // 9. Lấy dữ liệu thống kê Dashboard với số đếm thật từ PostgreSQL
+  async getDashboardMetrics(includeTrash = false): Promise<DashboardMetrics> {
     try {
-      const all = await this.getMyRecipes({ pageSize: 100 });
-      const trash = await this.getTrashedRecipes(1, 100);
-
-      const items = all.items || [];
-      const published = items.filter(r => r.status === 'Published' || r.status === 1).length;
-      const draft = items.filter(r => r.status === 'Draft' || r.status === 0).length;
-      const archived = items.filter(r => r.status === 'Archived' || r.status === 2).length;
+      const [allRes, pubRes, draftRes, archRes, trashRes] = await Promise.all([
+        this.getMyRecipes({ pageSize: 1 }),
+        this.getMyRecipes({ pageSize: 1, status: 'Published' }),
+        this.getMyRecipes({ pageSize: 1, status: 'Draft' }),
+        this.getMyRecipes({ pageSize: 1, status: 'Archived' }),
+        includeTrash ? this.getTrashedRecipes(1, 1) : Promise.resolve({ totalCount: 0, items: [] }),
+      ]);
 
       return {
-        totalRecipes: items.length,
-        publishedCount: published,
-        draftCount: draft,
-        archivedCount: archived,
-        trashCount: trash.totalCount || trash.items?.length || 0,
+        totalRecipes: allRes.totalCount ?? 0,
+        publishedCount: pubRes.totalCount ?? 0,
+        draftCount: draftRes.totalCount ?? 0,
+        archivedCount: archRes.totalCount ?? 0,
+        trashCount: trashRes.totalCount ?? (trashRes as unknown as { total?: number })?.total ?? trashRes.items?.length ?? 0,
       };
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return {
-        totalRecipes: 12,
-        publishedCount: 8,
-        draftCount: 3,
-        archivedCount: 1,
-        trashCount: 2,
+        totalRecipes: 0,
+        publishedCount: 0,
+        draftCount: 0,
+        archivedCount: 0,
+        trashCount: 0,
       };
     }
   },
@@ -196,25 +267,20 @@ export const RecipeApi = {
   // Lấy danh sách Danh mục (Categories)
   async getCategories(): Promise<CategoryOptionDto[]> {
     try {
-      const res = await fetchApi<CategoryOptionDto[] | { data: CategoryOptionDto[] }>('/categories');
-      if (res && typeof res === 'object' && 'data' in res && Array.isArray(res.data)) {
-        return res.data;
-      }
-      return Array.isArray(res) ? res : mockCategories;
-    } catch {
+      const res = await fetchApi<CategoryOptionDto[]>('/categories');
+      return Array.isArray(res) ? res : [];
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return mockCategories;
     }
   },
 
-  // Lấy chi tiết đầy đủ công thức (kèm Ingredients, Steps, Images, Nutrition, xmin)
+  // Lấy chi tiết đầy đủ công thức (kèm Ingredients, Steps, Images, Nutrition, xmin, concurrencyToken)
   async getRecipeFullDetail(id: string): Promise<RecipeFullDetailDto> {
     try {
-      const res = await fetchApi<RecipeFullDetailDto | { data: RecipeFullDetailDto }>(`/recipes/${id}`);
-      if (res && typeof res === 'object' && 'data' in res && (res as { data: RecipeFullDetailDto }).data) {
-        return (res as { data: RecipeFullDetailDto }).data;
-      }
-      return res as RecipeFullDetailDto;
+      return await fetchApi<RecipeFullDetailDto>(`/recipes/${id}`);
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -230,6 +296,7 @@ export const RecipeApi = {
         body: JSON.stringify(payload),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -250,6 +317,7 @@ export const RecipeApi = {
         ifMatch: xmin,
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -268,6 +336,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -290,6 +359,7 @@ export const RecipeApi = {
         }
       );
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -304,6 +374,7 @@ export const RecipeApi = {
         method: 'DELETE',
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -319,6 +390,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -338,6 +410,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -356,6 +429,7 @@ export const RecipeApi = {
         body: JSON.stringify(request),
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -370,6 +444,7 @@ export const RecipeApi = {
         method: 'DELETE',
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -404,6 +479,7 @@ export const RecipeApi = {
         },
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -418,12 +494,12 @@ export const RecipeApi = {
     request: UpdateRecipeImageRequest
   ): Promise<RecipeImageDto> {
     try {
-      const response = await fetchApi<{ data: RecipeImageDto }>(`/recipes/${recipeId}/images/${imageId}`, {
+      return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
         method: 'PATCH',
         body: JSON.stringify(request),
       });
-      return response.data;
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }
@@ -438,6 +514,7 @@ export const RecipeApi = {
         method: 'DELETE',
       });
     } catch (error) {
+      if (!USE_MOCK) throw error;
       if (error instanceof ApiError && error.status !== 0) {
         throw error;
       }

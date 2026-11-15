@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   PlusCircle,
@@ -13,6 +13,8 @@ import {
   Users,
   Edit,
   ExternalLink,
+  Undo2,
+  FolderUp,
 } from 'lucide-react';
 import { RecipeApi, ApiError } from '@/lib/api-client';
 import { RecipeSummaryDto } from '@/lib/types';
@@ -25,7 +27,7 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -51,6 +53,12 @@ export default function MyRecipesLifecyclePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
+  // Phân trang Server-side
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   // State cho 409 Conflict Modal
   const [conflictState, setConflictState] = useState<{
     isOpen: boolean;
@@ -65,12 +73,34 @@ export default function MyRecipesLifecyclePage() {
     recipe?: RecipeSummaryDto;
   }>({ isOpen: false });
 
-  const loadRecipes = async () => {
+  const loadRecipes = async (targetPage = page, targetFilter = activeFilter, targetQuery = searchQuery) => {
     try {
       setLoading(true);
       setLoadError(null);
-      const res = await RecipeApi.getMyRecipes({ pageSize: 50 });
+      const statusParam =
+        targetFilter === 'DRAFT'
+          ? 0
+          : targetFilter === 'PUBLISHED'
+            ? 1
+            : targetFilter === 'ARCHIVED'
+              ? 2
+              : undefined;
+
+      const fetchPage = (requestedPage: number) => RecipeApi.getMyRecipes({
+        page: requestedPage,
+        pageSize,
+        status: statusParam,
+        search: targetQuery.trim() || undefined,
+      });
+
+      let res = await fetchPage(targetPage);
+      const resolvedPage = Math.min(targetPage, Math.max(1, res.totalPages || 1));
+      if (resolvedPage !== targetPage) res = await fetchPage(resolvedPage);
+
       setRecipes(res.items || []);
+      setTotalPages(res.totalPages || 1);
+      setTotalCount(res.totalCount || 0);
+      setPage(resolvedPage);
     } catch (err) {
       const msg = (err as Error).message || 'Không thể tải danh sách công thức.';
       setLoadError(msg);
@@ -81,36 +111,22 @@ export default function MyRecipesLifecyclePage() {
   };
 
   useEffect(() => {
-    loadRecipes();
-  }, []);
-
-  // Lọc bài viết theo Tab trạng thái và Tìm kiếm từ khóa
-  const filteredRecipes = useMemo(() => {
-    return recipes.filter((item) => {
-      const s = (item.status ?? 'DRAFT').toString().toUpperCase();
-      let matchTab = true;
-      if (activeFilter === 'DRAFT') matchTab = s === 'DRAFT' || s === '0';
-      else if (activeFilter === 'PUBLISHED') matchTab = s === 'PUBLISHED' || s === '1';
-      else if (activeFilter === 'ARCHIVED') matchTab = s === 'ARCHIVED' || s === '2';
-
-      const query = searchQuery.trim().toLowerCase();
-      const matchSearch =
-        !query ||
-        item.title.toLowerCase().includes(query) ||
-        (item.description && item.description.toLowerCase().includes(query));
-
-      return matchTab && matchSearch;
-    });
-  }, [recipes, activeFilter, searchQuery]);
+    const timer = setTimeout(() => {
+      setPage(1);
+      loadRecipes(1, activeFilter, searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, activeFilter]);
 
   // Xử lý lỗi đặc thù (HTTP 409 Conflict token)
   const handleLifecycleError = (err: unknown, recipe: RecipeSummaryDto) => {
+    const token = recipe.concurrencyToken ?? recipe.xmin;
     if (err instanceof ApiError && err.status === 409) {
       setConflictState({
         isOpen: true,
         recipeTitle: recipe.title,
         errorMessage: err.message,
-        currentXmin: recipe.xmin,
+        currentXmin: token,
       });
       showWarning('Xung đột đồng thời (HTTP 409)', 'Dữ liệu đã bị thay đổi bởi phiên khác.');
     } else {
@@ -122,11 +138,25 @@ export default function MyRecipesLifecyclePage() {
   const handlePublish = async (recipe: RecipeSummaryDto) => {
     try {
       setActionInProgress(recipe.id);
-      const updated = await RecipeApi.publishRecipe(recipe.id, recipe.xmin);
+      const token = recipe.concurrencyToken ?? recipe.xmin;
+      await RecipeApi.publishRecipe(recipe.id, token);
       showSuccess(`Đã xuất bản "${recipe.title}" thành công!`, 'Công thức hiện đã hiển thị công khai.');
-      setRecipes((prev) =>
-        prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Published', xmin: updated?.xmin ?? r.xmin } : r))
-      );
+      await loadRecipes();
+    } catch (err) {
+      handleLifecycleError(err, recipe);
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // 1b. Hạ công thức về Nháp (Unpublish)
+  const handleUnpublish = async (recipe: RecipeSummaryDto) => {
+    try {
+      setActionInProgress(recipe.id);
+      const token = recipe.concurrencyToken ?? recipe.xmin;
+      await RecipeApi.unpublishRecipe(recipe.id, token);
+      showSuccess(`Đã chuyển "${recipe.title}" về bản nháp`, 'Công thức tạm thời không còn hiển thị công khai.');
+      await loadRecipes();
     } catch (err) {
       handleLifecycleError(err, recipe);
     } finally {
@@ -138,11 +168,25 @@ export default function MyRecipesLifecyclePage() {
   const handleArchive = async (recipe: RecipeSummaryDto) => {
     try {
       setActionInProgress(recipe.id);
-      const updated = await RecipeApi.archiveRecipe(recipe.id, recipe.xmin);
+      const token = recipe.concurrencyToken ?? recipe.xmin;
+      await RecipeApi.archiveRecipe(recipe.id, token);
       showSuccess(`Đã chuyển "${recipe.title}" vào lưu trữ`, 'Công thức tạm thời ẩn khỏi trang công khai.');
-      setRecipes((prev) =>
-        prev.map((r) => (r.id === recipe.id ? { ...r, status: 'Archived', xmin: updated?.xmin ?? r.xmin } : r))
-      );
+      await loadRecipes();
+    } catch (err) {
+      handleLifecycleError(err, recipe);
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // 2b. Bỏ lưu trữ công thức (Unarchive -> Draft)
+  const handleUnarchive = async (recipe: RecipeSummaryDto) => {
+    try {
+      setActionInProgress(recipe.id);
+      const token = recipe.concurrencyToken ?? recipe.xmin;
+      await RecipeApi.unarchiveRecipe(recipe.id, token);
+      showSuccess(`Đã bỏ lưu trữ "${recipe.title}"`, 'Công thức đã được chuyển về bản nháp.');
+      await loadRecipes();
     } catch (err) {
       handleLifecycleError(err, recipe);
     } finally {
@@ -158,9 +202,10 @@ export default function MyRecipesLifecyclePage() {
     try {
       setActionInProgress(recipe.id);
       setDeleteConfirmState({ isOpen: false });
-      await RecipeApi.deleteRecipe(recipe.id, recipe.xmin);
+      const token = recipe.concurrencyToken ?? recipe.xmin;
+      await RecipeApi.deleteRecipe(recipe.id, token);
       showSuccess(`Đã chuyển "${recipe.title}" vào thùng rác`, 'Quản trị viên có thể khôi phục khi cần.');
-      setRecipes((prev) => prev.filter((r) => r.id !== recipe.id));
+      await loadRecipes();
     } catch (err) {
       handleLifecycleError(err, recipe);
     } finally {
@@ -210,7 +255,7 @@ export default function MyRecipesLifecyclePage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={loadRecipes}
+            onClick={() => loadRecipes()}
             disabled={loading}
             className="gap-2 shadow-xs"
           >
@@ -231,7 +276,7 @@ export default function MyRecipesLifecyclePage() {
         <ErrorState
           title="Không thể tải danh sách công thức"
           message={loadError}
-          onRetry={loadRecipes}
+          onRetry={() => loadRecipes()}
           retryLabel="Thử nạp lại"
           showBackHome={false}
         />
@@ -247,7 +292,7 @@ export default function MyRecipesLifecyclePage() {
             onClick={() => setActiveFilter('ALL')}
             className="rounded-lg text-xs md:text-sm font-medium"
           >
-            Tất cả ({recipes.length})
+            Tất cả
           </Button>
           <Button
             type="button"
@@ -256,7 +301,7 @@ export default function MyRecipesLifecyclePage() {
             onClick={() => setActiveFilter('PUBLISHED')}
             className="rounded-lg text-xs md:text-sm font-medium"
           >
-            Đã xuất bản ({recipes.filter((r) => (r.status ?? '').toString().toUpperCase() === 'PUBLISHED' || r.status === 1).length})
+            Đã xuất bản
           </Button>
           <Button
             type="button"
@@ -265,7 +310,7 @@ export default function MyRecipesLifecyclePage() {
             onClick={() => setActiveFilter('DRAFT')}
             className="rounded-lg text-xs md:text-sm font-medium"
           >
-            Bản nháp ({recipes.filter((r) => (r.status ?? '').toString().toUpperCase() === 'DRAFT' || r.status === 0).length})
+            Bản nháp
           </Button>
           <Button
             type="button"
@@ -274,7 +319,7 @@ export default function MyRecipesLifecyclePage() {
             onClick={() => setActiveFilter('ARCHIVED')}
             className="rounded-lg text-xs md:text-sm font-medium"
           >
-            Đã lưu trữ ({recipes.filter((r) => (r.status ?? '').toString().toUpperCase() === 'ARCHIVED' || r.status === 2).length})
+            Đã lưu trữ
           </Button>
         </div>
 
@@ -282,7 +327,7 @@ export default function MyRecipesLifecyclePage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Tìm theo tên hoặc mô tả..."
+            placeholder="Tìm theo tên công thức..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-card"
@@ -311,7 +356,7 @@ export default function MyRecipesLifecyclePage() {
                     <Loading size="lg" text="Đang tải danh sách bài viết..." />
                   </TableCell>
                 </TableRow>
-              ) : filteredRecipes.length === 0 ? (
+              ) : recipes.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-72">
                     <EmptyState
@@ -335,7 +380,7 @@ export default function MyRecipesLifecyclePage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredRecipes.map((recipe) => {
+                recipes.map((recipe) => {
                   const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
                   const isBusy = actionInProgress === recipe.id;
 
@@ -380,9 +425,9 @@ export default function MyRecipesLifecyclePage() {
                       </TableCell>
 
                       <TableCell>
-                        {recipe.xmin ? (
+                        {recipe.concurrencyToken ?? recipe.xmin ? (
                           <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground border border-border/50">
-                            {recipe.xmin}
+                            {recipe.concurrencyToken ?? recipe.xmin}
                           </span>
                         ) : (
                           <span className="text-xs text-muted-foreground italic">mặc định</span>
@@ -392,7 +437,7 @@ export default function MyRecipesLifecyclePage() {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {/* Nút Xuất bản (Publish) */}
-                          {(statusStr === 'DRAFT' || statusStr === '0' || statusStr === 'ARCHIVED' || statusStr === '2') && (
+                          {(statusStr === 'DRAFT' || statusStr === '0') && (
                             <Button
                               type="button"
                               variant="outline"
@@ -404,6 +449,22 @@ export default function MyRecipesLifecyclePage() {
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               <span className="hidden md:inline">Xuất bản</span>
+                            </Button>
+                          )}
+
+                          {/* Nút Hạ về Nháp (Unpublish) - FE-10 */}
+                          {(statusStr === 'PUBLISHED' || statusStr === '1') && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUnpublish(recipe)}
+                              disabled={isBusy}
+                              title="Hạ bài về bản nháp"
+                              className="h-8 gap-1 text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200"
+                            >
+                              <Undo2 className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Hạ nháp</span>
                             </Button>
                           )}
 
@@ -420,6 +481,22 @@ export default function MyRecipesLifecyclePage() {
                             >
                               <Archive className="w-3.5 h-3.5" />
                               <span className="hidden md:inline">Lưu trữ</span>
+                            </Button>
+                          )}
+
+                          {/* Nút Bỏ lưu trữ (Unarchive) - FE-10 */}
+                          {(statusStr === 'ARCHIVED' || statusStr === '2') && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUnarchive(recipe)}
+                              disabled={isBusy}
+                              title="Bỏ lưu trữ (chuyển về nháp)"
+                              className="h-8 gap-1 text-sky-700 hover:text-sky-800 hover:bg-sky-50 border-sky-200"
+                            >
+                              <FolderUp className="w-3.5 h-3.5" />
+                              <span className="hidden md:inline">Bỏ lưu trữ</span>
                             </Button>
                           )}
 
@@ -459,6 +536,43 @@ export default function MyRecipesLifecyclePage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* PHÂN TRANG SERVER-SIDE */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          <p className="text-sm text-muted-foreground">
+            Hiển thị trang <span className="font-medium text-foreground">{page}</span> / <span className="font-medium text-foreground">{totalPages}</span> (Tổng cộng <span className="font-medium text-foreground">{totalCount}</span> công thức)
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page <= 1 || loading}
+              onClick={() => {
+                const prev = page - 1;
+                setPage(prev);
+                loadRecipes(prev, activeFilter, searchQuery);
+              }}
+            >
+              Trang trước
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages || loading}
+              onClick={() => {
+                const next = page + 1;
+                setPage(next);
+                loadRecipes(next, activeFilter, searchQuery);
+              }}
+            >
+              Trang sau
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* 409 CONFLICT MODAL */}
       <ConflictDialog

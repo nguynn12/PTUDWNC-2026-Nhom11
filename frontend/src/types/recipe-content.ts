@@ -10,7 +10,7 @@ import type { ApiProblemDetails, RecipeAuthorDto } from "./api";
 // ENUMS & ĐỘ KHÓ / TRẠNG THÁI CÔNG THỨC
 // ----------------------------------------------------------------------------
 
-export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
+export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 0 | 1 | 2 | 3 | 4;
 export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2;
 export type DifficultyLevel = RecipeDifficulty | number;
 
@@ -175,9 +175,11 @@ export interface CreateRecipePayload {
 
 export interface UpdateRecipePayload extends CreateRecipePayload {
   xmin?: string | number | null;
+  concurrencyToken?: string | number | null;
 }
 
 export interface RecipeFullDetailDto {
+  category?: CategoryOptionDto | null;
   id: string;
   title: string;
   slug: string;
@@ -201,6 +203,7 @@ export interface RecipeFullDetailDto {
   updatedAt?: string | null;
   primaryImageUrl?: string | null;
   xmin?: string | number | null;
+  concurrencyToken?: string | number | null;
   isDeleted?: boolean;
   deletedAt?: string | null;
   nutrition?: RecipeNutritionDto | null;

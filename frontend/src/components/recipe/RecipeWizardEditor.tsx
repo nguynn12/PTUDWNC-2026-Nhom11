@@ -152,23 +152,29 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         setRecipeId(detail.id);
         setTitle(detail.title);
         setDescription(detail.description);
-        setCategoryId(detail.categoryId || 'c1');
+        setCategoryId(detail.categoryId || detail.category?.id || '');
         setDifficulty(
-          detail.difficulty === 0 || detail.difficulty === 'Easy'
+          detail.difficulty === 0 || detail.difficulty === 1 || detail.difficulty === 'Easy'
             ? 'Easy'
-            : detail.difficulty === 2 || detail.difficulty === 'Hard'
-              ? 'Hard'
-              : 'Medium'
+            : detail.difficulty === 2 || detail.difficulty === 'Medium'
+              ? 'Medium'
+              : detail.difficulty === 3 || detail.difficulty === 'Hard'
+                ? 'Hard'
+                : detail.difficulty === 4 || detail.difficulty === 'Expert'
+                  ? 'Expert'
+                  : 'Medium'
         );
         setPrepTimeMinutes(detail.prepTimeMinutes ?? detail.prepTime ?? 15);
         setCookTimeMinutes(detail.cookTimeMinutes ?? detail.cookTime ?? 30);
         setServings(detail.servings);
-        setXmin(detail.xmin ?? null);
+        setXmin(detail.concurrencyToken ?? detail.xmin ?? null);
         setRecipeStatus(String(detail.status || 'Draft'));
 
         if (detail.nutrition) {
           setHasNutrition(true);
           setNutrition(detail.nutrition);
+        } else {
+          setHasNutrition(false);
         }
 
         const loadedIngs = detail.ingredients || [];
@@ -236,14 +242,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   // =========================================================
   const validateStep1 = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!title.trim() || title.trim().length < 3) {
-      errs.title = 'Tiêu đề món ăn phải có từ 3 đến 250 ký tự.';
+    if (!categoryId) {
+      errs.categoryId = 'Vui lòng chọn danh mục món ăn.';
     }
-    if (!description.trim() || description.trim().length < 10) {
-      errs.description = 'Mô tả tổng quan món ăn cần ít nhất 10 ký tự.';
+    if (!title.trim() || title.trim().length < 3 || title.trim().length > 200) {
+      errs.title = 'Tiêu đề món ăn phải có từ 3 đến 200 ký tự.';
     }
-    if (prepTimeMinutes < 0 || prepTimeMinutes > 1440) {
-      errs.prepTime = 'Thời gian chuẩn bị phải từ 0 đến 1440 phút.';
+    if (!description.trim() || description.trim().length < 10 || description.trim().length > 2000) {
+      errs.description = 'Mô tả tổng quan món ăn phải từ 10 đến 2000 ký tự.';
+    }
+    if (prepTimeMinutes <= 0 || prepTimeMinutes > 1440) {
+      errs.prepTime = 'Thời gian chuẩn bị phải lớn hơn 0 phút (1 đến 1440 phút).';
     }
     if (cookTimeMinutes < 0 || cookTimeMinutes > 1440) {
       errs.cookTime = 'Thời gian nấu phải từ 0 đến 1440 phút.';
@@ -276,18 +285,21 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
       if (!recipeId) {
         const created = await RecipeApi.createRecipe(payload);
-        setRecipeId(created.id);
-        setXmin(created.xmin ?? null);
+        const resolvedId = created.id || (created as unknown as { data: { id: string } }).data?.id;
+        const resolvedToken = (created as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? created.xmin ?? null;
+        setRecipeId(resolvedId);
+        setXmin(resolvedToken);
         showSuccess(
           'Đã khởi tạo bản nháp công thức',
-          `Mã công thức: ${created.id.slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
+          `Mã công thức: ${(resolvedId || '').slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
         );
       } else {
         const updated = await RecipeApi.updateRecipe(recipeId, payload, xmin);
-        setXmin(updated.xmin ?? xmin);
+        const resolvedToken = (updated as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? updated.xmin ?? xmin;
+        setXmin(resolvedToken);
         showSuccess(
           'Đã cập nhật thông tin chung',
-          `Phiên bản đồng thời mới (xmin): ${updated.xmin ?? 'Updated'}`
+          `Phiên bản đồng thời mới: ${resolvedToken ?? 'Updated'}`
         );
       }
 
@@ -750,7 +762,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     }
 
     try {
-      await RecipeApi.publishRecipe(recipeId, xmin);
+      const published = await RecipeApi.publishRecipe(recipeId, xmin);
+      const resolvedToken = (published as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? published?.xmin ?? xmin;
+      setXmin(resolvedToken);
       showSuccess('Xuất bản công thức thành công!', `Món "${title}" đã được công khai.`);
       router.push('/dashboard/recipes');
     } catch (err) {
@@ -976,13 +990,13 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                     <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                       Tiêu đề công thức <span className="text-[var(--danger)]">*</span>
                     </label>
-                    <span className="text-xs text-[var(--text-muted)]">{title.length}/250 ký tự</span>
+                    <span className="text-xs text-[var(--text-muted)]">{title.length}/200 ký tự</span>
                   </div>
                   <Input
                     type="text"
                     placeholder="Ví dụ: Phở Bò Truyền Thống Hà Nội Nước Trong..."
                     value={title}
-                    maxLength={250}
+                    maxLength={200}
                     onChange={e => setTitle(e.target.value)}
                   />
                   {step1Errors.title && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.title}</p>}
@@ -1003,6 +1017,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                         </option>
                       ))}
                     </Select>
+                    {step1Errors.categoryId && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.categoryId}</p>}
                   </div>
 
                   <div className="space-y-1.5">
@@ -1016,6 +1031,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                       <option value="Easy">Dễ (Easy) — Phù hợp người mới</option>
                       <option value="Medium">Trung bình (Medium) — Gia đình</option>
                       <option value="Hard">Khó (Hard) — Chuẩn Đầu bếp</option>
+                      <option value="Expert">Chuyên gia (Expert) — Đỉnh cao ẩm thực</option>
                     </Select>
                   </div>
                 </div>
