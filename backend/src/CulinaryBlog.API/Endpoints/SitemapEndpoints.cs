@@ -16,18 +16,7 @@ public static class SitemapEndpoints
         // GET /sitemap.xml
         group.MapGet("/sitemap.xml", async (ISitemapService sitemapService, CancellationToken ct) =>
         {
-            var baseDir = AppContext.BaseDirectory;
-            var sitemapFile = Path.Combine(baseDir, "wwwroot", "sitemap.xml");
-
-            string xmlContent;
-            if (File.Exists(sitemapFile))
-            {
-                xmlContent = await File.ReadAllTextAsync(sitemapFile, Encoding.UTF8, ct);
-            }
-            else
-            {
-                xmlContent = await sitemapService.GenerateSitemapXmlAsync(ct);
-            }
+            var xmlContent = await sitemapService.GenerateSitemapXmlAsync(ct);
 
             return Results.Content(xmlContent, "application/xml", Encoding.UTF8);
         })

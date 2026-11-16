@@ -1,6 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
+import { AppError } from "@/lib/errors";
+import { ErrorState } from "@/components/common/ErrorState";
 import { getRecipeBySlug, getRecipes } from "@/lib/api/recipes";
 import { RecipeDetail } from "@/components/recipe/RecipeDetail";
 import type { RecipeDetailDto, RecipeSummaryDto } from "@/types/api";
@@ -64,14 +66,20 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
   try {
     recipe = await getRecipeBySlug(slug);
-  } catch {
-    recipe = null;
+  } catch (error) {
+    if (error instanceof AppError && error.status === 404) notFound();
+    return <div className="container mx-auto px-4 py-16"><ErrorState
+      message={error instanceof AppError ? error.message : 'Không thể tải nội dung. Vui lòng thử lại.'}
+      errorCode={error instanceof AppError ? error.code : undefined}
+      title="Không thể tải công thức" /></div>;
   }
 
   // Nếu bài viết không tồn tại trong database hoặc trả về 404
   if (!recipe) {
     notFound();
   }
+
+  if (slug !== recipe.slug) permanentRedirect(`/recipes/${recipe.slug}`);
 
   // Lấy tối đa 4 công thức liên quan cùng danh mục
   if (recipe.categoryId) {

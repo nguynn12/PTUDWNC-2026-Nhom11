@@ -15,8 +15,8 @@ public class RecipeDetailDto
     public int PrepTimeMinutes { get; init; }
     public int CookTimeMinutes { get; init; }
     public int Servings { get; init; }
-    public string Difficulty { get; init; } = string.Empty;
-    public string Status { get; init; } = string.Empty;
+    public CulinaryBlog.Domain.Enums.RecipeDifficulty Difficulty { get; init; }
+    public CulinaryBlog.Domain.Enums.RecipeStatus Status { get; init; }
     public DateTimeOffset? PublishedAt { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; init; }

@@ -1,7 +1,21 @@
 # Kế hoạch sửa lỗi trước demo — Culinary Blog (Nhóm 11)
 
-**Căn cứ:** báo cáo rà soát của Codex trên `develop` (HEAD `6f881b8`) và phần kiểm chứng lại bằng cách đọc code.
-**Ký hiệu cột "Xác minh":** ✔ = đã đối chiếu trực tiếp trong code `develop`; ○ = lấy từ báo cáo Codex, **người sửa tự xác nhận khi sửa**. Mình chưa chạy ứng dụng, nên chưa tái hiện được lỗi nào bằng HTTP.
+## Cập nhật nghiệm thu tích hợp — 16/11/2026
+
+- Nhánh `nhanh-phu` được tạo từ `develop` (`6f881b8`), tích hợp phần TV3, TV1, TV2 và TV4; chưa merge trở lại `develop`.
+- Đã sửa và chạy lại các luồng quyền Draft/API con, chống giả mạo Admin/IP, If-Match, Nutrition, enum số, cache riêng/công khai, phân trang Category, sắp xếp và sitemap. Reorder/xóa bước được kiểm tra transaction trên PostgreSQL thật; ảnh chính có migration tạo partial unique index.
+- Ảnh được giải mã thật, sinh WebP bằng job Hangfire lưu PostgreSQL và retry 3 lần; MinIO lỗi không giả lập lưu thành công. Frontend giữ ảnh đã tải khi retry, đồng bộ phiên bản sau mutation, hiển thị đúng dinh dưỡng/thời gian và bỏ qua phản hồi tìm kiếm cũ về chậm.
+- Backend cuối: **406 unit + 54 integration = 460 test đạt**. Integration suite vẫn dùng InMemory/TestAuth; bổ sung **25 nhóm kiểm tra HTTP** trên PostgreSQL/JWT/Redis/MinIO thật để kiểm những điều InMemory không chứng minh được.
+- Docker API/Web build đạt; **9/9 E2E đạt qua Nginx trên toàn bộ stack Docker**. Bốn kiểm tra bổ sung đạt: ảnh tải thật trên trang chi tiết, slug cũ chuyển hướng, lỗi backend 500 khác 404, sitemap frontend đủ URL từ backend. Seq đã nhận log request mới theo CorrelationId.
+- TypeScript/build đạt; lint còn **13 cảnh báo, 0 lỗi**. Production npm audit: **0 advisory**; toàn bộ dev/build dependencies còn **13 advisory** (1 low, 9 moderate, 3 high), không ghi là toàn bộ dependency đã sạch.
+- **Chưa hoàn thành:** DATA-01…03 (dữ liệu thật để nộp); coverage unit Commands/Queries/Validators **57,17%**, chưa đạt NFR-MAINT-002 ≥ 80%; chưa nghiệm thu đầy đủ OpenTelemetry/EF Core trace/metrics, SMTP thật hoặc CI chạy trên GitHub. Các mục mở trong `docs/decisions/OPEN-QUESTIONS.md` không được tự coi là đã chốt.
+- **Khác biệt với plan Lab 8:** bộ giải mã ảnh hiện dùng `Magick.NET-Q8-AnyCPU` thay ImageSharp để giải mã AVIF thật; đã kiểm tra Windows và Linux. Giữ kích thước thumbnail 300×300, medium tối đa 800×600. Hai file migration mới là ngoại lệ cần thiết để áp dụng ràng buộc DB; các sửa đổi còn lại dùng file có sẵn.
+- Kiểm thử dùng bản sao DB, cache/bucket riêng. Không nhập lại hoặc thay bộ dữ liệu demo gốc 100 Recipe / 1.165 Ingredient / 593 Step. Không dùng dữ liệu kiểm thử làm dữ liệu thật cho báo cáo nộp.
+
+**Phần bên dưới là kế hoạch và phát hiện ban đầu tại `6f881b8`, không phải danh sách lỗi còn tồn tại sau tích hợp.**
+
+**Căn cứ:** báo cáo rà soát kỹ thuật trên `develop` (HEAD `6f881b8`) và phần kiểm chứng lại bằng cách đọc code.
+**Ký hiệu cột "Xác minh":** ✔ = đã đối chiếu trực tiếp trong code `develop`; ○ = lấy từ báo cáo rà soát kỹ thuật, **người sửa tự xác nhận khi sửa**. Mình chưa chạy ứng dụng, nên chưa tái hiện được lỗi nào bằng HTTP.
 
 ## 1. Kết luận ngắn
 
@@ -63,7 +77,7 @@ Báo cáo Chương 6 (demo) **chỉ chụp ảnh sau khi hết đợt 1**, trán
 
 ## 5. Phân công 4 người
 
-Theo module của từng người (đầu mối theo báo cáo Codex), có cân đối khối lượng.
+Theo module của từng người (đầu mối theo báo cáo rà soát kỹ thuật), có cân đối khối lượng.
 
 ### Tạ Nhật Nguyên — luồng vòng đời + nền hợp đồng (làm đầu tiên)
 
@@ -127,7 +141,7 @@ Theo module của từng người (đầu mối theo báo cáo Codex), có cân 
 
 ## 6. Dữ liệu thật (DATA-01…03) — chia chung cả nhóm
 
-Dữ liệu sinh ngẫu nhiên đạt yêu cầu Lab 2 nhưng không dùng được cho demo và nộp cuối. Việc này cần con người, không giao hết cho AI vì AI dễ viết công thức sai.
+Dữ liệu sinh ngẫu nhiên đạt yêu cầu Lab 2 nhưng không dùng được cho demo và nộp cuối. Việc nhập dữ liệu phải có người kiểm duyệt để bảo đảm công thức, định lượng và hình ảnh chính xác.
 
 | Bước | Nội dung |
 |---|---|
@@ -159,7 +173,7 @@ Chạy xong đợt 1 thì chạy kịch bản này; mỗi bước phải ra đú
 | 14 | Admin mở thùng rác | Thấy bài vừa xóa; khôi phục (`POST`) được; xóa vĩnh viễn được và file ảnh biến mất khỏi MinIO |
 | 15 | Tắt backend rồi mở các trang | Hiện lỗi thật, **không** hiện dữ liệu mẫu |
 
-## 8. Prompt giao cho AI coder (dán kèm phần việc của từng người)
+## 8. Hướng dẫn thực hiện sửa lỗi (kèm phần việc của từng người)
 
 ```
 Bạn đang sửa lỗi trong repo PTUDWNC-2026-Nhom11 (nhánh develop). Chỉ làm đúng danh sách việc tôi đưa

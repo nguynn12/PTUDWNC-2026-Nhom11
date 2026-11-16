@@ -156,25 +156,6 @@ public static class RecipeImageEndpoints
     /// <summary>
     /// API-03: Trích xuất token phiên bản concurrency từ header If-Match.
     /// </summary>
-    private static uint? ExtractConcurrencyToken(HttpContext httpContext)
-    {
-        var ifMatch = httpContext.Request.Headers["If-Match"].FirstOrDefault();
-        if (string.IsNullOrWhiteSpace(ifMatch))
-        {
-            return null;
-        }
-
-        var raw = ifMatch.Trim().Trim('"');
-        if (raw.StartsWith("W/", StringComparison.OrdinalIgnoreCase))
-        {
-            raw = raw.Substring(2).Trim('"');
-        }
-
-        if (uint.TryParse(raw, out var token))
-        {
-            return token;
-        }
-
-        throw new BadRequestException("Header If-Match không hợp lệ. Token phiên bản phải là số nguyên dương.");
-    }
+    private static uint? ExtractConcurrencyToken(HttpContext context) =>
+        RecipeLifecycleEndpoints.RequireIfMatch(context.Request.Headers["If-Match"].ToString());
 }

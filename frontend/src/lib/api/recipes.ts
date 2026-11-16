@@ -26,7 +26,26 @@ export async function getRecipeBySlug(slug: string): Promise<RecipeDetailDto> {
   const response = await apiClient.get<never, ApiResponse<RecipeDetailDto>>(
     `/recipes/${slug}`
   );
-  return response.data;
+  const recipe = response.data;
+  return {
+    ...recipe,
+    categoryId: recipe.category?.id ?? recipe.categoryId,
+    categoryName: recipe.category?.name ?? recipe.categoryName,
+    categorySlug: recipe.category?.slug ?? recipe.categorySlug,
+    prepTime: recipe.prepTimeMinutes ?? recipe.prepTime,
+    cookTime: recipe.cookTimeMinutes ?? recipe.cookTime,
+    totalTime: (recipe.prepTimeMinutes ?? recipe.prepTime ?? 0) + (recipe.cookTimeMinutes ?? recipe.cookTime ?? 0),
+    images: recipe.images.map(image => ({ ...image, imageUrl: image.mediumUrl ?? image.originalUrl ?? image.imageUrl })),
+    steps: recipe.steps.map(step => ({ ...step, timerMinutes: step.durationMinutes ?? step.timerMinutes })),
+    nutrition: recipe.nutrition ? {
+      ...recipe.nutrition,
+      proteinGrams: recipe.nutrition.protein ?? recipe.nutrition.proteinGrams,
+      carbsGrams: recipe.nutrition.carbohydrates ?? recipe.nutrition.carbsGrams,
+      fatGrams: recipe.nutrition.fat ?? recipe.nutrition.fatGrams,
+      fiberGrams: recipe.nutrition.fiber ?? recipe.nutrition.fiberGrams,
+      sodiumMilligrams: recipe.nutrition.sodium ?? recipe.nutrition.sodiumMilligrams,
+    } : null,
+  };
 }
 
 /**

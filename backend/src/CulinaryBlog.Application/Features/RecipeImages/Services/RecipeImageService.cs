@@ -24,18 +24,18 @@ public class RecipeImageService : IRecipeImageService
 {
     private readonly IApplicationDbContext _context;
     private readonly IFileStorageService _fileStorageService;
-    private readonly IImageProcessingService? _imageProcessingService;
+    private readonly IRecipeImageJobs? _imageJobs;
     private readonly ICacheInvalidator? _cacheInvalidator;
 
     public RecipeImageService(
         IApplicationDbContext context,
         IFileStorageService fileStorageService,
-        IImageProcessingService? imageProcessingService = null,
+        IRecipeImageJobs? imageJobs = null,
         ICacheInvalidator? cacheInvalidator = null)
     {
         _context = context;
         _fileStorageService = fileStorageService;
-        _imageProcessingService = imageProcessingService;
+        _imageJobs = imageJobs;
         _cacheInvalidator = cacheInvalidator;
     }
 
@@ -123,6 +123,9 @@ public class RecipeImageService : IRecipeImageService
         // Ảnh đầu tiên mặc định là primary; hoặc khi client chỉ định isPrimary = true (FR-RCP-008, E6)
         bool shouldBePrimary = (isPrimary == true) || (existingImages.Count == 0);
 
+        await using var transaction = _context is DbContext db && db.Database.IsRelational()
+            ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
+
         if (shouldBePrimary)
         {
             // Trong cùng transaction: set toàn bộ ảnh khác của Recipe về IsPrimary = false (E6)
@@ -152,44 +155,6 @@ public class RecipeImageService : IRecipeImageService
         string? thumbnailUrl = null;
         string? mediumUrl = null;
 
-        // 2. Tự động sinh thumbnail (300x300) và medium (800x600) bằng ImageSharp (FR-JOB-002)
-        if (_imageProcessingService != null)
-        {
-            try
-            {
-                var (thumb, med) = await _imageProcessingService.ProcessVariantsAsync(stream, fileName, cancellationToken);
-                if (thumb != null)
-                {
-                    using (thumb.Stream)
-                    {
-                        thumbnailUrl = await _fileStorageService.UploadAsync(
-                            thumb.Stream,
-                            thumb.FileName,
-                            thumb.ContentType,
-                            $"recipes/{recipeId}",
-                            cancellationToken);
-                    }
-                }
-
-                if (med != null)
-                {
-                    using (med.Stream)
-                    {
-                        mediumUrl = await _fileStorageService.UploadAsync(
-                            med.Stream,
-                            med.FileName,
-                            med.ContentType,
-                            $"recipes/{recipeId}",
-                            cancellationToken);
-                    }
-                }
-            }
-            catch
-            {
-                // Nếu xử lý variant thất bại: ảnh gốc vẫn hiển thị an toàn, chỉ thiếu thumbnail/medium theo SRS FR-JOB-002
-            }
-        }
-
         var image = new RecipeImage
         {
             Id = Guid.NewGuid(),
@@ -207,6 +172,9 @@ public class RecipeImageService : IRecipeImageService
         recipe.UpdatedAt = DateTimeOffset.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (transaction != null) await transaction.CommitAsync(cancellationToken);
+        _imageJobs?.EnqueueResize(image.Id);
 
         // API-08: Hủy cache Recipe/Search khi thêm ảnh
         if (_cacheInvalidator != null)
@@ -248,6 +216,9 @@ public class RecipeImageService : IRecipeImageService
             throw new NotFoundException(nameof(RecipeImage), imageId, "RECIPE_IMAGE_NOT_FOUND");
         }
 
+        await using var transaction = _context is DbContext db && db.Database.IsRelational()
+            ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
+
         if (request.AltText != null)
         {
             image.AltText = request.AltText.Trim();
@@ -281,6 +252,7 @@ public class RecipeImageService : IRecipeImageService
             else if (!request.IsPrimary.Value && image.IsPrimary)
             {
                 image.IsPrimary = false;
+                await _context.SaveChangesAsync(cancellationToken);
 
                 // Tự động chuyển ảnh có orderIndex nhỏ nhất thành primary để luôn có ít nhất 1 ảnh đại diện
                 var nextPrimary = await _context.RecipeImages
@@ -301,6 +273,7 @@ public class RecipeImageService : IRecipeImageService
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        if (transaction != null) await transaction.CommitAsync(cancellationToken);
         // API-08: Hủy cache Recipe/Search khi sửa ảnh
         if (_cacheInvalidator != null)
         {
@@ -340,9 +313,13 @@ public class RecipeImageService : IRecipeImageService
 
         bool wasPrimary = imageToDelete.IsPrimary;
 
+        await using var transaction = _context is DbContext db && db.Database.IsRelational()
+            ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
+
         // Xóa mềm theo quy chuẩn BaseEntity
         imageToDelete.IsDeleted = true;
         imageToDelete.DeletedAt = DateTimeOffset.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Khi xóa ảnh primary, ảnh có orderIndex nhỏ nhất còn lại trở thành primary (FR-RCP-008)
         if (wasPrimary)
@@ -361,19 +338,15 @@ public class RecipeImageService : IRecipeImageService
 
         recipe.UpdatedAt = DateTimeOffset.UtcNow;
 
-        // Xóa file gốc và các biến thể Thumbnail, Medium khỏi storage (FR-FILE-002 idempotent)
-        await _fileStorageService.DeleteAsync(imageToDelete.OriginalUrl, cancellationToken);
-        if (!string.IsNullOrWhiteSpace(imageToDelete.ThumbnailUrl))
-        {
-            await _fileStorageService.DeleteAsync(imageToDelete.ThumbnailUrl, cancellationToken);
-        }
-        if (!string.IsNullOrWhiteSpace(imageToDelete.MediumUrl))
-        {
-            await _fileStorageService.DeleteAsync(imageToDelete.MediumUrl, cancellationToken);
-        }
-
+        // Lưu yêu cầu xóa trước; job định kỳ đối soát lại nếu việc enqueue bị gián đoạn.
         await _context.SaveChangesAsync(cancellationToken);
-
+        if (transaction != null) await transaction.CommitAsync(cancellationToken);
+        foreach (var url in new[] { imageToDelete.OriginalUrl, imageToDelete.ThumbnailUrl, imageToDelete.MediumUrl })
+        {
+            if (string.IsNullOrWhiteSpace(url)) continue;
+            if (_imageJobs != null) _imageJobs.EnqueueDelete(url);
+            else await _fileStorageService.DeleteAsync(url, cancellationToken);
+        }
         // API-08: Hủy cache Recipe/Search khi xóa ảnh
         if (_cacheInvalidator != null)
         {

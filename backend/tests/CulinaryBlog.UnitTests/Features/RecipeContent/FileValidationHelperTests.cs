@@ -1,8 +1,7 @@
+using ImageMagick;
 namespace CulinaryBlog.UnitTests.Features.RecipeContent;
 
 using System.IO;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using CulinaryBlog.Application.Common.Helpers;
 using Xunit;
 
@@ -58,7 +57,7 @@ public class FileValidationHelperTests
     }
 
     [Fact]
-    public void ValidateImage_ValidAvifStream_ShouldReturnValid()
+    public void ValidateImage_AvifHeaderWithoutPixels_ShouldReturnInvalid()
     {
         // Arrange: hộp ftyp AVIF hợp lệ (kích thước 24 byte, brand avif + brand tương thích mif1)
         var avifBytes = BuildAvif(majorBrand: "avif", compatibleBrand: "mif1");
@@ -68,8 +67,8 @@ public class FileValidationHelperTests
         var (isValid, errorMessage) = FileValidationHelper.ValidateImage(stream, "photo.avif", "image/avif", avifBytes.Length);
 
         // Assert
-        Assert.True(isValid);
-        Assert.Null(errorMessage);
+        Assert.False(isValid);
+        Assert.NotNull(errorMessage);
     }
 
     [Fact]
@@ -171,9 +170,9 @@ public class FileValidationHelperTests
     [Fact]
     public void ValidateImage_ExceedsPixelLimit_ShouldReturnInvalid()
     {
-        using var image = new Image<Rgba32>(7000, 7000); // 49 triệu điểm ảnh > 40 triệu
+        using var image = new MagickImage(MagickColors.Orange, (uint)(7000), (uint)(7000)); // 49 triệu điểm ảnh > 40 triệu
         using var ms = new MemoryStream();
-        image.SaveAsPng(ms);
+        image.Write(ms, MagickFormat.Png);
         ms.Position = 0;
 
         var (isValid, _) = FileValidationHelper.ValidateImage(ms, "huge.png", "image/png", ms.Length);
@@ -181,15 +180,26 @@ public class FileValidationHelperTests
         Assert.False(isValid);
     }
 
+    [Fact]
+    public void ValidateImage_RealAvifPixelData_IsAccepted()
+    {
+        using var image = new MagickImage(MagickColors.Orange, 8, 8);
+        using var stream = new MemoryStream();
+        image.Write(stream, MagickFormat.Avif);
+        stream.Position = 0;
+        var (valid, error) = FileValidationHelper.ValidateImage(stream, "dish.avif", "image/avif", stream.Length);
+        Assert.True(valid, error);
+    }
+
     private static byte[] EncodeImage(string ext)
     {
-        using var image = new Image<Rgba32>(1, 1);
+        using var image = new MagickImage(MagickColors.Orange, (uint)(1), (uint)(1));
         using var ms = new MemoryStream();
         switch (ext)
         {
-            case "jpg": image.SaveAsJpeg(ms); break;
-            case "png": image.SaveAsPng(ms); break;
-            default: image.SaveAsWebp(ms); break;
+            case "jpg": image.Write(ms, MagickFormat.Jpeg); break;
+            case "png": image.Write(ms, MagickFormat.Png); break;
+            default: image.Write(ms, MagickFormat.WebP); break;
         }
         return ms.ToArray();
     }

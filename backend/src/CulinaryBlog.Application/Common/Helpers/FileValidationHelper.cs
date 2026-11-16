@@ -3,12 +3,12 @@ namespace CulinaryBlog.Application.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SixLabors.ImageSharp;
+using ImageMagick;
 
 /// <summary>
 /// Tiện ích xác thực tệp tin hình ảnh an toàn theo SRS v1.2.0 (FR-RCP-008, FR-FILE-001) và Lab 8.
 /// Kiểm tra dung lượng tối đa 5MB trước khi xử lý, MIME types cho phép (JPEG, PNG, WebP, AVIF),
-/// kiểm tra chữ ký Magic Bytes và giải mã ảnh thực nghiệm bằng SixLabors.ImageSharp.
+/// kiểm tra chữ ký Magic Bytes và giải mã ảnh thực nghiệm bằng Magick.NET.
 /// </summary>
 public static class FileValidationHelper
 {
@@ -37,7 +37,7 @@ public static class FileValidationHelper
 
     /// <summary>
     /// Kiểm tra tính hợp lệ toàn diện của file hình ảnh: dung lượng <= 5MB, đuôi file, MIME type,
-    /// Magic Bytes và giải mã nội dung ảnh thực tế bằng ImageSharp.
+    /// Magic Bytes và giải mã nội dung ảnh thực tế bằng Magick.NET.
     /// </summary>
     public static (bool IsValid, string? ErrorMessage) ValidateImage(
         Stream stream,
@@ -72,9 +72,8 @@ public static class FileValidationHelper
             return (false, "Nội dung tệp tin không đúng với định dạng hình ảnh đã khai báo (sai chữ ký Magic Bytes).");
         }
 
-        // 2. Giải mã thông số ảnh thật cho MỌI tệp (kể cả ảnh rất nhỏ). AVIF mà ImageSharp không hỗ trợ
-        //    thì kiểm tra cấu trúc hộp ISO-BMFF (ftyp + brand avif/avis, kích thước hộp hợp lệ).
-        if (!CanDecodeWithImageSharp(stream, extension))
+        // Giải mã cả dữ liệu pixel; metadata/header hợp lệ chưa đủ chứng minh là ảnh.
+        if (!CanDecodeImage(stream, extension))
         {
             return (false, "Nội dung tệp tin hình ảnh bị hỏng hoặc không thể giải mã thành ảnh hợp lệ.");
         }
@@ -83,9 +82,9 @@ public static class FileValidationHelper
     }
 
     /// <summary>
-    /// Giải mã thông số ảnh thực sự bằng SixLabors.ImageSharp (kích thước, định dạng hợp lệ).
+    /// Giải mã thông số ảnh thực sự bằng Magick.NET (kích thước, định dạng hợp lệ).
     /// </summary>
-    public static bool CanDecodeWithImageSharp(Stream stream, string extension)
+    public static bool CanDecodeImage(Stream stream, string extension)
     {
         if (!stream.CanRead || !stream.CanSeek)
         {
@@ -99,12 +98,21 @@ public static class FileValidationHelper
         {
             if (extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
             {
-                return HasValidAvifStructure(stream);
+                if (!HasValidAvifStructure(stream)) return false;
+                stream.Position = 0;
+                var info = new MagickImageInfo(stream);
+                if (info.Width == 0 || info.Height == 0 || (long)info.Width * info.Height > MaxPixels) return false;
+                stream.Position = 0;
+                using var decoded = new MagickImage(stream);
+                return decoded.Width > 0 && decoded.Height > 0;
             }
 
-            var imageInfo = Image.Identify(stream);
-            return imageInfo is { Width: > 0, Height: > 0 }
-                   && (long)imageInfo.Width * imageInfo.Height <= MaxPixels;
+            var imageInfo = new MagickImageInfo(stream);
+            if (imageInfo.Width == 0 || imageInfo.Height == 0 ||
+                (long)imageInfo.Width * imageInfo.Height > MaxPixels) return false;
+            stream.Position = 0;
+            using var image = new MagickImage(stream);
+            return image.Width == imageInfo.Width && image.Height == imageInfo.Height;
         }
         catch
         {

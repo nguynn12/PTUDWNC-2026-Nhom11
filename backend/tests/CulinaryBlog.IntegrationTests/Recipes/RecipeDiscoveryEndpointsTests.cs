@@ -102,23 +102,21 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
         using var privateOldSlug = await guest.GetAsync($"/api/v1/recipes/{oldSlug}");
         Assert.Equal(HttpStatusCode.NotFound, privateOldSlug.StatusCode);
         await Mutate(HttpMethod.Patch, path + "/publish", expected: 422);
-        using var ingredient = await admin.PostAsJsonAsync(path + "/ingredients", new { name = "Gạo", quantity = 200, unit = "g", orderIndex = 1 });
-        Assert.Equal(HttpStatusCode.Created, ingredient.StatusCode);
-        using var step = await admin.PostAsJsonAsync(path + "/steps", new { stepNumber = 1, title = "Nấu cơm", description = "Vo gạo sạch và nấu chín mềm với lượng nước phù hợp." });
-        Assert.Equal(HttpStatusCode.Created, step.StatusCode);
-        Assert.Equal("Published", (await Mutate(HttpMethod.Patch, path + "/publish")).GetProperty("status").GetString());
+        await Mutate(HttpMethod.Post, path + "/ingredients", new { name = "Gạo", quantity = 200, unit = "g", orderIndex = 1 }, expected: 201);
+        await Mutate(HttpMethod.Post, path + "/steps", new { stepNumber = 1, title = "Nấu cơm", description = "Vo gạo sạch và nấu chín mềm với lượng nước phù hợp." }, expected: 201);
+        Assert.Equal(1, (await Mutate(HttpMethod.Patch, path + "/publish")).GetProperty("status").GetInt32());
         using var oldSlugRedirect = await guest.GetAsync($"/api/v1/recipes/{oldSlug}");
         Assert.Equal(HttpStatusCode.MovedPermanently, oldSlugRedirect.StatusCode);
-        Assert.Equal("Published", (await Mutate(HttpMethod.Patch, path + "/publish")).GetProperty("status").GetString());
-        Assert.Equal("Draft", (await Mutate(HttpMethod.Patch, path + "/unpublish")).GetProperty("status").GetString());
-        Assert.Equal("Draft", (await Mutate(HttpMethod.Patch, path + "/unpublish")).GetProperty("status").GetString());
-        Assert.Equal("Archived", (await Mutate(HttpMethod.Patch, path + "/archive")).GetProperty("status").GetString());
-        Assert.Equal("Draft", (await Mutate(HttpMethod.Patch, path + "/unarchive")).GetProperty("status").GetString());
+        Assert.Equal(1, (await Mutate(HttpMethod.Patch, path + "/publish")).GetProperty("status").GetInt32());
+        Assert.Equal(0, (await Mutate(HttpMethod.Patch, path + "/unpublish")).GetProperty("status").GetInt32());
+        Assert.Equal(0, (await Mutate(HttpMethod.Patch, path + "/unpublish")).GetProperty("status").GetInt32());
+        Assert.Equal(2, (await Mutate(HttpMethod.Patch, path + "/archive")).GetProperty("status").GetInt32());
+        Assert.Equal(0, (await Mutate(HttpMethod.Patch, path + "/unarchive")).GetProperty("status").GetInt32());
         await Mutate(HttpMethod.Delete, path, expected: 204);
         using var trash = await admin.GetAsync("/api/v1/admin/recipes/trash");
         Assert.Equal(HttpStatusCode.OK, trash.StatusCode);
         Assert.Contains(id.ToString(), await trash.Content.ReadAsStringAsync());
-        Assert.Equal("Draft", (await Mutate(HttpMethod.Post, $"/api/v1/admin/recipes/{id}/restore")).GetProperty("status").GetString());
+        Assert.Equal(0, (await Mutate(HttpMethod.Post, $"/api/v1/admin/recipes/{id}/restore")).GetProperty("status").GetInt32());
         await Mutate(HttpMethod.Delete, path, expected: 204);
         await Mutate(HttpMethod.Delete, $"/api/v1/admin/recipes/{id}/purge", expected: 204);
         using var missing = await admin.GetAsync(path);
@@ -187,7 +185,7 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
         Assert.NotNull(envelope.Data);
         Assert.Equal("Phở Bò Tái Lăn Hà Nội", envelope.Data.Title);
         Assert.Equal("pho-bo-tai-lan-ha-noi", envelope.Data.Slug);
-        Assert.Equal("Published", envelope.Data.Status);
+        Assert.Equal(CulinaryBlog.Domain.Enums.RecipeStatus.Published, envelope.Data.Status);
     }
 
     [Fact]
@@ -220,7 +218,7 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
         Assert.NotNull(envelope.Data);
         Assert.Equal("Gỏi Cuốn Tôm Thịt Bí Mật", envelope.Data.Title);
         Assert.Equal("goi-cuon-tom-thit-bi-mat", envelope.Data.Slug);
-        Assert.Equal("Draft", envelope.Data.Status);
+        Assert.Equal(CulinaryBlog.Domain.Enums.RecipeStatus.Draft, envelope.Data.Status);
     }
 
     [Fact]

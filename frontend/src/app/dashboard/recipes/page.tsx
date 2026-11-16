@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   PlusCircle,
@@ -52,6 +52,7 @@ export default function MyRecipesLifecyclePage() {
   const [activeFilter, setActiveFilter] = useState<StatusFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const requestSequence = useRef(0);
 
   // Phân trang Server-side
   const [page, setPage] = useState(1);
@@ -74,6 +75,7 @@ export default function MyRecipesLifecyclePage() {
   }>({ isOpen: false });
 
   const loadRecipes = async (targetPage = page, targetFilter = activeFilter, targetQuery = searchQuery) => {
+    const requestId = ++requestSequence.current;
     try {
       setLoading(true);
       setLoadError(null);
@@ -94,19 +96,22 @@ export default function MyRecipesLifecyclePage() {
       });
 
       let res = await fetchPage(targetPage);
+      if (requestId !== requestSequence.current) return;
       const resolvedPage = Math.min(targetPage, Math.max(1, res.totalPages || 1));
       if (resolvedPage !== targetPage) res = await fetchPage(resolvedPage);
+      if (requestId !== requestSequence.current) return;
 
       setRecipes(res.items || []);
       setTotalPages(res.totalPages || 1);
       setTotalCount(res.totalCount || 0);
       setPage(resolvedPage);
     } catch (err) {
+      if (requestId !== requestSequence.current) return;
       const msg = (err as Error).message || 'Không thể tải danh sách công thức.';
       setLoadError(msg);
       showError('Không thể tải danh sách công thức', msg);
     } finally {
-      setLoading(false);
+      if (requestId === requestSequence.current) setLoading(false);
     }
   };
 
@@ -115,7 +120,11 @@ export default function MyRecipesLifecyclePage() {
       setPage(1);
       loadRecipes(1, activeFilter, searchQuery);
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      // Yêu cầu cũ không được ghi đè kết quả khi từ khóa/bộ lọc đã đổi.
+      requestSequence.current++;
+    };
   }, [searchQuery, activeFilter]);
 
   // Xử lý lỗi đặc thù (HTTP 409 Conflict token)

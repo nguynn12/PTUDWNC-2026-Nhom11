@@ -73,27 +73,21 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddCulinaryTelemetry(builder.Configuration);
 
-// Sau nginx/reverse proxy, RemoteIpAddress là IP của proxy => rate limit Auth (10 req/phút/IP) và IP đăng nhập
-// sẽ gom mọi người dùng vào một IP. Chỉ tin X-Forwarded-* khi kết nối đến từ mạng riêng (mạng compose);
-// client ngoài mạng đó không thể giả mạo IP bằng header.
-builder.Services.Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
-        | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
-    options.KnownIPNetworks.Clear();
-    options.KnownProxies.Clear();
-    foreach (var cidr in new[] { "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "::1/128" })
-        options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(cidr));
-});
-
-// SEC-03 & OPS-10: Cấu hình ForwardedHeaders an toàn với proxy tin cậy
+// Chỉ nhận địa chỉ chuyển tiếp từ các proxy được cấu hình tường minh.
+// Chạy trực tiếp không cấu hình proxy: bỏ qua hoàn toàn X-Forwarded-* từ client.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    var proxies = builder.Configuration.GetSection("ReverseProxy:KnownProxies").Get<string[]>() ?? [];
+    var networks = builder.Configuration.GetSection("ReverseProxy:KnownNetworks").Get<string[]>() ?? [];
+    options.ForwardedHeaders = ForwardedHeaders.None;
+    if (proxies.Length == 0 && networks.Length == 0) return;
     options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
+    foreach (var proxy in proxies) options.KnownProxies.Add(System.Net.IPAddress.Parse(proxy));
+    foreach (var network in networks) options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+    options.ForwardLimit = 1;
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
-
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -108,20 +102,34 @@ if (!app.Environment.IsDevelopment())
 
 app.Use(async (context, next) =>
 {
-    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-    context.Response.Headers["X-Frame-Options"] = "DENY";
-    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    // API JSON thuần: CSP chặt nhất. Riêng giao diện tài liệu/vận hành (Scalar, OpenAPI, Hangfire) cần
-    // script/style/font nên được nới có chủ đích; các đường dẫn này chỉ phục vụ Development hoặc Admin.
-    context.Response.Headers["Content-Security-Policy"] = IsToolingPath(context.Request.Path)
-        ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
-          "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; " +
-          "font-src 'self' data: https://fonts.gstatic.com https://fonts.scalar.com https://cdn.jsdelivr.net; " +
-          "img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'"
-        : "default-src 'none'; frame-ancestors 'none'";
+    var ratePolicy = context.GetEndpoint()?.Metadata
+        .GetMetadata<Microsoft.AspNetCore.RateLimiting.EnableRateLimitingAttribute>()?.PolicyName;
+    // Ghi lúc bắt đầu response để exception handler không xóa mất các header này.
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        context.Response.Headers["X-Frame-Options"] = "DENY";
+        context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+        context.Response.Headers["Content-Security-Policy"] = IsToolingPath(context.Request.Path)
+            ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; " +
+              "font-src 'self' data: https://fonts.gstatic.com https://fonts.scalar.com https://cdn.jsdelivr.net; " +
+              "img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'"
+            : "default-src 'none'; frame-ancestors 'none'";
+        if (ratePolicy != null)
+        {
+            var limit = ratePolicy switch
+            {
+                CulinaryBlog.API.RateLimiting.AuthRateLimiting.PolicyName => CulinaryBlog.API.RateLimiting.AuthRateLimiting.PermitLimit,
+                CulinaryBlog.API.RateLimiting.UploadRateLimiting.PolicyName => CulinaryBlog.API.RateLimiting.UploadRateLimiting.PermitLimit,
+                _ => CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PermitLimit
+            };
+            context.Response.Headers["X-RateLimit-Limit"] = limit.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+        return Task.CompletedTask;
+    });
     await next();
 });
-
 // CORS đặt đầu pipeline: preflight OPTIONS trả ngay (không tính rate limit) và header CORS
 // vẫn có trên response lỗi (401/429/500) để trình duyệt đọc được Problem Details.
 app.UseCors(CorsSetup.PolicyName);
@@ -213,6 +221,8 @@ if (!app.Environment.IsEnvironment("Testing"))
 
     try
     {
+        RecurringJob.AddOrUpdate<CulinaryBlog.Infrastructure.Services.RecipeImageJobs>(
+            "reconcile-recipe-images", job => job.ReconcileAsync(CancellationToken.None), "*/15 * * * *");
         RecurringJob.AddOrUpdate<PurgeExpiredRecipesJob>(
             "purge-expired-recipes-30days",
             job => job.ExecuteAsync(CancellationToken.None),
@@ -232,12 +242,7 @@ if (!app.Environment.IsEnvironment("Testing"))
 
 // Nhóm /api/v1 có phiên bản (Asp.Versioning, SRS 5.2). Các module gắn endpoint vào nhóm này.
 var api = app.MapVersionedApi()
-    .RequireRateLimiting(CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PolicyName)
-    .AddEndpointFilter(async (context, next) =>
-    {
-        context.HttpContext.Response.Headers["X-RateLimit-Limit"] = CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PermitLimit.ToString();
-        return await next(context);
-    });
+    .RequireRateLimiting(CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PolicyName);
 
 // 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
 api.MapAuthEndpoints();

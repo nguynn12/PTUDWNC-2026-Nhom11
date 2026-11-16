@@ -50,11 +50,12 @@ public class CategoryEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var envelope = await response.Content.ReadFromJsonAsync<ApiResponse<CategoryDetailDto>>(JsonOptions);
-        Assert.NotNull(envelope);
-        Assert.NotNull(envelope.Data);
-        Assert.Equal("Món Chính", envelope.Data.Name);
-        Assert.Equal("mon-chinh", envelope.Data.Slug);
+        using var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var data = json.RootElement.GetProperty("data");
+        Assert.Equal("Món Chính", data.GetProperty("category").GetProperty("name").GetString());
+        Assert.Equal("mon-chinh", data.GetProperty("category").GetProperty("slug").GetString());
+        Assert.NotEmpty(data.GetProperty("recipes").EnumerateArray());
+        Assert.Equal(1, json.RootElement.GetProperty("meta").GetProperty("recipes").GetProperty("page").GetInt32());
     }
 
     [Fact]

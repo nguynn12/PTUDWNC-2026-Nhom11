@@ -7,7 +7,7 @@ namespace CulinaryBlog.API.Configuration;
 /// <summary>
 /// OPS-07: OpenTelemetry (trace; metric chỉ thu trong tiến trình) cho request vào API và HTTP gọi ra ngoài (Google, MinIO...).
 /// Chỉ xuất dữ liệu khi cấu hình <c>OpenTelemetry:OtlpEndpoint</c> (vd. Seq nhận OTLP tại
-/// <c>http://seq:80/ingest/otlp</c>); bỏ trống thì vẫn thu thập trong tiến trình nhưng không gửi đi đâu.
+/// <c>http://seq:5341/ingest/otlp</c>); bỏ trống thì vẫn thu thập trong tiến trình nhưng không gửi đi đâu.
 /// </summary>
 public static class TelemetrySetup
 {

@@ -337,10 +337,11 @@ export const RecipeApi = {
   // --- [API 1/10 TV4] POST /api/v1/recipes/{id}/ingredients ---
   async addIngredient(
     recipeId: string,
-    request: CreateRecipeIngredientRequest
+    request: CreateRecipeIngredientRequest, xmin?: string | number | null
   ): Promise<RecipeIngredientDto> {
     try {
       return await fetchApi<RecipeIngredientDto>(`/recipes/${recipeId}/ingredients`, {
+        ifMatch: xmin,
         method: 'POST',
         body: JSON.stringify(request),
       });
@@ -357,12 +358,13 @@ export const RecipeApi = {
   async updateIngredient(
     recipeId: string,
     ingredientId: string,
-    request: UpdateRecipeIngredientRequest
+    request: UpdateRecipeIngredientRequest, xmin?: string | number | null
   ): Promise<RecipeIngredientDto> {
     try {
       return await fetchApi<RecipeIngredientDto>(
         `/recipes/${recipeId}/ingredients/${ingredientId}`,
         {
+        ifMatch: xmin,
           method: 'PUT',
           body: JSON.stringify(request),
         }
@@ -377,9 +379,10 @@ export const RecipeApi = {
   },
 
   // --- [API 3/10 TV4] DELETE /api/v1/recipes/{id}/ingredients/{ingredientId} ---
-  async deleteIngredient(recipeId: string, ingredientId: string): Promise<void> {
+  async deleteIngredient(recipeId: string, ingredientId: string, xmin?: string | number | null): Promise<void> {
     try {
       await fetchApi<void>(`/recipes/${recipeId}/ingredients/${ingredientId}`, {
+        ifMatch: xmin,
         method: 'DELETE',
       });
     } catch (error) {
@@ -392,9 +395,10 @@ export const RecipeApi = {
   },
 
   // --- [API 4/10 TV4] POST /api/v1/recipes/{id}/steps ---
-  async addStep(recipeId: string, request: CreateRecipeStepRequest): Promise<RecipeStepDto> {
+  async addStep(recipeId: string, request: CreateRecipeStepRequest, xmin?: string | number | null): Promise<RecipeStepDto> {
     try {
       return await fetchApi<RecipeStepDto>(`/recipes/${recipeId}/steps`, {
+        ifMatch: xmin,
         method: 'POST',
         body: JSON.stringify(request),
       });
@@ -411,10 +415,11 @@ export const RecipeApi = {
   async updateStep(
     recipeId: string,
     stepId: string,
-    request: UpdateRecipeStepRequest
+    request: UpdateRecipeStepRequest, xmin?: string | number | null
   ): Promise<RecipeStepDto> {
     try {
       return await fetchApi<RecipeStepDto>(`/recipes/${recipeId}/steps/${stepId}`, {
+        ifMatch: xmin,
         method: 'PUT',
         body: JSON.stringify(request),
       });
@@ -430,10 +435,11 @@ export const RecipeApi = {
   // --- [API 6/10 TV4] PUT /api/v1/recipes/{id}/steps/reorder ---
   async reorderSteps(
     recipeId: string,
-    request: ReorderRecipeStepsRequest
+    request: ReorderRecipeStepsRequest, xmin?: string | number | null
   ): Promise<RecipeStepDto[]> {
     try {
       return await fetchApi<RecipeStepDto[]>(`/recipes/${recipeId}/steps/reorder`, {
+        ifMatch: xmin,
         method: 'PUT',
         body: JSON.stringify(request),
       });
@@ -447,9 +453,10 @@ export const RecipeApi = {
   },
 
   // --- [API 7/10 TV4] DELETE /api/v1/recipes/{id}/steps/{stepId} ---
-  async deleteStep(recipeId: string, stepId: string): Promise<void> {
+  async deleteStep(recipeId: string, stepId: string, xmin?: string | number | null): Promise<void> {
     try {
       await fetchApi<void>(`/recipes/${recipeId}/steps/${stepId}`, {
+        ifMatch: xmin,
         method: 'DELETE',
       });
     } catch (error) {
@@ -467,7 +474,7 @@ export const RecipeApi = {
     file: File,
     altText?: string | null,
     isPrimary = false,
-    onUploadProgress?: (percent: number) => void
+    onUploadProgress?: (percent: number) => void, xmin?: string | number | null
   ): Promise<RecipeImageDto> {
     const formData = new FormData();
     formData.append('file', file);
@@ -478,6 +485,7 @@ export const RecipeApi = {
 
     try {
       return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images`, {
+        ifMatch: xmin,
         method: 'POST',
         body: formData,
         onUploadProgress: (e) => {
@@ -500,10 +508,11 @@ export const RecipeApi = {
   async updateImage(
     recipeId: string,
     imageId: string,
-    request: UpdateRecipeImageRequest
+    request: UpdateRecipeImageRequest, xmin?: string | number | null
   ): Promise<RecipeImageDto> {
     try {
       return await fetchApi<RecipeImageDto>(`/recipes/${recipeId}/images/${imageId}`, {
+        ifMatch: xmin,
         method: 'PATCH',
         body: JSON.stringify(request),
       });
@@ -517,9 +526,10 @@ export const RecipeApi = {
   },
 
   // --- [API 10/10 TV4] DELETE /api/v1/recipes/{id}/images/{imageId} ---
-  async deleteImage(recipeId: string, imageId: string): Promise<void> {
+  async deleteImage(recipeId: string, imageId: string, xmin?: string | number | null): Promise<void> {
     try {
       await fetchApi<void>(`/recipes/${recipeId}/images/${imageId}`, {
+        ifMatch: xmin,
         method: 'DELETE',
       });
     } catch (error) {

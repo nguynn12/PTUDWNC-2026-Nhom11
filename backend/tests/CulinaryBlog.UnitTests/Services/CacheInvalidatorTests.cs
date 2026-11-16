@@ -62,7 +62,9 @@ public class CacheInvalidatorTests
         Assert.Contains(CacheConstants.CategoryAllKey, mockCache.RemovedKeys);
         Assert.Contains($"{CacheConstants.CategoryPrefix}{slug}", mockCache.RemovedKeys);
         Assert.Contains(CacheConstants.CategoryPrefix, mockCache.RemovedPrefixes);
-        // API-10: Xóa cache danh sách công thức đang hiển thị tên danh mục
+        Assert.Contains(CacheConstants.RecipeDetailPrefix, mockCache.RemovedPrefixes);
+        Assert.Contains(CacheConstants.RecipeSlugPrefix, mockCache.RemovedPrefixes);
+        // Xóa cả chi tiết và danh sách đang hiển thị tên danh mục.
         Assert.Contains(CacheConstants.RecipeListPrefix, mockCache.RemovedPrefixes);
         Assert.Contains(CacheConstants.SearchPrefix, mockCache.RemovedPrefixes);
     }

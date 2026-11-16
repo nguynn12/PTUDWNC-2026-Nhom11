@@ -28,61 +28,61 @@ public static class AuthEndpoints
     {
         // Gắn vào nhóm /api/v{version} (Program.cs) nên đường dẫn thực tế là /api/v1/auth.
         var group = app.MapGroup("/auth")
-            .WithTags("Auth")
-            .RequireRateLimiting(AuthRateLimiting.PolicyName);
+            .WithTags("Auth");
+        var limited = group.MapGroup("").RequireRateLimiting(AuthRateLimiting.PolicyName);
 
-        // FR-AUTH-001: 201 Created; body token ở top-level (RESOLVED-CONFLICTS C2 — ngoại lệ /auth/*).
-        group.MapPost("/register", async (RegisterCommand command, ISender sender) =>
+        // FR-AUTH-001: 201 Created, phản hồi theo envelope thống nhất.
+        limited.MapPost("/register", async (RegisterCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
             return Results.Created("/api/v1/auth/me", ApiResponse.From(result));
         });
 
-        group.MapPost("/login", async (LoginCommand command, ISender sender) =>
+        limited.MapPost("/login", async (LoginCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
             return Results.Ok(ApiResponse.From(result));
         });
 
         // FR-AUTH-003: đăng nhập bằng Google ID token (Google Identity Services ở frontend).
-        group.MapPost("/google", async (GoogleLoginCommand command, ISender sender) =>
+        limited.MapPost("/google", async (GoogleLoginCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
             return Results.Ok(ApiResponse.From(result));
         });
 
-        group.MapPost("/refresh", async (RefreshTokenCommand command, ISender sender) =>
+        limited.MapPost("/refresh", async (RefreshTokenCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
             return Results.Ok(ApiResponse.From(result));
         });
 
-        group.MapPost("/email/confirm", async (ConfirmEmailCommand command, ISender sender) =>
+        limited.MapPost("/email/confirm", async (ConfirmEmailCommand command, ISender sender) =>
         {
             await sender.Send(command);
             return Results.NoContent();
         });
 
         // FR-AUTH-009: luôn 202 + message chung (không tiết lộ email có tồn tại hay không).
-        group.MapPost("/email/resend", async (ResendConfirmationEmailCommand command, ISender sender) =>
+        limited.MapPost("/email/resend", async (ResendConfirmationEmailCommand command, ISender sender) =>
         {
             await sender.Send(command);
             return Results.Accepted(value: ApiResponse.From(new { message = ResendConfirmationEmailCommandHandler.GenericMessage }));
         });
 
-        group.MapPost("/password/forgot", async (ForgotPasswordCommand command, ISender sender) =>
+        limited.MapPost("/password/forgot", async (ForgotPasswordCommand command, ISender sender) =>
         {
             await sender.Send(command);
             return Results.NoContent();
         });
 
-        group.MapPost("/password/reset", async (ResetPasswordCommand command, ISender sender) =>
+        limited.MapPost("/password/reset", async (ResetPasswordCommand command, ISender sender) =>
         {
             await sender.Send(command);
             return Results.NoContent();
         });
 
-        group.MapPost("/password/change", async (ChangePasswordCommand command, ISender sender) =>
+        limited.MapPost("/password/change", async (ChangePasswordCommand command, ISender sender) =>
         {
             var result = await sender.Send(command);
             return Results.Ok(ApiResponse.From(result));

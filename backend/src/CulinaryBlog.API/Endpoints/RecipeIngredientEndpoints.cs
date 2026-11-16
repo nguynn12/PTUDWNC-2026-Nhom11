@@ -20,16 +20,7 @@ using Microsoft.AspNetCore.Routing;
 /// </summary>
 public static class RecipeIngredientEndpoints
 {
-    private static uint? ParseIfMatchHeader(string? ifMatch)
-    {
-        if (string.IsNullOrWhiteSpace(ifMatch)) return null;
-        var cleanToken = ifMatch.Trim().Trim('"');
-        if (!uint.TryParse(cleanToken, out var parsed))
-        {
-            throw new BadRequestException("Tiêu đề If-Match không đúng định dạng.", "INVALID_IF_MATCH_HEADER");
-        }
-        return parsed;
-    }
+    private static uint? ParseIfMatchHeader(string? ifMatch) => RecipeLifecycleEndpoints.RequireIfMatch(ifMatch);
 
     public static RouteGroupBuilder MapRecipeIngredientEndpoints(this RouteGroupBuilder group)
     {

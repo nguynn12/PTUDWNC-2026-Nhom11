@@ -219,7 +219,10 @@ public class RecipeStepService : IRecipeStepService
             throw new BadRequestException("Danh sách sắp xếp phải chứa đúng toàn bộ các bước đang có của công thức.", "INVALID_STEP_IDS");
         }
 
-        // API-05: Cập nhật hai giai đoạn (two-stage update) với số âm tạm thời để không chạm unique index (RecipeId, StepNumber) trên PostgreSQL
+        await using var transaction = _context is DbContext db && db.Database.IsRelational()
+            ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
+
+        // Hai giai đoạn trong cùng transaction để không để lại số âm khi request thất bại.
         for (int i = 0; i < existingSteps.Count; i++)
         {
             existingSteps[i].StepNumber = -(i + 1);
@@ -239,6 +242,7 @@ public class RecipeStepService : IRecipeStepService
         await _context.SaveChangesAsync(cancellationToken);
 
         // API-08: Hủy cache Recipe/Search
+        if (transaction != null) await transaction.CommitAsync(cancellationToken);
         if (_cacheInvalidator != null)
         {
             await _cacheInvalidator.InvalidateRecipeAsync(recipeId, recipe.Slug, cancellationToken);
@@ -278,6 +282,9 @@ public class RecipeStepService : IRecipeStepService
             throw new NotFoundException(nameof(RecipeStep), stepId, "STEP_NOT_FOUND");
         }
 
+        await using var transaction = _context is DbContext db && db.Database.IsRelational()
+            ? await db.Database.BeginTransactionAsync(cancellationToken) : null;
+
         // Xóa mềm theo quy chuẩn BaseEntity
         stepToDelete.IsDeleted = true;
         stepToDelete.DeletedAt = DateTimeOffset.UtcNow;
@@ -303,6 +310,7 @@ public class RecipeStepService : IRecipeStepService
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        if (transaction != null) await transaction.CommitAsync(cancellationToken);
         // API-08: Hủy cache Recipe/Search
         if (_cacheInvalidator != null)
         {

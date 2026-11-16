@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -72,6 +73,9 @@ export default async function HomePage() {
     console.error("Lỗi khi tải danh sách công thức:", recResult.reason);
     fetchError = true;
   }
+
+  // Nếu API chưa chạy lúc build, đợi request thật thay vì lưu trang lỗi vào ISR.
+  if (fetchError) await connection();
 
   return (
     <div className="flex flex-col min-h-screen">

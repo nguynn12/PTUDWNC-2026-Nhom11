@@ -196,8 +196,8 @@ public class GetRecipeByIdQueryTests
         Assert.NotNull(result);
         Assert.Equal(recipeId, result.Id);
         Assert.Equal("Bún Bò Huế Cay Nồng", result.Title);
-        Assert.Equal("Draft", result.Status);
-        Assert.Equal("Hard", result.Difficulty);
+        Assert.Equal(RecipeStatus.Draft, result.Status);
+        Assert.Equal(RecipeDifficulty.Hard, result.Difficulty);
     }
 
     [Fact]
@@ -235,6 +235,6 @@ public class GetRecipeByIdQueryTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(recipeId, result.Id);
-        Assert.Equal("Draft", result.Status);
+        Assert.Equal(RecipeStatus.Draft, result.Status);
     }
 }

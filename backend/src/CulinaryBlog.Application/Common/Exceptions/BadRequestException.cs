@@ -7,6 +7,7 @@ namespace CulinaryBlog.Application.Common.Exceptions;
 public class BadRequestException : Exception
 {
     public string? ErrorCode { get; }
+    public int StatusCode { get; } = 400;
 
     public BadRequestException(string message) : base(message)
     {
@@ -16,6 +17,12 @@ public class BadRequestException : Exception
     public BadRequestException(string message, string errorCode) : base(message)
     {
         ErrorCode = errorCode;
+    }
+
+    public BadRequestException(string message, string errorCode, int statusCode) : base(message)
+    {
+        ErrorCode = errorCode;
+        StatusCode = statusCode;
     }
 }
 

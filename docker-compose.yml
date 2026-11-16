@@ -70,6 +70,9 @@ services:
   minio-init:
     image: minio/mc:RELEASE.2024-01-16T16-06-34Z
     container_name: culinary-blog-minio-init
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-culinary_minio_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-culinary_minio_secret}
     depends_on:
       - minio
     entrypoint: >
@@ -109,6 +112,10 @@ services:
     image: culinaryblog-api:latest
     container_name: culinary-blog-api
     restart: unless-stopped
+    networks:
+      default:
+      proxy:
+        aliases: [api-proxy]
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-culinary_blog_dev};Username=${POSTGRES_USER:-culinary_blog};Password=${POSTGRES_PASSWORD:-culinary_blog_dev}
@@ -117,7 +124,7 @@ services:
       Redis__Host: redis
       Redis__Port: 6379
       Minio__Endpoint: http://minio:9000
-      Minio__PublicUrl: http://localhost:9000
+      Minio__PublicUrl: ${MINIO_PUBLIC_URL:-http://localhost:9000}
       Minio__AccessKey: ${MINIO_ROOT_USER:-culinary_minio_admin}
       Minio__SecretKey: ${MINIO_ROOT_PASSWORD:-culinary_minio_secret}
       Minio__BucketName: culinary-blog
@@ -131,6 +138,7 @@ services:
       # OPS-01: máy sạch chạy compose phải tự có schema + dữ liệu mẫu
       Database__AutoMigrate: "true"
       SeedData__Enabled: ${SEED_DATA_ENABLED:-true}
+      ReverseProxy__KnownProxies__0: 172.30.11.10
       Seq__ServerUrl: http://seq:5341
       # OPS-07: Seq nhận OTLP (trace + metric) ở /ingest/otlp
       OpenTelemetry__OtlpEndpoint: http://seq:5341/ingest/otlp
@@ -157,6 +165,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
+        BACKEND_API_URL: http://api:8080
         NEXT_PUBLIC_SITE_URL: ${CLIENT_BASE_URL:-http://localhost:3000}
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GoogleAuth__ClientId:-}
     image: culinaryblog-web:latest
@@ -176,6 +185,10 @@ services:
     image: nginx:alpine
     container_name: culinary-blog-nginx
     restart: unless-stopped
+    networks:
+      default:
+      proxy:
+        ipv4_address: 172.30.11.10
     ports:
       - "${NGINX_PORT:-80}:80"
     volumes:
@@ -183,6 +196,12 @@ services:
     depends_on:
       - api
       - web
+
+networks:
+  proxy:
+    ipam:
+      config:
+        - subnet: 172.30.11.0/24
 
 volumes:
   postgres_data:

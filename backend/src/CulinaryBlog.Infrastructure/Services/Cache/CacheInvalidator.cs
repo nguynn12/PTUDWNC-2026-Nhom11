@@ -57,7 +57,10 @@ public class CacheInvalidator : ICacheInvalidator
 
         await _cacheService.RemoveByPrefixAsync(CacheConstants.CategoryPrefix, cancellationToken);
 
-        // [API-10] Khi danh mục đổi tên/thông tin, danh sách công thức đang hiển thị CategoryName cũng cần được làm mới
+        await _cacheService.RemoveByPrefixAsync(CacheConstants.RecipeDetailPrefix, cancellationToken);
+        await _cacheService.RemoveByPrefixAsync(CacheConstants.RecipeSlugPrefix, cancellationToken);
+
+        // Khi danh mục đổi tên, làm mới cả chi tiết và danh sách công thức liên quan.
         await _cacheService.RemoveByPrefixAsync(CacheConstants.RecipeListPrefix, cancellationToken);
         await _cacheService.RemoveByPrefixAsync(CacheConstants.SearchPrefix, cancellationToken);
 

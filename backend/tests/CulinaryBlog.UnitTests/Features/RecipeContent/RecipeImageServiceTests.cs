@@ -42,15 +42,11 @@ public class RecipeImageServiceTests
         }
     }
 
-    private class FakeImageProcessingService : IImageProcessingService
+    private class FakeImageJobs : IRecipeImageJobs
     {
-        public Task<(ImageVariantResult? Thumbnail, ImageVariantResult? Medium)> ProcessVariantsAsync(
-            Stream sourceStream, string originalFileName, CancellationToken cancellationToken = default)
-        {
-            var thumb = new ImageVariantResult(new MemoryStream(new byte[10]), "thumb.webp", "image/webp", 300, 300);
-            var med = new ImageVariantResult(new MemoryStream(new byte[10]), "medium.webp", "image/webp", 800, 600);
-            return Task.FromResult<(ImageVariantResult?, ImageVariantResult?)>((thumb, med));
-        }
+        public List<Guid> Resizes { get; } = [];
+        public void EnqueueResize(Guid imageId) => Resizes.Add(imageId);
+        public void EnqueueDelete(string fileUrl) { }
     }
 
     private CulinaryBlogDbContext CreateInMemoryDbContext()
@@ -65,9 +61,9 @@ public class RecipeImageServiceTests
     private static MemoryStream CreateValidJpegStream()
     {
         // Ảnh JPEG thật: FileValidationHelper giờ giải mã mọi ảnh (kể cả ảnh nhỏ).
-        using var image = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>(4, 4);
+        using var image = new ImageMagick.MagickImage(ImageMagick.MagickColors.Orange, 4, 4);
         var ms = new MemoryStream();
-        SixLabors.ImageSharp.ImageExtensions.SaveAsJpeg(image, ms);
+        image.Write(ms, ImageMagick.MagickFormat.Jpeg);
         ms.Position = 0;
         return ms;
     }
@@ -229,7 +225,7 @@ public class RecipeImageServiceTests
     }
 
     [Fact]
-    public async Task UploadImageAsync_WithImageProcessingService_ShouldSaveThumbnailAndMediumUrls()
+    public async Task UploadImageAsync_QueuesResizeWithoutWaitingForVariants()
     {
         // Arrange
         using var context = CreateInMemoryDbContext();
@@ -237,7 +233,8 @@ public class RecipeImageServiceTests
         context.Recipes.Add(new Recipe { Id = recipeId, Title = "Pho Bo", Description = "Pho bo Ha Noi", AuthorId = "user1" });
         await context.SaveChangesAsync();
 
-        var service = new RecipeImageService(context, new FakeFileStorageService(), new FakeImageProcessingService());
+        var jobs = new FakeImageJobs();
+        var service = new RecipeImageService(context, new FakeFileStorageService(), jobs);
         using var stream = CreateValidJpegStream();
 
         // Act
@@ -255,10 +252,9 @@ public class RecipeImageServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.NotNull(result.OriginalUrl);
-        Assert.NotNull(result.ThumbnailUrl);
-        Assert.Contains("thumb.webp", result.ThumbnailUrl);
-        Assert.NotNull(result.MediumUrl);
-        Assert.Contains("medium.webp", result.MediumUrl);
+        Assert.Null(result.ThumbnailUrl);
+        Assert.Null(result.MediumUrl);
+        Assert.Equal(result.Id, Assert.Single(jobs.Resizes));
 
         var savedImage = await context.RecipeImages.FirstOrDefaultAsync(i => i.Id == result.Id);
         Assert.NotNull(savedImage);

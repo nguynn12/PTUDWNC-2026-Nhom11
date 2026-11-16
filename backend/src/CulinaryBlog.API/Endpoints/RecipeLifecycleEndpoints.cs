@@ -20,32 +20,32 @@ public static class RecipeLifecycleEndpoints
 {
     private static (uint? Token, IResult? Error) ParseRequiredIfMatch(string? ifMatch)
     {
-        if (string.IsNullOrWhiteSpace(ifMatch))
+        try { return (RequireIfMatch(ifMatch), null); }
+        catch (CulinaryBlog.Application.Common.Exceptions.BadRequestException ex)
         {
-            return (null, Results.Problem(
-                type: CulinaryBlog.Application.Common.Exceptions.ErrorCodes.PreconditionRequired,
-                title: "Precondition Required",
-                detail: "Header 'If-Match' là bắt buộc để thực hiện thao tác cập nhật đồng thời (Optimistic Concurrency Control).",
-                statusCode: StatusCodes.Status428PreconditionRequired));
+            return (null, Results.Problem(type: ex.ErrorCode,
+                title: ex.StatusCode == 428 ? "Precondition Required" : "Bad Request",
+                detail: ex.Message, statusCode: ex.StatusCode));
         }
+    }
+
+    internal static uint RequireIfMatch(string? ifMatch)
+    {
+        if (string.IsNullOrWhiteSpace(ifMatch))
+            throw new CulinaryBlog.Application.Common.Exceptions.BadRequestException(
+                "Header If-Match là bắt buộc. Vui lòng tải lại dữ liệu.",
+                CulinaryBlog.Application.Common.Exceptions.ErrorCodes.PreconditionRequired, 428);
 
         if (!System.Net.Http.Headers.EntityTagHeaderValue.TryParse(ifMatch.Trim(), out var etag) ||
             etag.IsWeak || etag.Tag.Length < 3 ||
             !uint.TryParse(etag.Tag.AsSpan(1, etag.Tag.Length - 2),
-                System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var parsed) ||
-            parsed == 0 ||
-            etag.Tag != $"\"{parsed.ToString(System.Globalization.CultureInfo.InvariantCulture)}\"")
-        {
-            return (null, Results.Problem(
-                type: CulinaryBlog.Application.Common.Exceptions.ErrorCodes.MalformedRequest,
-                title: "Bad Request",
-                detail: "If-Match phải chứa một strong ETag dạng \"123\" với token nguyên dương. Vui lòng tải lại dữ liệu.",
-                statusCode: StatusCodes.Status400BadRequest));
-        }
-
-        return (parsed, null);
+                System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var token) ||
+            token == 0 || etag.Tag != $"\"{token.ToString(System.Globalization.CultureInfo.InvariantCulture)}\"")
+            throw new CulinaryBlog.Application.Common.Exceptions.BadRequestException(
+                "If-Match phải chứa một strong ETag dạng \"123\" với token nguyên dương.",
+                CulinaryBlog.Application.Common.Exceptions.ErrorCodes.MalformedRequest);
+        return token;
     }
-
     public static RouteGroupBuilder MapRecipeLifecycleEndpoints(this RouteGroupBuilder group)
     {
         var recipes = group.MapGroup("/recipes");

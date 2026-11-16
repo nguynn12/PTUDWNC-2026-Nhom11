@@ -34,21 +34,23 @@ public static class CategoryEndpoints
         .Produces<ApiResponse<IEnumerable<CategoryDto>>>(StatusCodes.Status200OK);
 
         // FR-CAT-002: Lấy thông tin chi tiết danh mục theo Slug (Public)
-        group.MapGet("/{slug}", async (string slug, ISender sender, CancellationToken cancellationToken) =>
+        group.MapGet("/{slug}", async (string slug, int? page, int? pageSize, ISender sender, CancellationToken cancellationToken) =>
         {
-            var category = await sender.Send(new GetCategoryBySlugQuery(slug), cancellationToken);
+            var category = await sender.Send(new GetCategoryBySlugQuery(slug, page ?? 1, pageSize ?? 12), cancellationToken);
 
             if (category is null)
             {
                 throw new NotFoundException($"Không tìm thấy danh mục với đường dẫn '{slug}'.", "CATEGORY_NOT_FOUND");
             }
 
-            return Results.Ok(new ApiResponse<CategoryDetailDto>(category));
+            var recipes = category.Recipes;
+            return Results.Ok(new ApiResponse<object>(new { category, recipes = recipes.Items },
+                new { recipes = new { recipes.Page, recipes.PageSize, recipes.Total, recipes.TotalPages, recipes.HasNextPage, recipes.HasPreviousPage } }));
         })
         .WithName("GetCategoryBySlug")
         .WithSummary("Xem chi tiết danh mục theo Slug")
         .WithDescription("Trả về thông tin chi tiết của danh mục dựa trên slug chuẩn SEO (FR-CAT-002).")
-        .Produces<ApiResponse<CategoryDetailDto>>(StatusCodes.Status200OK)
+        .Produces<ApiResponse<object>>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
         // FR-CAT-003: Tạo danh mục mới (Admin)

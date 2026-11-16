@@ -190,6 +190,7 @@ export interface RecipeSummaryDto {
   publishedAt?: string | null;
   createdAt: string;
   updatedAt?: string | null;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null; // Concurrency token phục vụ If-Match
   isDeleted?: boolean;
   deletedAt?: string | null;
@@ -197,6 +198,7 @@ export interface RecipeSummaryDto {
 }
 
 export interface RecipeDetailDto {
+  category?: { id: string; name: string; slug: string } | null;
   id: string;
   title: string;
   slug: string;
@@ -222,12 +224,14 @@ export interface RecipeDetailDto {
   createdAt: string;
   updatedAt?: string | null;
   rowVersion?: string;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
 }
 
 export interface RecipeFullDetailDto extends RecipeDetailDto {
   prepTimeMinutes?: number;
   cookTimeMinutes?: number;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
 }
 

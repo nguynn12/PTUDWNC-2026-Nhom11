@@ -134,8 +134,8 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
       name: recipe.author?.displayName || recipe.author?.userName || "Culinary Blog",
     },
     datePublished: recipe.publishedAt,
-    prepTime: `PT${recipe.prepTime || 15}M`,
-    cookTime: `PT${recipe.cookTime || 30}M`,
+    prepTime: `PT${recipe.prepTime ?? 0}M`,
+    cookTime: `PT${recipe.cookTime ?? 0}M`,
     totalTime: `PT${recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 45}M`,
     recipeYield: `${recipe.servings || 4} khẩu phần`,
     recipeCategory: recipe.categoryName,
@@ -317,7 +317,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
             Chuẩn bị
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
-            {recipe.prepTime || 15} phút
+            {recipe.prepTime ?? 0} phút
           </div>
         </div>
 
@@ -326,7 +326,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
             Nấu nướng
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
-            {recipe.cookTime || 30} phút
+            {recipe.cookTime ?? 0} phút
           </div>
         </div>
 
@@ -335,7 +335,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
             Tổng thời gian
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--primary)] mt-1">
-            {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 15) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 30)) || 45} phút
+            {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0)) || 45} phút
           </div>
         </div>
 

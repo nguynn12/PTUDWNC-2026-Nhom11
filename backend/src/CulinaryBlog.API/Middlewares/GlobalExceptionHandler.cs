@@ -154,9 +154,9 @@ public sealed class GlobalExceptionHandler(
                 null
             ),
             BadRequestException badRequestEx => (
-                StatusCodes.Status400BadRequest,
+                badRequestEx.StatusCode,
                 string.IsNullOrWhiteSpace(badRequestEx.ErrorCode) ? ErrorCodes.MalformedRequest : badRequestEx.ErrorCode,
-                "Bad Request",
+                badRequestEx.StatusCode == 428 ? "Precondition Required" : "Bad Request",
                 badRequestEx.Message,
                 null
             ),

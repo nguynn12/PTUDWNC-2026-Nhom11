@@ -19,7 +19,7 @@ using MediatR;
 /// <param name="MinCalories">Lượng calo tối thiểu (kcal).</param>
 /// <param name="MaxCalories">Lượng calo tối đa (kcal).</param>
 /// <param name="SortBy">Trường sắp xếp (publishedAt, newest, totalTime, quickest, prepTime, cookTime, calories, title, servings).</param>
-/// <param name="SortOrder">Thứ tự sắp xếp (asc hoặc desc, mặc định desc cho publishedAt).</param>
+/// <param name="SortOrder">Thứ tự sắp xếp (asc hoặc desc, mặc định createdAt giảm dần theo quyết định C1).</param>
 /// <param name="Mine">Khi true, chỉ lấy các bài viết của tác giả hiện tại (bao gồm Draft, Published, Archived).</param>
 /// <param name="Status">Lọc theo trạng thái bài viết cụ thể (khi mine=true).</param>
 /// <param name="AuthorId">Lọc theo định danh tác giả cụ thể (phục vụ Admin/nghiệp vụ lọc tác giả - API-14).</param>

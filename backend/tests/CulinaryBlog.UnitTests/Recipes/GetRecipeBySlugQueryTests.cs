@@ -43,8 +43,8 @@ public class GetRecipeBySlugQueryTests
             PrepTimeMinutes = 30,
             CookTimeMinutes = 120,
             Servings = 4,
-            Difficulty = "Medium",
-            Status = "Published",
+            Difficulty = CulinaryBlog.Domain.Enums.RecipeDifficulty.Medium,
+            Status = CulinaryBlog.Domain.Enums.RecipeStatus.Published,
             PublishedAt = publishedDate,
             CreatedAt = publishedDate.AddDays(-1),
             Category = new CategoryDto

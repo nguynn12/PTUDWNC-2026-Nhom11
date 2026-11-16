@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import React from "react";
 import type { Metadata } from "next";
 import { getCategories } from "@/lib/api/categories";
@@ -8,7 +9,7 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { CategoryDto } from "@/types/api";
 
-// Cấu hình ISR: Tự động tái sinh ngầm định trang sau 60 giây khi có danh mục mới
+// Cấu hình ISR: Tự động tái sinh ngầm định trang sau 3600 giây khi có danh mục mới
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
@@ -56,6 +57,9 @@ export default async function CategoriesPage() {
     if (orderA !== orderB) return orderA - orderB;
     return a.name.localeCompare(b.name, "vi");
   });
+
+  // Nếu API chưa chạy lúc build, đợi request thật thay vì lưu trang lỗi vào ISR.
+  if (fetchError) await connection();
 
   return (
     <div className="py-8 sm:py-12">

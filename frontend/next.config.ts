@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
+    // Biến thể WebP đã được tối ưu ở backend; browser dùng PublicUrl trực tiếp.
+    // Tránh optimizer trong container truy cập localhost của chính container web.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",

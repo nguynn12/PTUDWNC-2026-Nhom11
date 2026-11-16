@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
     launchOptions: { channel: process.env.PLAYWRIGHT_CHANNEL || undefined },
   },
   projects: [

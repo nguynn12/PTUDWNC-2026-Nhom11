@@ -39,6 +39,8 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
     public async Task<PagedResult<RecipeSummaryDto>> Handle(GetRecipesQuery request, CancellationToken cancellationToken)
     {
+        if (!string.IsNullOrWhiteSpace(request.AuthorId) && !_currentUserService.IsAdmin)
+            throw new ForbiddenException("Chỉ Admin được lọc công thức theo tác giả.", "RECIPE_FORBIDDEN");
         // 1. Chuẩn hóa tham số phân trang
         var page = request.Page < 1 ? 1 : request.Page;
         var pageSize = request.PageSize switch
@@ -152,7 +154,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         if (total == 0)
         {
             var emptyResult = new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
-            if (_cacheService != null && request.Mine != true)
+            if (_cacheService != null && isPublicListing)
             {
                 await _cacheService.SetAsync(cacheKey, emptyResult, CacheConstants.RecipeListDuration, cancellationToken);
             }
@@ -160,7 +162,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         }
 
         // 5. Áp dụng sắp xếp linh hoạt theo whitelist (FR-SRCH-003) và phân trang
-        var sortedQuery = ApplySorting(query, request.SortBy, request.SortOrder, request.Mine == true);
+        var sortedQuery = ApplySorting(query, request.SortBy, request.SortOrder);
 
         var items = await sortedQuery
             .Skip((page - 1) * pageSize)
@@ -182,8 +184,8 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
                 PrepTimeMinutes = r.PrepTimeMinutes,
                 CookTimeMinutes = r.CookTimeMinutes,
                 Servings = r.Servings,
-                Difficulty = r.Difficulty.ToString(),
-                Status = r.Status.ToString(),
+                Difficulty = r.Difficulty,
+                Status = r.Status,
                 CategoryId = r.CategoryId,
                 CategoryName = r.Category != null ? r.Category.Name : null,
                 CategorySlug = r.Category != null ? r.Category.Slug : null,
@@ -221,7 +223,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
     /// <summary>
     /// Áp dụng sắp xếp động theo danh sách whitelist quy định trong SRS FR-SRCH-003 và quyết định 2440.
     /// </summary>
-    private static IQueryable<Recipe> ApplySorting(IQueryable<Recipe> query, string? sortBy, string? sortOrder, bool isMine = false)
+    private static IQueryable<Recipe> ApplySorting(IQueryable<Recipe> query, string? sortBy, string? sortOrder)
     {
         var normalizedSortBy = sortBy?.Trim().ToLowerInvariant();
         var isAsc = string.Equals(sortOrder?.Trim(), "asc", StringComparison.OrdinalIgnoreCase);
@@ -238,15 +240,13 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
                 ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
                 : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
             "quickest" => isAsc
-                ? query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes)
-                : query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes),
+                ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
+                : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
             "calories" => isAsc
                 ? query.OrderBy(r => r.Nutrition != null ? r.Nutrition.Calories : 0)
                 : query.OrderByDescending(r => r.Nutrition != null ? r.Nutrition.Calories : 0),
             "title" => isAsc ? query.OrderBy(r => r.Title) : query.OrderByDescending(r => r.Title),
-            _ => isMine
-                ? (isAsc ? query.OrderBy(r => r.UpdatedAt ?? r.CreatedAt) : query.OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt))
-                : query.OrderByDescending(r => r.PublishedAt) // Sắp xếp mặc định: mới nhất trước
+            _ => isAsc ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt)
         };
     }
 }

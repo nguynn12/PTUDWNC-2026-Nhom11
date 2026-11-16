@@ -174,6 +174,7 @@ export interface CreateRecipePayload {
 }
 
 export interface UpdateRecipePayload extends CreateRecipePayload {
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
 }
 
@@ -191,6 +192,7 @@ export interface RecipeFullDetailDto {
   difficulty: RecipeDifficulty | number;
   status: RecipeStatus | number;
   categoryId: string;
+  category?: { id: string; name: string; slug: string } | null;
   categoryName?: string | null;
   categorySlug?: string | null;
   authorId?: string;
@@ -200,6 +202,7 @@ export interface RecipeFullDetailDto {
   createdAt: string;
   updatedAt?: string | null;
   primaryImageUrl?: string | null;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
   isDeleted?: boolean;
   deletedAt?: string | null;

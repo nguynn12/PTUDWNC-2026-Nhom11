@@ -15,7 +15,7 @@ Thư mục này chứa toàn bộ quyết định kiến trúc phát sinh từ v
 | `RESOLVED-CONFLICTS.md` | 27 mâu thuẫn giữa các phần của SRS đã được phân tích và chốt quyết định kiến trúc (ADR), cộng D7 chốt từ OPEN-QUESTIONS #1 | 28 |
 | `OPEN-QUESTIONS.md` | Các điểm SRS v1.2.0 vẫn còn mơ hồ/tự mâu thuẫn, cần người quyết trước khi code phần liên quan | 3 còn mở (mục 1 đã chốt) |
 
-## Quy tắc cho AI coding agent đọc thư mục này
+## Quy tắc cho người triển khai đọc thư mục này
 
 - Không implement bất kỳ phần nào khớp với 1 mục trong `OPEN-QUESTIONS.md` mà không có xác nhận của người dùng trong phiên làm việc hiện tại, kể cả khi có vẻ "hiển nhiên nên chọn phương án nào".
 - Khi 1 file trong `RESOLVED-CONFLICTS.md` có mục "Tác động kỹ thuật" ghi rõ migration SQL / tên field / route API — coi đó là spec bắt buộc tuân theo, không tự đổi tên khác dù thấy hợp lý hơn.

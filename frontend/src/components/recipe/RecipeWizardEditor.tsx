@@ -73,6 +73,31 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const [activeStep, setActiveStep] = useState<number>(1);
   const [recipeId, setRecipeId] = useState<string | null>(initialRecipeId ?? null);
   const [xmin, setXmin] = useState<string | number | null>(null);
+  const versionRef = useRef<string | number | null>(null);
+  const updateXmin = useCallback((value: string | number | null) => {
+    versionRef.current = value;
+    setXmin(value);
+  }, []);
+
+  async function mutateContent<T>(operation: (version: string | number) => Promise<T>): Promise<T> {
+    const version = versionRef.current;
+    if (version === null) throw new ApiError({ status: 428, message: 'Vui lòng tải lại công thức trước khi tiếp tục chỉnh sửa.' });
+    let result: T;
+    try { result = await operation(version); }
+    catch (error) {
+      if (error instanceof ApiError && error.status === 409)
+        setConflictState({ isOpen: true, detail: error.message });
+      throw error;
+    }
+    try {
+      const detail = await RecipeApi.getRecipeFullDetail(recipeId!);
+      updateXmin(detail.concurrencyToken ?? detail.xmin ?? null);
+    } catch {
+      updateXmin(null);
+      showWarning('Đã lưu thay đổi', 'Chưa tải được phiên bản mới. Hãy tải lại công thức trước khi sửa tiếp.');
+    }
+    return result;
+  }
   const [recipeStatus, setRecipeStatus] = useState<string>('Draft');
 
   // Danh mục (Categories)
@@ -167,7 +192,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         setPrepTimeMinutes(detail.prepTimeMinutes ?? detail.prepTime ?? 15);
         setCookTimeMinutes(detail.cookTimeMinutes ?? detail.cookTime ?? 30);
         setServings(detail.servings);
-        setXmin(detail.concurrencyToken ?? detail.xmin ?? null);
+        updateXmin(detail.concurrencyToken ?? detail.xmin ?? null);
         setRecipeStatus(String(detail.status || 'Draft'));
 
         if (detail.nutrition) {
@@ -197,7 +222,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         setLoadingInitial(false);
       }
     },
-    [showError]
+    [showError, updateXmin]
   );
 
   useEffect(() => {
@@ -288,7 +313,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         const resolvedId = created.id || (created as unknown as { data: { id: string } }).data?.id;
         const resolvedToken = (created as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? created.xmin ?? null;
         setRecipeId(resolvedId);
-        setXmin(resolvedToken);
+        updateXmin(resolvedToken);
         showSuccess(
           'Đã khởi tạo bản nháp công thức',
           `Mã công thức: ${(resolvedId || '').slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
@@ -296,7 +321,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
       } else {
         const updated = await RecipeApi.updateRecipe(recipeId, payload, xmin);
         const resolvedToken = (updated as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? updated.xmin ?? xmin;
-        setXmin(resolvedToken);
+        updateXmin(resolvedToken);
         showSuccess(
           'Đã cập nhật thông tin chung',
           `Phiên bản đồng thời mới: ${resolvedToken ?? 'Updated'}`
@@ -380,25 +405,25 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     try {
       if (editingIngId) {
         const existing = ingredients.find(i => i.id === editingIngId);
-        const updated = await RecipeApi.updateIngredient(recipeId, editingIngId, {
+        const updated = await mutateContent((version) => RecipeApi.updateIngredient(recipeId, editingIngId, {
           name: ingName.trim(),
           quantity: parsedQty,
           unit: parsedUnit,
           notes: ingNotes.trim() || null,
           orderIndex: existing?.orderIndex ?? ingredients.length + 1,
-        });
+        }, version));
         setIngredients(prev =>
           prev.map(item => (item.id === editingIngId ? updated : item))
         );
         showSuccess('Đã cập nhật nguyên liệu', `Đã lưu thay đổi cho "${updated.name}".`);
       } else {
-        const created = await RecipeApi.addIngredient(recipeId, {
+        const created = await mutateContent((version) => RecipeApi.addIngredient(recipeId, {
           name: ingName.trim(),
           quantity: parsedQty,
           unit: parsedUnit,
           notes: ingNotes.trim() || null,
           orderIndex: ingredients.length + 1,
-        });
+        }, version));
         setIngredients(prev => [...prev, created]);
         showSuccess('Đã thêm nguyên liệu', `Đã bổ sung "${created.name}" vào công thức.`);
       }
@@ -456,11 +481,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     setSubmittingStep(true);
     try {
       if (editingStepId) {
-        const updated = await RecipeApi.updateStep(recipeId, editingStepId, {
+        const updated = await mutateContent((version) => RecipeApi.updateStep(recipeId, editingStepId, {
           title: stepTitle.trim(),
           description: stepInstruction.trim(),
           durationMinutes: parsedDuration,
-        });
+        }, version));
         setSteps(prev =>
           prev
             .map(s => (s.id === editingStepId ? updated : s))
@@ -468,12 +493,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         );
         showSuccess('Đã cập nhật bước chế biến', `Bước ${updated.stepNumber}: ${updated.title}`);
       } else {
-        const created = await RecipeApi.addStep(recipeId, {
+        const created = await mutateContent((version) => RecipeApi.addStep(recipeId, {
           stepNumber: steps.length + 1,
           title: stepTitle.trim(),
           description: stepInstruction.trim(),
           durationMinutes: parsedDuration,
-        });
+        }, version));
         setSteps(prev => [...prev, created].sort((a, b) => a.stepNumber - b.stepNumber));
         showSuccess('Đã thêm bước chế biến', `Bước ${created.stepNumber}: ${created.title}`);
       }
@@ -499,9 +524,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     const orderedStepIds = cloned.map(s => s.id);
     setReorderingSteps(true);
     try {
-      const reordered = await RecipeApi.reorderSteps(recipeId, {
+      const reordered = await mutateContent((version) => RecipeApi.reorderSteps(recipeId, {
         stepIds: orderedStepIds,
-      });
+      }, version));
       setSteps(reordered);
       showInfo(
         'Đã sắp xếp lại thứ tự bước nấu',
@@ -580,14 +605,14 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     setUploadProgress(0);
     try {
       const total = filesToUpload.length;
-      const uploadedList: RecipeImageDto[] = [];
+
 
       for (let i = 0; i < total; i++) {
         const file = filesToUpload[i];
         const isFirst = (i === 0) && (imgIsPrimary || images.length === 0);
         const alt = total === 1 ? (imgAltText.trim() || title) : `${imgAltText.trim() || title} (Ảnh ${i + 1})`;
 
-        const uploaded = await RecipeApi.uploadImage(
+        const uploaded = await mutateContent((version) => RecipeApi.uploadImage(
           recipeId,
           file,
           alt,
@@ -595,27 +620,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
           (percent) => {
             const overall = Math.round(((i * 100) + percent) / total);
             setUploadProgress(overall);
-          }
-        );
-        uploadedList.push(uploaded);
+          }, version
+        ));
+        setImages(prev => [
+          ...prev.filter(image => image.id !== uploaded.id)
+            .map(image => uploaded.isPrimary ? { ...image, isPrimary: false } : image),
+          uploaded,
+        ]);
+        setEditingAltMap(prev => ({ ...prev, [uploaded.id]: uploaded.altText || '' }));
+        setSelectedFiles(filesToUpload.slice(i + 1));
+        setSelectedFile(filesToUpload[i + 1] ?? null);
       }
-
-      setImages(prev => {
-        let base = [...prev];
-        for (const uploaded of uploadedList) {
-          if (uploaded.isPrimary) {
-            base = base.map(img => ({ ...img, isPrimary: false }));
-          }
-          base.push(uploaded);
-        }
-        return base;
-      });
-
-      setEditingAltMap(prev => {
-        const next = { ...prev };
-        uploadedList.forEach(u => { next[u.id] = u.altText || ''; });
-        return next;
-      });
 
       setSelectedFile(null);
       setSelectedFiles([]);
@@ -648,17 +663,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     const targetImg = images[targetIndex];
 
     try {
-      await RecipeApi.updateImage(recipeId, currentImg.id, {
+      await mutateContent((version) => RecipeApi.updateImage(recipeId, currentImg.id, {
         altText: editingAltMap[currentImg.id] ?? currentImg.altText,
         isPrimary: currentImg.isPrimary,
         orderIndex: targetImg.orderIndex,
-      });
+      }, version));
 
-      await RecipeApi.updateImage(recipeId, targetImg.id, {
+      await mutateContent((version) => RecipeApi.updateImage(recipeId, targetImg.id, {
         altText: editingAltMap[targetImg.id] ?? targetImg.altText,
         isPrimary: targetImg.isPrimary,
         orderIndex: currentImg.orderIndex,
-      });
+      }, version));
 
       setImages(prev => {
         const next = [...prev];
@@ -675,11 +690,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const handleSetPrimaryImage = async (img: RecipeImageDto) => {
     if (!recipeId || img.isPrimary) return;
     try {
-      const updated = await RecipeApi.updateImage(recipeId, img.id, {
+      const updated = await mutateContent((version) => RecipeApi.updateImage(recipeId, img.id, {
         altText: editingAltMap[img.id] ?? img.altText,
         isPrimary: true,
         orderIndex: img.orderIndex,
-      });
+      }, version));
       setImages(prev =>
         prev.map(item => ({
           ...item,
@@ -696,11 +711,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     if (!recipeId) return;
     const newAlt = editingAltMap[img.id] ?? '';
     try {
-      const updated = await RecipeApi.updateImage(recipeId, img.id, {
+      const updated = await mutateContent((version) => RecipeApi.updateImage(recipeId, img.id, {
         altText: newAlt.trim() || null,
         isPrimary: img.isPrimary,
         orderIndex: img.orderIndex,
-      });
+      }, version));
       setImages(prev => prev.map(item => (item.id === img.id ? updated : item)));
       showSuccess('Đã lưu mô tả ảnh (Alt Text)', 'Metadata ảnh đã được cập nhật qua PATCH API.');
     } catch (err) {
@@ -718,12 +733,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
     try {
       if (type === 'ingredient') {
-        await RecipeApi.deleteIngredient(recipeId, id);
+        await mutateContent((version) => RecipeApi.deleteIngredient(recipeId, id, version));
         setIngredients(prev => prev.filter(i => i.id !== id));
         if (editingIngId === id) resetIngredientForm();
         showSuccess('Đã xóa nguyên liệu', `Đã xóa "${label}" khỏi danh sách.`);
       } else if (type === 'step') {
-        await RecipeApi.deleteStep(recipeId, id);
+        await mutateContent((version) => RecipeApi.deleteStep(recipeId, id, version));
         setSteps(prev =>
           prev
             .filter(s => s.id !== id)
@@ -735,7 +750,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
           'Các bước còn lại đã được tự động đánh lại số thứ tự liên tục 1..N.'
         );
       } else if (type === 'image') {
-        await RecipeApi.deleteImage(recipeId, id);
+        await mutateContent((version) => RecipeApi.deleteImage(recipeId, id, version));
         setImages(prev => {
           const remaining = prev.filter(i => i.id !== id);
           if (remaining.length > 0 && !remaining.some(i => i.isPrimary)) {
@@ -764,7 +779,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     try {
       const published = await RecipeApi.publishRecipe(recipeId, xmin);
       const resolvedToken = (published as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? published?.xmin ?? xmin;
-      setXmin(resolvedToken);
+      updateXmin(resolvedToken);
       showSuccess('Xuất bản công thức thành công!', `Món "${title}" đã được công khai.`);
       router.push('/dashboard/recipes');
     } catch (err) {
