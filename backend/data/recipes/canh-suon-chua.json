@@ -1,0 +1,122 @@
+{
+  "title": "Canh sườn chua",
+  "originalTitle": "Canh sườn chua",
+  "description": "Món canh sườn chua thanh tao rất được ưa chuộng trong bữa cơm gia đình, nước canh trong veo màu hồng cam dịu mát từ cà chua và dứa, vị chua thanh tự nhiên từ me hòa cùng vị ngọt đậm của sườn non mềm róc xương.",
+  "categoryName": "Món canh / Món sườn",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 45,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/canh-suon-chua-nau-dua-canh-cua-gia-dinh/",
+    "accessedOn": "2026-11-17",
+    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/canh-suon-chua-nau-dua-canh-cua-gia-dinh/)."
+  },
+  "nutrition": {
+    "calories": 280.0,
+    "protein": 22.0,
+    "carbohydrates": 9.0,
+    "fat": 16.0,
+    "fiber": null,
+    "sodium": null
+  },
+  "ingredients": [
+    {
+      "name": "Sườn non heo",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Chặt khúc vừa ăn 3-4cm"
+    },
+    {
+      "name": "Cà chua chín mọng",
+      "quantity": 2.0,
+      "unit": "quả nhỏ",
+      "notes": "Rửa sạch, bổ múi cau"
+    },
+    {
+      "name": "Dứa (thơm) chín vừa",
+      "quantity": 50.0,
+      "unit": "gram",
+      "notes": "Gọt vỏ, bỏ mắt, thái lát mỏng vừa ăn"
+    },
+    {
+      "name": "Nước cốt me chua",
+      "quantity": 25.0,
+      "unit": "ml (1.5 thìa canh)",
+      "notes": "Tạo vị chua thanh dịu ngọt hậu"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 1.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm nhỏ"
+    },
+    {
+      "name": "Hành lá và mùi tàu (ngò gai)",
+      "quantity": 1.0,
+      "unit": "mớ nhỏ",
+      "notes": "Rửa sạch, thái nhỏ"
+    },
+    {
+      "name": "Nước mắm ngon",
+      "quantity": 30.0,
+      "unit": "ml (2 thìa canh)",
+      "notes": "Nêm canh tạo vị thơm ngọt đượm"
+    },
+    {
+      "name": "Muối tinh",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Dùng chần sườn và nêm canh"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 15.0,
+      "unit": "ml (1 thìa canh)",
+      "notes": "Xào cà chua"
+    },
+    {
+      "name": "Hạt tiêu xay",
+      "quantity": 0.3,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Rắc mặt canh khi dọn"
+    },
+    {
+      "name": "Nước sạch ninh sườn",
+      "quantity": 1000.0,
+      "unit": "ml",
+      "notes": "Nước dùng canh trong ngọt"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Chần sườn và ninh sườn mềm trong",
+      "description": "Sườn non chặt khúc, cho vào nồi đổ ngập nước cùng 1 thìa cà phê muối. Đun sôi bùng trong 2-3 phút cho sườn tiết sạch bọt bẩn và máu đọng. Đổ sườn ra rổ, xả lại dưới vòi nước lạnh thật sạch vụn xương. Cho sườn trở lại nồi cùng 1 lít nước sạch, bật lửa lớn đun sôi rồi hạ lửa nhỏ ninh trong 30 phút đến khi thịt sườn chín mềm róc xương. Trong lúc ninh hớt bọt nếu có.",
+      "durationMinutes": 35
+    },
+    {
+      "title": "Xào cà chua tạo màu nước canh",
+      "description": "Bắc chảo nhỏ lên bếp với 1 thìa canh dầu ăn, phi thơm hành khô băm. Cho một nửa lượng cà chua bổ múi cau vào xào trên lửa vừa trong 3 phút đến khi cà chua mềm nhuyễn ra màu đỏ cam tự nhiên.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Nấu canh chua cùng dứa và me",
+      "description": "Khi sườn đã ninh mềm nhừ, trút phần cà chua đã xào cùng dứa thái lát mỏng và nước cốt me vào nồi sườn. Nêm 2 thìa canh nước mắm ngon và chút muối cho vừa miệng gia đình. Đun sôi lăn tăn thêm khoảng 5 phút để dứa và me tiết trọn vẹn vị chua ngọt thanh mát.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Hoàn thành và thưởng thức",
+      "description": "Thả nốt phần cà chua múi cau còn lại vào nồi (để miếng cà chua còn nguyên hình đẹp mắt), đun sôi lại 1 phút. Thả hành lá và mùi tàu thái nhỏ vào nồi rồi tắt bếp ngay. Múc canh ra tô sâu lòng, rắc chút hạt tiêu xay thơm nồng. Ăn nóng cùng cơm hoặc chan bún tươi.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80",
+      "altText": "Canh sườn chua",
+      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+    }
+  ]
+}

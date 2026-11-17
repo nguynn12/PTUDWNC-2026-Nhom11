@@ -1,0 +1,133 @@
+{
+  "title": "Bún bò Huế",
+  "originalTitle": "Bún bò Huế",
+  "description": "Bún bò Huế đậm đà nồng nàn với nước dùng ngọt sâu từ xương ống bò và móng giò, dậy mùi thơm lừng của sả tươi và mắm ruốc Huế nguyên chất, điểm xuyết váng dầu màu điều đỏ rực rỡ và bắp bò mềm ngọt.",
+  "categoryName": "Món bún / Đặc sản miền Trung",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 180,
+  "servings": 6,
+  "difficulty": "Hard",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/bun-bo-hue/",
+    "accessedOn": "2026-11-17",
+    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/bun-bo-hue/)."
+  },
+  "nutrition": {
+    "calories": 580.0,
+    "protein": 38.0,
+    "carbohydrates": 60.0,
+    "fat": 22.0,
+    "fiber": null,
+    "sodium": null
+  },
+  "ingredients": [
+    {
+      "name": "Xương ống bò hoặc xương ống heo",
+      "quantity": 1000.0,
+      "unit": "gram",
+      "notes": "Ninh lấy nước dùng ngọt"
+    },
+    {
+      "name": "Bắp bò hoa",
+      "quantity": 600.0,
+      "unit": "gram",
+      "notes": "Cuộn tròn buộc chỉ luộc chín thái lát"
+    },
+    {
+      "name": "Móng giò heo",
+      "quantity": 1.0,
+      "unit": "cái (khoảng 600g)",
+      "notes": "Cạo sạch lông, chặt khoanh tròn 3cm"
+    },
+    {
+      "name": "Sả tươi",
+      "quantity": 5.0,
+      "unit": "củ",
+      "notes": "Rửa sạch, đập dập phần gốc, bó lại thành bó"
+    },
+    {
+      "name": "Mắm ruốc Huế nguyên chất",
+      "quantity": 45.0,
+      "unit": "gram (2 thìa canh)",
+      "notes": "Nguyên liệu tạo hương vị đặc trưng cố đô"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 2.0,
+      "unit": "củ",
+      "notes": "1 củ thả ninh nước dùng, 1 củ bào mỏng ngâm đá ăn kèm"
+    },
+    {
+      "name": "Gừng tươi",
+      "quantity": 1.0,
+      "unit": "củ nhỏ",
+      "notes": "Nướng thơm, đập dập"
+    },
+    {
+      "name": "Dầu màu điều & ớt bột Huế",
+      "quantity": 2.0,
+      "unit": "hỗn hợp",
+      "notes": "Chưng sả ớt tạo váng màu đỏ cam rực rỡ"
+    },
+    {
+      "name": "Đường phèn",
+      "quantity": 20.0,
+      "unit": "gram",
+      "notes": "Làm dịu vị nồng của mắm ruốc và ngọt nước"
+    },
+    {
+      "name": "Nước mắm ngon & muối tinh",
+      "quantity": 1.0,
+      "unit": "gia vị",
+      "notes": "Nêm nếm nước dùng"
+    },
+    {
+      "name": "Bún bò sợi to",
+      "quantity": 1000.0,
+      "unit": "gram",
+      "notes": "Chần nước sôi"
+    },
+    {
+      "name": "Rau sống ăn kèm",
+      "quantity": 1.0,
+      "unit": "ăn kèm",
+      "notes": "Rau sống tươi sạch"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế xương thịt sạch khử mùi",
+      "description": "Xương ống, móng giò và bắp bò rửa sạch với nước muối. Cho tất cả vào nồi lớn ngập nước đun sôi bùng trong 5 phút để thải hết bọt bẩn và mùi tanh. Đổ ra rổ, xả nước lạnh rửa thật sạch từng miếng thịt và xương.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Pha và lọc mắm ruốc lấy nước trong",
+      "description": "Hòa tan 2 thìa canh mắm ruốc Huế với 1 bát con nước lạnh. Khuấy đều rồi để yên khoảng 30 phút cho phần cặn lắng xuống đáy. Khi nấu chỉ chắt nhẹ lấy phần nước trong thơm dịu phía trên đổ vào nồi canh, bỏ phần cặn bùn ở đáy nồi.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Ninh nước dùng sả ruốc ngọt sâu",
+      "description": "Cho xương, móng giò, bắp bò vào nồi lớn cùng 3.5 lít nước sạch. Thả bó sả đập dập, gừng nướng và 1 củ hành tây vào nồi. Đun sôi bùng, hớt sạch toàn bộ bọt nổi, sau đó đổ phần nước mắm ruốc đã lắng trong vào. Hạ nhỏ lửa đậy hé vung ninh liu riu. Sau khoảng 45 phút, kiểm tra thấy móng giò chín mềm vừa tới (dùng đũa xiên qua da dễ dàng) thì vớt ra ngâm nước đá lạnh cho giòn da. Bắp bò sau khoảng 1 tiếng chín mềm ngọt thì vớt ra ngâm nước lạnh rồi thái lát mỏng. Tiếp tục ninh xương cho ra hết chất ngọt.",
+      "durationMinutes": 120
+    },
+    {
+      "title": "Chưng dầu màu điều và nêm nếm",
+      "description": "Đun nóng 2 thìa canh dầu màu điều trên chảo nhỏ, cho 1 thìa sả băm, tỏi băm và 1 thìa ớt bột Huế vào phi thơm cho ra màu đỏ rực rỡ, sau đó trút vào nồi nước dùng. Nêm đường phèn, muối, nước mắm cho vừa khẩu vị. Nước dùng bún bò Huế đạt chuẩn phải có màu đỏ cam óng ánh, vị ngọt đậm đà, dậy mùi thơm của sả và thoảng nhẹ hương mắm ruốc.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Trình bày và thưởng thức",
+      "description": "Chần bún sợi to qua nước sôi, xếp vào các tô lớn. Xếp thịt bắp bò thái lát, móng giò, rắc hành tây bào mỏng và hành ngò thái nhỏ lên trên. Chan nước dùng nóng hổi ngập mặt bún. Ăn kèm đĩa hoa chuối bào, rau muống chẻ, giá đỗ và vắt thêm chanh tươi, ớt hiểm cay.",
+      "durationMinutes": 10
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1594998893017-36147cbcae05?auto=format&fit=crop&w=1200&q=80",
+      "altText": "Bún bò Huế",
+      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "title": "Bún ốc Hà Nội",
+  "originalTitle": "Bún ốc Hà Nội",
+  "description": "Bún ốc nước truyền thống Hà Nội với nước dùng thanh ngọt tự nhiên từ nước luộc ốc và xương ninh, vị chua dịu thanh tao không thể thay thế từ giấm bỗng nếp, thịt ốc giòn sần sật ăn kèm đậu phụ rán vàng và rau tía tô thơm ngát.",
+  "categoryName": "Món bún / Đặc sản Hà Nội",
+  "authorEmail": "chef.minhkhoi@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 45,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/bun-oc-ha-noi/",
+    "accessedOn": "2026-11-17",
+    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/bun-oc-ha-noi/)."
+  },
+  "nutrition": {
+    "calories": 410.0,
+    "protein": 24.0,
+    "carbohydrates": 48.0,
+    "fat": 14.0,
+    "fiber": null,
+    "sodium": null
+  },
+  "ingredients": [
+    {
+      "name": "Ốc nhồi hoặc ốc bươu tươi sống",
+      "quantity": 1000.0,
+      "unit": "gram",
+      "notes": "Ngâm nước vo gạo và ớt cay cho nhả sạch nhớt đất"
+    },
+    {
+      "name": "Xương ống hoặc sườn heo",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Ninh lấy nước dùng ngọt"
+    },
+    {
+      "name": "Cà chua chín mọng",
+      "quantity": 3.0,
+      "unit": "quả",
+      "notes": "Rửa sạch, bổ múi cau"
+    },
+    {
+      "name": "Giấm bỗng nếp ngon",
+      "quantity": 150.0,
+      "unit": "ml (1 bát con)",
+      "notes": "Nguyên liệu linh hồn tạo vị chua thanh dịu ngọt hậu"
+    },
+    {
+      "name": "Đậu phụ mơ",
+      "quantity": 2.0,
+      "unit": "bìa",
+      "notes": "Cắt khối vuông nhỏ 2cm, chiên vàng giòn"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 2.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm nhỏ"
+    },
+    {
+      "name": "Ớt chưng dầu (ớt sa tế)",
+      "quantity": 1.0,
+      "unit": "tbsp (thìa canh)",
+      "notes": "Tạo vị cay và màu đỏ đẹp"
+    },
+    {
+      "name": "Nước mắm ngon, muối tinh, bột nêm",
+      "quantity": 1.0,
+      "unit": "gia vị",
+      "notes": "Nêm nước dùng"
+    },
+    {
+      "name": "Bún tươi sợi nhỏ",
+      "quantity": 1000.0,
+      "unit": "gram",
+      "notes": "Chần qua nước sôi"
+    },
+    {
+      "name": "Rau sống tổng hợp",
+      "quantity": 1.0,
+      "unit": "rổ lớn",
+      "notes": "Tía tô, kinh giới, hoa chuối thái mỏng, hành hoa, xà lách"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Luộc ốc và khều thịt ốc giòn",
+      "description": "Ốc ngâm nước vo gạo cắt thêm vài lát ớt trong 2-3 tiếng cho nhả sạch bùn cát, rửa sạch vỏ ngoài. Cho ốc vào nồi với chút nước và vài lát gừng, đậy kín vung đun lửa lớn đến khi sôi bùng khoảng 2-3 phút, thấy mày ốc bong ra là tắt bếp ngay (luộc quá lâu ốc sẽ bị thụt sâu và dai). Vớt ốc ra, dùng tăm nhọn khều lấy phần thịt đầu giòn, bỏ phần phân ruột đen phía đuôi. Bóp nhẹ thịt ốc với chút muối và giấm rồi rửa sạch nhớt. Nước luộc ốc để yên cho lắng cặn, gạn lấy phần nước trong ngọt để nấu nước dùng.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Ninh nước dùng xương và hòa nước ốc",
+      "description": "Xương heo chần qua nước sôi, rửa sạch rồi cho vào nồi ninh với 1.5 lít nước sạch trong 30 phút cho ngọt nước. Đổ phần nước luộc ốc trong veo vào chung với nồi nước ninh xương, đun sôi lăn tăn và hớt sạch bọt nổi.",
+      "durationMinutes": 35
+    },
+    {
+      "title": "Xào cà chua và nêm giấm bỗng",
+      "description": "Bắc chảo lên bếp với 1 thìa canh dầu ăn, phi thơm hành khô băm. Cho một nửa lượng cà chua múi cau vào xào mềm nhuyễn cho ra màu đỏ cam tự nhiên rồi trút vào nồi nước dùng. Từ từ rót giấm bỗng vào nồi nước dùng, nêm nước mắm, muối, bột nêm cho vừa miệng gia đình. Nếm thử thấy nước canh có vị chua thanh dịu nhẹ, ngọt hậu tự nhiên. Thả nốt phần cà chua còn lại và đậu phụ chiên vào nồi đun sôi nhẹ.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Xào ốc và hoàn thành tô bún",
+      "description": "Dùng lại chảo, phi thơm chút hành khô, trút thịt ốc vào đảo nhanh tay trên lửa lớn trong 1 phút cùng chút bột nêm cho săn giòn rồi tắt bếp (không xào lâu làm ốc dai). Chần bún tươi qua nước sôi, xếp vào các tô lớn. Gắp thịt ốc xào, đậu phụ rán lên trên, rắc nhiều rau tía tô và hành lá thái nhỏ. Múc nước dùng giấm bỗng đang sôi sùng sục chan đều ngập bún. Thêm chút ớt chưng cay nồng và ăn kèm đĩa rau sống hoa chuối tươi mát.",
+      "durationMinutes": 10
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80",
+      "altText": "Bún ốc Hà Nội",
+      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+    }
+  ]
+}
