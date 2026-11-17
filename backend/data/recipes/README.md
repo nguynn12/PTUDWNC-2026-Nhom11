@@ -16,6 +16,7 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 - **Danh mục**: `categoryName` tìm theo tên (hoặc slug); chưa có thì tự tạo.
 - Chạy lại an toàn: công thức đã có (trùng slug) sẽ bị bỏ qua, không nhân đôi dữ liệu.
 - DB đang có dữ liệu được giữ nguyên: bộ nạp chỉ thêm công thức mới, không tự xóa hoặc thay thế công thức cũ.
+- Khởi động chỉ tạo tài khoản cố định và nhập JSON; không tự sinh tài khoản, danh mục, công thức hoặc chi tiết bằng Bogus. Thiếu JSON thì không tự thay bằng dữ liệu ngẫu nhiên.
 
 ## Định dạng
 
@@ -42,13 +43,14 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 
 | Nguồn khai báo trong JSON | Số công thức | Kiểm tra liên kết ảnh |
 |---|---:|---|
-| Allrecipes | 10 | Cả 10 ảnh trả 403 khi tải trực tiếp và không tải được trong trình duyệt thử |
+| Allrecipes | 10 | Môi trường kiểm tra tự động nhận 403; người dùng xác nhận mở được link trong trình duyệt của mình. Chưa kết luận ảnh lỗi với mọi người dùng |
 | BBC Good Food | 6 | 6 ảnh tải được |
 | RecipeTin Eats | 5 | 5 ảnh tải được |
 | Món Ngon Mỗi Ngày | 1 | 1 ảnh tải được |
 
 - Đã thử trên PostgreSQL riêng: DB mới có 22 công thức, 283 nguyên liệu, 112 bước và 22 bản ghi ảnh. Bản ghi ảnh tồn tại không chứng minh liên kết ảnh tải được.
 - Bản sao DB cũ tăng từ 100 lên 122 công thức; khởi động lại vẫn 122. Cache danh sách/danh mục được hủy sau khi nhập thêm món.
-- Chưa nhập vào DB demo gốc trong lần tích hợp này. Bộ nạp không thay thế 100 công thức cũ.
+- Sau tích hợp, đã nhập 22 món vào DB demo `culinary_blog_dev`, rồi xóa đúng 100 món Bogus theo yêu cầu. Đã sao lưu trước khi xóa. DB hiện có 22 công thức / 283 nguyên liệu / 112 bước / 22 ảnh.
+- Đã xóa 15 tài khoản Bogus, 5 danh mục mẫu không dùng; 15 danh mục còn lại dùng ảnh từ món thực tế trong danh mục, bỏ mô tả ngẫu nhiên và ảnh Picsum. Giữ tài khoản cố định và các tài khoản do người dùng/kiểm thử tạo riêng.
 - Chưa nghiệm thu đối chiếu từng định lượng và số liệu dinh dưỡng với trang nguồn. Các tài khoản tác giả là tài khoản demo của dự án, không phải tác giả gốc của các trang nguồn.
 - Khác mục 6 của kế hoạch trước demo: bộ nạp hiện ghi qua DbContext và liên kết ảnh ngoài, chưa tạo qua Command và chưa tải ảnh lên MinIO. Chưa đánh dấu DATA-01…03 hoàn thành.

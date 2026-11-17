@@ -17,8 +17,20 @@
 - Tích hợp 22 JSON công thức và bộ nạp từ nhánh TV1. Nguồn khai báo: 10 Allrecipes, 6 BBC Good Food, 5 RecipeTin Eats, 1 Món Ngon Mỗi Ngày. Metadata nguồn giữ trong JSON để đối chiếu, không nối vào mô tả bài trên blog.
 - Kiểm thử sau tích hợp: **412 unit + 54 integration = 466 test đạt**; frontend typecheck/build đạt, lint 13 cảnh báo và 0 lỗi. Chưa chạy lại toàn bộ E2E cho lần tích hợp dữ liệu này; kết quả 9/9 phía trên thuộc bản `96239d0`.
 - PostgreSQL riêng: DB mới nhập 22 món / 283 nguyên liệu / 112 bước / 22 bản ghi ảnh. Bản sao DB cũ tăng từ 100 lên 122 món, chạy lại không trùng. Danh sách công khai đã được làm nóng cache trước nhập tăng ngay từ 33 lên 55 món sau nhập.
-- **DATA-01…03 vẫn chưa nghiệm thu:** 10 ảnh Allrecipes trả 403 và không tải được trong trình duyệt thử; 12 ảnh còn lại tải được. Chưa đối chiếu từng định lượng/dinh dưỡng với nguồn. Tác giả gắn trong dữ liệu là tài khoản demo.
+- **DATA-01…03 vẫn chưa nghiệm thu:** môi trường kiểm tra tự động không tải được 10 ảnh Allrecipes (403), nhưng người dùng xác nhận mở được link trên trình duyệt của mình; chưa kết luận ảnh lỗi với mọi người dùng. 12 ảnh còn lại tải được trong lần kiểm tra. Chưa đối chiếu từng định lượng/dinh dưỡng với nguồn. Tác giả gắn trong dữ liệu là tài khoản demo.
 - Khác cách nhập dự kiến ở mục 6: bộ nạp ghi qua DbContext và dùng URL ảnh ngoài, chưa qua Command hoặc lưu ảnh vào MinIO. DB demo gốc vẫn 100 món / 1.165 nguyên liệu / 593 bước, chưa được thay bằng bộ 22 món. Không ghi báo cáo rằng dữ liệu nộp đã hoàn tất.
+
+### Dọn dữ liệu Bogus trên máy demo — 17/11/2026
+
+- Theo yêu cầu mới, đã sao lưu rồi xóa đúng 100 công thức cũ cùng 1.165 nguyên liệu, 593 bước và 300 ảnh. Đối chiếu danh sách ID đã lưu trước nhập; giữ nguyên nội dung của 22 công thức JSON.
+- Xóa 15 tài khoản ngẫu nhiên và 5 danh mục mẫu không dùng. Với 15 danh mục còn dùng, bỏ mô tả ngẫu nhiên/Picsum và chọn ảnh từ công thức thực tế trong danh mục. Giữ tài khoản cố định và các tài khoản được tạo riêng.
+- DB demo `culinary_blog_dev` hiện có **22 công thức / 283 nguyên liệu / 112 bước / 22 ảnh / 15 danh mục**. Cache công khai được làm mới; HTTP trả đúng 22 công thức và tổng số món trong danh mục là 22.
+- Bỏ tự sinh Bogus trong luồng khởi động, gồm tài khoản, danh mục, công thức và chi tiết. Các lớp seeder phục vụ Lab cũ vẫn còn trong mã nguồn nhưng không tự được gọi.
+- Backend **466/466 test đạt**. Khởi động lại DB demo không sinh thêm dữ liệu; DB kiểm tra mới chỉ có 22 món và 7 tài khoản cố định. Khi thiếu thư mục JSON, DB kiểm tra giữ 0 món / 0 danh mục, không thay bằng Bogus. DB kiểm tra đã được dọn.
+- Rà cuối trước commit: frontend typecheck/build production đạt; lint 13 cảnh báo, 0 lỗi; Docker Compose config hợp lệ. **9/9 E2E đạt** trên bản frontend production và API/PostgreSQL/Redis/MinIO thật, dùng DB/bucket riêng. Lượt này chạy API/Web cục bộ, không build lại Docker image hoặc chạy lại qua Nginx.
+- Đối chiếu HTTP chi tiết của toàn bộ 22 món với JSON: nội dung, định lượng của 283 nguyên liệu, 112 bước, dinh dưỡng và 22 đường dẫn ảnh khớp. DB demo không có nguyên liệu/bước/ảnh mồ côi; thứ tự bước liên tục và mỗi món có đúng một ảnh chính. Đối chiếu này kiểm tính toàn vẹn khi nhập, chưa chứng minh các số liệu đúng với trang nguồn.
+- Thao tác xóa dữ liệu cũ chỉ áp dụng cho DB trên máy demo. Commit/push mã nguồn không tự dọn các DB đã tồn tại ở máy khác; DB mới sẽ chỉ nhập bộ JSON, DB cũ phải được kiểm tra/dọn riêng sau khi sao lưu.
+- Việc loại bỏ Bogus không thay thế bước đối chiếu dinh dưỡng và nội dung từng món với nguồn; DATA-01…03 chưa được đánh dấu nghiệm thu đầy đủ.
 
 **Phần bên dưới là kế hoạch và phát hiện ban đầu tại `6f881b8`, không phải danh sách lỗi còn tồn tại sau tích hợp.**
 
