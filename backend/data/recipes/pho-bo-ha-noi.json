@@ -1,134 +1,134 @@
-{
-  "title": "Phở bò Hà Nội",
-  "originalTitle": "Phở bò Hà Nội",
-  "description": "Phở bò truyền thống chuẩn phong cách Hà Nội với nước dùng trong veo, ngọt sâu từ xương bò ninh nhừ cùng hương thơm thảo mộc ấm áp của gừng nướng, hoa hồi, quế, thảo quả và hạt mùi rang.",
-  "categoryName": "Món phở / Món bò",
-  "authorEmail": "chef.baongoc@culinaryblog.local",
-  "prepTimeMinutes": 30,
-  "cookTimeMinutes": 240,
-  "servings": 6,
-  "difficulty": "Hard",
-  "source": {
-    "name": "Linh Trang — Savoury Days",
-    "url": "https://www.savourydays.com/pho-bo-ha-noi/",
-    "accessedOn": "2026-11-17",
-    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/pho-bo-ha-noi/)."
-  },
-  "nutrition": {
-    "calories": 520.0,
-    "protein": 36.0,
-    "carbohydrates": 58.0,
-    "fat": 16.0,
-    "fiber": null,
-    "sodium": null
-  },
-  "ingredients": [
-    {
-      "name": "Xương bò (xương ống, sườn bò, đuôi bò)",
-      "quantity": 1800.0,
-      "unit": "gram",
-      "notes": "Ngâm nước muối, chần nước sôi 5 phút rửa sạch"
-    },
-    {
-      "name": "Thịt bắp bò (hoặc nạm bò)",
-      "quantity": 500.0,
-      "unit": "gram",
-      "notes": "Luộc chín tới trong nước phở, ngâm nước đá rồi thái mỏng"
-    },
-    {
-      "name": "Thịt thăn bò tươi mềm",
-      "quantity": 300.0,
-      "unit": "gram",
-      "notes": "Thấm khô, thái lát thật mỏng làm thịt bò tái"
-    },
-    {
-      "name": "Gừng tươi",
-      "quantity": 80.0,
-      "unit": "gram (1 củ lớn)",
-      "notes": "Nướng cháy xém vỏ, cạo sạch tro, đập dập"
-    },
-    {
-      "name": "Hành tím khô",
-      "quantity": 6.0,
-      "unit": "củ",
-      "notes": "Nướng chín xém vỏ, bóc vỏ, đập dập"
-    },
-    {
-      "name": "Hành tây",
-      "quantity": 1.0,
-      "unit": "củ lớn",
-      "notes": "1/2 củ nướng thả nồi nước dùng, 1/2 củ bào lát mỏng ăn kèm"
-    },
-    {
-      "name": "Gia vị thảo mộc (2 hoa hồi, 1 thanh quế, 2 thảo quả, 1 tsp hạt mùi)",
-      "quantity": 1.0,
-      "unit": "túi vải",
-      "notes": "Rang nhỏ lửa cho dậy mùi thơm nức rồi bọc vào túi vải"
-    },
-    {
-      "name": "Đường phèn",
-      "quantity": 25.0,
-      "unit": "gram",
-      "notes": "Tạo vị ngọt thanh dịu cho nước dùng phở"
-    },
-    {
-      "name": "Nước mắm ngon nguyên chất",
-      "quantity": 60.0,
-      "unit": "ml (4 thìa canh)",
-      "notes": "Nêm nước dùng"
-    },
-    {
-      "name": "Muối tinh",
-      "quantity": 1.5,
-      "unit": "tbsp (thìa canh)",
-      "notes": "Nêm nước ninh xương"
-    },
-    {
-      "name": "Bánh phở tươi",
-      "quantity": 1000.0,
-      "unit": "gram",
-      "notes": "Chần qua nước sôi già trước khi xếp vào bát"
-    },
-    {
-      "name": "Hành hoa, hành chẻ & rau mùi ta",
-      "quantity": 1.0,
-      "unit": "mớ lớn",
-      "notes": "Rửa sạch, thái nhỏ và chẻ sợi trắng"
-    },
-    {
-      "name": "Chanh tươi, ớt hiểm, tiêu xay",
-      "quantity": 1.0,
-      "unit": "ăn kèm",
-      "notes": "Gia vị nêm thêm tùy khẩu vị"
-    }
-  ],
-  "steps": [
-    {
-      "title": "Sơ chế và ninh xương bò nước trong",
-      "description": "Xương bò ngâm nước muối loãng 1-2 tiếng cho tiết hết máu thừa trong tủy. Cho xương vào nồi ngập nước đun sôi bùng trong 5 phút để loại bỏ hoàn toàn bọt bẩn và mùi hôi. Đổ xương ra rổ, dùng bàn chải nhỏ cọ rửa sạch từng khúc xương dưới vòi nước lạnh. Cho xương vào nồi lớn cùng 4.5 lít nước sạch, bật lửa lớn đun sôi rồi hạ lửa nhỏ liu riu. Thường xuyên hớt bọt và mỡ thừa nổi trên mặt để nước dùng được trong vắt.",
-      "durationMinutes": 60
-    },
-    {
-      "title": "Nướng thảo mộc và thả túi hương liệu",
-      "description": "Gừng, hành khô và nửa củ hành tây nướng trên lửa hoặc lò nướng cho xém vỏ dậy mùi thơm nức, cạo sạch phần cháy đen rồi đập dập nhẹ. Quế, hoa hồi, thảo quả và hạt mùi già cho lên chảo rang ở lửa nhỏ đến khi bốc mùi thơm thì trút vào túi vải sạch buộc kín miệng. Thả gừng, hành nướng và túi thảo mộc vào nồi nước dùng đang ninh.",
-      "durationMinutes": 15
-    },
-    {
-      "title": "Luộc bắp bò và nêm nếm nước dùng",
-      "description": "Thả miếng bắp bò vào nồi ninh cùng xương. Khi bắp bò chín mềm tới (khoảng 1 tiếng đến 1.5 tiếng), vớt ra thả ngay vào âu nước đá lạnh ngâm 10 phút để thịt không bị thâm đen và co giòn, sau đó vớt ra thái lát mỏng. Tiếp tục ninh xương ở lửa nhỏ hé vung thêm 2-3 tiếng. Khi nước dùng đã ra hết chất ngọt tủy, vớt bỏ xương và túi thảo mộc ra. Nêm nước mắm ngon, muối tinh và đường phèn. Nếm thử nước dùng thấy vị ngọt sâu tự nhiên của tủy xương, thoảng nhẹ hương thơm ấm áp.",
-      "durationMinutes": 150
-    },
-    {
-      "title": "Hoàn thành bát phở bò nóng hổi",
-      "description": "Chần bánh phở tươi qua nồi nước sôi già khoảng 15 giây, vớt ra lắc ráo nước rồi chia đều vào các tô lớn. Xếp các lát thịt bắp bò chín và thịt thăn bò tái thái mỏng lên trên bánh phở. Rắc hành hoa thái nhỏ, hành chẻ và rau mùi ta. Múc nước dùng đang sôi sùng sục chan đều ngập mặt thịt bò và bánh phở (nước sôi già sẽ làm thịt bò tái chín hồng mềm mọng). Thưởng thức nóng cùng chanh tươi, ớt xắt và hạt tiêu.",
-      "durationMinutes": 15
-    }
-  ],
-  "images": [
-    {
-      "url": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=1200&q=80",
-      "altText": "Phở bò Hà Nội",
-      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-    }
-  ]
+﻿{
+    "title":  "Phở bò Hà Nội",
+    "originalTitle":  "Phở bò Hà Nội",
+    "description":  "Phở bò truyền thống chuẩn phong cách Hà Nội với nước dùng trong veo, ngọt sâu từ xương bò ninh nhừ cùng hương thơm thảo mộc ấm áp của gừng nướng, hoa hồi, quế, thảo quả và hạt mùi rang.",
+    "categoryName":  "Món bún \u0026 phở",
+    "authorEmail":  "chef.baongoc@culinaryblog.local",
+    "prepTimeMinutes":  30,
+    "cookTimeMinutes":  240,
+    "servings":  6,
+    "difficulty":  "Hard",
+    "source":  {
+                   "name":  "Linh Trang — Savoury Days",
+                   "url":  "https://www.savourydays.com/pho-bo-ha-noi/",
+                   "accessedOn":  "2026-11-17",
+                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/pho-bo-ha-noi/)."
+               },
+    "nutrition":  {
+                      "calories":  520.0,
+                      "protein":  36.0,
+                      "carbohydrates":  58.0,
+                      "fat":  16.0,
+                      "fiber":  null,
+                      "sodium":  null
+                  },
+    "ingredients":  [
+                        {
+                            "name":  "Xương bò (xương ống, sườn bò, đuôi bò)",
+                            "quantity":  1800.0,
+                            "unit":  "gram",
+                            "notes":  "Ngâm nước muối, chần nước sôi 5 phút rửa sạch"
+                        },
+                        {
+                            "name":  "Thịt bắp bò (hoặc nạm bò)",
+                            "quantity":  500.0,
+                            "unit":  "gram",
+                            "notes":  "Luộc chín tới trong nước phở, ngâm nước đá rồi thái mỏng"
+                        },
+                        {
+                            "name":  "Thịt thăn bò tươi mềm",
+                            "quantity":  300.0,
+                            "unit":  "gram",
+                            "notes":  "Thấm khô, thái lát thật mỏng làm thịt bò tái"
+                        },
+                        {
+                            "name":  "Gừng tươi",
+                            "quantity":  80.0,
+                            "unit":  "gram (1 củ lớn)",
+                            "notes":  "Nướng cháy xém vỏ, cạo sạch tro, đập dập"
+                        },
+                        {
+                            "name":  "Hành tím khô",
+                            "quantity":  6.0,
+                            "unit":  "củ",
+                            "notes":  "Nướng chín xém vỏ, bóc vỏ, đập dập"
+                        },
+                        {
+                            "name":  "Hành tây",
+                            "quantity":  1.0,
+                            "unit":  "củ lớn",
+                            "notes":  "1/2 củ nướng thả nồi nước dùng, 1/2 củ bào lát mỏng ăn kèm"
+                        },
+                        {
+                            "name":  "Gia vị thảo mộc (2 hoa hồi, 1 thanh quế, 2 thảo quả, 1 tsp hạt mùi)",
+                            "quantity":  1.0,
+                            "unit":  "túi vải",
+                            "notes":  "Rang nhỏ lửa cho dậy mùi thơm nức rồi bọc vào túi vải"
+                        },
+                        {
+                            "name":  "Đường phèn",
+                            "quantity":  25.0,
+                            "unit":  "gram",
+                            "notes":  "Tạo vị ngọt thanh dịu cho nước dùng phở"
+                        },
+                        {
+                            "name":  "Nước mắm ngon nguyên chất",
+                            "quantity":  60.0,
+                            "unit":  "ml (4 thìa canh)",
+                            "notes":  "Nêm nước dùng"
+                        },
+                        {
+                            "name":  "Muối tinh",
+                            "quantity":  1.5,
+                            "unit":  "tbsp (thìa canh)",
+                            "notes":  "Nêm nước ninh xương"
+                        },
+                        {
+                            "name":  "Bánh phở tươi",
+                            "quantity":  1000.0,
+                            "unit":  "gram",
+                            "notes":  "Chần qua nước sôi già trước khi xếp vào bát"
+                        },
+                        {
+                            "name":  "Hành hoa, hành chẻ \u0026 rau mùi ta",
+                            "quantity":  1.0,
+                            "unit":  "mớ lớn",
+                            "notes":  "Rửa sạch, thái nhỏ và chẻ sợi trắng"
+                        },
+                        {
+                            "name":  "Chanh tươi, ớt hiểm, tiêu xay",
+                            "quantity":  1.0,
+                            "unit":  "ăn kèm",
+                            "notes":  "Gia vị nêm thêm tùy khẩu vị"
+                        }
+                    ],
+    "steps":  [
+                  {
+                      "title":  "Sơ chế và ninh xương bò nước trong",
+                      "description":  "Xương bò ngâm nước muối loãng 1-2 tiếng cho tiết hết máu thừa trong tủy. Cho xương vào nồi ngập nước đun sôi bùng trong 5 phút để loại bỏ hoàn toàn bọt bẩn và mùi hôi. Đổ xương ra rổ, dùng bàn chải nhỏ cọ rửa sạch từng khúc xương dưới vòi nước lạnh. Cho xương vào nồi lớn cùng 4.5 lít nước sạch, bật lửa lớn đun sôi rồi hạ lửa nhỏ liu riu. Thường xuyên hớt bọt và mỡ thừa nổi trên mặt để nước dùng được trong vắt.",
+                      "durationMinutes":  60
+                  },
+                  {
+                      "title":  "Nướng thảo mộc và thả túi hương liệu",
+                      "description":  "Gừng, hành khô và nửa củ hành tây nướng trên lửa hoặc lò nướng cho xém vỏ dậy mùi thơm nức, cạo sạch phần cháy đen rồi đập dập nhẹ. Quế, hoa hồi, thảo quả và hạt mùi già cho lên chảo rang ở lửa nhỏ đến khi bốc mùi thơm thì trút vào túi vải sạch buộc kín miệng. Thả gừng, hành nướng và túi thảo mộc vào nồi nước dùng đang ninh.",
+                      "durationMinutes":  15
+                  },
+                  {
+                      "title":  "Luộc bắp bò và nêm nếm nước dùng",
+                      "description":  "Thả miếng bắp bò vào nồi ninh cùng xương. Khi bắp bò chín mềm tới (khoảng 1 tiếng đến 1.5 tiếng), vớt ra thả ngay vào âu nước đá lạnh ngâm 10 phút để thịt không bị thâm đen và co giòn, sau đó vớt ra thái lát mỏng. Tiếp tục ninh xương ở lửa nhỏ hé vung thêm 2-3 tiếng. Khi nước dùng đã ra hết chất ngọt tủy, vớt bỏ xương và túi thảo mộc ra. Nêm nước mắm ngon, muối tinh và đường phèn. Nếm thử nước dùng thấy vị ngọt sâu tự nhiên của tủy xương, thoảng nhẹ hương thơm ấm áp.",
+                      "durationMinutes":  150
+                  },
+                  {
+                      "title":  "Hoàn thành bát phở bò nóng hổi",
+                      "description":  "Chần bánh phở tươi qua nồi nước sôi già khoảng 15 giây, vớt ra lắc ráo nước rồi chia đều vào các tô lớn. Xếp các lát thịt bắp bò chín và thịt thăn bò tái thái mỏng lên trên bánh phở. Rắc hành hoa thái nhỏ, hành chẻ và rau mùi ta. Múc nước dùng đang sôi sùng sục chan đều ngập mặt thịt bò và bánh phở (nước sôi già sẽ làm thịt bò tái chín hồng mềm mọng). Thưởng thức nóng cùng chanh tươi, ớt xắt và hạt tiêu.",
+                      "durationMinutes":  15
+                  }
+              ],
+    "images":  [
+                   {
+                       "url":  "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                       "altText":  "Phở bò Hà Nội",
+                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+                   }
+               ]
 }

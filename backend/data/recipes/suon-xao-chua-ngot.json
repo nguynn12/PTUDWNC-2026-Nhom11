@@ -1,116 +1,116 @@
-{
-  "title": "Sườn xào chua ngọt",
-  "originalTitle": "Sườn xào chua ngọt",
-  "description": "Sườn xào chua ngọt với miếng sườn non mềm róc xương, bề mặt xém vàng óng ả phủ đều lớp sốt chua ngọt sánh keo bóng bẩy, vị chua thanh ngọt dịu hòa quyện cùng mùi thơm của hành tỏi phi.",
-  "categoryName": "Món sườn / Món mặn",
-  "authorEmail": "chef.quocviet@culinaryblog.local",
-  "prepTimeMinutes": 15,
-  "cookTimeMinutes": 30,
-  "servings": 4,
-  "difficulty": "Easy",
-  "source": {
-    "name": "Linh Trang — Savoury Days",
-    "url": "https://www.savourydays.com/suon-xao-chua-ngot-my-best-sweet-sour-pork-ribs-recipe-ever/",
-    "accessedOn": "2026-11-17",
-    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/suon-xao-chua-ngot-my-best-sweet-sour-pork-ribs-recipe-ever/)."
-  },
-  "nutrition": {
-    "calories": 430.0,
-    "protein": 28.0,
-    "carbohydrates": 21.0,
-    "fat": 26.0,
-    "fiber": null,
-    "sodium": null
-  },
-  "ingredients": [
-    {
-      "name": "Sườn thăn non heo",
-      "quantity": 500.0,
-      "unit": "gram",
-      "notes": "Chặt khúc vừa ăn khoảng 3-4cm, chọn dẻ sườn nhiều thịt dắt chút mỡ"
-    },
-    {
-      "name": "Hành khô",
-      "quantity": 2.0,
-      "unit": "củ",
-      "notes": "Bóc vỏ, băm thật nhỏ"
-    },
-    {
-      "name": "Tỏi",
-      "quantity": 3.0,
-      "unit": "tép",
-      "notes": "Bóc vỏ, băm nhỏ"
-    },
-    {
-      "name": "Nước mắm ngon truyền thống",
-      "quantity": 30.0,
-      "unit": "ml (2 thìa canh)",
-      "notes": "Thành phần nước sốt chua ngọt"
-    },
-    {
-      "name": "Đường cát trắng",
-      "quantity": 30.0,
-      "unit": "gram (2 thìa canh)",
-      "notes": "Thành phần nước sốt chua ngọt"
-    },
-    {
-      "name": "Giấm gạo (hoặc nước cốt chanh)",
-      "quantity": 30.0,
-      "unit": "ml (2 thìa canh)",
-      "notes": "Tạo vị chua thanh cho sốt"
-    },
-    {
-      "name": "Nước lọc (hoặc nước luộc sườn)",
-      "quantity": 45.0,
-      "unit": "ml (3 thìa canh)",
-      "notes": "Hòa tan hỗn hợp sốt"
-    },
-    {
-      "name": "Tương cà chua (Ketchup)",
-      "quantity": 15.0,
-      "unit": "ml (1 thìa canh)",
-      "notes": "Tạo màu đỏ cam bóng đẹp và độ sánh mịn tự nhiên"
-    },
-    {
-      "name": "Hạt tiêu xay",
-      "quantity": 0.5,
-      "unit": "tsp (thìa cà phê)",
-      "notes": "Tạo độ thơm cay nhẹ"
-    },
-    {
-      "name": "Dầu ăn",
-      "quantity": 30.0,
-      "unit": "ml (2 thìa canh)",
-      "notes": "Rán sườn và phi thơm hành tỏi"
-    }
-  ],
-  "steps": [
-    {
-      "title": "Sơ chế và chần sườn non",
-      "description": "Sườn chặt khúc vừa ăn, rửa với nước muối loãng. Cho sườn vào nồi nước lạnh với 1 thìa cà phê muối, đun sôi bùng trong 2 phút để sườn thải hết bọt bẩn và dịch tanh. Đổ sườn ra rổ, xả lại nước lạnh thật sạch vụn xương rồi thấm thật khô ráo từng miếng sườn bằng khăn sạch.",
-      "durationMinutes": 10
-    },
-    {
-      "title": "Pha bát nước sốt chua ngọt tỉ lệ vàng",
-      "description": "Cho vào bát con: 2 thìa canh nước mắm ngon, 2 thìa canh đường cát, 2 thìa canh giấm gạo, 3 thìa canh nước lọc, 1 thìa canh tương cà và 1/2 thìa cà phê tiêu xay. Dùng thìa khuấy đều cho đường tan hoàn toàn. Nếm thử thấy rõ vị chua ngọt mặn cân bằng hài hòa, hơi đậm đà một chút để khi rim ngấm vào sườn là vừa.",
-      "durationMinutes": 5
-    },
-    {
-      "title": "Rán sườn xém vàng hai mặt",
-      "description": "Đặt chảo lên bếp với 2 thìa canh dầu ăn, đun nóng ở lửa vừa. Cho các miếng sườn vào rán đều hai mặt đến khi thịt sườn hơi xém vàng nhẹ và săn lại thì gắp ra đĩa riêng. Lưu ý của Savoury Days: Không rán sườn quá kỹ làm sườn bị khô xác và dai thịt.",
-      "durationMinutes": 10
-    },
-    {
-      "title": "Rim sườn ngấm sốt sánh sệt",
-      "description": "Chắt bớt dầu thừa trong chảo ra, chỉ để lại khoảng 1 thìa canh. Cho hành tỏi băm vào phi vàng thơm. Trút sườn đã rán vào chảo đảo đều 1 phút, sau đó rưới toàn bộ bát nước sốt chua ngọt vào sườn. Đun lửa lớn cho sốt sôi bùng lên, sau đó hạ nhỏ lửa liu riu, đậy nắp vung om trong khoảng 10 phút cho thịt sườn chín mềm nhừ và ngấm gia vị. Mở nắp vung, bật lửa vừa đảo đều tay liên tục khoảng 2-3 phút cho nước sốt cạn bớt, keo sánh lại và bám một lớp nâu đỏ óng ả quanh từng dẻ sườn rồi tắt bếp. Ăn nóng kèm cơm trắng.",
-      "durationMinutes": 15
-    }
-  ],
-  "images": [
-    {
-      "url": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=1200&q=80",
-      "altText": "Sườn xào chua ngọt",
-      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-    }
-  ]
+﻿{
+    "title":  "Sườn xào chua ngọt",
+    "originalTitle":  "Sườn xào chua ngọt",
+    "description":  "Sườn xào chua ngọt với miếng sườn non mềm róc xương, bề mặt xém vàng óng ả phủ đều lớp sốt chua ngọt sánh keo bóng bẩy, vị chua thanh ngọt dịu hòa quyện cùng mùi thơm của hành tỏi phi.",
+    "categoryName":  "Món xào",
+    "authorEmail":  "chef.quocviet@culinaryblog.local",
+    "prepTimeMinutes":  15,
+    "cookTimeMinutes":  30,
+    "servings":  4,
+    "difficulty":  "Easy",
+    "source":  {
+                   "name":  "Linh Trang — Savoury Days",
+                   "url":  "https://www.savourydays.com/suon-xao-chua-ngot-my-best-sweet-sour-pork-ribs-recipe-ever/",
+                   "accessedOn":  "2026-11-17",
+                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/suon-xao-chua-ngot-my-best-sweet-sour-pork-ribs-recipe-ever/)."
+               },
+    "nutrition":  {
+                      "calories":  430.0,
+                      "protein":  28.0,
+                      "carbohydrates":  21.0,
+                      "fat":  26.0,
+                      "fiber":  null,
+                      "sodium":  null
+                  },
+    "ingredients":  [
+                        {
+                            "name":  "Sườn thăn non heo",
+                            "quantity":  500.0,
+                            "unit":  "gram",
+                            "notes":  "Chặt khúc vừa ăn khoảng 3-4cm, chọn dẻ sườn nhiều thịt dắt chút mỡ"
+                        },
+                        {
+                            "name":  "Hành khô",
+                            "quantity":  2.0,
+                            "unit":  "củ",
+                            "notes":  "Bóc vỏ, băm thật nhỏ"
+                        },
+                        {
+                            "name":  "Tỏi",
+                            "quantity":  3.0,
+                            "unit":  "tép",
+                            "notes":  "Bóc vỏ, băm nhỏ"
+                        },
+                        {
+                            "name":  "Nước mắm ngon truyền thống",
+                            "quantity":  30.0,
+                            "unit":  "ml (2 thìa canh)",
+                            "notes":  "Thành phần nước sốt chua ngọt"
+                        },
+                        {
+                            "name":  "Đường cát trắng",
+                            "quantity":  30.0,
+                            "unit":  "gram (2 thìa canh)",
+                            "notes":  "Thành phần nước sốt chua ngọt"
+                        },
+                        {
+                            "name":  "Giấm gạo (hoặc nước cốt chanh)",
+                            "quantity":  30.0,
+                            "unit":  "ml (2 thìa canh)",
+                            "notes":  "Tạo vị chua thanh cho sốt"
+                        },
+                        {
+                            "name":  "Nước lọc (hoặc nước luộc sườn)",
+                            "quantity":  45.0,
+                            "unit":  "ml (3 thìa canh)",
+                            "notes":  "Hòa tan hỗn hợp sốt"
+                        },
+                        {
+                            "name":  "Tương cà chua (Ketchup)",
+                            "quantity":  15.0,
+                            "unit":  "ml (1 thìa canh)",
+                            "notes":  "Tạo màu đỏ cam bóng đẹp và độ sánh mịn tự nhiên"
+                        },
+                        {
+                            "name":  "Hạt tiêu xay",
+                            "quantity":  0.5,
+                            "unit":  "tsp (thìa cà phê)",
+                            "notes":  "Tạo độ thơm cay nhẹ"
+                        },
+                        {
+                            "name":  "Dầu ăn",
+                            "quantity":  30.0,
+                            "unit":  "ml (2 thìa canh)",
+                            "notes":  "Rán sườn và phi thơm hành tỏi"
+                        }
+                    ],
+    "steps":  [
+                  {
+                      "title":  "Sơ chế và chần sườn non",
+                      "description":  "Sườn chặt khúc vừa ăn, rửa với nước muối loãng. Cho sườn vào nồi nước lạnh với 1 thìa cà phê muối, đun sôi bùng trong 2 phút để sườn thải hết bọt bẩn và dịch tanh. Đổ sườn ra rổ, xả lại nước lạnh thật sạch vụn xương rồi thấm thật khô ráo từng miếng sườn bằng khăn sạch.",
+                      "durationMinutes":  10
+                  },
+                  {
+                      "title":  "Pha bát nước sốt chua ngọt tỉ lệ vàng",
+                      "description":  "Cho vào bát con: 2 thìa canh nước mắm ngon, 2 thìa canh đường cát, 2 thìa canh giấm gạo, 3 thìa canh nước lọc, 1 thìa canh tương cà và 1/2 thìa cà phê tiêu xay. Dùng thìa khuấy đều cho đường tan hoàn toàn. Nếm thử thấy rõ vị chua ngọt mặn cân bằng hài hòa, hơi đậm đà một chút để khi rim ngấm vào sườn là vừa.",
+                      "durationMinutes":  5
+                  },
+                  {
+                      "title":  "Rán sườn xém vàng hai mặt",
+                      "description":  "Đặt chảo lên bếp với 2 thìa canh dầu ăn, đun nóng ở lửa vừa. Cho các miếng sườn vào rán đều hai mặt đến khi thịt sườn hơi xém vàng nhẹ và săn lại thì gắp ra đĩa riêng. Lưu ý của Savoury Days: Không rán sườn quá kỹ làm sườn bị khô xác và dai thịt.",
+                      "durationMinutes":  10
+                  },
+                  {
+                      "title":  "Rim sườn ngấm sốt sánh sệt",
+                      "description":  "Chắt bớt dầu thừa trong chảo ra, chỉ để lại khoảng 1 thìa canh. Cho hành tỏi băm vào phi vàng thơm. Trút sườn đã rán vào chảo đảo đều 1 phút, sau đó rưới toàn bộ bát nước sốt chua ngọt vào sườn. Đun lửa lớn cho sốt sôi bùng lên, sau đó hạ nhỏ lửa liu riu, đậy nắp vung om trong khoảng 10 phút cho thịt sườn chín mềm nhừ và ngấm gia vị. Mở nắp vung, bật lửa vừa đảo đều tay liên tục khoảng 2-3 phút cho nước sốt cạn bớt, keo sánh lại và bám một lớp nâu đỏ óng ả quanh từng dẻ sườn rồi tắt bếp. Ăn nóng kèm cơm trắng.",
+                      "durationMinutes":  15
+                  }
+              ],
+    "images":  [
+                   {
+                       "url":  "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                       "altText":  "Sườn xào chua ngọt",
+                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+                   }
+               ]
 }

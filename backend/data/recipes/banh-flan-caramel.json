@@ -1,115 +1,115 @@
-{
-  "title": "Bánh flan (Crème Caramel)",
-  "originalTitle": "Bánh flan (Crème Caramel)",
-  "description": "Công thức chuẩn mực tỉ lệ vàng của Savoury Days cho món bánh flan mềm mịn mướt mát, béo ngậy vị sữa tươi và kem tươi whipping cream, lớp caramel nâu bóng màu hổ phách sóng sánh không bị đông cứng hay đắng gắt.",
-  "categoryName": "Món tráng miệng / Bánh ngọt",
-  "authorEmail": "chef.minhkhoi@culinaryblog.local",
-  "prepTimeMinutes": 25,
-  "cookTimeMinutes": 40,
-  "servings": 8,
-  "difficulty": "Hard",
-  "source": {
-    "name": "Linh Trang — Savoury Days",
-    "url": "https://www.savourydays.com/video-cach-lam-banh-flan-ngon-mem-min-muot-khong-ro/",
-    "accessedOn": "2026-11-17",
-    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/video-cach-lam-banh-flan-ngon-mem-min-muot-khong-ro/)."
-  },
-  "nutrition": {
-    "calories": 215.0,
-    "protein": 5.5,
-    "carbohydrates": 23.0,
-    "fat": 11.0,
-    "fiber": null,
-    "sodium": null
-  },
-  "ingredients": [
-    {
-      "name": "Đường cát trắng (nấu caramel)",
-      "quantity": 70.0,
-      "unit": "gram",
-      "notes": "Nấu caramel đáy khuôn"
-    },
-    {
-      "name": "Nước lọc (nấu caramel)",
-      "quantity": 50.0,
-      "unit": "ml",
-      "notes": "Nấu caramel"
-    },
-    {
-      "name": "Nước cốt chanh tươi",
-      "quantity": 5.0,
-      "unit": "ml (1 thìa cà phê)",
-      "notes": "Giúp caramel không bị lại đường và giữ độ lỏng"
-    },
-    {
-      "name": "Trứng gà toàn phần",
-      "quantity": 3.0,
-      "unit": "quả (khoảng 50g/quả)",
-      "notes": "Trứng ở nhiệt độ phòng"
-    },
-    {
-      "name": "Lòng đỏ trứng gà",
-      "quantity": 2.0,
-      "unit": "lòng đỏ (khoảng 20g/lòng đỏ)",
-      "notes": "Tăng độ ngậy béo và dẻo mịn cho bánh"
-    },
-    {
-      "name": "Đường cát trắng (pha kem sữa)",
-      "quantity": 70.0,
-      "unit": "gram",
-      "notes": "Độ ngọt thanh nhẹ"
-    },
-    {
-      "name": "Sữa tươi không đường",
-      "quantity": 400.0,
-      "unit": "gram",
-      "notes": "Thành phần sữa nền"
-    },
-    {
-      "name": "Kem tươi (Whipping cream 30-35% béo)",
-      "quantity": 150.0,
-      "unit": "gram",
-      "notes": "Giúp bánh thơm ngậy mướt tan trong miệng"
-    },
-    {
-      "name": "Chiết xuất vani tự nhiên",
-      "quantity": 5.0,
-      "unit": "ml (1 thìa cà phê)",
-      "notes": "Khử sạch mùi tanh trứng"
-    }
-  ],
-  "steps": [
-    {
-      "title": "Nấu sốt caramel và tráng đáy khuôn",
-      "description": "Cho 70g đường và 50ml nước vào nồi nhỏ, đun ở lửa vừa. Lưu ý sống còn: Tuyệt đối không dùng đũa khuấy đường trong quá trình đun để tránh hiện tượng kết tinh lại đường. Khi nước đường chuyển sang màu vàng nhạt, lắc nhẹ nồi cho màu đều. Khi đạt màu nâu cánh gián thì tắt bếp, cho ngay 1 thìa cà phê nước cốt chanh vào lắc đều. Nhanh tay rót một lớp mỏng caramel vào đáy 8 khuôn bánh, lắc nhẹ để caramel tráng đều đáy khuôn rồi để nguội cho đông lại.",
-      "durationMinutes": 10
-    },
-    {
-      "title": "Pha trộn hỗn hợp kem trứng sữa (custard)",
-      "description": "Cho 3 quả trứng toàn phần và 2 lòng đỏ vào âu lớn. Dùng phới lồng khuấy nhẹ nhàng theo một chiều cho tan đều (không đánh bông tạo bọt khí). Cho sữa tươi không đường, whipping cream và 70g đường vào nồi đun ở lửa nhỏ, khuấy tan đường đến khi hỗn hợp ấm khoảng 60-70°C (tuyệt đối không để sôi). Từ từ rót hỗn hợp sữa ấm vào âu trứng, vừa rót vừa dùng phới lồng khuấy đều nhẹ tay để trứng không bị chín vón cục. Thêm vani khuấy đều.",
-      "durationMinutes": 10
-    },
-    {
-      "title": "Lọc hỗn hợp và rót vào khuôn",
-      "description": "Đặt rây lọc lên ca rót, đổ hỗn hợp trứng sữa qua rây 1-2 lần để loại bỏ hoàn toàn các sợi lòng trắng lợn cợn, giúp bánh sau khi chín đạt độ mịn tuyệt đối. Nhẹ nhàng rót hỗn hợp vào các khuôn đã có lớp caramel đông cứng. Dùng tăm nhọn châm vỡ toàn bộ bọt khí li ti trên mặt bánh.",
-      "durationMinutes": 5
-    },
-    {
-      "title": "Nướng hoặc hấp cách thủy (kỹ thuật chống rỗ)",
-      "description": "Nếu nướng cách thủy: Làm nóng lò ở 150°C - 160°C. Đặt khuôn bánh vào khay nướng sâu lòng đã lót sẵn một chiếc khăn vải sạch ở đáy (giúp giảm chấn nhiệt nước sôi trực tiếp làm rỗ đáy bánh). Đổ nước sôi vào khay ngập 1/3 đến 1/2 chiều cao khuôn. Nướng trong 35-40 phút. Nếu hấp cách thủy: Đặt khuôn vào xửng hấp ở lửa nhỏ nhất (nước chỉ lăn tăn), phủ khăn sạch dưới nắp vung để nước đọng không nhỏ vào mặt bánh, hấp 30-40 phút.",
-      "durationMinutes": 40
-    },
-    {
-      "title": "Làm lạnh và thưởng thức",
-      "description": "Kiểm tra bánh chín bằng cách cắm que tăm vào giữa bánh rút ra thấy khô ráo là bánh đã chín. Để nguội hẳn ở nhiệt độ phòng rồi cất vào ngăn mát tủ lạnh tối thiểu 4 tiếng trước khi ăn. Khi ăn lách nhẹ mũi dao quanh thành khuôn, úp ngược ra đĩa.",
-      "durationMinutes": 240
-    }
-  ],
-  "images": [
-    {
-      "url": "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?auto=format&fit=crop&w=1200&q=80",
-      "altText": "Bánh flan (Crème Caramel)",
-      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-    }
-  ]
+﻿{
+    "title":  "Bánh flan (Crème Caramel)",
+    "originalTitle":  "Bánh flan (Crème Caramel)",
+    "description":  "Công thức chuẩn mực tỉ lệ vàng của Savoury Days cho món bánh flan mềm mịn mướt mát, béo ngậy vị sữa tươi và kem tươi whipping cream, lớp caramel nâu bóng màu hổ phách sóng sánh không bị đông cứng hay đắng gắt.",
+    "categoryName":  "Món tráng miệng",
+    "authorEmail":  "chef.minhkhoi@culinaryblog.local",
+    "prepTimeMinutes":  25,
+    "cookTimeMinutes":  40,
+    "servings":  8,
+    "difficulty":  "Hard",
+    "source":  {
+                   "name":  "Linh Trang — Savoury Days",
+                   "url":  "https://www.savourydays.com/video-cach-lam-banh-flan-ngon-mem-min-muot-khong-ro/",
+                   "accessedOn":  "2026-11-17",
+                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/video-cach-lam-banh-flan-ngon-mem-min-muot-khong-ro/)."
+               },
+    "nutrition":  {
+                      "calories":  215.0,
+                      "protein":  5.5,
+                      "carbohydrates":  23.0,
+                      "fat":  11.0,
+                      "fiber":  null,
+                      "sodium":  null
+                  },
+    "ingredients":  [
+                        {
+                            "name":  "Đường cát trắng (nấu caramel)",
+                            "quantity":  70.0,
+                            "unit":  "gram",
+                            "notes":  "Nấu caramel đáy khuôn"
+                        },
+                        {
+                            "name":  "Nước lọc (nấu caramel)",
+                            "quantity":  50.0,
+                            "unit":  "ml",
+                            "notes":  "Nấu caramel"
+                        },
+                        {
+                            "name":  "Nước cốt chanh tươi",
+                            "quantity":  5.0,
+                            "unit":  "ml (1 thìa cà phê)",
+                            "notes":  "Giúp caramel không bị lại đường và giữ độ lỏng"
+                        },
+                        {
+                            "name":  "Trứng gà toàn phần",
+                            "quantity":  3.0,
+                            "unit":  "quả (khoảng 50g/quả)",
+                            "notes":  "Trứng ở nhiệt độ phòng"
+                        },
+                        {
+                            "name":  "Lòng đỏ trứng gà",
+                            "quantity":  2.0,
+                            "unit":  "lòng đỏ (khoảng 20g/lòng đỏ)",
+                            "notes":  "Tăng độ ngậy béo và dẻo mịn cho bánh"
+                        },
+                        {
+                            "name":  "Đường cát trắng (pha kem sữa)",
+                            "quantity":  70.0,
+                            "unit":  "gram",
+                            "notes":  "Độ ngọt thanh nhẹ"
+                        },
+                        {
+                            "name":  "Sữa tươi không đường",
+                            "quantity":  400.0,
+                            "unit":  "gram",
+                            "notes":  "Thành phần sữa nền"
+                        },
+                        {
+                            "name":  "Kem tươi (Whipping cream 30-35% béo)",
+                            "quantity":  150.0,
+                            "unit":  "gram",
+                            "notes":  "Giúp bánh thơm ngậy mướt tan trong miệng"
+                        },
+                        {
+                            "name":  "Chiết xuất vani tự nhiên",
+                            "quantity":  5.0,
+                            "unit":  "ml (1 thìa cà phê)",
+                            "notes":  "Khử sạch mùi tanh trứng"
+                        }
+                    ],
+    "steps":  [
+                  {
+                      "title":  "Nấu sốt caramel và tráng đáy khuôn",
+                      "description":  "Cho 70g đường và 50ml nước vào nồi nhỏ, đun ở lửa vừa. Lưu ý sống còn: Tuyệt đối không dùng đũa khuấy đường trong quá trình đun để tránh hiện tượng kết tinh lại đường. Khi nước đường chuyển sang màu vàng nhạt, lắc nhẹ nồi cho màu đều. Khi đạt màu nâu cánh gián thì tắt bếp, cho ngay 1 thìa cà phê nước cốt chanh vào lắc đều. Nhanh tay rót một lớp mỏng caramel vào đáy 8 khuôn bánh, lắc nhẹ để caramel tráng đều đáy khuôn rồi để nguội cho đông lại.",
+                      "durationMinutes":  10
+                  },
+                  {
+                      "title":  "Pha trộn hỗn hợp kem trứng sữa (custard)",
+                      "description":  "Cho 3 quả trứng toàn phần và 2 lòng đỏ vào âu lớn. Dùng phới lồng khuấy nhẹ nhàng theo một chiều cho tan đều (không đánh bông tạo bọt khí). Cho sữa tươi không đường, whipping cream và 70g đường vào nồi đun ở lửa nhỏ, khuấy tan đường đến khi hỗn hợp ấm khoảng 60-70°C (tuyệt đối không để sôi). Từ từ rót hỗn hợp sữa ấm vào âu trứng, vừa rót vừa dùng phới lồng khuấy đều nhẹ tay để trứng không bị chín vón cục. Thêm vani khuấy đều.",
+                      "durationMinutes":  10
+                  },
+                  {
+                      "title":  "Lọc hỗn hợp và rót vào khuôn",
+                      "description":  "Đặt rây lọc lên ca rót, đổ hỗn hợp trứng sữa qua rây 1-2 lần để loại bỏ hoàn toàn các sợi lòng trắng lợn cợn, giúp bánh sau khi chín đạt độ mịn tuyệt đối. Nhẹ nhàng rót hỗn hợp vào các khuôn đã có lớp caramel đông cứng. Dùng tăm nhọn châm vỡ toàn bộ bọt khí li ti trên mặt bánh.",
+                      "durationMinutes":  5
+                  },
+                  {
+                      "title":  "Nướng hoặc hấp cách thủy (kỹ thuật chống rỗ)",
+                      "description":  "Nếu nướng cách thủy: Làm nóng lò ở 150°C - 160°C. Đặt khuôn bánh vào khay nướng sâu lòng đã lót sẵn một chiếc khăn vải sạch ở đáy (giúp giảm chấn nhiệt nước sôi trực tiếp làm rỗ đáy bánh). Đổ nước sôi vào khay ngập 1/3 đến 1/2 chiều cao khuôn. Nướng trong 35-40 phút. Nếu hấp cách thủy: Đặt khuôn vào xửng hấp ở lửa nhỏ nhất (nước chỉ lăn tăn), phủ khăn sạch dưới nắp vung để nước đọng không nhỏ vào mặt bánh, hấp 30-40 phút.",
+                      "durationMinutes":  40
+                  },
+                  {
+                      "title":  "Làm lạnh và thưởng thức",
+                      "description":  "Kiểm tra bánh chín bằng cách cắm que tăm vào giữa bánh rút ra thấy khô ráo là bánh đã chín. Để nguội hẳn ở nhiệt độ phòng rồi cất vào ngăn mát tủ lạnh tối thiểu 4 tiếng trước khi ăn. Khi ăn lách nhẹ mũi dao quanh thành khuôn, úp ngược ra đĩa.",
+                      "durationMinutes":  240
+                  }
+              ],
+    "images":  [
+                   {
+                       "url":  "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                       "altText":  "Bánh flan (Crème Caramel)",
+                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+                   }
+               ]
 }

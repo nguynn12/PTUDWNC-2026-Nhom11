@@ -1,145 +1,145 @@
-{
-  "title": "Gỏi cuốn tôm thịt",
-  "originalTitle": "Gỏi cuốn tôm thịt",
-  "description": "Gỏi cuốn tôm thịt truyền thống miền Nam tươi mát, thanh nhẹ với tôm đỏ au, thịt ba chỉ giòn ngọt cuộn cùng bún tươi, xà lách, hẹ và rau thơm trong lớp bánh tráng mỏng dẻo, chấm ngập trong sốt tương đen bơ đậu phộng Hoisin béo bùi đậm đà.",
-  "categoryName": "Món cuốn / Món khai vị",
-  "authorEmail": "chef.thuha@culinaryblog.local",
-  "prepTimeMinutes": 25,
-  "cookTimeMinutes": 20,
-  "servings": 4,
-  "difficulty": "Easy",
-  "source": {
-    "name": "Helen Lê — Helen's Recipes (Da Nang Cuisine)",
-    "url": "https://helenrecipes.com/vi/recipe-13-goi-cuon-fresh-spring-rolls/",
-    "accessedOn": "2026-11-17",
-    "note": "Công thức trích xuất và kiểm chứng từ Helen Lê — Helen's Recipes (Da Nang Cuisine) (https://helenrecipes.com/vi/recipe-13-goi-cuon-fresh-spring-rolls/)."
-  },
-  "nutrition": {
-    "calories": 320.0,
-    "protein": 19.0,
-    "carbohydrates": 34.0,
-    "fat": 12.0,
-    "fiber": null,
-    "sodium": null
-  },
-  "ingredients": [
-    {
-      "name": "Thịt ba chỉ heo",
-      "quantity": 300.0,
-      "unit": "gram",
-      "notes": "Rửa sạch, luộc chín thái lát mỏng"
-    },
-    {
-      "name": "Muối tinh (luộc thịt)",
-      "quantity": 1.0,
-      "unit": "tsp (thìa cà phê)",
-      "notes": "Cho vào nồi luộc thịt giúp thịt ngọt đậm đà"
-    },
-    {
-      "name": "Tôm sú tươi",
-      "quantity": 200.0,
-      "unit": "gram (khoảng 15 con)",
-      "notes": "Luộc chín, bóc vỏ, chẻ đôi theo chiều dọc thân tôm"
-    },
-    {
-      "name": "Bún tươi",
-      "quantity": 200.0,
-      "unit": "gram",
-      "notes": "Bún sợi nhỏ tươi ngon"
-    },
-    {
-      "name": "Bánh tráng cuốn gỏi",
-      "quantity": 15.0,
-      "unit": "lá tròn",
-      "notes": "Loại bánh tráng mỏng dẻo dai"
-    },
-    {
-      "name": "Rau sống tổng hợp",
-      "quantity": 1.0,
-      "unit": "rổ nhỏ",
-      "notes": "Xà lách, rau thơm (húng quế, bạc hà, ngò rí)"
-    },
-    {
-      "name": "Hẹ tươi",
-      "quantity": 1.0,
-      "unit": "bó nhỏ (khoảng 15 cọng)",
-      "notes": "Rửa sạch, cắt bớt cuống già để lộ đầu ra ngoài cuốn"
-    },
-    {
-      "name": "Dưa chuột",
-      "quantity": 1.0,
-      "unit": "quả",
-      "notes": "Rửa sạch, thái que dài mỏng"
-    },
-    {
-      "name": "Sốt tương đen (Hoisin sauce)",
-      "quantity": 75.0,
-      "unit": "ml (5 thìa canh)",
-      "notes": "Nấu sốt chấm bơ đậu phộng"
-    },
-    {
-      "name": "Nước luộc thịt heo giữ lại",
-      "quantity": 75.0,
-      "unit": "ml (5 thìa canh)",
-      "notes": "Hòa cùng tương đen nấu sốt"
-    },
-    {
-      "name": "Bơ đậu phộng mịn (Peanut butter)",
-      "quantity": 20.0,
-      "unit": "gram (1 thìa canh)",
-      "notes": "Tạo vị béo bùi ngậy đặc trưng"
-    },
-    {
-      "name": "Đường cát",
-      "quantity": 15.0,
-      "unit": "gram (1 thìa canh)",
-      "notes": "Nêm sốt tương"
-    },
-    {
-      "name": "Tỏi băm nhuyễn & dầu ăn",
-      "quantity": 1.0,
-      "unit": "hỗn hợp",
-      "notes": "Phi thơm nấu sốt"
-    },
-    {
-      "name": "Đậu phộng rang giã dập & ớt băm",
-      "quantity": 2.0,
-      "unit": "trang trí",
-      "notes": "Rắc lên mặt bát sốt chấm"
-    }
-  ],
-  "steps": [
-    {
-      "title": "Luộc thịt ba chỉ và tôm tươi",
-      "description": "Đun sôi một nồi nước với 1 thìa cà phê muối, cho thịt ba chỉ vào luộc chín trong khoảng 15-20 phút. Vớt thịt ra thả ngay vào âu nước đá lạnh ngâm 5 phút để thịt trắng giòn và không bị thâm, sau đó vớt ra thái lát mỏng vừa ăn. Thả tôm vào chính nồi nước luộc thịt đang sôi luộc nhanh 2-3 phút đến khi tôm chuyển màu đỏ au và cong tròn, vớt ra ngâm nước lạnh. Bóc vỏ, bỏ đầu và rút chỉ đen trên lưng tôm, dùng dao bén chẻ đôi con tôm theo chiều dọc. Múc giữ lại 5 thìa canh nước luộc thịt để dùng nấu sốt chấm.",
-      "durationMinutes": 20
-    },
-    {
-      "title": "Nấu sốt tương đen bơ đậu phộng (Hoisin Peanut Sauce)",
-      "description": "Bắc chảo nhỏ lên bếp với 1 thìa canh dầu ăn, phi thơm 1 thìa canh tỏi băm nhuyễn. Cho 5 thìa canh sốt tương đen Hoisin, 5 thìa canh nước luộc thịt, 1 thìa canh bơ đậu phộng mịn và 1 thìa canh đường vào chảo. Khuấy đều liên tục trên lửa nhỏ cho đến khi các nguyên liệu hòa quyện sánh mịn và sệt nhẹ thì tắt bếp. Múc sốt ra bát con, rắc đậu phộng rang giã dập và ớt băm lên trên.",
-      "durationMinutes": 10
-    },
-    {
-      "title": "Sơ chế rau sống và chuẩn bị cuộn",
-      "description": "Rau xà lách, rau thơm rửa sạch để ráo nước. Dưa chuột thái que dài. Hẹ tươi nhặt rửa sạch, cắt cọng dài khoảng 12-15cm.",
-      "durationMinutes": 10
-    },
-    {
-      "title": "Cuốn gỏi cuốn tôm thịt",
-      "description": "Trải lá bánh tráng lên đĩa phẳng hoặc thớt sạch, dùng tay thoa một lớp nước lọc rất mỏng lên mặt bánh để bánh mềm dẻo. Xếp lá xà lách, rau thơm, vài que dưa chuột và một lọn bún tươi lên 1/3 phía dưới lá bánh tráng. Xếp 2 lát thịt ba chỉ lên trên phần rau. Gấp mép dưới bánh tráng phủ lên phần rau thịt, gấp tiếp hai mép hai bên vào trong và cuộn tròn một vòng. Đặt 2-3 nửa con tôm (mặt lưng đỏ hướng xuống dưới mặt bánh tráng để khi cuộn xong lộ rõ màu đỏ tôm bắt mắt) và đặt 1 cọng hẹ tươi cho thò đầu ra ngoài mép bánh. Tiếp tục cuộn tròn chặt tay đến hết mép lá bánh.",
-      "durationMinutes": 15
-    },
-    {
-      "title": "Thưởng thức",
-      "description": "Xếp từng chiếc gỏi cuốn ra đĩa phẳng. Thưởng thức bằng cách chấm ngập cuốn gỏi vào bát sốt tương đen bơ đậu phộng béo bùi, thơm lừng.",
-      "durationMinutes": 2
-    }
-  ],
-  "images": [
-    {
-      "url": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=1200&q=80",
-      "altText": "Gỏi cuốn tôm thịt",
-      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-    }
-  ]
+﻿{
+    "title":  "Gỏi cuốn tôm thịt",
+    "originalTitle":  "Gỏi cuốn tôm thịt",
+    "description":  "Gỏi cuốn tôm thịt truyền thống miền Nam tươi mát, thanh nhẹ với tôm đỏ au, thịt ba chỉ giòn ngọt cuộn cùng bún tươi, xà lách, hẹ và rau thơm trong lớp bánh tráng mỏng dẻo, chấm ngập trong sốt tương đen bơ đậu phộng Hoisin béo bùi đậm đà.",
+    "categoryName":  "Món cuốn thanh mát",
+    "authorEmail":  "chef.thuha@culinaryblog.local",
+    "prepTimeMinutes":  25,
+    "cookTimeMinutes":  20,
+    "servings":  4,
+    "difficulty":  "Easy",
+    "source":  {
+                   "name":  "Helen Lê — Helen\u0027s Recipes (Da Nang Cuisine)",
+                   "url":  "https://helenrecipes.com/vi/recipe-13-goi-cuon-fresh-spring-rolls/",
+                   "accessedOn":  "2026-11-17",
+                   "note":  "Công thức trích xuất và kiểm chứng từ Helen Lê — Helen\u0027s Recipes (Da Nang Cuisine) (https://helenrecipes.com/vi/recipe-13-goi-cuon-fresh-spring-rolls/)."
+               },
+    "nutrition":  {
+                      "calories":  320.0,
+                      "protein":  19.0,
+                      "carbohydrates":  34.0,
+                      "fat":  12.0,
+                      "fiber":  null,
+                      "sodium":  null
+                  },
+    "ingredients":  [
+                        {
+                            "name":  "Thịt ba chỉ heo",
+                            "quantity":  300.0,
+                            "unit":  "gram",
+                            "notes":  "Rửa sạch, luộc chín thái lát mỏng"
+                        },
+                        {
+                            "name":  "Muối tinh (luộc thịt)",
+                            "quantity":  1.0,
+                            "unit":  "tsp (thìa cà phê)",
+                            "notes":  "Cho vào nồi luộc thịt giúp thịt ngọt đậm đà"
+                        },
+                        {
+                            "name":  "Tôm sú tươi",
+                            "quantity":  200.0,
+                            "unit":  "gram (khoảng 15 con)",
+                            "notes":  "Luộc chín, bóc vỏ, chẻ đôi theo chiều dọc thân tôm"
+                        },
+                        {
+                            "name":  "Bún tươi",
+                            "quantity":  200.0,
+                            "unit":  "gram",
+                            "notes":  "Bún sợi nhỏ tươi ngon"
+                        },
+                        {
+                            "name":  "Bánh tráng cuốn gỏi",
+                            "quantity":  15.0,
+                            "unit":  "lá tròn",
+                            "notes":  "Loại bánh tráng mỏng dẻo dai"
+                        },
+                        {
+                            "name":  "Rau sống tổng hợp",
+                            "quantity":  1.0,
+                            "unit":  "rổ nhỏ",
+                            "notes":  "Xà lách, rau thơm (húng quế, bạc hà, ngò rí)"
+                        },
+                        {
+                            "name":  "Hẹ tươi",
+                            "quantity":  1.0,
+                            "unit":  "bó nhỏ (khoảng 15 cọng)",
+                            "notes":  "Rửa sạch, cắt bớt cuống già để lộ đầu ra ngoài cuốn"
+                        },
+                        {
+                            "name":  "Dưa chuột",
+                            "quantity":  1.0,
+                            "unit":  "quả",
+                            "notes":  "Rửa sạch, thái que dài mỏng"
+                        },
+                        {
+                            "name":  "Sốt tương đen (Hoisin sauce)",
+                            "quantity":  75.0,
+                            "unit":  "ml (5 thìa canh)",
+                            "notes":  "Nấu sốt chấm bơ đậu phộng"
+                        },
+                        {
+                            "name":  "Nước luộc thịt heo giữ lại",
+                            "quantity":  75.0,
+                            "unit":  "ml (5 thìa canh)",
+                            "notes":  "Hòa cùng tương đen nấu sốt"
+                        },
+                        {
+                            "name":  "Bơ đậu phộng mịn (Peanut butter)",
+                            "quantity":  20.0,
+                            "unit":  "gram (1 thìa canh)",
+                            "notes":  "Tạo vị béo bùi ngậy đặc trưng"
+                        },
+                        {
+                            "name":  "Đường cát",
+                            "quantity":  15.0,
+                            "unit":  "gram (1 thìa canh)",
+                            "notes":  "Nêm sốt tương"
+                        },
+                        {
+                            "name":  "Tỏi băm nhuyễn \u0026 dầu ăn",
+                            "quantity":  1.0,
+                            "unit":  "hỗn hợp",
+                            "notes":  "Phi thơm nấu sốt"
+                        },
+                        {
+                            "name":  "Đậu phộng rang giã dập \u0026 ớt băm",
+                            "quantity":  2.0,
+                            "unit":  "trang trí",
+                            "notes":  "Rắc lên mặt bát sốt chấm"
+                        }
+                    ],
+    "steps":  [
+                  {
+                      "title":  "Luộc thịt ba chỉ và tôm tươi",
+                      "description":  "Đun sôi một nồi nước với 1 thìa cà phê muối, cho thịt ba chỉ vào luộc chín trong khoảng 15-20 phút. Vớt thịt ra thả ngay vào âu nước đá lạnh ngâm 5 phút để thịt trắng giòn và không bị thâm, sau đó vớt ra thái lát mỏng vừa ăn. Thả tôm vào chính nồi nước luộc thịt đang sôi luộc nhanh 2-3 phút đến khi tôm chuyển màu đỏ au và cong tròn, vớt ra ngâm nước lạnh. Bóc vỏ, bỏ đầu và rút chỉ đen trên lưng tôm, dùng dao bén chẻ đôi con tôm theo chiều dọc. Múc giữ lại 5 thìa canh nước luộc thịt để dùng nấu sốt chấm.",
+                      "durationMinutes":  20
+                  },
+                  {
+                      "title":  "Nấu sốt tương đen bơ đậu phộng (Hoisin Peanut Sauce)",
+                      "description":  "Bắc chảo nhỏ lên bếp với 1 thìa canh dầu ăn, phi thơm 1 thìa canh tỏi băm nhuyễn. Cho 5 thìa canh sốt tương đen Hoisin, 5 thìa canh nước luộc thịt, 1 thìa canh bơ đậu phộng mịn và 1 thìa canh đường vào chảo. Khuấy đều liên tục trên lửa nhỏ cho đến khi các nguyên liệu hòa quyện sánh mịn và sệt nhẹ thì tắt bếp. Múc sốt ra bát con, rắc đậu phộng rang giã dập và ớt băm lên trên.",
+                      "durationMinutes":  10
+                  },
+                  {
+                      "title":  "Sơ chế rau sống và chuẩn bị cuộn",
+                      "description":  "Rau xà lách, rau thơm rửa sạch để ráo nước. Dưa chuột thái que dài. Hẹ tươi nhặt rửa sạch, cắt cọng dài khoảng 12-15cm.",
+                      "durationMinutes":  10
+                  },
+                  {
+                      "title":  "Cuốn gỏi cuốn tôm thịt",
+                      "description":  "Trải lá bánh tráng lên đĩa phẳng hoặc thớt sạch, dùng tay thoa một lớp nước lọc rất mỏng lên mặt bánh để bánh mềm dẻo. Xếp lá xà lách, rau thơm, vài que dưa chuột và một lọn bún tươi lên 1/3 phía dưới lá bánh tráng. Xếp 2 lát thịt ba chỉ lên trên phần rau. Gấp mép dưới bánh tráng phủ lên phần rau thịt, gấp tiếp hai mép hai bên vào trong và cuộn tròn một vòng. Đặt 2-3 nửa con tôm (mặt lưng đỏ hướng xuống dưới mặt bánh tráng để khi cuộn xong lộ rõ màu đỏ tôm bắt mắt) và đặt 1 cọng hẹ tươi cho thò đầu ra ngoài mép bánh. Tiếp tục cuộn tròn chặt tay đến hết mép lá bánh.",
+                      "durationMinutes":  15
+                  },
+                  {
+                      "title":  "Thưởng thức",
+                      "description":  "Xếp từng chiếc gỏi cuốn ra đĩa phẳng. Thưởng thức bằng cách chấm ngập cuốn gỏi vào bát sốt tương đen bơ đậu phộng béo bùi, thơm lừng.",
+                      "durationMinutes":  2
+                  }
+              ],
+    "images":  [
+                   {
+                       "url":  "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                       "altText":  "Gỏi cuốn tôm thịt",
+                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+                   }
+               ]
 }

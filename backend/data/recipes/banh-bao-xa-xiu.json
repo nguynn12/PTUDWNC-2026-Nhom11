@@ -1,116 +1,116 @@
-{
-  "title": "Bánh bao xá xíu",
-  "originalTitle": "Bánh bao xá xíu",
-  "description": "Bánh bao nhân xá xíu với lớp vỏ bánh trắng ngần mềm xốp, thơm nhẹ mùi sữa tươi, ôm trọn phần nhân thịt xá xíu đậm đà, màu đỏ nâu sánh quyện đẫm sốt dầu hào dầu mè chuẩn vị ẩm thực Quảng Đông.",
-  "categoryName": "Món điểm tâm / Bánh hấp",
-  "authorEmail": "chef.baongoc@culinaryblog.local",
-  "prepTimeMinutes": 60,
-  "cookTimeMinutes": 40,
-  "servings": 8,
-  "difficulty": "Hard",
-  "source": {
-    "name": "Linh Trang — Savoury Days",
-    "url": "https://www.savourydays.com/banh-bao-nhan-xa-xiu/",
-    "accessedOn": "2026-11-17",
-    "note": "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/banh-bao-nhan-xa-xiu/)."
-  },
-  "nutrition": {
-    "calories": 260.0,
-    "protein": 10.0,
-    "carbohydrates": 36.0,
-    "fat": 8.0,
-    "fiber": null,
-    "sodium": null
-  },
-  "ingredients": [
-    {
-      "name": "Bột mì hoa ngọc lan (hoặc bột mì số 8 / số 11)",
-      "quantity": 250.0,
-      "unit": "gram",
-      "notes": "Bột làm vỏ bánh bao"
-    },
-    {
-      "name": "Men nở (Instant dry yeast)",
-      "quantity": 3.0,
-      "unit": "gram (khoảng 1 tsp)",
-      "notes": "Kích hoạt bột nở xốp"
-    },
-    {
-      "name": "Sữa tươi không đường ấm (35-40°C)",
-      "quantity": 135.0,
-      "unit": "ml",
-      "notes": "Pha men và nhồi bột"
-    },
-    {
-      "name": "Đường cát trắng (cho vào vỏ bánh)",
-      "quantity": 40.0,
-      "unit": "gram",
-      "notes": "Tạo độ ngọt nhẹ và nuôi men"
-    },
-    {
-      "name": "Dầu ăn",
-      "quantity": 15.0,
-      "unit": "ml (1 thìa canh)",
-      "notes": "Nhồi vào bột giúp vỏ bánh bóng mượt"
-    },
-    {
-      "name": "Muối tinh",
-      "quantity": 1.0,
-      "unit": "nhúm nhỏ",
-      "notes": "Nêm vỏ bánh"
-    },
-    {
-      "name": "Thịt xá xíu chín thơm",
-      "quantity": 250.0,
-      "unit": "gram",
-      "notes": "Thái hạt lựu nhỏ đều nhau"
-    },
-    {
-      "name": "Hành tây",
-      "quantity": 50.0,
-      "unit": "gram (1/2 củ nhỏ)",
-      "notes": "Bóc vỏ, thái hạt lựu nhỏ"
-    },
-    {
-      "name": "Hỗn hợp sốt xá xíu: dầu hào, xì dầu, sốt xá xíu, đường, dầu mè",
-      "quantity": 1.0,
-      "unit": "hỗn hợp",
-      "notes": "Gia vị sốt nhân đậm đà"
-    },
-    {
-      "name": "Bột bắp (tinh bột ngô)",
-      "quantity": 10.0,
-      "unit": "gram (1 thìa canh)",
-      "notes": "Hòa tan với 50ml nước lạnh làm sánh sốt nhân"
-    }
-  ],
-  "steps": [
-    {
-      "title": "Làm nhân thịt xá xíu sánh sệt",
-      "description": "Bắc chảo nhỏ lên bếp với chút dầu ăn, cho hành tây hạt lựu vào xào thơm trong 1 phút. Trút thịt xá xíu thái hạt lựu vào đảo đều. Đổ hỗn hợp gia vị sốt (dầu hào, xì dầu, sốt xá xíu, đường, dầu mè) cùng bát nước bột bắp hòa tan vào chảo. Đảo đều trên lửa nhỏ đến khi phần nước sốt sệt lại, keo sánh đặc bám đều quanh từng hạt thịt xá xíu thì tắt bếp, để nguội hoàn toàn.",
-      "durationMinutes": 15
-    },
-    {
-      "title": "Nhồi bột và ủ nở vỏ bánh bao",
-      "description": "Hòa men nở vào sữa tươi ấm cùng 1 thìa cà phê đường, để 5-10 phút cho men nở bung mảng như gạch cua. Trộn bột mì, phần đường còn lại và nhúm muối trong âu lớn. Đổ hỗn hợp sữa men và dầu ăn vào âu, dùng tay nhồi đều thành khối bột dẻo mịn không dính tay trong khoảng 10-12 phút. Quét lớp dầu mỏng quanh âu, đặt khối bột vào, bọc kín màng bọc thực phẩm ủ ở nơi ấm áp khoảng 45-60 phút đến khi bột nở gấp đôi.",
-      "durationMinutes": 45
-    },
-    {
-      "title": "Chia bột, cán vỏ và bắt múi bánh",
-      "description": "Ấn nhẹ tay cho xẹp bọt khí trong khối bột, chia bột thành 8 phần bằng nhau (khoảng 50g/viên) rồi vo tròn. Dùng cây cán bột cán mỏng từng viên bột thành hình tròn, sao cho phần mép ngoài mỏng hơn phần tâm giữa (để đáy bánh không bị rách khi hấp). Múc một thìa nhân xá xíu đặt vào giữa. Dùng ngón tay túm nhẹ từng nếp gấp mép bột xoay tròn nhịp nhàng tạo thành các múi hoa đều đặn, túm chặt đỉnh bánh để nhân không bị hở. Đặt mỗi chiếc bánh lên một miếng giấy nến cắt vuông.",
-      "durationMinutes": 20
-    },
-    {
-      "title": "Ủ lần 2 và hấp bánh bao trắng xốp",
-      "description": "Xếp bánh lên khay để bánh nghỉ thêm 15-20 phút cho bột nở nhẹ trở lại. Đun sôi nước trong xửng hấp ở lửa vừa. Lót một chiếc khăn vải sạch dưới nắp vung nồi để nước ngưng tụ không nhỏ giọt làm rỗ vỏ bánh. Xếp bánh vào xửng cách nhau khoảng 3-4cm để bánh nở. Hấp bánh ở lửa vừa trong khoảng 12-14 phút. Tắt bếp nhưng để nguyên nồi đậy vung 3 phút mới mở nắp (giúp bánh không bị xẹp đột ngột do sốc nhiệt). Bánh bao xá xíu chín trắng ngần, vỏ mềm xốp và nhân thơm ngậy.",
-      "durationMinutes": 20
-    }
-  ],
-  "images": [
-    {
-      "url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=80",
-      "altText": "Bánh bao xá xíu",
-      "license": "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-    }
-  ]
+﻿{
+    "title":  "Bánh bao xá xíu",
+    "originalTitle":  "Bánh bao xá xíu",
+    "description":  "Bánh bao nhân xá xíu với lớp vỏ bánh trắng ngần mềm xốp, thơm nhẹ mùi sữa tươi, ôm trọn phần nhân thịt xá xíu đậm đà, màu đỏ nâu sánh quyện đẫm sốt dầu hào dầu mè chuẩn vị ẩm thực Quảng Đông.",
+    "categoryName":  "Bánh \u0026 Điểm tâm",
+    "authorEmail":  "chef.baongoc@culinaryblog.local",
+    "prepTimeMinutes":  60,
+    "cookTimeMinutes":  40,
+    "servings":  8,
+    "difficulty":  "Hard",
+    "source":  {
+                   "name":  "Linh Trang — Savoury Days",
+                   "url":  "https://www.savourydays.com/banh-bao-nhan-xa-xiu/",
+                   "accessedOn":  "2026-11-17",
+                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/banh-bao-nhan-xa-xiu/)."
+               },
+    "nutrition":  {
+                      "calories":  260.0,
+                      "protein":  10.0,
+                      "carbohydrates":  36.0,
+                      "fat":  8.0,
+                      "fiber":  null,
+                      "sodium":  null
+                  },
+    "ingredients":  [
+                        {
+                            "name":  "Bột mì hoa ngọc lan (hoặc bột mì số 8 / số 11)",
+                            "quantity":  250.0,
+                            "unit":  "gram",
+                            "notes":  "Bột làm vỏ bánh bao"
+                        },
+                        {
+                            "name":  "Men nở (Instant dry yeast)",
+                            "quantity":  3.0,
+                            "unit":  "gram (khoảng 1 tsp)",
+                            "notes":  "Kích hoạt bột nở xốp"
+                        },
+                        {
+                            "name":  "Sữa tươi không đường ấm (35-40°C)",
+                            "quantity":  135.0,
+                            "unit":  "ml",
+                            "notes":  "Pha men và nhồi bột"
+                        },
+                        {
+                            "name":  "Đường cát trắng (cho vào vỏ bánh)",
+                            "quantity":  40.0,
+                            "unit":  "gram",
+                            "notes":  "Tạo độ ngọt nhẹ và nuôi men"
+                        },
+                        {
+                            "name":  "Dầu ăn",
+                            "quantity":  15.0,
+                            "unit":  "ml (1 thìa canh)",
+                            "notes":  "Nhồi vào bột giúp vỏ bánh bóng mượt"
+                        },
+                        {
+                            "name":  "Muối tinh",
+                            "quantity":  1.0,
+                            "unit":  "nhúm nhỏ",
+                            "notes":  "Nêm vỏ bánh"
+                        },
+                        {
+                            "name":  "Thịt xá xíu chín thơm",
+                            "quantity":  250.0,
+                            "unit":  "gram",
+                            "notes":  "Thái hạt lựu nhỏ đều nhau"
+                        },
+                        {
+                            "name":  "Hành tây",
+                            "quantity":  50.0,
+                            "unit":  "gram (1/2 củ nhỏ)",
+                            "notes":  "Bóc vỏ, thái hạt lựu nhỏ"
+                        },
+                        {
+                            "name":  "Hỗn hợp sốt xá xíu: dầu hào, xì dầu, sốt xá xíu, đường, dầu mè",
+                            "quantity":  1.0,
+                            "unit":  "hỗn hợp",
+                            "notes":  "Gia vị sốt nhân đậm đà"
+                        },
+                        {
+                            "name":  "Bột bắp (tinh bột ngô)",
+                            "quantity":  10.0,
+                            "unit":  "gram (1 thìa canh)",
+                            "notes":  "Hòa tan với 50ml nước lạnh làm sánh sốt nhân"
+                        }
+                    ],
+    "steps":  [
+                  {
+                      "title":  "Làm nhân thịt xá xíu sánh sệt",
+                      "description":  "Bắc chảo nhỏ lên bếp với chút dầu ăn, cho hành tây hạt lựu vào xào thơm trong 1 phút. Trút thịt xá xíu thái hạt lựu vào đảo đều. Đổ hỗn hợp gia vị sốt (dầu hào, xì dầu, sốt xá xíu, đường, dầu mè) cùng bát nước bột bắp hòa tan vào chảo. Đảo đều trên lửa nhỏ đến khi phần nước sốt sệt lại, keo sánh đặc bám đều quanh từng hạt thịt xá xíu thì tắt bếp, để nguội hoàn toàn.",
+                      "durationMinutes":  15
+                  },
+                  {
+                      "title":  "Nhồi bột và ủ nở vỏ bánh bao",
+                      "description":  "Hòa men nở vào sữa tươi ấm cùng 1 thìa cà phê đường, để 5-10 phút cho men nở bung mảng như gạch cua. Trộn bột mì, phần đường còn lại và nhúm muối trong âu lớn. Đổ hỗn hợp sữa men và dầu ăn vào âu, dùng tay nhồi đều thành khối bột dẻo mịn không dính tay trong khoảng 10-12 phút. Quét lớp dầu mỏng quanh âu, đặt khối bột vào, bọc kín màng bọc thực phẩm ủ ở nơi ấm áp khoảng 45-60 phút đến khi bột nở gấp đôi.",
+                      "durationMinutes":  45
+                  },
+                  {
+                      "title":  "Chia bột, cán vỏ và bắt múi bánh",
+                      "description":  "Ấn nhẹ tay cho xẹp bọt khí trong khối bột, chia bột thành 8 phần bằng nhau (khoảng 50g/viên) rồi vo tròn. Dùng cây cán bột cán mỏng từng viên bột thành hình tròn, sao cho phần mép ngoài mỏng hơn phần tâm giữa (để đáy bánh không bị rách khi hấp). Múc một thìa nhân xá xíu đặt vào giữa. Dùng ngón tay túm nhẹ từng nếp gấp mép bột xoay tròn nhịp nhàng tạo thành các múi hoa đều đặn, túm chặt đỉnh bánh để nhân không bị hở. Đặt mỗi chiếc bánh lên một miếng giấy nến cắt vuông.",
+                      "durationMinutes":  20
+                  },
+                  {
+                      "title":  "Ủ lần 2 và hấp bánh bao trắng xốp",
+                      "description":  "Xếp bánh lên khay để bánh nghỉ thêm 15-20 phút cho bột nở nhẹ trở lại. Đun sôi nước trong xửng hấp ở lửa vừa. Lót một chiếc khăn vải sạch dưới nắp vung nồi để nước ngưng tụ không nhỏ giọt làm rỗ vỏ bánh. Xếp bánh vào xửng cách nhau khoảng 3-4cm để bánh nở. Hấp bánh ở lửa vừa trong khoảng 12-14 phút. Tắt bếp nhưng để nguyên nồi đậy vung 3 phút mới mở nắp (giúp bánh không bị xẹp đột ngột do sốc nhiệt). Bánh bao xá xíu chín trắng ngần, vỏ mềm xốp và nhân thơm ngậy.",
+                      "durationMinutes":  20
+                  }
+              ],
+    "images":  [
+                   {
+                       "url":  "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+                       "altText":  "Bánh bao xá xíu",
+                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
+                   }
+               ]
 }
