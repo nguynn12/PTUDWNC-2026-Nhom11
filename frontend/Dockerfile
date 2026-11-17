@@ -12,6 +12,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN mkdir -p /app/public
 # NEXT_PUBLIC_* được nhúng lúc build nên phải truyền qua build arg (xem docker-compose.yml)
+# rewrites() trong next.config.ts được tính lúc BUILD (next start chỉ đọc lại từ manifest), nên địa chỉ backend
+# phải có ngay lúc build; đặt biến môi trường lúc chạy là không đủ.
+ARG BACKEND_API_URL=http://localhost:5000
+ENV BACKEND_API_URL=$BACKEND_API_URL
 ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 ARG NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED=true
@@ -36,6 +40,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+# next start nạp lại next.config lúc chạy; thiếu tệp này thì images.remotePatterns mất và mọi ảnh ngoài bị 400
+COPY --from=builder /app/next.config.ts ./next.config.ts
+ARG BACKEND_API_URL=http://localhost:5000
+ENV BACKEND_API_URL=$BACKEND_API_URL
 
 USER nextjs
 EXPOSE 3000

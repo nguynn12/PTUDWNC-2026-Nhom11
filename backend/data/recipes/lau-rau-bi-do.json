@@ -1,0 +1,107 @@
+{
+  "title": "Nồi bí đỏ đậu que kiểu Việt (chay)",
+  "originalTitle": "Vietnamese-style veggie hotpot",
+  "description": "Món chay hầm nhanh với bí đỏ, đậu que, gừng, tỏi và nước tương, ăn nóng với cơm và ngò rí. Làm trong khoảng 25 phút.",
+  "categoryName": "Món chay thanh tịnh",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-veggie-hotpot",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 75.0,
+    "protein": 2.0,
+    "carbohydrates": 13.0,
+    "fat": 2.0
+  },
+  "ingredients": [
+    {
+      "name": "Dầu thực vật",
+      "quantity": 2,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 1,
+      "unit": "khúc ngón cái",
+      "notes": "Thái sợi"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 2,
+      "unit": "tép",
+      "notes": "Băm"
+    },
+    {
+      "name": "Bí đỏ",
+      "quantity": 0.5,
+      "unit": "quả lớn",
+      "notes": "Gọt vỏ, cắt khối"
+    },
+    {
+      "name": "Nước tương",
+      "quantity": 2,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Đường nâu",
+      "quantity": 2,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Nước dùng rau củ",
+      "quantity": 200,
+      "unit": "ml"
+    },
+    {
+      "name": "Đậu que",
+      "quantity": 100,
+      "unit": "g",
+      "notes": "Cắt bỏ đầu, cắt khúc"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 4,
+      "unit": "cây",
+      "notes": "Thái khúc"
+    },
+    {
+      "name": "Ngò rí và cơm trắng",
+      "notes": "Dọn kèm"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Phi gừng tỏi",
+      "description": "Đun dầu trong nồi có nắp cỡ vừa, xào gừng và tỏi khoảng 5 phút.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Hầm bí",
+      "description": "Cho bí đỏ, nước tương, đường và nước dùng vào, đậy nắp ninh 10 phút.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Cho đậu que",
+      "description": "Mở nắp, thêm đậu que và nấu thêm 3 phút cho bí và đậu mềm.",
+      "durationMinutes": 3
+    },
+    {
+      "title": "Hoàn thiện",
+      "description": "Trộn hành lá vào phút cuối, rắc ngò rí và dọn với cơm."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-513480_11-48515a9.jpg",
+      "altText": "Nồi bí đỏ đậu que kiểu Việt (chay)",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

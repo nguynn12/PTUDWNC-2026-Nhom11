@@ -1,0 +1,184 @@
+{
+  "title": "Phở gà kiểu Việt",
+  "originalTitle": "Vietnamese chicken noodle soup",
+  "description": "Tô bún nước dùng gà thơm gia vị với hồi, quế, gừng, sả và hành phi, ăn cùng bún gạo, ức gà xé, giá và rau thơm. Làm nhanh trong khoảng 45 phút.",
+  "categoryName": "Món súp",
+  "authorEmail": "author@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 25,
+  "servings": 6,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-chicken-noodle-soup",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 442.0,
+    "protein": 31.0,
+    "carbohydrates": 68.0,
+    "fat": 4.0,
+    "fiber": 5.0
+  },
+  "ingredients": [
+    {
+      "name": "Dầu thực vật",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 3,
+      "unit": "củ",
+      "notes": "Thái lát"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3,
+      "unit": "tép",
+      "notes": "Thái lát"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "cây",
+      "notes": "Cắt khúc"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 2.5,
+      "unit": "cm",
+      "notes": "Thái lát"
+    },
+    {
+      "name": "Hoa hồi",
+      "quantity": 3,
+      "unit": "cái"
+    },
+    {
+      "name": "Quế",
+      "quantity": 1,
+      "unit": "thanh"
+    },
+    {
+      "name": "Hạt ngò",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Ngũ vị hương",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Tiêu đen hạt",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước dùng gà",
+      "quantity": 1.4,
+      "unit": "lít"
+    },
+    {
+      "name": "Ức gà",
+      "quantity": 500,
+      "unit": "g",
+      "notes": "Khoảng 3 miếng lớn"
+    },
+    {
+      "name": "Bún gạo",
+      "quantity": 450,
+      "unit": "g"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 4,
+      "unit": "cây",
+      "notes": "Thái xéo mỏng"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Bào sợi hoặc bào dải"
+    },
+    {
+      "name": "Giá đỗ",
+      "quantity": 150,
+      "unit": "g"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 1,
+      "unit": "bó lớn",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Bạc hà",
+      "quantity": 1,
+      "unit": "bó nhỏ",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Ớt đỏ",
+      "quantity": 1,
+      "unit": "trái",
+      "notes": "Thái lát mỏng, tùy chọn"
+    },
+    {
+      "name": "Hành phi",
+      "quantity": 2,
+      "unit": "muỗng canh",
+      "notes": "Tùy chọn"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt múi"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Phi hành tỏi",
+      "description": "Đun dầu trong chảo nhỏ lửa vừa, phi hành khô và tỏi đến khi vàng thơm.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Nấu nước dùng",
+      "description": "Cho hành tỏi phi, sả, gừng, các loại gia vị, đường, nước mắm, nước dùng gà và ức gà vào nồi lớn, đậy nắp, đun liu riu khoảng 15 phút.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Luộc bún",
+      "description": "Trụng bún theo hướng dẫn trên bao bì đến khi vừa chín, xả nước lạnh, để ráo rồi chia vào các tô."
+    },
+    {
+      "title": "Lọc nước dùng",
+      "description": "Lọc nước dùng qua rây, bỏ gia vị. Xé nhỏ thịt gà. Đun sôi lại nước dùng và nêm thêm nước mắm nếu cần."
+    },
+    {
+      "title": "Hoàn thiện",
+      "description": "Xếp thịt gà lên bún, chan nước dùng nóng, thêm hành lá, cà rốt, giá, rau thơm, ớt, hành phi; ăn kèm chanh và thêm nước mắm, ớt tùy khẩu vị."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chicken-pho-5fb5771.jpg",
+      "altText": "Phở gà kiểu Việt",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

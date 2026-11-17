@@ -171,6 +171,13 @@ if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Databas
             await initialiser.InitialiseAsync();
             await initialiser.SeedAsync();
             await CategorySeeder.SeedAsync(dbContext);
+
+            // Công thức thật (backend/data/recipes) nạp TRƯỚC seeder ngẫu nhiên: khi đã có công thức thì
+            // RecipeSeeder/RecipeDetailSeeder tự bỏ qua, nên DB mới chỉ chứa dữ liệu thật có tác giả và danh mục.
+            var recipeDataPath = app.Configuration["Seeding:RecipeDataPath"]
+                ?? Path.Combine(AppContext.BaseDirectory, RecipeDataImporter.DefaultFolder);
+            await RecipeDataImporter.ImportAsync(dbContext, recipeDataPath, app.Logger);
+
             await RecipeSeeder.SeedAsync(dbContext);
             await RecipeDetailSeeder.SeedAsync(dbContext);
         }

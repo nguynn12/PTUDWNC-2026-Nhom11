@@ -1,0 +1,94 @@
+{
+  "title": "Bún thịt nướng sả",
+  "originalTitle": "Vietnamese Lemongrass Pork Noodle Bowls (Bun Thit Nuong)",
+  "description": "Tô bún thịt heo nướng sả ăn kèm bún, rau sống, đồ chua cà rốt củ cải, đậu phộng rang và nước chấm chua ngọt. Thịt cần ướp qua đêm; các thành phần có thể chuẩn bị trước rồi bày ra tô khi ăn.",
+  "categoryName": "Món bún & phở",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 10,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/vietnamese-pork-noodle-bowls/",
+    "accessedOn": "2026-11-16",
+    "note": "Nguyên liệu và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, giữ đơn vị gốc); các bước được diễn đạt lại. Thịt heo ướp sả được nguồn viết ở một công thức riêng nên chưa có chi tiết ướp và nướng ở đây. Nguồn cần ướp thịt 1 ngày và ngâm đồ chua 2 giờ, không tính vào thời gian chuẩn bị 30 phút. Dinh dưỡng tính khi ăn hết phần nước chấm."
+  },
+  "nutrition": {
+    "calories": 622,
+    "protein": 23,
+    "carbohydrates": 94,
+    "fat": 18,
+    "fiber": 5,
+    "sodium": 2362
+  },
+  "ingredients": [
+    { "name": "Thịt heo nướng ướp sả", "quantity": 8, "unit": "miếng", "notes": "Đã ướp qua đêm; theo công thức riêng, đủ cho 4 người" },
+    { "name": "Bún khô (sợi gạo mảnh)", "quantity": 200, "unit": "g", "notes": "Có thể thay bằng miến hoặc loại bún gạo khô mảnh khác" },
+    { "name": "Xà lách mềm (xà lách bơ)", "quantity": 1, "unit": "cây", "notes": "Xé miếng vừa ăn; có thể thay bằng 4 cốc xà lách bào" },
+    { "name": "Dưa leo", "quantity": 2, "unit": "quả", "notes": "Bổ đôi theo chiều dọc, thái xéo dày khoảng 3 mm" },
+    { "name": "Giá đỗ", "quantity": 2, "unit": "cốc" },
+    { "name": "Húng lủi", "quantity": 1, "unit": "nắm" },
+    { "name": "Ngò rí", "quantity": 1, "unit": "nắm" },
+    { "name": "Đậu phộng rang không muối", "quantity": 0.25, "unit": "cốc", "notes": "Băm nhỏ" },
+    { "name": "Ớt đỏ", "notes": "Thái lát, tùy chọn" },
+    { "name": "Chanh", "notes": "Cắt múi, tùy chọn nhưng nên có" },
+    { "name": "Cà rốt", "quantity": 2, "unit": "củ vừa", "notes": "Đồ chua: gọt vỏ, cắt que dày 2–3 mm" },
+    { "name": "Củ cải trắng", "quantity": 0.5, "unit": "củ lớn", "notes": "Đồ chua: gọt vỏ, cắt giống cà rốt" },
+    { "name": "Nước sôi", "quantity": 1.5, "unit": "cốc", "notes": "Đồ chua" },
+    { "name": "Đường trắng", "quantity": 0.5, "unit": "cốc", "notes": "Đồ chua" },
+    { "name": "Muối", "quantity": 4, "unit": "muỗng cà phê", "notes": "Đồ chua" },
+    { "name": "Giấm gạo", "quantity": 0.75, "unit": "cốc", "notes": "Đồ chua; có thể thay bằng giấm táo" },
+    { "name": "Đường trắng", "quantity": 4.5, "unit": "muỗng canh", "notes": "Nước chấm" },
+    { "name": "Nước mắm", "quantity": 4.5, "unit": "muỗng canh", "notes": "Nước chấm" },
+    { "name": "Giấm gạo", "quantity": 3, "unit": "muỗng canh", "notes": "Nước chấm" },
+    { "name": "Nước cốt chanh", "quantity": 3, "unit": "muỗng canh", "notes": "Nước chấm" },
+    { "name": "Nước", "quantity": 0.5, "unit": "cốc", "notes": "Nước chấm" },
+    { "name": "Ớt hiểm", "quantity": 2, "unit": "trái", "notes": "Nước chấm: bỏ hạt, băm nhỏ" },
+    { "name": "Tỏi", "quantity": 5, "unit": "tép", "notes": "Nước chấm: băm nhỏ" }
+  ],
+  "steps": [
+    {
+      "title": "Làm đồ chua",
+      "description": "Hòa tan muối và đường trong nước sôi, thêm giấm gạo, rồi cho cà rốt và củ cải trắng đã cắt que vào ngâm."
+    },
+    {
+      "title": "Để đồ chua thấm",
+      "description": "Để khoảng 2 giờ cho rau hơi mềm lại, sau đó vớt ra và để ráo kỹ.",
+      "durationMinutes": 120
+    },
+    {
+      "title": "Pha nước chấm",
+      "description": "Trộn tất cả nguyên liệu nước chấm, khuấy đến khi đường tan hết."
+    },
+    {
+      "title": "Chuẩn bị bún",
+      "description": "Ngâm bún trong nước sôi khoảng 5 phút, xả nước lạnh, để nguội rồi để thật ráo.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Chuẩn bị rau và topping",
+      "description": "Sơ chế các loại rau, rau thơm và đậu phộng còn lại để sẵn sàng bày ra tô."
+    },
+    {
+      "title": "Nướng thịt",
+      "description": "Nướng thịt heo đã ướp sả theo công thức riêng đến khi chín.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Bày tô bún",
+      "description": "Cho bún, xà lách, đồ chua, dưa leo và giá vào tô, đặt thịt nướng lên trên (2 miếng mỗi tô), thêm rau thơm, đậu phộng, ớt và một múi chanh."
+    },
+    {
+      "title": "Dọn ăn",
+      "description": "Dọn kèm nước chấm để mỗi người tự rưới thêm theo khẩu vị."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2023/04/Vietnamese-noodles-lemongrass-pork-6.jpg",
+      "altText": "Tô bún thịt nướng sả với rau sống, đồ chua và nước chấm",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

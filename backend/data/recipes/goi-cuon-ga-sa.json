@@ -1,0 +1,153 @@
+{
+  "title": "Gỏi cuốn gà sả",
+  "originalTitle": "Lemongrass Chicken Rice Paper Rolls",
+  "description": "Gỏi cuốn nhân đùi gà ướp sả áp chảo, bún, bắp cải tím, cà rốt và rau thơm, chấm sốt đậu phộng. Làm được khoảng 10 cuốn, hợp làm món khai vị.",
+  "categoryName": "Món cuốn thanh mát",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 25,
+  "cookTimeMinutes": 6,
+  "servings": 10,
+  "difficulty": "Medium",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/lemongrass-chicken-rice-paper-rolls/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 163.0,
+    "protein": 7.0,
+    "carbohydrates": 18.0,
+    "fat": 7.0,
+    "fiber": 1.0,
+    "sodium": 337.0
+  },
+  "ingredients": [
+    {
+      "name": "Đùi gà không xương",
+      "quantity": 350,
+      "unit": "g",
+      "notes": "Thái rất mỏng, rộng khoảng 2,5 cm, dày 3 mm"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1.5,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Đường nâu",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Bào nhuyễn hoặc dạng nhuyễn"
+    },
+    {
+      "name": "Nước cốt chanh",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 1,
+      "unit": "tép",
+      "notes": "Bào nhuyễn"
+    },
+    {
+      "name": "Dầu canola",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Để áp chảo"
+    },
+    {
+      "name": "Bánh tráng tròn",
+      "quantity": 10,
+      "unit": "tờ",
+      "notes": "Khoảng 22 cm"
+    },
+    {
+      "name": "Bún khô",
+      "quantity": 70,
+      "unit": "g"
+    },
+    {
+      "name": "Bắp cải xanh",
+      "quantity": 1,
+      "unit": "cốc",
+      "notes": "Thái thật mỏng"
+    },
+    {
+      "name": "Bắp cải tím",
+      "quantity": 1,
+      "unit": "cốc",
+      "notes": "Thái thật mỏng"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Bóc vỏ, thái sợi mảnh"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.25,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Sốt đậu phộng",
+      "notes": "Dùng để chấm"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ướp gà",
+      "description": "Trộn các nguyên liệu ướp với thịt gà, ướp 15 phút hoặc qua đêm.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Pha sốt đậu phộng",
+      "description": "Trộn sốt đậu phộng, thêm sữa nếu cần cho đỡ đặc."
+    },
+    {
+      "title": "Chần bún",
+      "description": "Cho bún vào tô, chan nước sôi 2 phút, để thật ráo rồi để nguội.",
+      "durationMinutes": 2
+    },
+    {
+      "title": "Áp chảo gà",
+      "description": "Đun nóng dầu trong chảo lớn lửa to, cho nửa số gà vào đảo liên tục 3 phút đến khi hơi xém cạnh, vớt ra để nguội rồi làm mẻ còn lại.",
+      "durationMinutes": 6
+    },
+    {
+      "title": "Chuẩn bị nước nhúng",
+      "description": "Đổ nước ấm vào tô lớn để nhúng bánh tráng."
+    },
+    {
+      "title": "Làm mềm bánh tráng",
+      "description": "Nhúng bánh tráng khoảng 2 giây rồi đặt lên thớt, mặt trơn xuống dưới."
+    },
+    {
+      "title": "Xếp nhân",
+      "description": "Xếp ngò rí, gà, cà rốt, bắp cải, bạc hà rồi bún lên trên cho nén chặt nhân."
+    },
+    {
+      "title": "Cuốn",
+      "description": "Gập phần dưới bánh lên nhân, gập hai bên vào rồi cuốn chặt. Bánh sẽ tự dính."
+    },
+    {
+      "title": "Dọn ăn",
+      "description": "Bày ra đĩa, không xếp chồng vì sẽ dính. Dọn với sốt đậu phộng; có thể cắt đôi dựng đứng làm món khai vị."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2025/09/Lemongrass-chicken-rice-paper-rolls_3.jpg",
+      "altText": "Gỏi cuốn gà sả",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

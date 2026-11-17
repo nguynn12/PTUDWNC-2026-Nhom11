@@ -90,6 +90,9 @@ services:
     restart: unless-stopped
     environment:
       ACCEPT_EULA: "Y"
+      # Seq bản mới bắt buộc có mật khẩu admin hoặc tắt xác thực ở lần chạy đầu, nếu không container crash.
+      # Chỉ dùng cho môi trường dev/demo; khi triển khai thật hãy đặt SEQ_FIRSTRUN_ADMINPASSWORD thay thế.
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
     ports:
       - "${SEQ_PORT:-5341}:80"
     volumes:
@@ -147,6 +150,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
+        BACKEND_API_URL: http://api:8080
         NEXT_PUBLIC_SITE_URL: ${CLIENT_BASE_URL:-http://localhost:3000}
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GoogleAuth__ClientId:-}
     image: culinaryblog-web:latest

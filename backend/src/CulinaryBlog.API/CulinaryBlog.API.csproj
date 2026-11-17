@@ -22,5 +22,10 @@
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Sinks.Seq" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Dữ liệu công thức thật: đi cùng bản build/publish (kể cả image Docker) -->
+    <None Include="../../data/recipes/*.json" Link="data/recipes/%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
 

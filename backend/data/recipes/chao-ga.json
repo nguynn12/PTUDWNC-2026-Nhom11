@@ -1,0 +1,103 @@
+{
+  "title": "Cháo gà",
+  "originalTitle": "Vietnamese Chicken and Long-Grain Rice Congee",
+  "description": "Cháo gà nấu từ nước luộc gà thơm gừng và sả, ăn kèm thịt gà xé, ngò rí, hành lá, tiêu và chanh. Món ăn nhẹ bụng, hợp khi mệt hoặc bữa sáng.",
+  "categoryName": "Món cháo bồi bổ",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 120,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/37707/vietnamese-chicken-and-long-grain-rice-congee/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 643.0,
+    "protein": 53.0,
+    "carbohydrates": 10.0,
+    "fat": 42.0,
+    "fiber": 1.0,
+    "sodium": 1943.0
+  },
+  "ingredients": [
+    {
+      "name": "Gạo thơm",
+      "quantity": 0.125,
+      "unit": "cốc"
+    },
+    {
+      "name": "Gà ta nguyên con",
+      "quantity": 1.1,
+      "unit": "kg"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 3,
+      "unit": "khúc 5 cm"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "cây",
+      "notes": "Cắt khúc"
+    },
+    {
+      "name": "Muối",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Nêm theo khẩu vị"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.25,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Hẹ",
+      "quantity": 0.125,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Tiêu đen xay",
+      "notes": "Theo khẩu vị"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt 8 múi"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Luộc gà",
+      "description": "Cho gà vào nồi lớn, đổ nước ngập, thêm gừng, sả và muối, đun sôi rồi hạ nhỏ lửa, đậy nắp liu riu 1–1,5 giờ.",
+      "durationMinutes": 90
+    },
+    {
+      "title": "Xé gà",
+      "description": "Lọc nước luộc đổ lại vào nồi. Để gà nguội, lọc bỏ xương và da, xé thành miếng vừa ăn."
+    },
+    {
+      "title": "Nấu cháo",
+      "description": "Cho gạo vào nước luộc gà, đun sôi rồi hạ lửa vừa nấu 30 phút, khuấy thỉnh thoảng; thêm nước hoặc muối nếu cần. Nấu thêm khoảng 45 phút nếu muốn cháo nhuyễn hơn.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Dọn ăn",
+      "description": "Múc cháo ra tô, thêm thịt gà, ngò rí, hẹ, tiêu và vắt chanh."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/JdJUn-uMWB80AnMfBIkNri3Ghek=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/6750773-vietnamese-chicken-and-long-grain-rice-congee-Rachel-Palmer-4x3-1-7d8b698333f2449990656bd871c830ee.jpg",
+      "altText": "Cháo gà",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

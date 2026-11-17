@@ -16,7 +16,8 @@ import { Sparkles, Utensils, Search, ArrowRight, Clock, Salad, Zap } from "lucid
 import type { CategoryDto, RecipeSummaryDto } from "@/types/api";
 
 // Cấu hình ISR: Tự động tái sinh trang tĩnh ngầm định sau mỗi 60 giây khi có dữ liệu mới
-export const revalidate = 3600;
+// Dữ liệu lấy từ backend lúc chạy; nếu prerender lúc build (backend chưa sẵn sàng) thì trang lỗi bị cache 1 giờ.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Trang Chủ — Khám Phá Hàng Ngàn Món Ngon & Công Thức Chuẩn Vị",

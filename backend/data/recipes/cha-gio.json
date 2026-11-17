@@ -1,0 +1,126 @@
+{
+  "title": "Chả giò",
+  "originalTitle": "Cha Gio Vietnamese Egg Rolls",
+  "description": "Chả giò chiên giòn với nhân thịt heo, tôm, miến, nấm hương và cà rốt. Cuốn trước rồi chiên ngập dầu đến khi vàng giòn.",
+  "categoryName": "Món khai vị",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 45,
+  "cookTimeMinutes": 5,
+  "servings": 12,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/245342/cha-gio-vietnamese-egg-rolls/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 228.0,
+    "protein": 12.0,
+    "carbohydrates": 14.0,
+    "fat": 14.0,
+    "fiber": 1.0,
+    "sodium": 464.0
+  },
+  "ingredients": [
+    {
+      "name": "Miến",
+      "quantity": 1,
+      "unit": "cốc"
+    },
+    {
+      "name": "Nấm hương khô",
+      "quantity": 1,
+      "unit": "tai lớn"
+    },
+    {
+      "name": "Thịt heo xay",
+      "quantity": 450,
+      "unit": "g"
+    },
+    {
+      "name": "Tôm",
+      "quantity": 225,
+      "unit": "g",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ lớn",
+      "notes": "Bào sợi"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 1,
+      "unit": "củ nhỏ",
+      "notes": "Băm"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 2.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Đường",
+      "quantity": 1.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Muối",
+      "quantity": 1.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Tiêu đen xay",
+      "quantity": 1.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Vỏ chả giò",
+      "quantity": 24,
+      "unit": "tờ"
+    },
+    {
+      "name": "Trứng",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Đánh tan, để dán mép"
+    },
+    {
+      "name": "Dầu ăn",
+      "notes": "Để chiên ngập dầu"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ngâm miến và nấm",
+      "description": "Ngâm miến và nấm hương trong nước ấm khoảng 15 phút cho mềm, để ráo rồi băm nhỏ nấm.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Trộn nhân",
+      "description": "Trộn miến, nấm, thịt heo, tôm, cà rốt, hành khô, nước mắm, đường, muối và tiêu cho thật đều."
+    },
+    {
+      "title": "Cuốn chả giò",
+      "description": "Đặt vỏ chả giò theo hình thoi, cho khoảng 2 muỗng canh nhân vào giữa, gập góc dưới lên, gập hai bên vào rồi cuốn, dán mép bằng trứng đánh."
+    },
+    {
+      "title": "Đun dầu",
+      "description": "Đun dầu ở khoảng 175°C."
+    },
+    {
+      "title": "Chiên",
+      "description": "Chiên chả giò từng mẻ 5–8 phút đến khi vàng giòn, vớt ra để ráo dầu.",
+      "durationMinutes": 8
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/_m7K5IlYXvHK9ipjISDzXK6CUjw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/2898454-331f1d0042cd4e04a7cc9d75be587a31.jpg",
+      "altText": "Chả giò",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

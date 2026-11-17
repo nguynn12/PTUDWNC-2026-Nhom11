@@ -1,0 +1,182 @@
+{
+  "title": "Bún chả",
+  "originalTitle": "Bun Cha - Vietnamese Meatballs",
+  "description": "Chả viên thịt heo ướp nước mắm, hành lá và sả áp chảo vàng, ăn với bún, rau sống, đồ chua và bát nước chấm chua ngọt nhiều nước như nước dùng.",
+  "categoryName": "Món nướng thơm lừng",
+  "authorEmail": "chef.minhkhoi@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 10,
+  "servings": 2,
+  "difficulty": "Medium",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/bun-cha-vietnamese-meatballs/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 540.0,
+    "protein": 23.0,
+    "carbohydrates": 27.0,
+    "fat": 37.0,
+    "sodium": 2903.0
+  },
+  "ingredients": [
+    {
+      "name": "Thịt heo xay",
+      "quantity": 275,
+      "unit": "g",
+      "notes": "250–300 g"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Để ướp"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 2,
+      "unit": "muỗng cà phê",
+      "notes": "Để ướp"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 0.33,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 1,
+      "unit": "tép",
+      "notes": "Băm, để ướp"
+    },
+    {
+      "name": "Tiêu trắng và muối",
+      "quantity": 1,
+      "unit": "nhúm"
+    },
+    {
+      "name": "Sả",
+      "quantity": 2,
+      "unit": "muỗng cà phê",
+      "notes": "Băm hoặc dạng nhuyễn, tùy chọn"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 1.5,
+      "unit": "muỗng canh",
+      "notes": "Để chiên"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 3,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 3,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Giấm gạo",
+      "quantity": 2,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Nước cốt chanh",
+      "quantity": 2,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Nước",
+      "quantity": 0.33,
+      "unit": "cốc",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Ớt hiểm",
+      "quantity": 1,
+      "unit": "trái",
+      "notes": "Bỏ hạt, băm nhỏ"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3,
+      "unit": "tép",
+      "notes": "Băm, cho nước chấm"
+    },
+    {
+      "name": "Bún khô",
+      "quantity": 100,
+      "unit": "g"
+    },
+    {
+      "name": "Giá đỗ",
+      "quantity": 1,
+      "unit": "nắm lớn"
+    },
+    {
+      "name": "Xà lách",
+      "quantity": 4,
+      "unit": "lá",
+      "notes": "Cuộn hoặc thái nhỏ"
+    },
+    {
+      "name": "Cà rốt và củ cải trắng",
+      "notes": "Cắt sợi, muối chua, tùy chọn"
+    },
+    {
+      "name": "Ngò rí và bạc hà",
+      "notes": "Một nắm"
+    },
+    {
+      "name": "Ớt đỏ và chanh",
+      "notes": "Dọn kèm, tùy chọn"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Pha nước chấm",
+      "description": "Trộn các nguyên liệu nước chấm rồi để yên ít nhất 10 phút.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Chuẩn bị bún",
+      "description": "Chan nước sôi ngập bún, ngâm theo hướng dẫn trên bao bì rồi để ráo."
+    },
+    {
+      "title": "Trộn thịt",
+      "description": "Trộn tất cả nguyên liệu ướp thịt (trừ dầu) cho đến khi hòa quyện."
+    },
+    {
+      "title": "Tạo hình",
+      "description": "Nặn thành 6 miếng chả nhỏ như bánh hamburger."
+    },
+    {
+      "title": "Áp chảo",
+      "description": "Đun dầu trong chảo lửa vừa lớn, áp chảo khoảng 2,5 phút đến khi vàng, lật mặt 2 phút rồi vớt ra.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Bày tô",
+      "description": "Cho bún vào tô, thêm giá, xà lách, cà rốt và củ cải."
+    },
+    {
+      "title": "Dọn ăn",
+      "description": "Xếp chả lên trên, thêm ngò rí và bạc hà rồi chan nước chấm thật nhiều."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2019/01/Vietnamese-Pork-Meatballs_6.jpg",
+      "altText": "Bún chả",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

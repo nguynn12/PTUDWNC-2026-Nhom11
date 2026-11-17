@@ -81,6 +81,14 @@ public class ApplicationDbContextInitialiser(
     /// khớp policy đã cấu hình ở DependencyInjection.AddInfrastructure (tối thiểu 8 ký
     /// tự, có hoa/thường/số/ký tự đặc biệt).
     /// </summary>
+    private static readonly (string Email, string DisplayName)[] RecipeAuthors =
+    [
+        ("chef.thuha@culinaryblog.local", "Nguyễn Thu Hà"),
+        ("chef.minhkhoi@culinaryblog.local", "Trần Minh Khôi"),
+        ("chef.baongoc@culinaryblog.local", "Lê Bảo Ngọc"),
+        ("chef.quocviet@culinaryblog.local", "Phạm Quốc Việt"),
+    ];
+
     private async Task SeedUsersAsync()
     {
         const int sampleUserCount = 15;
@@ -90,6 +98,10 @@ public class ApplicationDbContextInitialiser(
         await CreateUserIfNotExists("admin@culinaryblog.local", "Admin User", samplePassword, Roles.Admin, true);
         await CreateUserIfNotExists("author@culinaryblog.local", "Author User", samplePassword, Roles.Author, true);
         await CreateUserIfNotExists("author.unverified@culinaryblog.local", "Unverified Author", samplePassword, Roles.Author, false);
+
+        // Tác giả cố định cho công thức thật (backend/data/recipes): email ổn định để bộ nạp liên kết đúng tác giả.
+        foreach (var (email, name) in RecipeAuthors)
+            await CreateUserIfNotExists(email, name, samplePassword, Roles.Author, true);
 
         if (await context.Users.CountAsync() >= 18)
         {
