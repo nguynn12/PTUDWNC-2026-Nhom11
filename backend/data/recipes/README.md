@@ -59,6 +59,7 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 
 - Kho JSON có 42 công thức thuộc 17 danh mục: giữ 22 món cũ, thêm 16 món từ tài liệu tham chiếu Savoury Days và 4 món từ Helen's Recipes.
 - 20 ảnh mới lấy từ đúng bài nguồn, đã tải kiểm tra và xem ảnh từng món; thay toàn bộ ảnh Unsplash không đúng món. Không nối thông tin nguồn vào mô tả bài trên blog.
+- Ảnh bên ngoài được hiển thị với `referrerPolicy="no-referrer"` để tránh bị Savoury Days chặn khi nhúng từ tên miền khác. Kiểm thử ảnh kiểm cả ảnh tải thật, không chỉ kiểm URL.
 - Định lượng hỗn hợp được khôi phục từ Word và tách thành nguyên liệu riêng khi có số lượng từng thành phần. Nguyên liệu ghi "vừa đủ" giữ `quantity: null`, `unit: null` cùng ghi chú, không tự đặt số 1.
 - 20 món mới để `nutrition: null` vì các số trong Word là ước tính chưa có bảng tính kiểm chứng. Không thay số thiếu bằng 0; trang chi tiết không hiện bảng dinh dưỡng trống.
 - Nhập thử trên PostgreSQL riêng có 42 món / 540 nguyên liệu / 199 bước / 42 ảnh / 17 danh mục. DB demo đang dùng vẫn giữ 22 món trong lúc rà PR; bộ nạp không tự cập nhật các slug đã tồn tại.

@@ -1863,6 +1863,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                       <div className="relative w-full pt-[60%] overflow-hidden bg-[var(--bg-surface-alt)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
+                          referrerPolicy="no-referrer"
                           src={img.originalUrl}
                           alt={img.altText || title}
                           className="absolute inset-0 w-full h-full object-cover"

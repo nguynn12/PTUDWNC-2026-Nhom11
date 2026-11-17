@@ -20,8 +20,11 @@ test("Công thức dùng ảnh đúng nguồn và không hiện bảng dinh dư�
   await page.goto("/recipes/bo-sot-vang");
   await expect(page.getByRole("heading", { level: 1, name: "Bò sốt vang", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Giá trị dinh dưỡng (mỗi khẩu phần)", exact: true })).toHaveCount(0);
-  await expect(page.getByRole("img", { name: "Bò sốt vang", exact: true }).first())
+  const image = page.getByRole("img", { name: "Bò sốt vang", exact: true }).first();
+  await expect(image)
     .toHaveAttribute("src", "https://www.savourydays.com/wp-content/uploads/2011/09/bo-sot-vang1.jpg");
+  await expect(image).toHaveAttribute("referrerpolicy", "no-referrer");
+  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth), { timeout: 15000 }).toBeGreaterThan(0);
 
   const backend = process.env.PLAYWRIGHT_API_URL || "http://localhost:5000";
   const response = await page.request.get(`${backend}/api/v1/recipes/bun-cha-ha-noi`);
