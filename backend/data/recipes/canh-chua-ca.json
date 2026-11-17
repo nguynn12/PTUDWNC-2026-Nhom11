@@ -1,140 +1,145 @@
-﻿{
-    "title":  "Canh chua cá",
-    "originalTitle":  "Canh chua cá",
-    "description":  "Canh chua cá lóc chuẩn vị Nam Bộ thanh mát với thịt cá ngọt mềm, nước canh chua ngọt hài hòa từ me và dứa, kết hợp giòn sần sật của dọc mùng, đậu bắp, giá đỗ và mùi thơm đặc trưng không thể trộn lẫn của ngò om ngò gai và tỏi phi giòn.",
-    "categoryName":  "Món canh",
-    "authorEmail":  "chef.minhkhoi@culinaryblog.local",
-    "prepTimeMinutes":  20,
-    "cookTimeMinutes":  25,
-    "servings":  4,
-    "difficulty":  "Easy",
-    "source":  {
-                   "name":  "Helen Lê — Helen\u0027s Recipes (Da Nang Cuisine)",
-                   "url":  "https://helenrecipes.com/vietnamese-sweet-and-sour-snakehead-fish-soup/",
-                   "accessedOn":  "2026-11-17",
-                   "note":  "Công thức trích xuất và kiểm chứng từ Helen Lê — Helen\u0027s Recipes (Da Nang Cuisine) (https://helenrecipes.com/vietnamese-sweet-and-sour-snakehead-fish-soup/)."
-               },
-    "nutrition":  {
-                      "calories":  240.0,
-                      "protein":  26.0,
-                      "carbohydrates":  21.0,
-                      "fat":  6.0,
-                      "fiber":  null,
-                      "sodium":  null
-                  },
-    "ingredients":  [
-                        {
-                            "name":  "Cá lóc tươi (hoặc cá basa, cá bông lau)",
-                            "quantity":  500.0,
-                            "unit":  "gram",
-                            "notes":  "Cắt khúc dày 2.5-3cm, rửa sạch với muối chanh"
-                        },
-                        {
-                            "name":  "Nước sạch nấu canh",
-                            "quantity":  1500.0,
-                            "unit":  "ml",
-                            "notes":  "Nấu nước dùng"
-                        },
-                        {
-                            "name":  "Me vắt chua",
-                            "quantity":  30.0,
-                            "unit":  "gram (2 thìa canh)",
-                            "notes":  "Dầm với 150ml nước ấm chắt lấy nước cốt me"
-                        },
-                        {
-                            "name":  "Đường cát trắng",
-                            "quantity":  50.0,
-                            "unit":  "gram (3.5 thìa canh)",
-                            "notes":  "Cân bằng vị ngọt thanh Nam Bộ"
-                        },
-                        {
-                            "name":  "Nước mắm ngon",
-                            "quantity":  45.0,
-                            "unit":  "ml (3 thìa canh)",
-                            "notes":  "Nêm nước dùng"
-                        },
-                        {
-                            "name":  "Muối tinh \u0026 hạt nêm",
-                            "quantity":  1.0,
-                            "unit":  "hỗn hợp",
-                            "notes":  "Nêm canh"
-                        },
-                        {
-                            "name":  "Dứa (thơm) chín vừa",
-                            "quantity":  100.0,
-                            "unit":  "gram (1/4 quả)",
-                            "notes":  "Gọt vỏ, bỏ mắt, thái lát xéo mỏng"
-                        },
-                        {
-                            "name":  "Cà chua chín",
-                            "quantity":  2.0,
-                            "unit":  "quả",
-                            "notes":  "Bổ múi cau"
-                        },
-                        {
-                            "name":  "Đậu bắp",
-                            "quantity":  8.0,
-                            "unit":  "quả",
-                            "notes":  "Rửa sạch, cắt lát chéo dày 1.5cm"
-                        },
-                        {
-                            "name":  "Dọc mùng (bạc hà)",
-                            "quantity":  1.0,
-                            "unit":  "nhánh lớn",
-                            "notes":  "Tước vỏ ngoài, thái lát vát xéo, bóp muối xả sạch ráo"
-                        },
-                        {
-                            "name":  "Giá đỗ sạch",
-                            "quantity":  50.0,
-                            "unit":  "gram",
-                            "notes":  "Nhặt rễ, rửa sạch"
-                        },
-                        {
-                            "name":  "Rau ngò om (ngổ) và ngò gai",
-                            "quantity":  1.0,
-                            "unit":  "mớ nhỏ",
-                            "notes":  "Rửa sạch, thái nhỏ"
-                        },
-                        {
-                            "name":  "Tỏi băm \u0026 dầu ăn",
-                            "quantity":  1.0,
-                            "unit":  "hỗn hợp",
-                            "notes":  "Phi vàng giòn rưới mặt canh"
-                        },
-                        {
-                            "name":  "Ớt sừng đỏ",
-                            "quantity":  1.0,
-                            "unit":  "quả",
-                            "notes":  "Thái lát xéo"
-                        }
-                    ],
-    "steps":  [
-                  {
-                      "title":  "Sơ chế và ướp cá khử tanh",
-                      "description":  "Khúc cá lóc làm sạch ruột và vảy, xát muối hột pha chút nước cốt chanh để sạch nhớt và khử mùi tanh, xả nước lạnh rồi thấm thật khô ráo. Ướp khúc cá với 1 thìa cà phê nước mắm ngon, chút tiêu xay và ớt băm trong 10 phút.",
-                      "durationMinutes":  15
-                  },
-                  {
-                      "title":  "Nấu nước dùng chua ngọt từ cốt me",
-                      "description":  "Dầm 2 thìa canh me vắt với 1 chén nước ấm, lọc qua rây lấy phần nước cốt me chua thanh, bỏ hạt và bã me. Đun sôi 1.5 lít nước trong nồi lớn, đổ nước cốt me vào khuấy đều. Nêm 3.5 thìa canh đường cát, 3 thìa canh nước mắm, 1 thìa cà phê muối và 1 thìa cà phê hạt nêm. Nếm thử nước dùng thấy rõ vị chua ngọt thanh dịu đặc trưng của canh chua miền Nam.",
-                      "durationMinutes":  10
-                  },
-                  {
-                      "title":  "Nấu cá và thả rau củ theo tầng sôi",
-                      "description":  "Khi nước dùng sôi bùng, nhẹ nhàng thả các khúc cá vào nồi, đun lửa vừa khoảng 5-7 phút cho cá chín tới, hớt bọt nổi trên mặt. Vớt nhẹ khúc cá ra đĩa riêng để cá không bị nát trong quá trình nấu rau củ. Cho dứa và cà chua vào nồi nước dùng đun 2 phút cho tiết nước ngọt. Tiếp tục cho đậu bắp và dọc mùng đã bóp muối vào đun sôi thêm 2 phút cho vừa chín tới giữ độ giòn.",
-                      "durationMinutes":  10
-                  },
-                  {
-                      "title":  "Hoàn thiện canh chua",
-                      "description":  "Cho giá đỗ vào nồi và thả lại các khúc cá vào nồi canh cho nóng sốt bốc khói rồi tắt bếp ngay. Rắc rau ngò om, ngò gai thái nhỏ và vài lát ớt sừng lên mặt nồi canh. Rưới phần tỏi phi vàng giòn cùng chút dầu phi tỏi lên trên mặt để dậy mùi thơm nức. Múc canh ra tô lớn, dọn ăn nóng cùng cơm trắng và chén nước mắm nguyên chất dầm ớt hiểm cay.",
-                      "durationMinutes":  5
-                  }
-              ],
-    "images":  [
-                   {
-                       "url":  "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
-                       "altText":  "Canh chua cá",
-                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-                   }
-               ]
+{
+  "title": "Canh chua cá",
+  "originalTitle": "Canh chua cá",
+  "description": "Canh chua cá lóc chuẩn vị Nam Bộ thanh mát với thịt cá ngọt mềm, nước canh chua ngọt hài hòa từ me và dứa, kết hợp giòn sần sật của dọc mùng, đậu bắp, giá đỗ và mùi thơm đặc trưng không thể trộn lẫn của ngò om ngò gai và tỏi phi giòn.",
+  "categoryName": "Món canh",
+  "authorEmail": "chef.minhkhoi@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 25,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Helen Lê — Helen's Recipes (Da Nang Cuisine)",
+    "url": "https://helenrecipes.com/vietnamese-sweet-and-sour-snakehead-fish-soup/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Cá lóc tươi (hoặc cá basa, cá bông lau)",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Cắt khúc dày 2.5-3cm, rửa sạch với muối chanh"
+    },
+    {
+      "name": "Nước sạch nấu canh",
+      "quantity": 1500.0,
+      "unit": "ml",
+      "notes": "Nấu nước dùng"
+    },
+    {
+      "name": "Me vắt chua",
+      "quantity": 30.0,
+      "unit": "gram (2 thìa canh)",
+      "notes": "Dầm với 150ml nước ấm chắt lấy nước cốt me"
+    },
+    {
+      "name": "Đường cát trắng",
+      "quantity": 50.0,
+      "unit": "gram (3.5 thìa canh)",
+      "notes": "Cân bằng vị ngọt thanh Nam Bộ"
+    },
+    {
+      "name": "Nước mắm ngon",
+      "quantity": 45.0,
+      "unit": "ml (3 thìa canh)",
+      "notes": "Nêm nước dùng"
+    },
+    {
+      "name": "Muối tinh",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Nêm canh"
+    },
+    {
+      "name": "Hạt nêm",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Nêm canh"
+    },
+    {
+      "name": "Dứa (thơm) chín vừa",
+      "quantity": 100.0,
+      "unit": "gram (1/4 quả)",
+      "notes": "Gọt vỏ, bỏ mắt, thái lát xéo mỏng"
+    },
+    {
+      "name": "Cà chua chín",
+      "quantity": 2.0,
+      "unit": "quả",
+      "notes": "Bổ múi cau"
+    },
+    {
+      "name": "Đậu bắp",
+      "quantity": 8.0,
+      "unit": "quả",
+      "notes": "Rửa sạch, cắt lát chéo dày 1.5cm"
+    },
+    {
+      "name": "Dọc mùng (bạc hà)",
+      "quantity": 1.0,
+      "unit": "nhánh lớn",
+      "notes": "Tước vỏ ngoài, thái lát vát xéo, bóp muối xả sạch ráo"
+    },
+    {
+      "name": "Giá đỗ sạch",
+      "quantity": 50.0,
+      "unit": "gram",
+      "notes": "Nhặt rễ, rửa sạch"
+    },
+    {
+      "name": "Rau ngò om (ngổ) và ngò gai",
+      "quantity": 1.0,
+      "unit": "mớ nhỏ",
+      "notes": "Rửa sạch, thái nhỏ"
+    },
+    {
+      "name": "Tỏi băm",
+      "quantity": 1,
+      "unit": "tbsp",
+      "notes": "Phi vàng giòn rưới mặt canh"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 1,
+      "unit": "tbsp",
+      "notes": "Phi vàng giòn rưới mặt canh"
+    },
+    {
+      "name": "Ớt sừng đỏ",
+      "quantity": 1.0,
+      "unit": "quả",
+      "notes": "Thái lát xéo"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp cá khử tanh",
+      "description": "Khúc cá lóc làm sạch ruột và vảy, xát muối hột pha chút nước cốt chanh để sạch nhớt và khử mùi tanh, xả nước lạnh rồi thấm thật khô ráo. Ướp khúc cá với 1 thìa cà phê nước mắm ngon, chút tiêu xay và ớt băm trong 10 phút.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Nấu nước dùng chua ngọt từ cốt me",
+      "description": "Dầm 2 thìa canh me vắt với 1 chén nước ấm, lọc qua rây lấy phần nước cốt me chua thanh, bỏ hạt và bã me. Đun sôi 1.5 lít nước trong nồi lớn, đổ nước cốt me vào khuấy đều. Nêm 3.5 thìa canh đường cát, 3 thìa canh nước mắm, 1 thìa cà phê muối và 1 thìa cà phê hạt nêm. Nếm thử nước dùng thấy rõ vị chua ngọt thanh dịu đặc trưng của canh chua miền Nam.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Nấu cá và thả rau củ theo tầng sôi",
+      "description": "Khi nước dùng sôi bùng, nhẹ nhàng thả các khúc cá vào nồi, đun lửa vừa khoảng 5-7 phút cho cá chín tới, hớt bọt nổi trên mặt. Vớt nhẹ khúc cá ra đĩa riêng để cá không bị nát trong quá trình nấu rau củ. Cho dứa và cà chua vào nồi nước dùng đun 2 phút cho tiết nước ngọt. Tiếp tục cho đậu bắp và dọc mùng đã bóp muối vào đun sôi thêm 2 phút cho vừa chín tới giữ độ giòn.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Hoàn thiện canh chua",
+      "description": "Cho giá đỗ vào nồi và thả lại các khúc cá vào nồi canh cho nóng sốt bốc khói rồi tắt bếp ngay. Rắc rau ngò om, ngò gai thái nhỏ và vài lát ớt sừng lên mặt nồi canh. Rưới phần tỏi phi vàng giòn cùng chút dầu phi tỏi lên trên mặt để dậy mùi thơm nức. Múc canh ra tô lớn, dọn ăn nóng cùng cơm trắng và chén nước mắm nguyên chất dầm ớt hiểm cay.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://helenrecipes.com/wp-content/uploads/2021/09/Screenshot-2021-09-02-134338-1024x576.png",
+      "altText": "Canh chua cá",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
 }

@@ -54,3 +54,12 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 - Đã xóa 15 tài khoản Bogus, 5 danh mục mẫu không dùng; 15 danh mục còn lại dùng ảnh từ món thực tế trong danh mục, bỏ mô tả ngẫu nhiên và ảnh Picsum. Giữ tài khoản cố định và các tài khoản do người dùng/kiểm thử tạo riêng.
 - Chưa nghiệm thu đối chiếu từng định lượng và số liệu dinh dưỡng với trang nguồn. Các tài khoản tác giả là tài khoản demo của dự án, không phải tác giả gốc của các trang nguồn.
 - Khác mục 6 của kế hoạch trước demo: bộ nạp hiện ghi qua DbContext và liên kết ảnh ngoài, chưa tạo qua Command và chưa tải ảnh lên MinIO. Chưa đánh dấu DATA-01…03 hoàn thành.
+
+## Bổ sung 20 công thức trong PR 40
+
+- Kho JSON có 42 công thức thuộc 17 danh mục: giữ 22 món cũ, thêm 16 món từ tài liệu tham chiếu Savoury Days và 4 món từ Helen's Recipes.
+- 20 ảnh mới lấy từ đúng bài nguồn, đã tải kiểm tra và xem ảnh từng món; thay toàn bộ ảnh Unsplash không đúng món. Không nối thông tin nguồn vào mô tả bài trên blog.
+- Định lượng hỗn hợp được khôi phục từ Word và tách thành nguyên liệu riêng khi có số lượng từng thành phần. Nguyên liệu ghi "vừa đủ" giữ `quantity: null`, `unit: null` cùng ghi chú, không tự đặt số 1.
+- 20 món mới để `nutrition: null` vì các số trong Word là ước tính chưa có bảng tính kiểm chứng. Không thay số thiếu bằng 0; trang chi tiết không hiện bảng dinh dưỡng trống.
+- Nhập thử trên PostgreSQL riêng có 42 món / 540 nguyên liệu / 199 bước / 42 ảnh / 17 danh mục. DB demo đang dùng vẫn giữ 22 món trong lúc rà PR; bộ nạp không tự cập nhật các slug đã tồn tại.
+- Các định lượng được bảo toàn theo tài liệu nhóm, chưa xác minh toàn bộ với bài nguồn. Việc ảnh tải được và JSON nhập thành công không thay thế nghiệm thu nội dung từng công thức.

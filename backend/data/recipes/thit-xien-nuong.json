@@ -1,128 +1,121 @@
-﻿{
-    "title":  "Thịt xiên nướng",
-    "originalTitle":  "Thịt xiên nướng",
-    "description":  "Thịt xiên nướng thơm nức mũi như các xe đẩy phố cổ Hà Nội, thịt mềm mọng không khô xác nhờ tỉ lệ nạc mỡ cân bằng, sốt ướp đậm đà dậy mùi sả thơm, dầu mè béo ngậy và hạt vừng rang giòn tan.",
-    "categoryName":  "Món nướng thơm lừng",
-    "authorEmail":  "chef.thuha@culinaryblog.local",
-    "prepTimeMinutes":  30,
-    "cookTimeMinutes":  20,
-    "servings":  4,
-    "difficulty":  "Easy",
-    "source":  {
-                   "name":  "Linh Trang — Savoury Days",
-                   "url":  "https://www.savourydays.com/tu-lam-thit-xien-nuong-ngon-nhu-ngoai-hang-d/",
-                   "accessedOn":  "2026-11-17",
-                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/tu-lam-thit-xien-nuong-ngon-nhu-ngoai-hang-d/)."
-               },
-    "nutrition":  {
-                      "calories":  420.0,
-                      "protein":  26.0,
-                      "carbohydrates":  10.0,
-                      "fat":  30.0,
-                      "fiber":  null,
-                      "sodium":  null
-                  },
-    "ingredients":  [
-                        {
-                            "name":  "Thịt nạc vai heo dắt mỡ (hoặc ba chỉ bỏ bì)",
-                            "quantity":  500.0,
-                            "unit":  "gram",
-                            "notes":  "Rửa sạch, thấm khô, thái lát mỏng khoảng 0.3 - 0.4cm"
-                        },
-                        {
-                            "name":  "Que xiên tre",
-                            "quantity":  12.0,
-                            "unit":  "que",
-                            "notes":  "Ngâm nước lạnh 30 phút trước khi dùng để không bị cháy khi nướng"
-                        },
-                        {
-                            "name":  "Hành khô",
-                            "quantity":  2.0,
-                            "unit":  "củ",
-                            "notes":  "Bóc vỏ, băm thật nhuyễn"
-                        },
-                        {
-                            "name":  "Tỏi",
-                            "quantity":  3.0,
-                            "unit":  "tép",
-                            "notes":  "Bóc vỏ, băm nhuyễn"
-                        },
-                        {
-                            "name":  "Sả tươi",
-                            "quantity":  1.0,
-                            "unit":  "nhánh",
-                            "notes":  "Bóc bẹ già, băm thật nhỏ mịn"
-                        },
-                        {
-                            "name":  "Nước mắm ngon",
-                            "quantity":  25.0,
-                            "unit":  "ml (1.5 thìa canh)",
-                            "notes":  "Gia vị ướp thịt"
-                        },
-                        {
-                            "name":  "Dầu hào",
-                            "quantity":  15.0,
-                            "unit":  "ml (1 thìa canh)",
-                            "notes":  "Giúp thịt mềm bóng và đậm đà"
-                        },
-                        {
-                            "name":  "Nước hàng (nước màu chưng)",
-                            "quantity":  15.0,
-                            "unit":  "ml (1 thìa canh)",
-                            "notes":  "Tạo màu vàng nâu cánh gián óng ả"
-                        },
-                        {
-                            "name":  "Mật ong (hoặc đường)",
-                            "quantity":  15.0,
-                            "unit":  "ml (1 thìa canh)",
-                            "notes":  "Tạo độ ngọt thanh và caramel hóa thơm"
-                        },
-                        {
-                            "name":  "Dầu vừng (dầu mè)",
-                            "quantity":  15.0,
-                            "unit":  "ml (1 thìa canh)",
-                            "notes":  "Tạo hương vị thơm béo quyến rũ"
-                        },
-                        {
-                            "name":  "Vừng trắng (mè trắng)",
-                            "quantity":  15.0,
-                            "unit":  "gram (1 thìa canh)",
-                            "notes":  "Rang vàng thơm trộn cùng sốt ướp"
-                        },
-                        {
-                            "name":  "Hạt tiêu xay",
-                            "quantity":  0.5,
-                            "unit":  "tsp (thìa cà phê)",
-                            "notes":  "Tạo vị cay nhẹ"
-                        }
-                    ],
-    "steps":  [
-                  {
-                      "title":  "Thái thịt và trộn sốt ướp",
-                      "description":  "Thịt nạc vai rửa sạch, lau khô bằng khăn giấy. Thái thành từng lát mỏng bản to vừa phải (dày khoảng 0.3-0.4cm). Trong một tô lớn, trộn đều: hành khô băm, tỏi băm, sả băm, nước mắm, dầu hào, nước hàng, mật ong, dầu mè, hạt tiêu và vừng rang. Trút thịt vào âu sốt, dùng tay bóp trộn đều cho gia vị bao phủ từng miếng thịt. Bọc kín để ngăn mát tủ lạnh tối thiểu 2 tiếng hoặc để qua đêm cho ngấm đẫm.",
-                      "durationMinutes":  20
-                  },
-                  {
-                      "title":  "Xiên thịt vào que tre",
-                      "description":  "Que xiên tre ngâm nước lạnh 30 phút vớt ra để ráo. Gấp đôi hoặc cuộn nhẹ từng miếng thịt rồi luồn xiên qua tâm miếng thịt. Xiên xen kẽ miếng nạc và miếng dắt mỡ để khi nướng mỡ chảy ra giúp xiên thịt mềm ngậy. Dồn các miếng thịt sát nhau vừa phải, không nén quá chặt làm thịt khó chín đều bên trong, cũng không xiên quá thưa làm thịt teo khô. Giữ lại phần nước ướp còn sót trong tô.",
-                      "durationMinutes":  15
-                  },
-                  {
-                      "title":  "Nướng thịt xiên vàng óng",
-                      "description":  "Nếu nướng than hoa: Đặt xiên thịt lên vỉ trên bếp than hồng đỏ rực, lật vỉ liên tục đều tay. Khi mặt ngoài se lại, dùng chổi quét lớp nước ướp còn thừa lên mặt thịt cho bóng mềm và không bị khô, nướng đến khi thịt xém cạnh vàng nâu tỏa mùi thơm nức. Nếu nướng nồi chiên không dầu / lò nướng: Làm nóng ở 190°C. Xếp xiên thịt vào khay nướng trong 10 phút, lật mặt quét sốt nướng thêm 6-8 phút cho thịt chín vàng óng.",
-                      "durationMinutes":  20
-                  },
-                  {
-                      "title":  "Thưởng thức",
-                      "description":  "Xếp các que thịt xiên nướng nóng hổi ra đĩa. Dùng nóng kẹp cùng bánh mì giòn, dưa góp dưa leo chua ngọt và tương ớt cay, hoặc ăn kèm đĩa bún tươi.",
-                      "durationMinutes":  5
-                  }
-              ],
-    "images":  [
-                   {
-                       "url":  "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
-                       "altText":  "Thịt xiên nướng",
-                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-                   }
-               ]
+{
+  "title": "Thịt xiên nướng",
+  "originalTitle": "Thịt xiên nướng",
+  "description": "Thịt xiên nướng thơm nức mũi như các xe đẩy phố cổ Hà Nội, thịt mềm mọng không khô xác nhờ tỉ lệ nạc mỡ cân bằng, sốt ướp đậm đà dậy mùi sả thơm, dầu mè béo ngậy và hạt vừng rang giòn tan.",
+  "categoryName": "Món nướng thơm lừng",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/tu-lam-thit-xien-nuong-ngon-nhu-ngoai-hang-d/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Thịt nạc vai heo dắt mỡ (hoặc ba chỉ bỏ bì)",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, thấm khô, thái lát mỏng khoảng 0.3 - 0.4cm"
+    },
+    {
+      "name": "Que xiên tre",
+      "quantity": 12.0,
+      "unit": "que",
+      "notes": "Ngâm nước lạnh 30 phút trước khi dùng để không bị cháy khi nướng"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 2.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm thật nhuyễn"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3.0,
+      "unit": "tép",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Sả tươi",
+      "quantity": 1.0,
+      "unit": "nhánh",
+      "notes": "Bóc bẹ già, băm thật nhỏ mịn"
+    },
+    {
+      "name": "Nước mắm ngon",
+      "quantity": 25.0,
+      "unit": "ml (1.5 thìa canh)",
+      "notes": "Gia vị ướp thịt"
+    },
+    {
+      "name": "Dầu hào",
+      "quantity": 15.0,
+      "unit": "ml (1 thìa canh)",
+      "notes": "Giúp thịt mềm bóng và đậm đà"
+    },
+    {
+      "name": "Nước hàng (nước màu chưng)",
+      "quantity": 15.0,
+      "unit": "ml (1 thìa canh)",
+      "notes": "Tạo màu vàng nâu cánh gián óng ả"
+    },
+    {
+      "name": "Mật ong (hoặc đường)",
+      "quantity": 15.0,
+      "unit": "ml (1 thìa canh)",
+      "notes": "Tạo độ ngọt thanh và caramel hóa thơm"
+    },
+    {
+      "name": "Dầu vừng (dầu mè)",
+      "quantity": 15.0,
+      "unit": "ml (1 thìa canh)",
+      "notes": "Tạo hương vị thơm béo quyến rũ"
+    },
+    {
+      "name": "Vừng trắng (mè trắng)",
+      "quantity": 15.0,
+      "unit": "gram (1 thìa canh)",
+      "notes": "Rang vàng thơm trộn cùng sốt ướp"
+    },
+    {
+      "name": "Hạt tiêu xay",
+      "quantity": 0.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Tạo vị cay nhẹ"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Thái thịt và trộn sốt ướp",
+      "description": "Thịt nạc vai rửa sạch, lau khô bằng khăn giấy. Thái thành từng lát mỏng bản to vừa phải (dày khoảng 0.3-0.4cm). Trong một tô lớn, trộn đều: hành khô băm, tỏi băm, sả băm, nước mắm, dầu hào, nước hàng, mật ong, dầu mè, hạt tiêu và vừng rang. Trút thịt vào âu sốt, dùng tay bóp trộn đều cho gia vị bao phủ từng miếng thịt. Bọc kín để ngăn mát tủ lạnh tối thiểu 2 tiếng hoặc để qua đêm cho ngấm đẫm.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Xiên thịt vào que tre",
+      "description": "Que xiên tre ngâm nước lạnh 30 phút vớt ra để ráo. Gấp đôi hoặc cuộn nhẹ từng miếng thịt rồi luồn xiên qua tâm miếng thịt. Xiên xen kẽ miếng nạc và miếng dắt mỡ để khi nướng mỡ chảy ra giúp xiên thịt mềm ngậy. Dồn các miếng thịt sát nhau vừa phải, không nén quá chặt làm thịt khó chín đều bên trong, cũng không xiên quá thưa làm thịt teo khô. Giữ lại phần nước ướp còn sót trong tô.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Nướng thịt xiên vàng óng",
+      "description": "Nếu nướng than hoa: Đặt xiên thịt lên vỉ trên bếp than hồng đỏ rực, lật vỉ liên tục đều tay. Khi mặt ngoài se lại, dùng chổi quét lớp nước ướp còn thừa lên mặt thịt cho bóng mềm và không bị khô, nướng đến khi thịt xém cạnh vàng nâu tỏa mùi thơm nức. Nếu nướng nồi chiên không dầu / lò nướng: Làm nóng ở 190°C. Xếp xiên thịt vào khay nướng trong 10 phút, lật mặt quét sốt nướng thêm 6-8 phút cho thịt chín vàng óng.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Thưởng thức",
+      "description": "Xếp các que thịt xiên nướng nóng hổi ra đĩa. Dùng nóng kẹp cùng bánh mì giòn, dưa góp dưa leo chua ngọt và tương ớt cay, hoặc ăn kèm đĩa bún tươi.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2011/05/Thit-xien-nuong.jpg",
+      "altText": "Thịt xiên nướng",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
 }

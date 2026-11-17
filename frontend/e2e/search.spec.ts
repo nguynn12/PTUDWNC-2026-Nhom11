@@ -16,6 +16,24 @@ test.afterEach(async ({ page }) => {
   await page.unrouteAll({ behavior: 'wait' });
 });
 
+test("Công thức dùng ảnh đúng nguồn và không hiện bảng dinh dưỡng khi chưa có số liệu", async ({ page }) => {
+  await page.goto("/recipes/bo-sot-vang");
+  await expect(page.getByRole("heading", { level: 1, name: "Bò sốt vang", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Giá trị dinh dưỡng (mỗi khẩu phần)", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("img", { name: "Bò sốt vang", exact: true }).first())
+    .toHaveAttribute("src", "https://www.savourydays.com/wp-content/uploads/2011/09/bo-sot-vang1.jpg");
+
+  const backend = process.env.PLAYWRIGHT_API_URL || "http://localhost:5000";
+  const response = await page.request.get(`${backend}/api/v1/recipes/bun-cha-ha-noi`);
+  expect(response.status()).toBe(200);
+  const { data } = await response.json();
+  expect(data.ingredients).toEqual(expect.arrayContaining([
+    expect.objectContaining({ name: "Đường cát (ngâm dưa góp)", quantity: 25, unit: "g" }),
+    expect.objectContaining({ name: "Nước cốt chanh (ngâm dưa góp)", quantity: 15, unit: "ml" }),
+    expect.objectContaining({ name: "Muối tinh (ngâm dưa góp)", quantity: 0.75, unit: "tsp" }),
+  ]));
+});
+
 test.describe("Luồng tìm kiếm món ăn E2E (FR-SRCH-001 -> FR-SRCH-004)", () => {
   test("Hiển thị giao diện tìm kiếm với ô nhập liệu và các bộ lọc", async ({ page }) => {
     await page.goto("/search");
@@ -79,8 +97,11 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
     await page.goto("/auth/login?callbackUrl=/dashboard/recipes/new");
     await page.getByLabel("Email", { exact: true }).fill(process.env.E2E_AUTHOR_EMAIL!);
     await page.getByLabel("Mật khẩu", { exact: true }).fill(process.env.E2E_AUTHOR_PASSWORD!);
+    const signedIn = page.waitForResponse(response => response.url().endsWith("/auth/login")
+      && response.request().method() === "POST");
     await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
-    await expect.poll(() => new URL(page.url()).pathname).toBe("/dashboard/recipes/new");
+    expect((await signedIn).status()).toBe(200);
+    await page.waitForURL("**/dashboard/recipes/new");
   });
 
   async function createDraft(page: Page) {
@@ -103,7 +124,10 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
 
   test("Tạo bản nháp, mở lại và lưu đúng danh mục cùng If-Match", async ({ page }) => {
     const { id, title } = await createDraft(page);
+    const loaded = page.waitForResponse(response => response.url().endsWith(`/recipes/${id}`)
+      && response.request().method() === "GET");
     await page.goto(`/dashboard/recipes/${id}/edit`);
+    expect((await loaded).status()).toBe(200);
     await expect(page.getByPlaceholder("Ví dụ: Phở Bò Truyền Thống Hà Nội Nước Trong...")).toHaveValue(title);
     await expect(page.locator("select").first()).toHaveValue(/[0-9a-f-]{36}/);
     const saved = page.waitForResponse(response => response.url().endsWith(`/recipes/${id}`)
@@ -191,6 +215,7 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
       && response.request().method() === "POST");
     await page.getByRole("button", { name: "Thêm vào danh sách (POST)", exact: true }).click();
     expect((await ingredient).status()).toBe(201);
+    await expect(page.getByText("Gạo", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Tiếp tục Bước 3: Các bước thực hiện", exact: true }).click();
     await page.getByPlaceholder("VD: Sơ chế & chần xương bò khử mùi...").fill("Nấu cơm");
     await page.getByPlaceholder("Mô tả chi tiết nhiệt độ lửa, thời gian canh chỉnh và mẹo nhận biết khi đạt yêu cầu...")
@@ -199,6 +224,8 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
       && response.request().method() === "POST");
     await page.getByRole("button", { name: "Thêm Bước 1 (POST)", exact: true }).click();
     expect((await step).status()).toBe(201);
+    // Mutation còn tải lại phiên bản Recipe sau 201; đợi bước đã hiện rồi mới xuất bản.
+    await expect(page.locator("span").filter({ hasText: /^Bước 1: Nấu cơm$/ })).toBeVisible();
     const published = page.waitForResponse(response => response.url().endsWith(`/recipes/${id}/publish`)
       && response.request().method() === "PATCH");
     await page.getByRole("button", { name: "Hoàn tất & Xuất bản", exact: true }).click();

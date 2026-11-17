@@ -1,139 +1,150 @@
-﻿{
-    "title":  "Nem rán Hà Nội",
-    "originalTitle":  "Nem rán Hà Nội",
-    "description":  "Nem rán truyền thống Hà Nội với lớp vỏ giòn rụm màu vàng ruộm óng ả nhờ bí quyết rán 2 lần và quét nước giấm đường, phần nhân thịt tôm rau củ khô ráo đậm đà không bị chảy nước làm mềm ỉu vỏ bánh.",
-    "categoryName":  "Món khai vị",
-    "authorEmail":  "chef.baongoc@culinaryblog.local",
-    "prepTimeMinutes":  30,
-    "cookTimeMinutes":  40,
-    "servings":  6,
-    "difficulty":  "Medium",
-    "source":  {
-                   "name":  "Linh Trang — Savoury Days",
-                   "url":  "https://www.savourydays.com/nem-ran-meo-ran-nem-gion-cach-pha-nuoc-cham-bun-cha-nem-cua-minh/",
-                   "accessedOn":  "2026-11-17",
-                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/nem-ran-meo-ran-nem-gion-cach-pha-nuoc-cham-bun-cha-nem-cua-minh/)."
-               },
-    "nutrition":  {
-                      "calories":  390.0,
-                      "protein":  21.0,
-                      "carbohydrates":  26.0,
-                      "fat":  22.0,
-                      "fiber":  null,
-                      "sodium":  null
-                  },
-    "ingredients":  [
-                        {
-                            "name":  "Thịt nạc vai heo có dắt mỡ",
-                            "quantity":  400.0,
-                            "unit":  "gram",
-                            "notes":  "Băm nhỏ hoặc xay nhuyễn"
-                        },
-                        {
-                            "name":  "Tôm tươi bóc vỏ (tùy chọn)",
-                            "quantity":  100.0,
-                            "unit":  "gram",
-                            "notes":  "Băm hạt lựu nhỏ"
-                        },
-                        {
-                            "name":  "Cà rốt tươi",
-                            "quantity":  80.0,
-                            "unit":  "gram (1 củ nhỏ)",
-                            "notes":  "Gọt vỏ, nạo sợi ngắn"
-                        },
-                        {
-                            "name":  "Su hào (hoặc củ đậu vắt kiệt nước)",
-                            "quantity":  100.0,
-                            "unit":  "gram (1/2 củ)",
-                            "notes":  "Nạo sợi ngắn, bóp nhẹ ráo nước"
-                        },
-                        {
-                            "name":  "Mộc nhĩ khô",
-                            "quantity":  3.0,
-                            "unit":  "tai lớn",
-                            "notes":  "Ngâm nước ấm cho nở mềm, rửa sạch, thái chỉ ngắn"
-                        },
-                        {
-                            "name":  "Nấm hương khô",
-                            "quantity":  5.0,
-                            "unit":  "tai",
-                            "notes":  "Ngâm nở, bỏ chân nấm, băm nhỏ"
-                        },
-                        {
-                            "name":  "Miến dong khô",
-                            "quantity":  50.0,
-                            "unit":  "gram",
-                            "notes":  "Rửa sạch bụi, cắt khúc ngắn 2cm, KHÔNG ngâm nước"
-                        },
-                        {
-                            "name":  "Lòng đỏ trứng gà",
-                            "quantity":  2.0,
-                            "unit":  "lòng đỏ",
-                            "notes":  "Chỉ dùng lòng đỏ để nhân dính kết mà không bị dư nước"
-                        },
-                        {
-                            "name":  "Hành tím khô",
-                            "quantity":  3.0,
-                            "unit":  "củ",
-                            "notes":  "Bóc vỏ, băm nhỏ"
-                        },
-                        {
-                            "name":  "Hạt tiêu xay \u0026 hạt nêm",
-                            "quantity":  1.0,
-                            "unit":  "hỗn hợp",
-                            "notes":  "Nêm nhân nem vừa vặn"
-                        },
-                        {
-                            "name":  "Bánh đa nem (vỏ ram)",
-                            "quantity":  25.0,
-                            "unit":  "lá",
-                            "notes":  "Loại bánh tráng mỏng mềm chất lượng tốt"
-                        },
-                        {
-                            "name":  "Nước quét vỏ giòn",
-                            "quantity":  1.0,
-                            "unit":  "hỗn hợp",
-                            "notes":  "Quét lên bánh trước khi cuốn để vỏ giòn xốp lâu"
-                        },
-                        {
-                            "name":  "Dầu ăn rán ngập dầu",
-                            "quantity":  500.0,
-                            "unit":  "ml",
-                            "notes":  "Dùng rán nem giòn 2 lần"
-                        }
-                    ],
-    "steps":  [
-                  {
-                      "title":  "Sơ chế nguyên liệu giữ nhân khô ráo",
-                      "description":  "Mộc nhĩ, nấm hương ngâm nở mềm, rửa sạch băm nhỏ. Cà rốt, su hào nạo sợi ngắn. Bí quyết cốt lõi của Savoury Days: Miến dong chỉ rửa sạch qua nước rồi dùng kéo cắt khúc ngắn 1.5 - 2cm, tuyệt đối không ngâm mềm trước. Miến khô khi trộn vào nhân sẽ hút bớt lượng nước tiết ra từ thịt và rau củ, giúp nhân hoàn toàn khô ráo và không làm ướt rách vỏ nem khi gói.",
-                      "durationMinutes":  20
-                  },
-                  {
-                      "title":  "Trộn nhân kết dính",
-                      "description":  "Cho thịt vai xay, tôm băm, mộc nhĩ, nấm hương, cà rốt, su hào, miến cắt ngắn vào âu lớn. Thêm hành khô băm, hạt tiêu xay, bột nêm và 2 lòng đỏ trứng gà (chỉ dùng lòng đỏ, không dùng lòng trắng để tránh dư nước). Dùng tay trộn đều nhẹ nhàng, để 10 phút cho nhân ngấm đều gia vị.",
-                      "durationMinutes":  10
-                  },
-                  {
-                      "title":  "Cuốn nem chuẩn kỹ thuật",
-                      "description":  "Pha 1 thìa cà phê đường, 1 thìa cà phê giấm gạo và 3 thìa canh nước lọc. Dùng chổi quét một lớp rất mỏng hỗn hợp này lên lá bánh đa nem giúp lá dẻo dễ gói và giòn lâu. Trải lá bánh đa ra đĩa phẳng, múc lượng nhân vừa phải đặt gần mép dưới. Gấp hai bên mép bánh vào rồi cuộn tròn lỏng tay (không cuộn quá chặt vì khi rán nhân nở sẽ làm nứt vỡ vỏ).",
-                      "durationMinutes":  15
-                  },
-                  {
-                      "title":  "Rán nem 2 lần (bí quyết giòn rụm lâu)",
-                      "description":  "Đổ dầu ăn ngập khoảng nửa chiếc nem, đun nóng ở lửa vừa. Rán lần 1: Thả nem vào chảo rán sơ đến khi vỏ nem se cứng và hơi chuyển sang màu vàng nhạt, vớt ra khay có khe thoáng để ráo dầu và nguội hẳn. Rán lần 2: Trước khi dọn ăn, đun dầu nóng trở lại, thả nem vào rán vàng ruộm đều các mặt trên lửa vừa, vớt ra đĩa có lót giấy thấm dầu.",
-                      "durationMinutes":  25
-                  },
-                  {
-                      "title":  "Dọn ăn và pha nước chấm",
-                      "description":  "Cắt nem làm đôi xếp ra đĩa. Ăn kèm đĩa bún tươi, rổ rau sống và bát nước chấm nem chua ngọt ấm dịu có thả dưa góp su hào cà rốt tỉa hoa.",
-                      "durationMinutes":  10
-                  }
-              ],
-    "images":  [
-                   {
-                       "url":  "https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
-                       "altText":  "Nem rán Hà Nội",
-                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-                   }
-               ]
+{
+  "title": "Nem rán Hà Nội",
+  "originalTitle": "Nem rán Hà Nội",
+  "description": "Nem rán truyền thống Hà Nội với lớp vỏ giòn rụm màu vàng ruộm óng ả nhờ bí quyết rán 2 lần và quét nước giấm đường, phần nhân thịt tôm rau củ khô ráo đậm đà không bị chảy nước làm mềm ỉu vỏ bánh.",
+  "categoryName": "Món khai vị",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 40,
+  "servings": 6,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/nem-ran-meo-ran-nem-gion-cach-pha-nuoc-cham-bun-cha-nem-cua-minh/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Thịt nạc vai heo có dắt mỡ",
+      "quantity": 400.0,
+      "unit": "gram",
+      "notes": "Băm nhỏ hoặc xay nhuyễn"
+    },
+    {
+      "name": "Tôm tươi bóc vỏ (tùy chọn)",
+      "quantity": 100.0,
+      "unit": "gram",
+      "notes": "Băm hạt lựu nhỏ"
+    },
+    {
+      "name": "Cà rốt tươi",
+      "quantity": 80.0,
+      "unit": "gram (1 củ nhỏ)",
+      "notes": "Gọt vỏ, nạo sợi ngắn"
+    },
+    {
+      "name": "Su hào (hoặc củ đậu vắt kiệt nước)",
+      "quantity": 100.0,
+      "unit": "gram (1/2 củ)",
+      "notes": "Nạo sợi ngắn, bóp nhẹ ráo nước"
+    },
+    {
+      "name": "Mộc nhĩ khô",
+      "quantity": 3.0,
+      "unit": "tai lớn",
+      "notes": "Ngâm nước ấm cho nở mềm, rửa sạch, thái chỉ ngắn"
+    },
+    {
+      "name": "Nấm hương khô",
+      "quantity": 5.0,
+      "unit": "tai",
+      "notes": "Ngâm nở, bỏ chân nấm, băm nhỏ"
+    },
+    {
+      "name": "Miến dong khô",
+      "quantity": 50.0,
+      "unit": "gram",
+      "notes": "Rửa sạch bụi, cắt khúc ngắn 2cm, KHÔNG ngâm nước"
+    },
+    {
+      "name": "Lòng đỏ trứng gà",
+      "quantity": 2.0,
+      "unit": "lòng đỏ",
+      "notes": "Chỉ dùng lòng đỏ để nhân dính kết mà không bị dư nước"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 3.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm nhỏ"
+    },
+    {
+      "name": "Hạt tiêu xay (nhân nem)",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Nêm nhân nem vừa vặn"
+    },
+    {
+      "name": "Hạt nêm (nhân nem)",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Nêm nhân nem vừa vặn"
+    },
+    {
+      "name": "Bánh đa nem (vỏ ram)",
+      "quantity": 25.0,
+      "unit": "lá",
+      "notes": "Loại bánh tráng mỏng mềm chất lượng tốt"
+    },
+    {
+      "name": "Đường cát (nước quét vỏ)",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Quét lên bánh trước khi cuốn để vỏ giòn xốp lâu"
+    },
+    {
+      "name": "Giấm (nước quét vỏ)",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Quét lên bánh trước khi cuốn để vỏ giòn xốp lâu"
+    },
+    {
+      "name": "Nước (nước quét vỏ)",
+      "quantity": 3,
+      "unit": "tbsp",
+      "notes": "Quét lên bánh trước khi cuốn để vỏ giòn xốp lâu"
+    },
+    {
+      "name": "Dầu ăn rán ngập dầu",
+      "quantity": 500.0,
+      "unit": "ml",
+      "notes": "Dùng rán nem giòn 2 lần"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế nguyên liệu giữ nhân khô ráo",
+      "description": "Mộc nhĩ, nấm hương ngâm nở mềm, rửa sạch băm nhỏ. Cà rốt, su hào nạo sợi ngắn. Bí quyết cốt lõi của Savoury Days: Miến dong chỉ rửa sạch qua nước rồi dùng kéo cắt khúc ngắn 1.5 - 2cm, tuyệt đối không ngâm mềm trước. Miến khô khi trộn vào nhân sẽ hút bớt lượng nước tiết ra từ thịt và rau củ, giúp nhân hoàn toàn khô ráo và không làm ướt rách vỏ nem khi gói.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Trộn nhân kết dính",
+      "description": "Cho thịt vai xay, tôm băm, mộc nhĩ, nấm hương, cà rốt, su hào, miến cắt ngắn vào âu lớn. Thêm hành khô băm, hạt tiêu xay, bột nêm và 2 lòng đỏ trứng gà (chỉ dùng lòng đỏ, không dùng lòng trắng để tránh dư nước). Dùng tay trộn đều nhẹ nhàng, để 10 phút cho nhân ngấm đều gia vị.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Cuốn nem chuẩn kỹ thuật",
+      "description": "Pha 1 thìa cà phê đường, 1 thìa cà phê giấm gạo và 3 thìa canh nước lọc. Dùng chổi quét một lớp rất mỏng hỗn hợp này lên lá bánh đa nem giúp lá dẻo dễ gói và giòn lâu. Trải lá bánh đa ra đĩa phẳng, múc lượng nhân vừa phải đặt gần mép dưới. Gấp hai bên mép bánh vào rồi cuộn tròn lỏng tay (không cuộn quá chặt vì khi rán nhân nở sẽ làm nứt vỡ vỏ).",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Rán nem 2 lần (bí quyết giòn rụm lâu)",
+      "description": "Đổ dầu ăn ngập khoảng nửa chiếc nem, đun nóng ở lửa vừa. Rán lần 1: Thả nem vào chảo rán sơ đến khi vỏ nem se cứng và hơi chuyển sang màu vàng nhạt, vớt ra khay có khe thoáng để ráo dầu và nguội hẳn. Rán lần 2: Trước khi dọn ăn, đun dầu nóng trở lại, thả nem vào rán vàng ruộm đều các mặt trên lửa vừa, vớt ra đĩa có lót giấy thấm dầu.",
+      "durationMinutes": 25
+    },
+    {
+      "title": "Dọn ăn và pha nước chấm",
+      "description": "Cắt nem làm đôi xếp ra đĩa. Ăn kèm đĩa bún tươi, rổ rau sống và bát nước chấm nem chua ngọt ấm dịu có thả dưa góp su hào cà rốt tỉa hoa.",
+      "durationMinutes": 10
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2011/06/Nem-ran.jpg",
+      "altText": "Nem rán Hà Nội",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
 }

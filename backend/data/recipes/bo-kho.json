@@ -1,128 +1,151 @@
-﻿{
-    "title":  "Bò kho",
-    "originalTitle":  "Bò kho",
-    "description":  "Bò kho chuẩn phong cách miền Nam với từng miếng bắp bò và gân bò mềm rệu dẻo ngọt, nước sốt sánh sệt màu đỏ cam bắt mắt thơm lừng sả cây, hoa hồi, quế chi, ăn kèm cà rốt bùi bùi và bánh mì giòn hoặc hủ tiếu dai.",
-    "categoryName":  "Món kho đậm đà",
-    "authorEmail":  "chef.minhkhoi@culinaryblog.local",
-    "prepTimeMinutes":  25,
-    "cookTimeMinutes":  75,
-    "servings":  4,
-    "difficulty":  "Medium",
-    "source":  {
-                   "name":  "Linh Trang — Savoury Days",
-                   "url":  "https://www.savourydays.com/hu-tieu-bo-kho/",
-                   "accessedOn":  "2026-11-17",
-                   "note":  "Công thức trích xuất và kiểm chứng từ Linh Trang — Savoury Days (https://www.savourydays.com/hu-tieu-bo-kho/)."
-               },
-    "nutrition":  {
-                      "calories":  510.0,
-                      "protein":  38.0,
-                      "carbohydrates":  22.0,
-                      "fat":  24.0,
-                      "fiber":  null,
-                      "sodium":  null
-                  },
-    "ingredients":  [
-                        {
-                            "name":  "Thịt bắp bò hoặc dẻ sườn/gân bò",
-                            "quantity":  600.0,
-                            "unit":  "gram",
-                            "notes":  "Cắt khối vuông quân cờ 3x3cm"
-                        },
-                        {
-                            "name":  "Cà rốt tươi",
-                            "quantity":  2.0,
-                            "unit":  "củ (khoảng 250g)",
-                            "notes":  "Gọt vỏ, tỉa hoa hoặc cắt khúc tròn dày 1.5cm"
-                        },
-                        {
-                            "name":  "Sả tươi",
-                            "quantity":  4.0,
-                            "unit":  "nhánh",
-                            "notes":  "Rửa sạch, đập dập phần gốc, cắt khúc 7cm"
-                        },
-                        {
-                            "name":  "Hoa hồi (tai vị) \u0026 quế chi",
-                            "quantity":  2.0,
-                            "unit":  "gia vị thơm",
-                            "notes":  "Rang thơm tạo hương bò kho đặc trưng"
-                        },
-                        {
-                            "name":  "Hành tím khô \u0026 tỏi \u0026 gừng",
-                            "quantity":  1.0,
-                            "unit":  "hỗn hợp",
-                            "notes":  "Bóc vỏ, băm nhuyễn"
-                        },
-                        {
-                            "name":  "Bột gia vị bò kho (hoặc bột ngũ vị hương)",
-                            "quantity":  1.0,
-                            "unit":  "tbsp (thìa canh)",
-                            "notes":  "Gia vị ướp thịt bò"
-                        },
-                        {
-                            "name":  "Dầu màu điều",
-                            "quantity":  30.0,
-                            "unit":  "ml (2 thìa canh)",
-                            "notes":  "Tạo màu đỏ cam rực rỡ"
-                        },
-                        {
-                            "name":  "Sốt cà chua cô đặc (Tomato paste)",
-                            "quantity":  30.0,
-                            "unit":  "gram (2 thìa canh)",
-                            "notes":  "Tạo độ sánh và màu sắc đẹp"
-                        },
-                        {
-                            "name":  "Nước mắm ngon \u0026 đường cát \u0026 muối",
-                            "quantity":  2.0,
-                            "unit":  "hỗn hợp",
-                            "notes":  "Nêm nếm gia vị"
-                        },
-                        {
-                            "name":  "Nước dừa tươi nguyên chất",
-                            "quantity":  1000.0,
-                            "unit":  "ml",
-                            "notes":  "Hầm thịt bò ngọt thanh"
-                        },
-                        {
-                            "name":  "Rau húng quế, ngò gai \u0026 ớt tươi",
-                            "quantity":  1.0,
-                            "unit":  "mớ nhỏ",
-                            "notes":  "Rửa sạch, thái nhỏ rắc lên mặt"
-                        },
-                        {
-                            "name":  "Bánh mì giòn hoặc hủ tiếu tươi",
-                            "quantity":  1.0,
-                            "unit":  "ăn kèm",
-                            "notes":  "Dùng kèm món bò kho nóng"
-                        }
-                    ],
-    "steps":  [
-                  {
-                      "title":  "Sơ chế và ướp thịt bò",
-                      "description":  "Thịt bắp bò rửa sạch, chần sơ qua nồi nước sôi có vài lát gừng để khử mùi hôi, vớt ra rửa sạch, cắt khối vuông quân cờ khoảng 3cm. Ướp thịt bò với hành, tỏi, gừng băm nhuyễn, 1 thìa canh bột gia vị bò kho, 2 thìa canh nước mắm, 1 thìa canh đường, 1 thìa cà phê muối và 2 thìa canh dầu màu điều. Trộn đều ướp trong 1 tiếng cho ngấm sâu.",
-                      "durationMinutes":  60
-                  },
-                  {
-                      "title":  "Xào săn thịt bò dậy hương thơm",
-                      "description":  "Đặt nồi lên bếp với chút dầu ăn, cho sả đập dập, hoa hồi và thanh quế vào xào thơm ở lửa vừa. Trút toàn bộ thịt bò đã ướp vào đảo đều tay trên lửa lớn trong khoảng 5 phút đến khi từng thớ thịt bò săn chắc lại. Cho 2 thìa canh sốt cà chua cô đặc vào xào chung thêm 2 phút cho lên màu đỏ sẫm óng ả.",
-                      "durationMinutes":  10
-                  },
-                  {
-                      "title":  "Hầm bò kho mềm nhừ ngọt nước",
-                      "description":  "Đổ 1 lít nước dừa tươi (hoặc nước sôi) vào ngập mặt thịt bò. Đun lửa lớn cho nước sôi bùng lên, dùng muôi hớt sạch bọt nổi. Hạ nhỏ lửa liu riu, đậy hé nắp vung hầm trong khoảng 45-50 phút cho đến khi phần thịt bắp và gân bò mềm nhừ dẻo ngọt tự nhiên.",
-                      "durationMinutes":  50
-                  },
-                  {
-                      "title":  "Cho cà rốt và hoàn thành món ăn",
-                      "description":  "Cho cà rốt đã tỉa hoa/cắt khúc vào nồi bò kho, hầm thêm 15 phút đến khi cà rốt chín mềm vừa tới nhưng không bị nát nhũn. Nếm lại gia vị cho vừa miệng gia đình. Nếu thích nước bò kho sánh đặc hơn, có thể hòa 1 thìa canh bột năng với chút nước lạnh rồi rót từ từ vào nồi khuấy nhẹ tay cho sôi lại. Múc bò kho ra tô lớn, rắc rau húng quế, ngò gai thái nhỏ và vài lát ớt hiểm lên trên. Dùng nóng kèm bánh mì giòn hoặc chan hủ tiếu dai.",
-                      "durationMinutes":  15
-                  }
-              ],
-    "images":  [
-                   {
-                       "url":  "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
-                       "altText":  "Bò kho",
-                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-                   }
-               ]
+{
+  "title": "Bò kho",
+  "originalTitle": "Bò kho",
+  "description": "Bò kho chuẩn phong cách miền Nam với từng miếng bắp bò và gân bò mềm rệu dẻo ngọt, nước sốt sánh sệt màu đỏ cam bắt mắt thơm lừng sả cây, hoa hồi, quế chi, ăn kèm cà rốt bùi bùi và bánh mì giòn hoặc hủ tiếu dai.",
+  "categoryName": "Món kho đậm đà",
+  "authorEmail": "chef.minhkhoi@culinaryblog.local",
+  "prepTimeMinutes": 25,
+  "cookTimeMinutes": 75,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/hu-tieu-bo-kho/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Thịt bắp bò hoặc dẻ sườn/gân bò",
+      "quantity": 600.0,
+      "unit": "gram",
+      "notes": "Cắt khối vuông quân cờ 3x3cm"
+    },
+    {
+      "name": "Cà rốt tươi",
+      "quantity": 2.0,
+      "unit": "củ (khoảng 250g)",
+      "notes": "Gọt vỏ, tỉa hoa hoặc cắt khúc tròn dày 1.5cm"
+    },
+    {
+      "name": "Sả tươi",
+      "quantity": 4.0,
+      "unit": "nhánh",
+      "notes": "Rửa sạch, đập dập phần gốc, cắt khúc 7cm"
+    },
+    {
+      "name": "Hoa hồi (tai vị)",
+      "quantity": 2,
+      "unit": "hoa",
+      "notes": "Rang thơm tạo hương bò kho đặc trưng"
+    },
+    {
+      "name": "Quế chi",
+      "quantity": 1,
+      "unit": "thanh nhỏ",
+      "notes": "Rang thơm tạo hương bò kho đặc trưng"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 1,
+      "unit": "củ nhỏ",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 1,
+      "unit": "củ nhỏ",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 1,
+      "unit": "củ nhỏ",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Bột gia vị bò kho (hoặc bột ngũ vị hương)",
+      "quantity": 1.0,
+      "unit": "tbsp (thìa canh)",
+      "notes": "Gia vị ướp thịt bò"
+    },
+    {
+      "name": "Dầu màu điều",
+      "quantity": 30.0,
+      "unit": "ml (2 thìa canh)",
+      "notes": "Tạo màu đỏ cam rực rỡ"
+    },
+    {
+      "name": "Sốt cà chua cô đặc (Tomato paste)",
+      "quantity": 30.0,
+      "unit": "gram (2 thìa canh)",
+      "notes": "Tạo độ sánh và màu sắc đẹp"
+    },
+    {
+      "name": "Nước mắm ngon",
+      "quantity": 2,
+      "unit": "tbsp",
+      "notes": "Nêm nếm gia vị"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 1,
+      "unit": "tbsp",
+      "notes": "Nêm nếm gia vị"
+    },
+    {
+      "name": "Muối tinh",
+      "quantity": 1,
+      "unit": "tsp",
+      "notes": "Nêm nếm gia vị"
+    },
+    {
+      "name": "Nước dừa tươi nguyên chất",
+      "quantity": 1000.0,
+      "unit": "ml",
+      "notes": "Hầm thịt bò ngọt thanh"
+    },
+    {
+      "name": "Rau húng quế, ngò gai & ớt tươi",
+      "quantity": 1.0,
+      "unit": "mớ nhỏ",
+      "notes": "Rửa sạch, thái nhỏ rắc lên mặt"
+    },
+    {
+      "name": "Bánh mì giòn hoặc hủ tiếu tươi",
+      "quantity": null,
+      "unit": null,
+      "notes": "vừa đủ. Dùng kèm món bò kho nóng"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp thịt bò",
+      "description": "Thịt bắp bò rửa sạch, chần sơ qua nồi nước sôi có vài lát gừng để khử mùi hôi, vớt ra rửa sạch, cắt khối vuông quân cờ khoảng 3cm. Ướp thịt bò với hành, tỏi, gừng băm nhuyễn, 1 thìa canh bột gia vị bò kho, 2 thìa canh nước mắm, 1 thìa canh đường, 1 thìa cà phê muối và 2 thìa canh dầu màu điều. Trộn đều ướp trong 1 tiếng cho ngấm sâu.",
+      "durationMinutes": 60
+    },
+    {
+      "title": "Xào săn thịt bò dậy hương thơm",
+      "description": "Đặt nồi lên bếp với chút dầu ăn, cho sả đập dập, hoa hồi và thanh quế vào xào thơm ở lửa vừa. Trút toàn bộ thịt bò đã ướp vào đảo đều tay trên lửa lớn trong khoảng 5 phút đến khi từng thớ thịt bò săn chắc lại. Cho 2 thìa canh sốt cà chua cô đặc vào xào chung thêm 2 phút cho lên màu đỏ sẫm óng ả.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Hầm bò kho mềm nhừ ngọt nước",
+      "description": "Đổ 1 lít nước dừa tươi (hoặc nước sôi) vào ngập mặt thịt bò. Đun lửa lớn cho nước sôi bùng lên, dùng muôi hớt sạch bọt nổi. Hạ nhỏ lửa liu riu, đậy hé nắp vung hầm trong khoảng 45-50 phút cho đến khi phần thịt bắp và gân bò mềm nhừ dẻo ngọt tự nhiên.",
+      "durationMinutes": 50
+    },
+    {
+      "title": "Cho cà rốt và hoàn thành món ăn",
+      "description": "Cho cà rốt đã tỉa hoa/cắt khúc vào nồi bò kho, hầm thêm 15 phút đến khi cà rốt chín mềm vừa tới nhưng không bị nát nhũn. Nếm lại gia vị cho vừa miệng gia đình. Nếu thích nước bò kho sánh đặc hơn, có thể hòa 1 thìa canh bột năng với chút nước lạnh rồi rót từ từ vào nồi khuấy nhẹ tay cho sôi lại. Múc bò kho ra tô lớn, rắc rau húng quế, ngò gai thái nhỏ và vài lát ớt hiểm lên trên. Dùng nóng kèm bánh mì giòn hoặc chan hủ tiếu dai.",
+      "durationMinutes": 15
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2014/09/HuTieuBoKho1.jpg",
+      "altText": "Bò kho",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
 }

@@ -1,127 +1,120 @@
-﻿{
-    "title":  "Bánh xèo",
-    "originalTitle":  "Bánh xèo",
-    "description":  "Bánh xèo miền Trung/Nam Bộ giòn rụm màu vàng ươm nghệ tây nhờ bí quyết pha bột cùng bia của Helen Lê, nhân tôm thịt đậm đà, giá đỗ thanh ngọt, cuộn cùng bánh tráng, rau cải xanh và chấm nước mắm chua ngọt tỏi ớt.",
-    "categoryName":  "Bánh \u0026 Điểm tâm",
-    "authorEmail":  "chef.baongoc@culinaryblog.local",
-    "prepTimeMinutes":  30,
-    "cookTimeMinutes":  30,
-    "servings":  4,
-    "difficulty":  "Medium",
-    "source":  {
-                   "name":  "Helen Lê — Helen\u0027s Recipes (Da Nang Cuisine)",
-                   "url":  "https://helenrecipes.com/recipe-31-banh-xeo-vietnamese-sizzling-cakes/",
-                   "accessedOn":  "2026-11-17",
-                   "note":  "Công thức trích xuất và kiểm chứng từ Helen Lê — Helen\u0027s Recipes (Da Nang Cuisine) (https://helenrecipes.com/recipe-31-banh-xeo-vietnamese-sizzling-cakes/)."
-               },
-    "nutrition":  {
-                      "calories":  460.0,
-                      "protein":  24.0,
-                      "carbohydrates":  52.0,
-                      "fat":  18.0,
-                      "fiber":  null,
-                      "sodium":  null
-                  },
-    "ingredients":  [
-                        {
-                            "name":  "Bột gạo tẻ ngon",
-                            "quantity":  400.0,
-                            "unit":  "gram",
-                            "notes":  "Thành phần bột nền bánh xèo"
-                        },
-                        {
-                            "name":  "Bột nghệ vàng",
-                            "quantity":  2.0,
-                            "unit":  "tsp (thìa cà phê)",
-                            "notes":  "Tạo màu vàng ươm đẹp mắt"
-                        },
-                        {
-                            "name":  "Nước lọc",
-                            "quantity":  500.0,
-                            "unit":  "ml (2.25 cup)",
-                            "notes":  "Pha loãng bột"
-                        },
-                        {
-                            "name":  "Bia tươi (hoặc bia lon)",
-                            "quantity":  250.0,
-                            "unit":  "ml (1 cup)",
-                            "notes":  "Bí quyết của Helen Lê giúp vỏ bánh nở giòn xốp tan và giữ độ giòn lâu"
-                        },
-                        {
-                            "name":  "Hành lá tươi",
-                            "quantity":  3.0,
-                            "unit":  "nhánh",
-                            "notes":  "Rửa sạch, thái nhỏ cho vào bột"
-                        },
-                        {
-                            "name":  "Muối tinh",
-                            "quantity":  1.0,
-                            "unit":  "tsp (thìa cà phê)",
-                            "notes":  "Pha vào bột bánh"
-                        },
-                        {
-                            "name":  "Thịt ba chỉ heo",
-                            "quantity":  300.0,
-                            "unit":  "gram",
-                            "notes":  "Rửa sạch, thái lát thật mỏng"
-                        },
-                        {
-                            "name":  "Tôm sú tươi",
-                            "quantity":  300.0,
-                            "unit":  "gram",
-                            "notes":  "Bóc vỏ, bỏ đầu, rút chỉ đen trên lưng"
-                        },
-                        {
-                            "name":  "Giá đỗ sạch",
-                            "quantity":  400.0,
-                            "unit":  "gram",
-                            "notes":  "Rửa sạch, để thật ráo nước"
-                        },
-                        {
-                            "name":  "Dầu ăn để chiên bánh",
-                            "quantity":  100.0,
-                            "unit":  "ml",
-                            "notes":  "Dùng láng chảo cho mỗi chiếc bánh"
-                        },
-                        {
-                            "name":  "Rau ăn kèm \u0026 nước chấm",
-                            "quantity":  1.0,
-                            "unit":  "ăn kèm",
-                            "notes":  "Cuộn ăn giòn rụm"
-                        }
-                    ],
-    "steps":  [
-                  {
-                      "title":  "Pha bột bánh xèo giòn xốp",
-                      "description":  "Trong một âu lớn, trộn đều bột gạo, bột nghệ và 1 thìa cà phê muối. Đổ 500ml nước lọc và 250ml bia vào khuấy đều bằng phới lồng cho bột tan mịn hoàn toàn không vón cục. Thả hành lá thái nhỏ vào khuấy đều. Để âu bột nghỉ ở nhiệt độ phòng trong 30 phút để hạt bột ngậm đủ nước nở dẻo.",
-                      "durationMinutes":  30
-                  },
-                  {
-                      "title":  "Sơ chế tôm thịt làm nhân",
-                      "description":  "Thịt ba chỉ thái lát thật mỏng. Tôm bóc vỏ để nguyên con. Ướp nhẹ tôm thịt với một nhúm nhỏ muối và tiêu xay.",
-                      "durationMinutes":  10
-                  },
-                  {
-                      "title":  "Đổ bánh xèo giòn rụm trên chảo nóng",
-                      "description":  "Đặt chảo chống dính hoặc chảo gang đáy dày lên bếp ở lửa lớn, cho 1 thìa canh dầu ăn láng đều mặt chảo đun nóng già. Cho vài lát thịt ba chỉ và 2 con tôm vào đảo nhanh tay cho săn chín hai mặt. Khuấy đều âu bột, múc 1 muôi bột (khoảng 1/3 cup) rưới đều từ viền chảo vào lòng chảo đồng thời tay kia nghiêng lắc chảo tròn đều cho bột tráng một lớp mỏng dính sát thành chảo kêu tiếng \u0027xèo xèo\u0027 lớn. Đậy kín nắp vung chảo trong 1 phút cho bột chín trong suốt.",
-                      "durationMinutes":  15
-                  },
-                  {
-                      "title":  "Thêm giá đỗ và gấp bánh",
-                      "description":  "Mở nắp vung, rải một nắm giá đỗ lên một nửa chiếc bánh. Rưới thêm vài giọt dầu ăn men theo viền ngoài của bánh để mép bánh tự tách rời khỏi thành chảo và đạt độ giòn rụm tối đa. Khi thấy mép bánh cong lên vàng giòn và đáy bánh khô ráo, dùng xẻng lật gập đôi chiếc bánh lại thành hình bán nguyệt. Để bánh chiên thêm khoảng 30 giây cho thật giòn rồi xúc ra đĩa có lót giấy thấm dầu. Lặp lại thao tác với phần bột còn lại.",
-                      "durationMinutes":  15
-                  },
-                  {
-                      "title":  "Thưởng thức",
-                      "description":  "Bày bánh xèo nóng hổi ra đĩa cùng rổ rau cải xanh, xà lách, rau thơm. Khi ăn đặt miếng bánh xèo vào lá cải, cuộn tròn lại và chấm ngập vào bát nước mắm chua ngọt tỏi ớt.",
-                      "durationMinutes":  5
-                  }
-              ],
-    "images":  [
-                   {
-                       "url":  "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
-                       "altText":  "Bánh xèo",
-                       "license":  "Unsplash License (Miễn phí sử dụng phi thương mại, cho phép nhúng trực tiếp)"
-                   }
-               ]
+{
+  "title": "Bánh xèo",
+  "originalTitle": "Bánh xèo",
+  "description": "Bánh xèo miền Trung/Nam Bộ giòn rụm màu vàng ươm nghệ tây nhờ bí quyết pha bột cùng bia của Helen Lê, nhân tôm thịt đậm đà, giá đỗ thanh ngọt, cuộn cùng bánh tráng, rau cải xanh và chấm nước mắm chua ngọt tỏi ớt.",
+  "categoryName": "Bánh & Điểm tâm",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 30,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Helen Lê — Helen's Recipes (Da Nang Cuisine)",
+    "url": "https://helenrecipes.com/recipe-31-banh-xeo-vietnamese-sizzling-cakes/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Bột gạo tẻ ngon",
+      "quantity": 400.0,
+      "unit": "gram",
+      "notes": "Thành phần bột nền bánh xèo"
+    },
+    {
+      "name": "Bột nghệ vàng",
+      "quantity": 2.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Tạo màu vàng ươm đẹp mắt"
+    },
+    {
+      "name": "Nước lọc",
+      "quantity": 500.0,
+      "unit": "ml (2.25 cup)",
+      "notes": "Pha loãng bột"
+    },
+    {
+      "name": "Bia tươi (hoặc bia lon)",
+      "quantity": 250.0,
+      "unit": "ml (1 cup)",
+      "notes": "Bí quyết của Helen Lê giúp vỏ bánh nở giòn xốp tan và giữ độ giòn lâu"
+    },
+    {
+      "name": "Hành lá tươi",
+      "quantity": 3.0,
+      "unit": "nhánh",
+      "notes": "Rửa sạch, thái nhỏ cho vào bột"
+    },
+    {
+      "name": "Muối tinh",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Pha vào bột bánh"
+    },
+    {
+      "name": "Thịt ba chỉ heo",
+      "quantity": 300.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, thái lát thật mỏng"
+    },
+    {
+      "name": "Tôm sú tươi",
+      "quantity": 300.0,
+      "unit": "gram",
+      "notes": "Bóc vỏ, bỏ đầu, rút chỉ đen trên lưng"
+    },
+    {
+      "name": "Giá đỗ sạch",
+      "quantity": 400.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, để thật ráo nước"
+    },
+    {
+      "name": "Dầu ăn để chiên bánh",
+      "quantity": 100.0,
+      "unit": "ml",
+      "notes": "Dùng láng chảo cho mỗi chiếc bánh"
+    },
+    {
+      "name": "Rau ăn kèm & nước chấm",
+      "quantity": null,
+      "unit": null,
+      "notes": "rau cải bẹ xanh, xà lách, rau thơm, nước mắm tỏi ớt. Cuộn ăn giòn rụm"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Pha bột bánh xèo giòn xốp",
+      "description": "Trong một âu lớn, trộn đều bột gạo, bột nghệ và 1 thìa cà phê muối. Đổ 500ml nước lọc và 250ml bia vào khuấy đều bằng phới lồng cho bột tan mịn hoàn toàn không vón cục. Thả hành lá thái nhỏ vào khuấy đều. Để âu bột nghỉ ở nhiệt độ phòng trong 30 phút để hạt bột ngậm đủ nước nở dẻo.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Sơ chế tôm thịt làm nhân",
+      "description": "Thịt ba chỉ thái lát thật mỏng. Tôm bóc vỏ để nguyên con. Ướp nhẹ tôm thịt với một nhúm nhỏ muối và tiêu xay.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Đổ bánh xèo giòn rụm trên chảo nóng",
+      "description": "Đặt chảo chống dính hoặc chảo gang đáy dày lên bếp ở lửa lớn, cho 1 thìa canh dầu ăn láng đều mặt chảo đun nóng già. Cho vài lát thịt ba chỉ và 2 con tôm vào đảo nhanh tay cho săn chín hai mặt. Khuấy đều âu bột, múc 1 muôi bột (khoảng 1/3 cup) rưới đều từ viền chảo vào lòng chảo đồng thời tay kia nghiêng lắc chảo tròn đều cho bột tráng một lớp mỏng dính sát thành chảo kêu tiếng 'xèo xèo' lớn. Đậy kín nắp vung chảo trong 1 phút cho bột chín trong suốt.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Thêm giá đỗ và gấp bánh",
+      "description": "Mở nắp vung, rải một nắm giá đỗ lên một nửa chiếc bánh. Rưới thêm vài giọt dầu ăn men theo viền ngoài của bánh để mép bánh tự tách rời khỏi thành chảo và đạt độ giòn rụm tối đa. Khi thấy mép bánh cong lên vàng giòn và đáy bánh khô ráo, dùng xẻng lật gập đôi chiếc bánh lại thành hình bán nguyệt. Để bánh chiên thêm khoảng 30 giây cho thật giòn rồi xúc ra đĩa có lót giấy thấm dầu. Lặp lại thao tác với phần bột còn lại.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Thưởng thức",
+      "description": "Bày bánh xèo nóng hổi ra đĩa cùng rổ rau cải xanh, xà lách, rau thơm. Khi ăn đặt miếng bánh xèo vào lá cải, cuộn tròn lại và chấm ngập vào bát nước mắm chua ngọt tỏi ớt.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://helenrecipes.com/wp-content/uploads/2012/05/banhxeo4.jpeg",
+      "altText": "Bánh xèo",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
 }
