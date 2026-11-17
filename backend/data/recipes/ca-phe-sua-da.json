@@ -1,0 +1,72 @@
+{
+  "title": "Cà phê sữa đá",
+  "originalTitle": "Vietnamese Iced Coffee",
+  "description": "Cà phê pha đậm với sữa đặc, rót lên đá. Công thức đơn giản, ngọt béo, hợp buổi sáng hoặc giải nhiệt.",
+  "categoryName": "Đồ uống & Trà",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 5,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/77768/vietnamese-iced-coffee/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 129.0,
+    "protein": 3.0,
+    "carbohydrates": 22.0,
+    "fat": 3.0,
+    "sodium": 64.0
+  },
+  "ingredients": [
+    {
+      "name": "Nước",
+      "quantity": 1,
+      "unit": "lít"
+    },
+    {
+      "name": "Cà phê rang đậm xay",
+      "quantity": 0.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Sữa đặc có đường",
+      "quantity": 0.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Đá viên",
+      "quantity": 16,
+      "unit": "viên"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Pha cà phê",
+      "description": "Pha cà phê bằng nước nóng theo cách bạn quen dùng.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Cho sữa đặc",
+      "description": "Cho 2 muỗng canh sữa đặc vào mỗi ly trong 4 ly."
+    },
+    {
+      "title": "Rót cà phê",
+      "description": "Rót khoảng 1 cốc cà phê nóng vào mỗi ly và khuấy cho tan sữa."
+    },
+    {
+      "title": "Làm lạnh",
+      "description": "Rót cà phê lên ly đựng 4 viên đá và khuấy nhanh cho nguội, dùng ngay."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/LlegF5NeKOTHqs9WZw5RWWwSyjU=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/77768-Vietnamese-Iced-Coffee-DDMFS-4x3-62f34e1d4658433a83801c8533dbcafe.jpg",
+      "altText": "Cà phê sữa đá",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

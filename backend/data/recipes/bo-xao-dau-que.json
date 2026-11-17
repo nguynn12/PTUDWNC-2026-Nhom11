@@ -1,0 +1,111 @@
+{
+  "title": "Thịt bò xào đậu que",
+  "originalTitle": "Thịt Bò Xào Đậu (Vietnamese Stir-Fried Beef and Green Beans)",
+  "description": "Thịt bò thái mỏng ướp tỏi, xào lửa lớn rồi xào cùng hành tây và đậu que. Món xào nhanh gọn, ăn với cơm trắng.",
+  "categoryName": "Món xào",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 15,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/14680/thit-bo-xao-dau/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 376.0,
+    "protein": 23.0,
+    "carbohydrates": 6.0,
+    "fat": 29.0,
+    "fiber": 2.0,
+    "sodium": 199.0
+  },
+  "ingredients": [
+    {
+      "name": "Tỏi",
+      "quantity": 1,
+      "unit": "tép",
+      "notes": "Băm"
+    },
+    {
+      "name": "Bột bắp",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 1,
+      "unit": "muỗng cà phê",
+      "notes": "Để ướp"
+    },
+    {
+      "name": "Tiêu đen xay",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Thịt bò thăn",
+      "quantity": 450,
+      "unit": "g",
+      "notes": "Thái mỏng"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 3,
+      "unit": "muỗng canh",
+      "notes": "Chia đôi để xào"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 0.5,
+      "unit": "củ",
+      "notes": "Thái lát mỏng"
+    },
+    {
+      "name": "Đậu que",
+      "quantity": 2,
+      "unit": "cốc",
+      "notes": "Rửa sạch, cắt đầu"
+    },
+    {
+      "name": "Nước dùng gà",
+      "quantity": 0.25,
+      "unit": "cốc"
+    },
+    {
+      "name": "Nước tương",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ướp bò",
+      "description": "Trộn tỏi, bột bắp, 1 muỗng cà phê dầu và tiêu rồi ướp với thịt bò."
+    },
+    {
+      "title": "Xào bò",
+      "description": "Đun nóng 2 muỗng canh dầu trong chảo lớn lửa to, xào bò khoảng 2 phút đến khi bắt đầu vàng, múc ra tô.",
+      "durationMinutes": 2
+    },
+    {
+      "title": "Xào rau",
+      "description": "Cho thêm 1 muỗng canh dầu, xào hành tây cho mềm, thêm đậu que và nước dùng, đậy nắp, hạ lửa vừa nấu 4–5 phút cho đậu mềm nhưng còn giòn.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Hoàn thiện",
+      "description": "Cho thịt bò trở lại chảo cùng nước tương, đảo đều 1–2 phút cho nóng rồi dọn ăn.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/2XjrPThQge6irEBUJuNcX5Dn-ag=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/111393-e7b1be7fe0204555adbacb743e9e314d.jpg",
+      "altText": "Thịt bò xào đậu que",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

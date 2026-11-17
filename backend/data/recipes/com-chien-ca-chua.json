@@ -1,0 +1,116 @@
+{
+  "title": "Cơm chiên cà chua",
+  "originalTitle": "Red Vietnamese Fried Rice",
+  "description": "Cơm chiên đỏ với bơ, tỏi, giăm bông, đậu Hà Lan và cà chua cô đặc, nêm nước mắm và nước tương, thêm trứng chiên. Làm nhanh trong 15 phút từ cơm nguội.",
+  "categoryName": "Món chính",
+  "authorEmail": "author@culinaryblog.local",
+  "prepTimeMinutes": 8,
+  "cookTimeMinutes": 7,
+  "servings": 2,
+  "difficulty": "Easy",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/red-vietnamese-fried-rice/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 544.0,
+    "protein": 22.0,
+    "carbohydrates": 72.0,
+    "fat": 18.0,
+    "fiber": 6.0,
+    "sodium": 1375.0
+  },
+  "ingredients": [
+    {
+      "name": "Bơ nhạt",
+      "quantity": 30,
+      "unit": "g"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3,
+      "unit": "tép",
+      "notes": "Băm nhuyễn"
+    },
+    {
+      "name": "Giăm bông",
+      "quantity": 0.5,
+      "unit": "cốc",
+      "notes": "Cắt hạt lựu"
+    },
+    {
+      "name": "Đậu Hà Lan đông lạnh",
+      "quantity": 1,
+      "unit": "cốc"
+    },
+    {
+      "name": "Cơm gạo thơm để qua đêm",
+      "quantity": 2.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Cà chua cô đặc",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 2,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Nước tương",
+      "quantity": 2,
+      "unit": "muỗng cà phê",
+      "notes": "Loại thường hoặc nhạt, không dùng nước tương đen"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Trứng",
+      "quantity": 2,
+      "unit": "quả",
+      "notes": "Đánh tan"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Phi tỏi",
+      "description": "Làm chảy phần lớn bơ trong chảo chống dính lớn lửa to (để dành một chút để chiên trứng), cho tỏi vào xào 10 giây."
+    },
+    {
+      "title": "Xào giăm bông và đậu",
+      "description": "Cho giăm bông xào 30 giây, thêm đậu Hà Lan xào 30 giây nữa."
+    },
+    {
+      "title": "Cho cơm",
+      "description": "Cho cơm và cà chua cô đặc vào xào 2 phút.",
+      "durationMinutes": 2
+    },
+    {
+      "title": "Nêm nếm",
+      "description": "Thêm nước mắm, nước tương và đường, xào thêm 1 phút cho cơm hơi xém cạnh.",
+      "durationMinutes": 1
+    },
+    {
+      "title": "Chiên trứng",
+      "description": "Dồn cơm sang một bên chảo, làm chảy phần bơ còn lại ở chỗ trống, đổ trứng vào đảo đến khi vừa chín."
+    },
+    {
+      "title": "Hoàn thiện",
+      "description": "Trộn trứng vào cơm và dọn ngay."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2022/09/Red-Vietnamese-Fried-Rice_2-SQ.jpg",
+      "altText": "Cơm chiên cà chua",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ using CulinaryBlog.API.Filters;
 using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.API.OpenApi;
 using CulinaryBlog.Application;
+using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Constants;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Jobs;
@@ -185,11 +186,20 @@ try
         // 1. Áp dụng schema migration cho mọi môi trường (kể cả Production trong container)
         await initialiser.InitialiseAsync();
 
-        // 2. Chỉ nạp dữ liệu mẫu Bogus ở môi trường Development hoặc khi có cờ bật chủ đích
+        // 2. Chỉ nạp tài khoản, danh mục và công thức khi có cờ bật chủ đích hoặc ở Development.
         if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("SeedData:Enabled"))
         {
             await initialiser.SeedAsync();
             await CategorySeeder.SeedAsync(dbContext);
+
+            // Công thức thật (backend/data/recipes) nạp TRƯỚC seeder ngẫu nhiên: khi đã có công thức thì
+            // RecipeSeeder/RecipeDetailSeeder tự bỏ qua, nên DB mới chỉ chứa dữ liệu thật có tác giả và danh mục.
+            var recipeDataPath = app.Configuration["Seeding:RecipeDataPath"]
+                ?? Path.Combine(AppContext.BaseDirectory, RecipeDataImporter.DefaultFolder);
+            var importResult = await RecipeDataImporter.ImportAsync(dbContext, recipeDataPath, app.Logger);
+            if (importResult.Imported > 0)
+                await scope.ServiceProvider.GetRequiredService<ICacheInvalidator>().InvalidateAllAsync();
+
             await RecipeSeeder.SeedAsync(dbContext);
             await RecipeDetailSeeder.SeedAsync(dbContext);
         }

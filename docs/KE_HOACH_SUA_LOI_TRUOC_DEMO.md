@@ -2,7 +2,7 @@
 
 ## Cập nhật nghiệm thu tích hợp — 16/11/2026
 
-- Nhánh `nhanh-phu` được tạo từ `develop` (`6f881b8`), tích hợp phần TV3, TV1, TV2 và TV4; chưa merge trở lại `develop`.
+- Nhánh `nhanh-phu` được tạo từ `develop` (`6f881b8`), tích hợp phần TV3, TV1, TV2 và TV4; đã merge trở lại `develop` tại `96239d0`.
 - Đã sửa và chạy lại các luồng quyền Draft/API con, chống giả mạo Admin/IP, If-Match, Nutrition, enum số, cache riêng/công khai, phân trang Category, sắp xếp và sitemap. Reorder/xóa bước được kiểm tra transaction trên PostgreSQL thật; ảnh chính có migration tạo partial unique index.
 - Ảnh được giải mã thật, sinh WebP bằng job Hangfire lưu PostgreSQL và retry 3 lần; MinIO lỗi không giả lập lưu thành công. Frontend giữ ảnh đã tải khi retry, đồng bộ phiên bản sau mutation, hiển thị đúng dinh dưỡng/thời gian và bỏ qua phản hồi tìm kiếm cũ về chậm.
 - Backend cuối: **406 unit + 54 integration = 460 test đạt**. Integration suite vẫn dùng InMemory/TestAuth; bổ sung **25 nhóm kiểm tra HTTP** trên PostgreSQL/JWT/Redis/MinIO thật để kiểm những điều InMemory không chứng minh được.
@@ -11,6 +11,14 @@
 - **Chưa hoàn thành:** DATA-01…03 (dữ liệu thật để nộp); coverage unit Commands/Queries/Validators **57,17%**, chưa đạt NFR-MAINT-002 ≥ 80%; chưa nghiệm thu đầy đủ OpenTelemetry/EF Core trace/metrics, SMTP thật hoặc CI chạy trên GitHub. Các mục mở trong `docs/decisions/OPEN-QUESTIONS.md` không được tự coi là đã chốt.
 - **Khác biệt với plan Lab 8:** bộ giải mã ảnh hiện dùng `Magick.NET-Q8-AnyCPU` thay ImageSharp để giải mã AVIF thật; đã kiểm tra Windows và Linux. Giữ kích thước thumbnail 300×300, medium tối đa 800×600. Hai file migration mới là ngoại lệ cần thiết để áp dụng ràng buộc DB; các sửa đổi còn lại dùng file có sẵn.
 - Kiểm thử dùng bản sao DB, cache/bucket riêng. Không nhập lại hoặc thay bộ dữ liệu demo gốc 100 Recipe / 1.165 Ingredient / 593 Step. Không dùng dữ liệu kiểm thử làm dữ liệu thật cho báo cáo nộp.
+
+### Cập nhật dữ liệu từ PR #37 — 17/11/2026
+
+- Tích hợp 22 JSON công thức và bộ nạp từ nhánh TV1. Nguồn khai báo: 10 Allrecipes, 6 BBC Good Food, 5 RecipeTin Eats, 1 Món Ngon Mỗi Ngày. Metadata nguồn giữ trong JSON để đối chiếu, không nối vào mô tả bài trên blog.
+- Kiểm thử sau tích hợp: **412 unit + 54 integration = 466 test đạt**; frontend typecheck/build đạt, lint 13 cảnh báo và 0 lỗi. Chưa chạy lại toàn bộ E2E cho lần tích hợp dữ liệu này; kết quả 9/9 phía trên thuộc bản `96239d0`.
+- PostgreSQL riêng: DB mới nhập 22 món / 283 nguyên liệu / 112 bước / 22 bản ghi ảnh. Bản sao DB cũ tăng từ 100 lên 122 món, chạy lại không trùng. Danh sách công khai đã được làm nóng cache trước nhập tăng ngay từ 33 lên 55 món sau nhập.
+- **DATA-01…03 vẫn chưa nghiệm thu:** 10 ảnh Allrecipes trả 403 và không tải được trong trình duyệt thử; 12 ảnh còn lại tải được. Chưa đối chiếu từng định lượng/dinh dưỡng với nguồn. Tác giả gắn trong dữ liệu là tài khoản demo.
+- Khác cách nhập dự kiến ở mục 6: bộ nạp ghi qua DbContext và dùng URL ảnh ngoài, chưa qua Command hoặc lưu ảnh vào MinIO. DB demo gốc vẫn 100 món / 1.165 nguyên liệu / 593 bước, chưa được thay bằng bộ 22 món. Không ghi báo cáo rằng dữ liệu nộp đã hoàn tất.
 
 **Phần bên dưới là kế hoạch và phát hiện ban đầu tại `6f881b8`, không phải danh sách lỗi còn tồn tại sau tích hợp.**
 

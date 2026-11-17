@@ -1,0 +1,131 @@
+{
+  "title": "Gỏi gà bắp cải",
+  "originalTitle": "Vietnamese Chicken Salad",
+  "description": "Gỏi gà xé với bắp cải, cà rốt, hành tây, đậu phộng rang và ngò rí, trộn nước mắm chua ngọt cay. Làm trong 30 phút, ăn ngay khi trộn.",
+  "categoryName": "Salad & Gỏi",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 0,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/214225/vietnamese-chicken-salad/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 303.0,
+    "protein": 19.0,
+    "carbohydrates": 19.0,
+    "fat": 18.0,
+    "fiber": 6.0,
+    "sodium": 991.0
+  },
+  "ingredients": [
+    {
+      "name": "Ớt xanh",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Giấm gạo",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước cốt chanh",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 3,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3,
+      "unit": "tép",
+      "notes": "Băm"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Dầu mè",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Dầu thực vật",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Tiêu đen",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Ức gà luộc, bỏ da, không xương",
+      "quantity": 2,
+      "unit": "miếng",
+      "notes": "Xé sợi"
+    },
+    {
+      "name": "Bắp cải",
+      "quantity": 0.5,
+      "unit": "cái",
+      "notes": "Bỏ lõi, thái mỏng"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Cắt sợi que"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 0.33,
+      "unit": "củ",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Đậu phộng rang",
+      "quantity": 0.33,
+      "unit": "cốc",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.33,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Pha nước trộn",
+      "description": "Khuấy đều ớt xanh, giấm gạo, nước cốt chanh, nước mắm, tỏi, đường, dầu mè, dầu thực vật và tiêu cho đến khi đường tan."
+    },
+    {
+      "title": "Trộn rau và gà",
+      "description": "Cho gà, bắp cải, cà rốt, hành tây, đậu phộng và ngò rí vào tô lớn, trộn đều."
+    },
+    {
+      "title": "Trộn gỏi",
+      "description": "Rưới nước trộn lên, trộn lại lần nữa và dùng ngay."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/jCILLkAeg1vK6vQ12HyctWMWb8k=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/214225-vietnamese-chicken-salad-VAT-008-3x4-6fbdeca2a11d4eca9cf80c7e5377d2a4.jpg",
+      "altText": "Gỏi gà bắp cải",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

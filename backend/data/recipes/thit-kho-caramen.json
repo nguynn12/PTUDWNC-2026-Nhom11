@@ -1,0 +1,111 @@
+{
+  "title": "Thịt heo kho caramel",
+  "originalTitle": "Vietnamese-style caramel pork",
+  "description": "Thịt vai heo cắt miếng xào săn rồi kho với đường, nước mắm, gừng và ớt cho đến khi nước sốt sánh bóng. Ăn với cơm trắng và cải thìa.",
+  "categoryName": "Món kho đậm đà",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-style-caramel-pork",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 350.0,
+    "protein": 24.0,
+    "carbohydrates": 19.0,
+    "fat": 20.0
+  },
+  "ingredients": [
+    {
+      "name": "Dầu đậu phộng",
+      "quantity": 1.5,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Thịt vai heo",
+      "quantity": 500,
+      "unit": "g",
+      "notes": "Cắt miếng vừa ăn"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 2,
+      "unit": "củ",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Bào nhuyễn"
+    },
+    {
+      "name": "Ớt đỏ",
+      "quantity": 1,
+      "unit": "trái",
+      "notes": "Bỏ hạt, băm nhỏ"
+    },
+    {
+      "name": "Đường nâu",
+      "quantity": 75,
+      "unit": "g"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Thêm tùy khẩu vị"
+    },
+    {
+      "name": "Tương ớt",
+      "quantity": 1.5,
+      "unit": "muỗng cà phê",
+      "notes": "1–2 muỗng cà phê, dùng sriracha"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 4,
+      "unit": "cây",
+      "notes": "Bổ đôi, xé sợi"
+    },
+    {
+      "name": "Cơm trắng",
+      "notes": "Ăn kèm"
+    },
+    {
+      "name": "Cải thìa",
+      "notes": "Ăn kèm"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Áp chảo thịt",
+      "description": "Đun nóng 1 muỗng canh dầu trong chảo sâu lửa lớn, xào thịt heo từng mẻ đến khi vàng đều rồi vớt ra."
+    },
+    {
+      "title": "Phi gia vị",
+      "description": "Hạ lửa nhỏ, cho phần dầu còn lại cùng hành khô, gừng và ớt, xào vài phút cho mềm."
+    },
+    {
+      "title": "Kho thịt",
+      "description": "Cho đường, nước mắm và 200 ml nước vào, khuấy đến khi đường tan, cho thịt trở lại và sôi mạnh 8–10 phút đến khi nước sốt sánh bóng bám thịt.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Nêm và dọn",
+      "description": "Nêm thêm nước mắm và tương ớt nếu cần, rắc hành lá, dọn với cơm trắng và cải thìa."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/vietnamese-caramel-pork-5e1c6e0.jpg",
+      "altText": "Thịt heo kho caramel",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

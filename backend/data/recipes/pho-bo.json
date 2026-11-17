@@ -1,0 +1,154 @@
+{
+  "title": "Phở bò",
+  "originalTitle": "Pho (Vietnamese Noodle Soup)",
+  "description": "Phở bò với nước dùng hầm xương nhiều giờ cùng hành nướng, gừng, hoa hồi; ăn kèm bánh phở, thịt bò thăn thái mỏng, giá, húng quế và chanh. Nước dùng là phần tốn thời gian nhất nhưng làm một lần dùng được nhiều bữa.",
+  "categoryName": "Món bún & phở",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 425,
+  "servings": 4,
+  "difficulty": "Hard",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/228443/authentic-pho/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 509.0,
+    "protein": 35.0,
+    "carbohydrates": 66.0,
+    "fat": 11.0,
+    "fiber": 4.0,
+    "sodium": 3519.0
+  },
+  "ingredients": [
+    {
+      "name": "Xương ống bò (chân giò và đầu gối)",
+      "quantity": 1.8,
+      "unit": "kg"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 1,
+      "unit": "củ vừa",
+      "notes": "Không bóc vỏ, bổ đôi"
+    },
+    {
+      "name": "Gừng tươi",
+      "quantity": 5,
+      "unit": "lát"
+    },
+    {
+      "name": "Muối",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Hoa hồi",
+      "quantity": 2,
+      "unit": "cái"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 2.5,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước",
+      "quantity": 4,
+      "unit": "lít"
+    },
+    {
+      "name": "Bánh phở khô",
+      "quantity": 225,
+      "unit": "g"
+    },
+    {
+      "name": "Thịt bò thăn",
+      "quantity": 680,
+      "unit": "g",
+      "notes": "Thái mỏng"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.5,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Giá đỗ",
+      "quantity": 1.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Húng quế Thái",
+      "quantity": 1,
+      "unit": "bó"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt 4 múi"
+    },
+    {
+      "name": "Tương hoisin",
+      "quantity": 0.25,
+      "unit": "cốc"
+    },
+    {
+      "name": "Tương ớt tỏi",
+      "quantity": 0.25,
+      "unit": "cốc"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Nướng xương",
+      "description": "Xếp xương bò lên khay, nướng ở 220°C đến khi vàng nâu.",
+      "durationMinutes": 60
+    },
+    {
+      "title": "Nướng hành",
+      "description": "Nướng hành tây bổ đôi ở khay khác cho đến khi cháy xém và mềm.",
+      "durationMinutes": 45
+    },
+    {
+      "title": "Ninh nước dùng",
+      "description": "Cho xương và hành vào nồi lớn cùng gừng, muối, hoa hồi, nước mắm và 4 lít nước, đun sôi rồi hạ nhỏ lửa ninh 6–10 giờ. Lọc lấy nước dùng.",
+      "durationMinutes": 480
+    },
+    {
+      "title": "Ngâm bánh phở",
+      "description": "Ngâm bánh phở khô trong nước thường khoảng 1 giờ rồi để ráo.",
+      "durationMinutes": 60
+    },
+    {
+      "title": "Trụng bánh phở",
+      "description": "Đun sôi nước, trụng bánh phở 1 phút rồi vớt ra để ráo. Đun nóng lại nước dùng.",
+      "durationMinutes": 1
+    },
+    {
+      "title": "Bày tô",
+      "description": "Chia bánh phở vào 4 tô, xếp thịt bò thăn sống, ngò rí và hành lá lên trên rồi chan nước dùng thật nóng; để 1–2 phút cho thịt chín tới."
+    },
+    {
+      "title": "Dọn ăn",
+      "description": "Ăn kèm giá, húng quế, chanh, tương hoisin và tương ớt tỏi."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/SZjdgaXhmkrRNLoOvdxuAktwk3E=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/228443-authentic-pho-DDMFS-4x3-0523f6531ccf4dbeb4b5bde52e007b1e.jpg",
+      "altText": "Phở bò",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

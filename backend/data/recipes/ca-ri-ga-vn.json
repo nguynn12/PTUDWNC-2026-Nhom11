@@ -1,0 +1,164 @@
+{
+  "title": "Cà ri gà kiểu Việt",
+  "originalTitle": "Vietnamese-Style Chicken Curry Soup",
+  "description": "Nồi cà ri gà nước cốt dừa với sả, gừng, bột cà ri, khoai tây và cà rốt, ninh liu riu đến khi gà mềm. Món nhiều nước, ăn với bánh mì hoặc cơm.",
+  "categoryName": "Món súp",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 120,
+  "servings": 8,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/27176/vietnamese-style-chicken-curry-soup/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 512.0,
+    "protein": 30.0,
+    "carbohydrates": 41.0,
+    "fat": 27.0,
+    "fiber": 7.0,
+    "sodium": 375.0
+  },
+  "ingredients": [
+    {
+      "name": "Dầu thực vật",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Gà ta nguyên con",
+      "quantity": 1.35,
+      "unit": "kg",
+      "notes": "Bỏ da, chặt miếng"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Cắt khối"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 2,
+      "unit": "củ",
+      "notes": "Thái lát mỏng"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 2,
+      "unit": "tép",
+      "notes": "Băm"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 0.125,
+      "unit": "cốc",
+      "notes": "Thái lát mỏng"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "cây",
+      "notes": "Cắt khúc 5 cm"
+    },
+    {
+      "name": "Bột cà ri",
+      "quantity": 4,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Ớt chuông xanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt miếng 2,5 cm"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 2,
+      "unit": "củ",
+      "notes": "Thái xéo"
+    },
+    {
+      "name": "Nước dùng gà",
+      "quantity": 1,
+      "unit": "lít"
+    },
+    {
+      "name": "Nước",
+      "quantity": 1,
+      "unit": "lít"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Lá chanh",
+      "quantity": 2,
+      "unit": "lá"
+    },
+    {
+      "name": "Lá nguyệt quế",
+      "quantity": 1,
+      "unit": "lá"
+    },
+    {
+      "name": "Ớt bột",
+      "quantity": 2,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Khoai tây nhỏ",
+      "quantity": 8,
+      "unit": "củ",
+      "notes": "Cắt tư"
+    },
+    {
+      "name": "Nước cốt dừa",
+      "quantity": 400,
+      "unit": "ml",
+      "notes": "1 lon"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 1,
+      "unit": "bó",
+      "notes": "Để trang trí"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Áp chảo gà",
+      "description": "Đun dầu trong nồi lớn lửa vừa, xào gà và hành tây đến khi gà hơi vàng và hành mềm trong, vớt ra riêng."
+    },
+    {
+      "title": "Phi gia vị",
+      "description": "Xào hành khô khoảng 1 phút trong phần mỡ còn lại rồi cho tỏi, gừng, sả và bột cà ri vào xào 5 phút, thêm ớt chuông và cà rốt.",
+      "durationMinutes": 6
+    },
+    {
+      "title": "Nấu nước dùng",
+      "description": "Cho gà và hành trở lại nồi, thêm nước dùng gà, nước, nước mắm, lá chanh, lá nguyệt quế và ớt bột."
+    },
+    {
+      "title": "Ninh",
+      "description": "Đun sôi, cho khoai tây vào, sôi lại rồi đổ nước cốt dừa. Hạ lửa ninh 40–60 phút đến khi khoai mềm và gà chín (nhiệt độ ở giữa miếng gà tối thiểu 74°C).",
+      "durationMinutes": 60
+    },
+    {
+      "title": "Dọn ăn",
+      "description": "Múc ra tô, trang trí bằng một nhánh ngò rí."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.allrecipes.com/thmb/49q7TsGwHXpZqMQOGneiq5YwUMY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/182550-e2633777b76449188f04aa9d0591883e.jpg",
+      "altText": "Cà ri gà kiểu Việt",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

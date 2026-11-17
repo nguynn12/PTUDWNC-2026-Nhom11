@@ -46,6 +46,26 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "monngonmoingay.com",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.recipetineats.com",
+        pathname: "/tachyon/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.allrecipes.com",
+        pathname: "/thmb/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.immediate.co.uk",
+        pathname: "/production/**",
+      },
+      {
+        protocol: "https",
         hostname: "fastly.picsum.photos",
         pathname: "/**",
       },

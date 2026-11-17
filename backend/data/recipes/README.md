@@ -1,0 +1,54 @@
+# Dữ liệu công thức thật
+
+Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend nạp chúng khi khởi động
+(`RecipeDataImporter`) trong Development, hoặc khi bật cả `Database__AutoMigrate=true` và `SeedData__Enabled=true`.
+
+## Quy tắc
+
+- **Chỉ ghi dữ kiện** (tên món, thời gian, khẩu phần, nguyên liệu và số lượng, số liệu dinh dưỡng) và **tự diễn đạt lại
+  các bước bằng lời của nhóm**. Không chép nguyên văn nội dung trang nguồn.
+- **Luôn ghi nguồn** trong `source` (tên + URL + ngày truy cập) để đối chiếu dữ liệu. Bộ nạp giữ nguyên mô tả đã biên tập, không tự nối nguồn vào nội dung bài.
+- **Dinh dưỡng**: chỉ điền khi trang nguồn có số liệu; trường nào nguồn không có thì **để trống**, không ước lượng.
+- **Ảnh**: điền `url`, `altText` và ghi `license` (nguồn/giấy phép). Hiện dùng trực tiếp ảnh của trang nguồn (liên kết, không tải về)
+  kèm ghi nguồn, theo quyết định của người phụ trách dữ liệu, người chịu trách nhiệm về bản quyền. Nên thay bằng ảnh tự chụp khi có.
+  Tên miền ảnh phải có trong `images.remotePatterns` của `frontend/next.config.ts`.
+- **Tác giả**: `authorEmail` phải là tài khoản đã tồn tại. Thiếu tài khoản thì tệp bị bỏ qua và ghi cảnh báo.
+- **Danh mục**: `categoryName` tìm theo tên (hoặc slug); chưa có thì tự tạo.
+- Chạy lại an toàn: công thức đã có (trùng slug) sẽ bị bỏ qua, không nhân đôi dữ liệu.
+- DB đang có dữ liệu được giữ nguyên: bộ nạp chỉ thêm công thức mới, không tự xóa hoặc thay thế công thức cũ.
+
+## Định dạng
+
+```json
+{
+  "title": "Tên món (3–200 ký tự)",
+  "originalTitle": "Tên gốc trên trang nguồn (tùy chọn)",
+  "description": "Mô tả 10–1800 ký tự (tự viết)",
+  "categoryName": "Món canh",
+  "authorEmail": "author@culinaryblog.local",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 15,
+  "servings": 4,
+  "difficulty": "Easy | Medium | Hard | Expert",
+  "source": { "name": "Tên trang", "url": "https://...", "accessedOn": "yyyy-MM-dd", "note": "Ghi chú" },
+  "nutrition": { "calories": 0, "protein": 0, "carbohydrates": 0, "fat": 0, "fiber": 0, "sodium": 0 },
+  "ingredients": [ { "name": "...", "quantity": 1, "unit": "g", "notes": "..." } ],
+  "steps": [ { "title": "...", "description": "...", "durationMinutes": 5 } ],
+  "images": [ { "url": "...", "altText": "...", "license": "..." } ]
+}
+```
+
+## Kiểm tra tích hợp ngày 17/11/2026
+
+| Nguồn khai báo trong JSON | Số công thức | Kiểm tra liên kết ảnh |
+|---|---:|---|
+| Allrecipes | 10 | Cả 10 ảnh trả 403 khi tải trực tiếp và không tải được trong trình duyệt thử |
+| BBC Good Food | 6 | 6 ảnh tải được |
+| RecipeTin Eats | 5 | 5 ảnh tải được |
+| Món Ngon Mỗi Ngày | 1 | 1 ảnh tải được |
+
+- Đã thử trên PostgreSQL riêng: DB mới có 22 công thức, 283 nguyên liệu, 112 bước và 22 bản ghi ảnh. Bản ghi ảnh tồn tại không chứng minh liên kết ảnh tải được.
+- Bản sao DB cũ tăng từ 100 lên 122 công thức; khởi động lại vẫn 122. Cache danh sách/danh mục được hủy sau khi nhập thêm món.
+- Chưa nhập vào DB demo gốc trong lần tích hợp này. Bộ nạp không thay thế 100 công thức cũ.
+- Chưa nghiệm thu đối chiếu từng định lượng và số liệu dinh dưỡng với trang nguồn. Các tài khoản tác giả là tài khoản demo của dự án, không phải tác giả gốc của các trang nguồn.
+- Khác mục 6 của kế hoạch trước demo: bộ nạp hiện ghi qua DbContext và liên kết ảnh ngoài, chưa tạo qua Command và chưa tải ảnh lên MinIO. Chưa đánh dấu DATA-01…03 hoàn thành.
