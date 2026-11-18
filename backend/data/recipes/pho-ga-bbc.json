@@ -1,7 +1,7 @@
 {
   "title": "Phở gà kiểu Việt",
   "originalTitle": "Vietnamese chicken noodle soup",
-  "description": "Tô bún nước dùng gà thơm gia vị với hồi, quế, gừng, sả và hành phi, ăn cùng bún gạo, ức gà xé, giá và rau thơm. Làm nhanh trong khoảng 45 phút.",
+  "description": "Tô phở gà thanh tao, nước dùng vàng óng ánh lớp váng mỡ gà tự nhiên ngọt lịm từ xương gà ninh cùng sả, gừng nướng, hoa hồi, quế chi ấm áp. Từng thớ thịt gà ta mềm ngọt mọng nước, sợi bánh phở trắng ngần dẻo dai hòa quyện cùng hành hoa, lá chanh non thái chỉ thơm ngát và hành phi giòn tan, đem lại cảm giác thanh mát và ấm áp trọn vẹn.",
   "categoryName": "Món súp",
   "authorEmail": "author@culinaryblog.local",
   "prepTimeMinutes": 20,
@@ -153,26 +153,34 @@
   ],
   "steps": [
     {
-      "title": "Phi hành tỏi",
-      "description": "Đun dầu trong chảo nhỏ lửa vừa, phi hành khô và tỏi đến khi vàng thơm.",
-      "durationMinutes": 5
+      "stepNumber": 1,
+      "title": "Phi hành tỏi và rang thảo mộc",
+      "durationMinutes": 5,
+      "description": "Đun nóng 1 muỗng canh dầu ăn trong chảo nhỏ, phi thơm hành khô thái lát và tỏi đến khi vàng ruộm vớt ra làm hành phi. Trên chảo đó, rang sơ hoa hồi, thanh quế, hạt ngò và tiêu hạt ở lửa nhỏ cho dậy mùi thơm nức."
     },
     {
-      "title": "Nấu nước dùng",
-      "description": "Cho hành tỏi phi, sả, gừng, các loại gia vị, đường, nước mắm, nước dùng gà và ức gà vào nồi lớn, đậy nắp, đun liu riu khoảng 15 phút.",
-      "durationMinutes": 15
+      "stepNumber": 2,
+      "title": "Nấu nước dùng gà thanh ngọt",
+      "durationMinutes": 20,
+      "description": "Cho nước dùng gà (1.4 lít) vào nồi lớn cùng sả đập dập, gừng thái lát, túi thảo mộc rang thơm, ức gà và đùi gà. Đun sôi rồi hạ lửa nhỏ liu riu đậy nắp trong 15-20 phút cho thịt gà chín ngọt mềm mọng và ngấm trọn vẹn hương thơm thảo mộc."
     },
     {
-      "title": "Luộc bún",
-      "description": "Trụng bún theo hướng dẫn trên bao bì đến khi vừa chín, xả nước lạnh, để ráo rồi chia vào các tô."
+      "stepNumber": 3,
+      "title": "Lọc nước dùng và xé thịt gà",
+      "durationMinutes": 10,
+      "description": "Vớt thịt gà ra ngâm nước đá lạnh 3 phút cho da gà giòn dai rồi dùng tay xé hoặc thái lát mỏng vừa ăn. Lọc nước dùng qua rây mịn bỏ bã gia vị, đun sôi trở lại và nêm nước mắm ngon, hạt nêm, chút đường cho vị ngọt thanh đậm đà vừa miệng."
     },
     {
-      "title": "Lọc nước dùng",
-      "description": "Lọc nước dùng qua rây, bỏ gia vị. Xé nhỏ thịt gà. Đun sôi lại nước dùng và nêm thêm nước mắm nếu cần."
+      "stepNumber": 4,
+      "title": "Chần bánh phở",
+      "durationMinutes": 3,
+      "description": "Nấu nồi nước sôi riêng, chần bánh phở trong 20-30 giây cho sợi phở mềm tơi, vớt ra lắc ráo nước rồi chia đều vào 6 tô lớn."
     },
     {
-      "title": "Hoàn thiện",
-      "description": "Xếp thịt gà lên bún, chan nước dùng nóng, thêm hành lá, cà rốt, giá, rau thơm, ớt, hành phi; ăn kèm chanh và thêm nước mắm, ớt tùy khẩu vị."
+      "stepNumber": 5,
+      "title": "Bày biện tô phở gà hoàn chỉnh",
+      "durationMinutes": 5,
+      "description": "Xếp thịt gà xé lên mặt bánh phở, rắc hành lá thái nhỏ, giá đỗ, ngò rí, vài lát ớt sừng và đặc biệt là một nhúm lá chanh non thái sợi chỉ mỏng manh (linh hồn của món phở gà). Múc nước dùng đang sôi sùng sục chan ngập mặt tô phở, rắc hành phi vàng giòn lên trên cùng và vắt chút chanh tươi thưởng thức ngay."
     }
   ],
   "images": [

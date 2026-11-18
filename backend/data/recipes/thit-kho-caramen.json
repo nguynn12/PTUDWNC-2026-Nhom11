@@ -1,7 +1,7 @@
 {
   "title": "Thịt heo kho caramel",
   "originalTitle": "Vietnamese-style caramel pork",
-  "description": "Thịt vai heo cắt miếng xào săn rồi kho với đường, nước mắm, gừng và ớt cho đến khi nước sốt sánh bóng. Ăn với cơm trắng và cải thìa.",
+  "description": "Món thịt kho mang phong vị Nam Bộ quyến rũ với từng miếng thịt vai heo nạc mỡ đan xen mềm ngậy, áo lớp sốt caramel nâu óng ả sóng sánh. Vị mặn mòi của nước mắm nhĩ hòa quyện vị ngọt thanh của caramel đường nâu, cay ấm nồng nàn của gừng củ và ớt đỏ, ăn kèm cơm trắng nóng hổi và đĩa cải thìa luộc xanh giòn mướt mát thì không gì sánh bằng.",
   "categoryName": "Món kho đậm đà",
   "authorEmail": "chef.thuha@culinaryblog.local",
   "prepTimeMinutes": 10,
@@ -86,21 +86,28 @@
   ],
   "steps": [
     {
-      "title": "Áp chảo thịt",
-      "description": "Đun nóng 1 muỗng canh dầu trong chảo sâu lửa lớn, xào thịt heo từng mẻ đến khi vàng đều rồi vớt ra."
+      "stepNumber": 1,
+      "title": "Sơ chế và áp chảo thịt heo săn chắc",
+      "durationMinutes": 5,
+      "description": "Thịt vai heo rửa sạch, cắt miếng vuông quân cờ vừa ăn. Đun nóng 1 muỗng canh dầu ăn trong chảo sâu lòng ở lửa lớn, cho thịt heo vào áp chảo nhanh từng mẻ khoảng 3-4 phút cho các mặt thịt săn chắc, xém vàng nhẹ và tươm bớt mỡ thừa rồi vớt ra đĩa."
     },
     {
-      "title": "Phi gia vị",
-      "description": "Hạ lửa nhỏ, cho phần dầu còn lại cùng hành khô, gừng và ớt, xào vài phút cho mềm."
+      "stepNumber": 2,
+      "title": "Phi thơm hành gừng ớt",
+      "durationMinutes": 3,
+      "description": "Hạ lửa vừa, tận dụng chút mỡ trong chảo phi thơm hành khô băm nhỏ, gừng nạo nhuyễn và ớt đỏ băm trong 1-2 phút cho bốc mùi thơm nồng nàn."
     },
     {
-      "title": "Kho thịt",
-      "description": "Cho đường, nước mắm và 200 ml nước vào, khuấy đến khi đường tan, cho thịt trở lại và sôi mạnh 8–10 phút đến khi nước sốt sánh bóng bám thịt.",
-      "durationMinutes": 10
+      "stepNumber": 3,
+      "title": "Nấu sốt caramel sóng sánh và kho thịt",
+      "durationMinutes": 12,
+      "description": "Cho 75g đường nâu, 1 muỗng canh nước mắm ngon, 1.5 thìa cà phê tương ớt sriracha và 200ml nước ấm vào chảo. Khuấy đều tay ở lửa vừa cho đường tan chảy hòa quyện. Trút toàn bộ thịt heo đã áp chảo vào, đun sôi bùng rồi hạ lửa vừa đun sôi mạnh không đậy nắp trong 10-12 phút để nước kho cạn dần và sánh keo lại thành lớp sốt caramel bóng bẩy bám chặt từng miếng thịt."
     },
     {
-      "title": "Nêm và dọn",
-      "description": "Nêm thêm nước mắm và tương ớt nếu cần, rắc hành lá, dọn với cơm trắng và cải thìa."
+      "stepNumber": 4,
+      "title": "Hoàn thiện và dọn ăn",
+      "durationMinutes": 3,
+      "description": "Nếm lại nước kho, thêm chút nước mắm nếu thích vị mặn đậm hơn. Rắc hành lá thái sợi và tiêu sọ thơm nức mũi. Dọn thịt kho caramel ra đĩa sâu lòng, ăn cùng cơm trắng dẻo thơm và cải thìa luộc xanh mướt chấm ngập nước sốt caramel."
     }
   ],
   "images": [

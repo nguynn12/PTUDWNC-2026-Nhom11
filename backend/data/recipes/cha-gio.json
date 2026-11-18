@@ -1,7 +1,7 @@
 {
   "title": "Chả giò",
   "originalTitle": "Cha Gio Vietnamese Egg Rolls",
-  "description": "Chả giò chiên giòn với nhân thịt heo, tôm, miến, nấm hương và cà rốt. Cuốn trước rồi chiên ngập dầu đến khi vàng giòn.",
+  "description": "Món ăn tinh túy xuất hiện trên mọi mâm cỗ truyền thống và ngày Tết sum vầy của người Việt. Từng cuốn chả giò vàng ươm ruộm nắng, lớp vỏ ngoài giòn rụm tan ngay trong vòm họng, nhân bên trong thơm ngọt mọng nước từ thịt nạc dăm, tôm tươi, nấm hương mộc nhĩ giòn sần sật và sợi miến dong dai mềm thấm đượm gia vị.",
   "categoryName": "Món khai vị",
   "authorEmail": "chef.baongoc@culinaryblog.local",
   "prepTimeMinutes": 45,
@@ -94,26 +94,34 @@
   ],
   "steps": [
     {
-      "title": "Ngâm miến và nấm",
-      "description": "Ngâm miến và nấm hương trong nước ấm khoảng 15 phút cho mềm, để ráo rồi băm nhỏ nấm.",
-      "durationMinutes": 15
+      "stepNumber": 1,
+      "title": "Sơ chế miến dong và nấm hương mộc nhĩ",
+      "durationMinutes": 15,
+      "description": "Ngâm miến dong, mộc nhĩ và nấm hương trong nước ấm khoảng 15 phút cho nở mềm. Vớt ra vắt thật ráo nước. Mộc nhĩ nấm hương băm nhỏ, miến dong dùng kéo cắt thành từng khúc ngắn cỡ 1.5 - 2cm."
     },
     {
-      "title": "Trộn nhân",
-      "description": "Trộn miến, nấm, thịt heo, tôm, cà rốt, hành khô, nước mắm, đường, muối và tiêu cho thật đều."
+      "stepNumber": 2,
+      "title": "Trộn nhân chả giò ráo nước",
+      "durationMinutes": 10,
+      "description": "Cho thịt nạc dăm xay (có lẫn chút mỡ), tôm tươi băm nhỏ, miến, nấm, cà rốt bào sợi ngắn, hành tím băm vào âu lớn. Nêm nước mắm ngon, hạt nêm, tiêu xay và đập 1 quả trứng gà (chỉ dùng lòng đỏ hoặc bớt lòng trắng để nhân không bị ướt nhão). Trộn đều tay theo một chiều cho nhân hòa quyện dẻo dai."
     },
     {
-      "title": "Cuốn chả giò",
-      "description": "Đặt vỏ chả giò theo hình thoi, cho khoảng 2 muỗng canh nhân vào giữa, gập góc dưới lên, gập hai bên vào rồi cuốn, dán mép bằng trứng đánh."
+      "stepNumber": 3,
+      "title": "Kỹ thuật gói chả giò tròn đều",
+      "durationMinutes": 20,
+      "description": "Trải bánh tráng bò bía xốp hoặc bánh đa nem lên mặt phẳng sạch, phết nhẹ chút nước giấm pha loãng giúp vỏ giòn lâu. Múc 1 muỗng nhân đặt vào 1/3 góc dưới, gập mép dưới lên phủ kín nhân, gập tiếp hai mép bên hông vào trong rồi cuốn tròn nhẹ tay (không cuốn quá chặt tay để khi chiên nhân nở không làm rách vỏ bánh). Dán mép cuốn bằng chút lòng trắng trứng."
     },
     {
-      "title": "Đun dầu",
-      "description": "Đun dầu ở khoảng 175°C."
+      "stepNumber": 4,
+      "title": "Kỹ thuật chiên chả giò 2 lần lửa giòn tan",
+      "durationMinutes": 15,
+      "description": "Đun nóng chảo ngập dầu ăn ở nhiệt độ khoảng 160°C. Thả chả giò vào chiên lần 1 ở lửa vừa khoảng 5 phút cho vỏ se cứng và nhân chín tới thì vớt ra để nguội ráo dầu. Trước khi ăn, đun dầu nóng già ở 180°C, thả chả giò vào chiên lần 2 nhanh trong 2-3 phút cho vỏ vàng ươm, giòn rụm ráo dầu tuyệt đối."
     },
     {
-      "title": "Chiên",
-      "description": "Chiên chả giò từng mẻ 5–8 phút đến khi vàng giòn, vớt ra để ráo dầu.",
-      "durationMinutes": 8
+      "stepNumber": 5,
+      "title": "Bày biện và dọn ăn",
+      "durationMinutes": 5,
+      "description": "Xếp chả giò lên đĩa có lót xà lách xanh mát. Dọn kèm bát nước mắm chua ngọt tỏi ớt băm nhuyễn, đồ chua đu đủ cà rốt và rau thơm tươi non."
     }
   ],
   "images": [

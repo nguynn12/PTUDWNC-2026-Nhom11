@@ -1,7 +1,7 @@
 {
   "title": "Gỏi hải sản",
   "originalTitle": "Vietnamese seafood salad",
-  "description": "Gỏi hải sản chín trộn bún, giá, cà rốt, hành lá và rau thơm với nước trộn giấm gạo, sả và ớt. Chuẩn bị 10 phút, dọn cho cả nhà.",
+  "description": "Món khai vị thanh mát, mang đậm hơi thở đại dương nồng nàn. Sự kết hợp tuyệt vời giữa mực tươi giòn sần sật, tôm biển ngọt lịm cùng sợi bún gạo thanh nhẹ, giá đỗ tươi non, cà rốt thái chỉ và các loại rau thơm nhiệt đới, hòa quyện trong nước sốt giấm gạo sả ớt the nồng đánh thức mọi vị giác.",
   "categoryName": "Hải sản tươi sống",
   "authorEmail": "chef.minhkhoi@culinaryblog.local",
   "prepTimeMinutes": 10,
@@ -86,16 +86,34 @@
   ],
   "steps": [
     {
-      "title": "Trộn gỏi",
-      "description": "Cho rau củ và hải sản vào tô lớn, để lại một ít rau thơm trang trí, trộn đều với bún."
+      "stepNumber": 1,
+      "title": "Chần hải sản giòn ngọt không tanh",
+      "durationMinutes": 5,
+      "description": "Đun sôi nồi nước với vài cọng sả đập dập và chút rượu trắng. Thả hải sản hỗn hợp (tôm sú, mực ống khía vảy rồng) vào chần nhanh trong 2-3 phút vừa chín tới. Vớt ra ngâm ngay vào nước đá lạnh để mực và tôm giữ trọn độ giòn sần sật và màu sắc tươi sáng."
     },
     {
-      "title": "Pha nước trộn",
-      "description": "Trộn các nguyên liệu nước trộn rồi rưới vào gỏi, trộn đều."
+      "stepNumber": 2,
+      "title": "Chuẩn bị rau củ và bún tươi",
+      "durationMinutes": 10,
+      "description": "Bún gạo chần nước sôi để ráo. Giá đỗ nhặt sạch cọng, chần sơ nước sôi 10 giây rồi xả nước lạnh để giữ độ giòn. Cà rốt bào sợi mỏng, hành lá xẻ sợi dọc, sả cây thái lát mỏng manh, bạc hà và ngò rí nhặt lấy lá."
     },
     {
-      "title": "Dọn ăn",
-      "description": "Chia vào 5 tô sâu hoặc bày ra đĩa lớn, rắc rau thơm còn lại lên trên."
+      "stepNumber": 3,
+      "title": "Pha nước sốt trộn giấm sả thơm lừng",
+      "durationMinutes": 5,
+      "description": "Khuấy đều giấm gạo, nước tương ít muối, chút đường cát, ớt đỏ băm nhỏ và sả thái mỏng cho hòa quyện tạo thành hỗn hợp nước sốt chua the thơm nồng đặc trưng."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Trộn gỏi hải sản",
+      "durationMinutes": 5,
+      "description": "Cho bún gạo, giá đỗ, cà rốt, hành lá và hải sản vào tô lớn. Rưới nước sốt trộn lên, dùng đũa đảo nhẹ tay cho nước sốt ngấm đều vào từng sợi bún và miếng hải sản."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Bày biện",
+      "durationMinutes": 3,
+      "description": "Múc gỏi ra 5 tô sâu lòng hoặc đĩa lớn, rắc rau thơm bạc hà và ngò rí lên mặt. Dùng ngay để thưởng thức trọn vẹn độ tươi giòn của hải sản."
     }
   ],
   "images": [

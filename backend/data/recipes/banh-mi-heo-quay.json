@@ -1,7 +1,7 @@
 {
   "title": "Bánh mì heo quay",
   "originalTitle": "Roasted Pork Bánh Mì (Vietnamese Sandwich)",
-  "description": "Ổ bánh mì giòn phết sốt mayonnaise tương hoisin, kẹp thịt heo quay, pa-tê, đồ chua, dưa leo, ớt và ngò rí. Dễ làm cho bữa sáng hay bữa trưa.",
+  "description": "Bánh mì heo quay là sự hòa quyện tuyệt vời của văn hóa ẩm thực đường phố Việt Nam. Từng lát thịt heo quay với lớp da giòn rôm rốp, thịt mềm ngọt mọng mỡ, kết hợp cùng lớp pa-tê gan béo ngậy, sốt tương hoisin cay the nhẹ, dưa leo tươi mát và đồ chua cà rốt củ cải giòn sần sật trong ổ bánh mì nóng giòn rụm vừa ra lò.",
   "categoryName": "Món ăn sáng",
   "authorEmail": "author@culinaryblog.local",
   "prepTimeMinutes": 25,
@@ -92,26 +92,28 @@
   ],
   "steps": [
     {
-      "title": "Làm nóng lò",
-      "description": "Làm nóng lò ở 200°C và lót giấy bạc lên khay nướng."
+      "stepNumber": 1,
+      "title": "Làm đồ chua cà rốt củ cải",
+      "durationMinutes": 20,
+      "description": "Cà rốt và củ cải trắng gọt vỏ, bào sợi vừa ăn. Trộn đều với giấm gạo, đường và chút xíu muối tinh. Để ngâm trong 15-20 phút cho rau củ vừa mềm dịu mà vẫn giữ được độ giòn rụm sần sật, sau đó vớt ra bóp nhẹ cho ráo nước."
     },
     {
-      "title": "Làm đồ chua",
-      "description": "Trộn củ cải và cà rốt với giấm gạo, để 15–20 phút cho hơi mềm rồi để ráo.",
-      "durationMinutes": 20
+      "stepNumber": 2,
+      "title": "Pha sốt bơ tương cay",
+      "durationMinutes": 3,
+      "description": "Trong bát nhỏ, khuấy đều mayonnaise béo ngậy, tương đen hoisin ngọt mặn và một chút tương ớt sriracha cay nồng tạo thành hỗn hợp sốt mịn màng sánh quyện."
     },
     {
-      "title": "Trộn sốt",
-      "description": "Trộn mayonnaise, tương hoisin và sriracha. Bổ ổ bánh mì ra, phết sốt đều hai mặt."
+      "stepNumber": 3,
+      "title": "Làm nóng thịt heo quay và nướng bánh mì",
+      "durationMinutes": 7,
+      "description": "Làm nóng lò nướng hoặc nồi chiên không dầu ở 200°C. Xếp thịt heo quay vào khay nướng khoảng 4-5 phút cho phần da nổ giòn rụm và ráo bớt mỡ thừa. Bổ dọc ổ bánh mì, cho vào lò nướng nhẹ 2-3 phút cho vỏ bánh nóng giòn thơm nức."
     },
     {
-      "title": "Nướng bánh",
-      "description": "Đặt bánh mì lên khay, mặt cắt hướng lên, nướng khoảng 7 phút đến khi nóng giòn và hơi vàng cạnh.",
-      "durationMinutes": 7
-    },
-    {
-      "title": "Kẹp nhân",
-      "description": "Cho thịt heo, pa-tê, đồ chua, dưa leo, ớt và ngò rí vào bánh mì nóng, cắt đôi và dùng ngay."
+      "stepNumber": 4,
+      "title": "Kẹp nhân và hoàn thiện",
+      "durationMinutes": 5,
+      "description": "Dùng dao phết một lớp sốt bơ tương đều hai mặt ruột bánh mì, tiếp đến là một lớp pa-tê gan thơm béo. Xếp lần lượt dưa leo thái lát mỏng, thịt heo quay da giòn thái miếng vừa ăn, gắp đồ chua rải đều lên trên. Điểm xuyết vài nhánh ngò rí, vài lát ớt sừng đỏ tươi và rắc nhẹ chút tiêu bột. Thưởng thức ngay khi bánh còn nóng giòn."
     }
   ],
   "images": [

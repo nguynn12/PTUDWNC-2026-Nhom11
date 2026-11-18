@@ -1,7 +1,7 @@
 {
   "title": "Gỏi cuốn gà sả",
   "originalTitle": "Lemongrass Chicken Rice Paper Rolls",
-  "description": "Gỏi cuốn nhân đùi gà ướp sả áp chảo, bún, bắp cải tím, cà rốt và rau thơm, chấm sốt đậu phộng. Làm được khoảng 10 cuốn, hợp làm món khai vị.",
+  "description": "Một khúc biến tấu hiện đại đầy mê hoặc của món cuốn Việt Nam. Từng cuốn bánh tráng trong suốt khoe trọn phần nhân bắt mắt với thịt đùi gà ướp sả áp chảo xém cạnh thơm lừng, bắp cải tím giòn sần sật, cà rốt cam tươi, bún trắng mềm mại và rau thơm the mát, chấm ngập trong chén sốt bơ đậu phộng béo bùi sánh đặc ngất ngây.",
   "categoryName": "Món cuốn thanh mát",
   "authorEmail": "chef.quocviet@culinaryblog.local",
   "prepTimeMinutes": 25,
@@ -104,43 +104,34 @@
   ],
   "steps": [
     {
-      "title": "Ướp gà",
-      "description": "Trộn các nguyên liệu ướp với thịt gà, ướp 15 phút hoặc qua đêm.",
-      "durationMinutes": 15
+      "stepNumber": 1,
+      "title": "Ướp thịt gà hương sả thơm lừng",
+      "durationMinutes": 15,
+      "description": "Thịt đùi gà lọc xương thái dải dài cỡ ngón tay. Ướp thịt với sả băm nhuyễn, nước mắm ngon, tỏi băm, mật ong, dầu hào và chút tiêu trong 15 phút cho ngấm đều gia vị."
     },
     {
-      "title": "Pha sốt đậu phộng",
-      "description": "Trộn sốt đậu phộng, thêm sữa nếu cần cho đỡ đặc."
+      "stepNumber": 2,
+      "title": "Áp chảo thịt gà xém cạnh",
+      "durationMinutes": 6,
+      "description": "Đun nóng 1 muỗng canh dầu ăn trong chảo lớn ở lửa to. Cho thịt gà vào đảo nhanh tay liên tục trong 5-6 phút đến khi thịt gà chín săn, xém nâu các cạnh và bốc mùi sả thơm lừng thì trút ra đĩa để nguội bớt."
     },
     {
-      "title": "Chần bún",
-      "description": "Cho bún vào tô, chan nước sôi 2 phút, để thật ráo rồi để nguội.",
-      "durationMinutes": 2
+      "stepNumber": 3,
+      "title": "Nấu sốt bơ đậu phộng béo ngậy",
+      "durationMinutes": 5,
+      "description": "Cho bơ đậu phộng mịn, tương đen hoisin, chút sữa tươi (hoặc nước cốt dừa), tỏi băm và giấm gạo vào chảo nhỏ. Đun ở lửa nhỏ khuấy đều tay đến khi sốt sánh mịn màng, nêm chút ớt băm tạo vị the ấm."
     },
     {
-      "title": "Áp chảo gà",
-      "description": "Đun nóng dầu trong chảo lớn lửa to, cho nửa số gà vào đảo liên tục 3 phút đến khi hơi xém cạnh, vớt ra để nguội rồi làm mẻ còn lại.",
-      "durationMinutes": 6
+      "stepNumber": 4,
+      "title": "Kỹ thuật cuốn gỏi đều tay",
+      "durationMinutes": 15,
+      "description": "Nhúng nhanh bánh tráng vào nước ấm trong 2 giây rồi trải phẳng lên thớt sạch. Xếp lần lượt lá bạc hà, ngò rí, thịt gà sả áp chảo, cà rốt bào sợi, bắp cải tím thái mỏng và một nhúm bún tươi lên trên. Gập mép dưới bánh tráng phủ kín nhân, gập hai bên mép hông vào trong rồi cuộn tròn thật chặt tay."
     },
     {
-      "title": "Chuẩn bị nước nhúng",
-      "description": "Đổ nước ấm vào tô lớn để nhúng bánh tráng."
-    },
-    {
-      "title": "Làm mềm bánh tráng",
-      "description": "Nhúng bánh tráng khoảng 2 giây rồi đặt lên thớt, mặt trơn xuống dưới."
-    },
-    {
-      "title": "Xếp nhân",
-      "description": "Xếp ngò rí, gà, cà rốt, bắp cải, bạc hà rồi bún lên trên cho nén chặt nhân."
-    },
-    {
-      "title": "Cuốn",
-      "description": "Gập phần dưới bánh lên nhân, gập hai bên vào rồi cuốn chặt. Bánh sẽ tự dính."
-    },
-    {
-      "title": "Dọn ăn",
-      "description": "Bày ra đĩa, không xếp chồng vì sẽ dính. Dọn với sốt đậu phộng; có thể cắt đôi dựng đứng làm món khai vị."
+      "stepNumber": 5,
+      "title": "Bày biện và dọn ăn",
+      "durationMinutes": 5,
+      "description": "Cắt đôi từng cuốn gỏi theo góc chéo 45 độ, dựng đứng trên đĩa để lộ phần nhân đa sắc tuyệt đẹp. Dọn kèm chén sốt bơ đậu phộng rắc thêm đậu phộng giã dập và vài lát ớt đỏ."
     }
   ],
   "images": [

@@ -1,7 +1,7 @@
 {
   "title": "Cà phê trứng",
   "originalTitle": "Vietnamese egg coffee",
-  "description": "Cà phê đậm phủ lớp kem trứng đánh bông với sữa đặc và vani, béo mịn như kem. Món đặc trưng của Hà Nội, làm trong 20 phút.",
+  "description": "Biểu tượng ẩm thực tao nhã của phố cổ Hà Nội ra đời từ những năm 1940. Lớp kem trứng vàng óng ánh, sánh mịn bồng bềnh như mây, thơm béo ngậy mùi sữa và vani mà không hề tanh, ngự trị trên nền cà phê đen nóng hổi đậm đà, mang đến trải nghiệm hương vị đan xen tuyệt hảo giữa đắng và ngọt béo.",
   "categoryName": "Đồ uống & Trà",
   "authorEmail": "author@culinaryblog.local",
   "prepTimeMinutes": 20,
@@ -51,21 +51,28 @@
   ],
   "steps": [
     {
-      "title": "Đánh kem trứng",
-      "description": "Cho lòng đỏ, sữa đặc và vani vào tô lớn, đánh bằng máy ít nhất 5 phút đến khi bông nhạt màu.",
-      "durationMinutes": 5
+      "stepNumber": 1,
+      "title": "Tách lòng đỏ và chuẩn bị đánh kem",
+      "durationMinutes": 5,
+      "description": "Khéo léo tách riêng 4 lòng đỏ trứng gà tươi mới, tuyệt đối không để dính lòng trắng. Cho lòng đỏ vào âu sạch cùng 150ml sữa đặc có đường và 1 thìa cà phê chiết xuất vani tự nhiên (hoặc vài giọt rượu rum để khử mùi tanh trứng hoàn toàn)."
     },
     {
-      "title": "Giữ nóng ly",
-      "description": "Đặt 4 ly chịu nhiệt vào các tô lớn hơn có nước sôi một nửa để cà phê nóng lâu."
+      "stepNumber": 2,
+      "title": "Đánh bông kem trứng sánh mịn",
+      "durationMinutes": 7,
+      "description": "Dùng máy đánh trứng đánh ở tốc độ cao liên tục trong 5-7 phút. Khi hỗn hợp chuyển từ màu vàng đậm sang vàng kem nhạt, thể tích tăng gấp 3 lần, sánh dẻo đạt trạng thái chóp mềm mịn (ribbon stage) thì dừng lại. Lớp kem đạt chuẩn sẽ nhẹ xốp và nổi hoàn toàn trên mặt nước."
     },
     {
-      "title": "Rót cà phê",
-      "description": "Rót cà phê vào ly, chừa lại 2 muỗng canh, rồi múc kem trứng lên trên."
+      "stepNumber": 3,
+      "title": "Pha cà phê nóng đậm đà",
+      "durationMinutes": 5,
+      "description": "Pha 4 ly cà phê đen nóng nguyên chất (pha phin hoặc espresso đậm đà). Cà phê cần phải thật nóng để khi đổ kem lên, hơi nóng sẽ làm chín nhẹ lớp kem trứng."
     },
     {
-      "title": "Hoàn thiện",
-      "description": "Rưới phần cà phê còn lại lên mặt cho thấm xuống, rắc sô-cô-la bào nếu thích và dùng ngay với muỗng."
+      "stepNumber": 4,
+      "title": "Giữ nhiệt và hoàn thiện",
+      "durationMinutes": 3,
+      "description": "Đặt ly thủy tinh vào một bát con chứa nước sôi để giữ ấm cà phê trong suốt quá trình thưởng thức. Rót cà phê nóng ngập 1/2 ly, nhẹ nhàng múc từng muỗng kem trứng bồng bềnh phủ đầy mặt ly. Rưới vài giọt cà phê đen tạo vân nghệ thuật hoặc rắc chút bột cacao/sô-cô-la đen bào mịn lên mặt. Dùng muỗng nhỏ múc từng lớp kem trứng cùng cà phê nhâm nhi chậm rãi."
     }
   ],
   "images": [

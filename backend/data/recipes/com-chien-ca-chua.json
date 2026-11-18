@@ -1,7 +1,7 @@
 {
   "title": "Cơm chiên cà chua",
   "originalTitle": "Red Vietnamese Fried Rice",
-  "description": "Cơm chiên đỏ với bơ, tỏi, giăm bông, đậu Hà Lan và cà chua cô đặc, nêm nước mắm và nước tương, thêm trứng chiên. Làm nhanh trong 15 phút từ cơm nguội.",
+  "description": "Món cơm chiên sắc đỏ hồng tươi tắn, hấp dẫn và thơm nức mũi mùi bơ tỏi quyến rũ. Từng hạt cơm tơi xốp, vàng xém cạnh bóng bẩy bao phủ đều bởi sốt cà chua cô đặc đậm đà, điểm xuyết giăm bông thơm mặn mà, hạt đậu Hà Lan ngọt bùi và trứng chiên vàng xốp mềm tơi, là món ăn nhanh gọn mà đầy đủ dưỡng chất cho cả gia đình.",
   "categoryName": "Món chính",
   "authorEmail": "author@culinaryblog.local",
   "prepTimeMinutes": 8,
@@ -80,30 +80,28 @@
   ],
   "steps": [
     {
-      "title": "Phi tỏi",
-      "description": "Làm chảy phần lớn bơ trong chảo chống dính lớn lửa to (để dành một chút để chiên trứng), cho tỏi vào xào 10 giây."
+      "stepNumber": 1,
+      "title": "Chuẩn bị cơm và nguyên liệu",
+      "durationMinutes": 5,
+      "description": "Dùng cơm nguội để tủ lạnh qua đêm, bóp tơi hạt cơm giúp cơm khi chiên săn hạt và không bị bết dính. Giăm bông thái hạt lựu nhỏ, tỏi băm nhuyễn, đậu Hà Lan rửa sạch để ráo."
     },
     {
-      "title": "Xào giăm bông và đậu",
-      "description": "Cho giăm bông xào 30 giây, thêm đậu Hà Lan xào 30 giây nữa."
+      "stepNumber": 2,
+      "title": "Phi thơm bơ tỏi và xào giăm bông",
+      "durationMinutes": 2,
+      "description": "Đặt chảo sâu lòng lên bếp ở lửa lớn, làm tan chảy 1 muỗng canh bơ lạt, trút tỏi băm vào phi nhanh 10 giây cho dậy mùi thơm nức. Cho tiếp giăm bông và đậu Hà Lan vào đảo nhanh tay trong 1 phút cho giăm bông se vàng cạnh."
     },
     {
-      "title": "Cho cơm",
-      "description": "Cho cơm và cà chua cô đặc vào xào 2 phút.",
-      "durationMinutes": 2
+      "stepNumber": 3,
+      "title": "Chiên cơm cùng sốt cà chua cô đặc",
+      "durationMinutes": 3,
+      "description": "Trút toàn bộ cơm nguội đã bóp tơi vào chảo, thêm 2 muỗng canh sốt cà chua cô đặc (tomato paste). Đảo đều tay liên tục trên lửa lớn trong 2-3 phút cho từng hạt cơm tơi xốp, bám đều màu đỏ hồng óng ả và hơi xém cạnh dậy mùi khói thơm chảo."
     },
     {
-      "title": "Nêm nếm",
-      "description": "Thêm nước mắm, nước tương và đường, xào thêm 1 phút cho cơm hơi xém cạnh.",
-      "durationMinutes": 1
-    },
-    {
-      "title": "Chiên trứng",
-      "description": "Dồn cơm sang một bên chảo, làm chảy phần bơ còn lại ở chỗ trống, đổ trứng vào đảo đến khi vừa chín."
-    },
-    {
-      "title": "Hoàn thiện",
-      "description": "Trộn trứng vào cơm và dọn ngay."
+      "stepNumber": 4,
+      "title": "Nêm nếm gia vị và đảo trứng xốp mềm",
+      "durationMinutes": 2,
+      "description": "Rưới 1 muỗng canh nước mắm ngon quanh thành chảo, thêm chút nước tương và đường, đảo thật nhanh tay. Dồn cơm sang một góc chảo, cho chút bơ vào góc trống làm tan chảy rồi đập trứng vào, dùng đũa khuấy nhanh cho trứng vừa chín xốp mềm thì đảo lẫn vào khối cơm. Tắt bếp, rắc tiêu xay và hành lá thái nhỏ rồi múc ra đĩa dùng nóng."
     }
   ],
   "images": [
