@@ -8,7 +8,6 @@ import {
   TrashIcon,
   ArchiveIcon,
   CheckCircleIcon,
-  FlameIcon,
   SparklesIcon,
   ArrowUpRightIcon,
   ClockIcon,
@@ -86,7 +85,7 @@ export default function DashboardOverviewPage() {
       <header className="dashboard-header">
         <div className="header-title-area">
           <h1>Tổng quan Studio</h1>
-          <p>Bảng điều khiển và theo dõi trạng thái công thức của bạn</p>
+          <p>Thống kê công thức của riêng bạn{isAdmin ? ' · Thùng rác toàn hệ thống' : ''}</p>
         </div>
         <div className="header-actions">
           <button
@@ -113,33 +112,9 @@ export default function DashboardOverviewPage() {
               <BookOpenIcon size={24} />
             </div>
 
-            <section className="section-card" style={{ marginBottom: '28px' }}>
-              <div className="section-header">
-                <div>
-                  <h2 className="section-title">Từ tác giả đến món ăn</h2>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                    {user?.displayName ?? 'Tác giả'} tạo công thức, gắn vào danh mục và chia sẻ món ăn với cộng đồng.
-                  </p>
-                </div>
-              </div>
-              <div className="quick-actions-grid">
-                <Link href="/dashboard/recipes/new" className="action-card">
-                  <div className="action-card-title">1. Tạo công thức</div>
-                  <div className="action-card-desc">Nhập tên món ăn, mô tả, nguyên liệu, các bước làm và hình ảnh.</div>
-                </Link>
-                <Link href="/categories" className="action-card">
-                  <div className="action-card-title">2. Chọn danh mục món ăn</div>
-                  <div className="action-card-desc">Mỗi công thức thuộc một danh mục để người đọc dễ khám phá.</div>
-                </Link>
-                <Link href="/recipes" className="action-card">
-                  <div className="action-card-title">3. Xem món ăn công khai</div>
-                  <div className="action-card-desc">Công thức đã xuất bản sẽ xuất hiện trong kho món ăn và trang danh mục.</div>
-                </Link>
-              </div>
-            </section>
             <div>
               <div className="metric-value">{loading ? '...' : metrics.totalRecipes}</div>
-              <div className="metric-label">Tổng số công thức</div>
+              <div className="metric-label">Tổng công thức của bạn</div>
             </div>
           </div>
 
@@ -173,7 +148,7 @@ export default function DashboardOverviewPage() {
             </div>
           </div>
 
-          <div className="metric-card">
+          {isAdmin && <div className="metric-card">
             <div className="metric-icon-box metric-icon-danger">
               <TrashIcon size={24} />
             </div>
@@ -181,8 +156,31 @@ export default function DashboardOverviewPage() {
               <div className="metric-value">{loading ? '...' : metrics.trashCount}</div>
               <div className="metric-label">Thùng rác (Admin)</div>
             </div>
-          </div>
+          </div>}
         </div>
+
+        <section className="section-card dashboard-guide">
+          <div className="section-header">
+            <div>
+              <h2 className="section-title">Từ tác giả đến món ăn</h2>
+              <p className="action-card-desc">{user?.displayName ?? 'Tác giả'} tạo công thức, gắn vào danh mục và chia sẻ món ăn với cộng đồng.</p>
+            </div>
+          </div>
+          <div className="quick-actions-grid">
+            <Link href="/dashboard/recipes/new" className="action-card">
+              <div className="action-card-title">1. Tạo công thức</div>
+              <div className="action-card-desc">Nhập tên món ăn, mô tả, nguyên liệu, các bước làm và hình ảnh.</div>
+            </Link>
+            <Link href="/categories" className="action-card">
+              <div className="action-card-title">2. Chọn danh mục món ăn</div>
+              <div className="action-card-desc">Mỗi công thức thuộc một danh mục để người đọc dễ khám phá.</div>
+            </Link>
+            <Link href="/recipes" className="action-card">
+              <div className="action-card-title">3. Xem món ăn công khai</div>
+              <div className="action-card-desc">Công thức đã xuất bản sẽ xuất hiện trong kho món ăn và trang danh mục.</div>
+            </Link>
+          </div>
+        </section>
 
         {/* QUICK ACTIONS SECTION */}
         <h2 className="section-title" style={{ marginBottom: '16px' }}>
@@ -230,7 +228,7 @@ export default function DashboardOverviewPage() {
             </Link>
           )}
 
-          <Link href="/admin/recipes/trash" className="action-card">
+          {isAdmin && <Link href="/admin/recipes/trash" className="action-card">
             <div className="action-card-header">
               <div className="metric-icon-box metric-icon-danger">
                 <TrashIcon size={22} />
@@ -241,14 +239,14 @@ export default function DashboardOverviewPage() {
             <div className="action-card-desc">
               Phục hồi các công thức đã xóa nhầm hoặc xóa vĩnh viễn (Purge) giải phóng bộ nhớ.
             </div>
-          </Link>
+          </Link>}
         </div>
 
         {/* RECENT RECIPES SECTION */}
         <div className="section-card">
           <div className="section-header">
             <div>
-              <h2 className="section-title">Công thức gần đây</h2>
+              <h2 className="section-title">Công thức gần đây của bạn</h2>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                 Các món ăn được cập nhật hoặc chỉnh sửa mới nhất
               </p>
@@ -281,7 +279,7 @@ export default function DashboardOverviewPage() {
                 ) : recentRecipes.length === 0 ? (
                   <tr>
                     <td colSpan={6} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
-                      Chưa có công thức nào. Hãy bắt đầu bằng cách tạo công thức đầu tiên!
+                      Bạn chưa tạo công thức nào. Hãy bắt đầu bằng công thức đầu tiên của bạn!
                     </td>
                   </tr>
                 ) : (

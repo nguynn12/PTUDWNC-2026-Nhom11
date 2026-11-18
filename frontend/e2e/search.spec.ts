@@ -1,4 +1,42 @@
 import { test, expect, type Page } from "@playwright/test";
+import { toStatusNumber, toStatusLabel } from "../src/lib/enums";
+
+test("Trạng thái công thức thống nhất giữa enum số và chuỗi", () => {
+  for (const [value, expected, label] of [
+    [0, 0, 'Bản nháp'], ['0', 0, 'Bản nháp'], ['Draft', 0, 'Bản nháp'],
+    [1, 1, 'Đã xuất bản'], ['1', 1, 'Đã xuất bản'], ['Published', 1, 'Đã xuất bản'],
+    [2, 2, 'Đã lưu trữ'], ['2', 2, 'Đã lưu trữ'], ['Archived', 2, 'Đã lưu trữ'],
+  ] as const) {
+    expect(toStatusNumber(value)).toBe(expected);
+    expect(toStatusLabel(value)).toBe(label);
+  }
+});
+
+test("Khách xem công thức đã xuất bản không bị gắn nhãn lưu trữ", async ({ page }) => {
+  const backend = process.env.PLAYWRIGHT_API_URL || 'http://localhost:5000';
+  const response = await page.request.get(`${backend}/api/v1/recipes/thit-xien-nuong`);
+  expect(response.status()).toBe(200);
+  expect((await response.json()).data.status).toBe(1);
+  await page.goto('/recipes');
+  await expect(page.getByRole('article').first()).toBeVisible();
+  await expect(page.getByText('Lưu trữ', { exact: true })).toHaveCount(0);
+  await page.goto('/recipes/thit-xien-nuong');
+  await expect(page.getByRole('heading', { level: 1, name: 'Thịt xiên nướng', exact: true })).toBeVisible();
+  await expect(page.getByText(/Công thức đang ở trạng thái/)).toHaveCount(0);
+  await expect(page.getByText('Lưu trữ', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('Công thức này chưa được bổ sung số liệu dinh dưỡng.', { exact: true })).toBeVisible();
+});
+
+test("Khách xem ảnh gà nướng sả và đủ trường dinh dưỡng đã nhập", async ({ page }) => {
+  await page.goto('/recipes/ga-nuong-sa');
+  await expect(page.getByRole('heading', { level: 1, name: 'Gà nướng sả', exact: true })).toBeVisible();
+  await expect(page.getByText(/Công thức đang ở trạng thái/)).toHaveCount(0);
+  const image = page.getByRole('img', { name: 'Gà nướng sả', exact: true }).first();
+  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth), { timeout: 15000 }).toBeGreaterThan(0);
+  await expect(page.getByRole('heading', { name: /Giá trị dinh dưỡng \(mỗi khẩu phần\)/ })).toBeVisible();
+  await expect(page.getByText('Natri', { exact: true })).toBeVisible();
+  await expect(page.getByText('339 mg', { exact: true })).toBeVisible();
+});
 
 // Chuyển tiếp tới API thật của môi trường kiểm thử riêng, không dựng response giả.
 test.beforeEach(async ({ page }) => {
@@ -19,7 +57,7 @@ test.afterEach(async ({ page }) => {
 test("Công thức dùng ảnh đúng nguồn và không hiện bảng dinh dưỡng khi chưa có số liệu", async ({ page }) => {
   await page.goto("/recipes/bo-sot-vang");
   await expect(page.getByRole("heading", { level: 1, name: "Bò sốt vang", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Giá trị dinh dưỡng (mỗi khẩu phần)", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Giá trị dinh dưỡng \(mỗi khẩu phần\)/ })).toHaveCount(0);
   const image = page.getByRole("img", { name: "Bò sốt vang", exact: true }).first();
   await expect(image)
     .toHaveAttribute("src", "https://www.savourydays.com/wp-content/uploads/2011/09/bo-sot-vang1.jpg");

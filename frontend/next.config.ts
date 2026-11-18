@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "images.media-allrecipes.com",
+        pathname: "/userphotos/**",
+      },
+      {
+        protocol: "https",
         hostname: "www.savourydays.com",
         pathname: "/wp-content/uploads/**",
       },

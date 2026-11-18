@@ -62,5 +62,7 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 - Ảnh bên ngoài được hiển thị với `referrerPolicy="no-referrer"` để tránh bị Savoury Days chặn khi nhúng từ tên miền khác. Kiểm thử ảnh kiểm cả ảnh tải thật, không chỉ kiểm URL.
 - Định lượng hỗn hợp được khôi phục từ Word và tách thành nguyên liệu riêng khi có số lượng từng thành phần. Nguyên liệu ghi "vừa đủ" giữ `quantity: null`, `unit: null` cùng ghi chú, không tự đặt số 1.
 - 20 món mới để `nutrition: null` vì các số trong Word là ước tính chưa có bảng tính kiểm chứng. Không thay số thiếu bằng 0; trang chi tiết không hiện bảng dinh dưỡng trống.
-- Nhập thử trên PostgreSQL riêng có 42 món / 540 nguyên liệu / 199 bước / 42 ảnh / 17 danh mục. DB demo đang dùng vẫn giữ 22 món trong lúc rà PR; bộ nạp không tự cập nhật các slug đã tồn tại.
+- DB demo đã có 42 món / 540 nguyên liệu / 199 bước / 42 ảnh / 17 danh mục. Bộ nạp không tự cập nhật các slug đã tồn tại.
+- Rà ngày 18/11: 10 link ảnh `www.allrecipes.com/thmb` trả 403. JSON chuyển sang ảnh gốc công khai `images.media-allrecipes.com/userphotos` lấy từ thư viện ảnh của đúng bài nguồn; đã xem lại nội dung từng ảnh. Trên máy demo, 10 ảnh này được lưu đủ bản gốc, medium và thumbnail trong MinIO, cập nhật 10 bản ghi ảnh và 6 ảnh danh mục dùng chung. Không thay quyền truy cập bucket. Kiểm tra lại 42/42 ảnh tải và giải mã được.
+- Dinh dưỡng hiện có ở 22 món; 20 món mới vẫn chưa có số liệu có căn cứ. Giao diện báo rõ khi thiếu dữ liệu và không quảng bá toàn bộ công thức đều có dinh dưỡng.
 - Các định lượng được bảo toàn theo tài liệu nhóm, chưa xác minh toàn bộ với bài nguồn. Việc ảnh tải được và JSON nhập thành công không thay thế nghiệm thu nội dung từng công thức.

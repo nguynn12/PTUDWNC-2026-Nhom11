@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { RecipeApi, ApiError } from '@/lib/api-client';
+import { RecipeStatus, toStatusNumber, toStatusLabel, type RecipeStatusValue } from '@/lib/enums';
 import type {
   CategoryOptionDto,
   DifficultyLevel,
@@ -98,7 +99,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     }
     return result;
   }
-  const [recipeStatus, setRecipeStatus] = useState<string>('Draft');
+  const [recipeStatus, setRecipeStatus] = useState<RecipeStatusValue>(RecipeStatus.Draft);
 
   // Danh mục (Categories)
   const [categories, setCategories] = useState<CategoryOptionDto[]>([]);
@@ -193,7 +194,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         setCookTimeMinutes(detail.cookTimeMinutes ?? detail.cookTime ?? 30);
         setServings(detail.servings);
         updateXmin(detail.concurrencyToken ?? detail.xmin ?? null);
-        setRecipeStatus(String(detail.status || 'Draft'));
+        setRecipeStatus(toStatusNumber(detail.status));
 
         if (detail.nutrition) {
           setHasNutrition(true);
@@ -991,11 +992,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                   Cung cấp tên món ăn, phân loại danh mục, khẩu phần phục vụ và thông số dinh dưỡng trên mỗi khẩu phần.
                 </p>
               </div>
-              {recipeStatus && (
-                <Badge variant={recipeStatus === 'Draft' ? 'statusDraft' : 'statusPublished'} className="text-xs">
-                  Trạng thái: {recipeStatus}
-                </Badge>
-              )}
+              <Badge variant={recipeStatus === RecipeStatus.Draft ? 'statusDraft' : recipeStatus === RecipeStatus.Archived ? 'statusArchived' : 'statusPublished'} className="text-xs">
+                Trạng thái: {toStatusLabel(recipeStatus)}
+              </Badge>
             </div>
 
             <div className="p-5 sm:p-6 space-y-6">
