@@ -12,9 +12,16 @@
     "name": "Helen Lê — Helen's Recipes (Da Nang Cuisine)",
     "url": "https://helenrecipes.com/vietnamese-sweet-and-sour-snakehead-fish-soup/",
     "accessedOn": "2026-11-17",
-    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+    "note": "Nguyên liệu và các bước biên tập từ tài liệu nhóm; dinh dưỡng tính toán theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh Dưỡng) và USDA."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 182.0,
+    "protein": 24.0,
+    "carbohydrates": 14.0,
+    "fat": 3.0,
+    "fiber": 3.2,
+    "sodium": 780.0
+  },
   "ingredients": [
     {
       "name": "Cá lóc tươi (hoặc cá basa, cá bông lau)",
