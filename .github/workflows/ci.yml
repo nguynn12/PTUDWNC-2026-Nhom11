@@ -94,6 +94,8 @@ jobs:
       E2E_AUTHOR_PASSWORD: E2ePass!2026_Only
       PLAYWRIGHT_API_URL: http://127.0.0.1:5000
       BACKEND_API_URL: http://127.0.0.1:5000
+      # Image ghim theo digest, dùng cả MinIO server và mc có sẵn trong image.
+      MINIO_IMAGE: coollabsio/minio@sha256:69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9
     services:
       postgres:
         image: postgres:16-alpine
@@ -121,8 +123,14 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Start MinIO
         run: |
-          docker run -d --name culinary-e2e-minio -p 9000:9000 -e MINIO_ROOT_USER=culinary_minio_admin -e MINIO_ROOT_PASSWORD=culinary_minio_secret minio/minio:RELEASE.2024-01-16T16-07-38Z server /data
-          docker run --rm --network host --entrypoint /bin/sh minio/mc:RELEASE.2024-01-16T16-06-34Z -c 'until mc alias set local http://127.0.0.1:9000 culinary_minio_admin culinary_minio_secret; do sleep 2; done; mc mb local/culinary-blog --ignore-existing; mc anonymous set download local/culinary-blog'
+          docker run -d --name culinary-e2e-minio -p 9000:9000 -e MINIO_ROOT_USER=culinary_minio_admin -e MINIO_ROOT_PASSWORD=culinary_minio_secret "$MINIO_IMAGE" server /data
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:9000/minio/health/ready; then break; fi
+            sleep 2
+          done
+          curl --fail http://127.0.0.1:9000/minio/health/ready
+          docker run --rm --network host --entrypoint /usr/bin/mc -e MC_HOST_local=http://culinary_minio_admin:culinary_minio_secret@127.0.0.1:9000 "$MINIO_IMAGE" mb local/culinary-blog --ignore-existing
+          docker run --rm --network host --entrypoint /usr/bin/mc -e MC_HOST_local=http://culinary_minio_admin:culinary_minio_secret@127.0.0.1:9000 "$MINIO_IMAGE" anonymous set download local/culinary-blog
       - name: Build backend
         run: dotnet build backend/src/CulinaryBlog.API -c Release -m:1 -nodeReuse:false
       - name: Start backend and prepare Author

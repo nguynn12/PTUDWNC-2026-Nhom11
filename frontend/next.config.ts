@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     remotePatterns: [
       {
+        protocol: "https",
+        hostname: "www.savourydays.com",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "helenrecipes.com",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         pathname: "/**",

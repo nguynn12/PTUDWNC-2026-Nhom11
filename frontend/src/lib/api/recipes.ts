@@ -27,6 +27,16 @@ export async function getRecipeBySlug(slug: string): Promise<RecipeDetailDto> {
     `/recipes/${slug}`
   );
   const recipe = response.data;
+  const values = recipe.nutrition;
+  // PostgreSQL có thể trả owned entity chỉ còn Source=Manual dù mọi chỉ số đều trống.
+  const nutrition = values && [
+    values.calories,
+    values.protein ?? values.proteinGrams,
+    values.carbohydrates ?? values.carbsGrams,
+    values.fat ?? values.fatGrams,
+    values.fiber ?? values.fiberGrams,
+    values.sodium ?? values.sodiumMilligrams,
+  ].some(value => value !== null && value !== undefined) ? values : null;
   return {
     ...recipe,
     categoryId: recipe.category?.id ?? recipe.categoryId,
@@ -37,13 +47,13 @@ export async function getRecipeBySlug(slug: string): Promise<RecipeDetailDto> {
     totalTime: (recipe.prepTimeMinutes ?? recipe.prepTime ?? 0) + (recipe.cookTimeMinutes ?? recipe.cookTime ?? 0),
     images: recipe.images.map(image => ({ ...image, imageUrl: image.mediumUrl ?? image.originalUrl ?? image.imageUrl })),
     steps: recipe.steps.map(step => ({ ...step, timerMinutes: step.durationMinutes ?? step.timerMinutes })),
-    nutrition: recipe.nutrition ? {
-      ...recipe.nutrition,
-      proteinGrams: recipe.nutrition.protein ?? recipe.nutrition.proteinGrams,
-      carbsGrams: recipe.nutrition.carbohydrates ?? recipe.nutrition.carbsGrams,
-      fatGrams: recipe.nutrition.fat ?? recipe.nutrition.fatGrams,
-      fiberGrams: recipe.nutrition.fiber ?? recipe.nutrition.fiberGrams,
-      sodiumMilligrams: recipe.nutrition.sodium ?? recipe.nutrition.sodiumMilligrams,
+    nutrition: nutrition ? {
+      ...nutrition,
+      proteinGrams: nutrition.protein ?? nutrition.proteinGrams,
+      carbsGrams: nutrition.carbohydrates ?? nutrition.carbsGrams,
+      fatGrams: nutrition.fat ?? nutrition.fatGrams,
+      fiberGrams: nutrition.fiber ?? nutrition.fiberGrams,
+      sodiumMilligrams: nutrition.sodium ?? nutrition.sodiumMilligrams,
     } : null,
   };
 }

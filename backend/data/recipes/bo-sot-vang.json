@@ -1,0 +1,127 @@
+{
+  "title": "Bò sốt vang",
+  "originalTitle": "Bò sốt vang",
+  "description": "Món bò sốt vang truyền thống Việt Nam với phần thịt bò gân dẻo ninh nhừ trong nước sốt sánh mịn từ cà chua, vang đỏ và lá nguyệt quế thoảng nhẹ hương bơ nhạt và ngũ vị hương. Dùng nóng kèm bánh mì giòn hoặc phở tươi.",
+  "categoryName": "Món chính",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 90,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/bo-sot-vang/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Thịt bò (gân bò, dẻ sườn hoặc bắp bò)",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, thấm khô, cắt khối vuông quân cờ khoảng 3-3.5cm"
+    },
+    {
+      "name": "Bột gia vị (hoặc muối tinh)",
+      "quantity": 1.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Gia vị ướp thịt bò"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Gia vị ướp thịt bò"
+    },
+    {
+      "name": "Bột ngũ vị hương",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Gia vị ướp thịt tạo hương đặc trưng"
+    },
+    {
+      "name": "Rượu vang đỏ",
+      "quantity": 60.0,
+      "unit": "ml (4 thìa canh)",
+      "notes": "Chia làm 2 lần: 2 thìa ướp thịt, 2 thìa cho vào khi ninh"
+    },
+    {
+      "name": "Cà chua tươi chín mọng",
+      "quantity": 250.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, bổ múi cau nhỏ"
+    },
+    {
+      "name": "Sốt cà chua cô đặc (Tomato puree)",
+      "quantity": 50.0,
+      "unit": "gram",
+      "notes": "Tạo độ sánh sệt và màu đỏ đẹp (hoặc 300g cà chua lon)"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 80.0,
+      "unit": "gram (1/2 củ)",
+      "notes": "Bóc vỏ, băm nhỏ"
+    },
+    {
+      "name": "Tỏi cô đơn",
+      "quantity": 3.0,
+      "unit": "tép",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Bơ nhạt (Unsalted butter)",
+      "quantity": 15.0,
+      "unit": "gram (1 thìa canh)",
+      "notes": "Dùng đun chảy để phi hành tỏi và xào cà chua"
+    },
+    {
+      "name": "Lá nguyệt quế (Bay leaf)",
+      "quantity": 1.0,
+      "unit": "lá",
+      "notes": "Thả vào nồi khi ninh thịt để tạo hương thảo mộc sâu"
+    },
+    {
+      "name": "Rau mùi ta (ngò rí)",
+      "quantity": 1.0,
+      "unit": "mớ nhỏ",
+      "notes": "Rửa sạch, thái nhỏ rắc lên mặt bát khi hoàn thành"
+    },
+    {
+      "name": "Tiêu đen xay",
+      "quantity": 0.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Rắc lên mặt tạo độ cay thơm nhẹ"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp thịt bò",
+      "description": "Thịt bò rửa sạch, thấm thật khô bằng khăn giấy. Cắt khối vuông khoảng 3 đến 3.5cm (không nên cắt quá nhỏ vì khi ninh lâu thịt sẽ bị teo rút). Ướp thịt bò với 1.5 thìa cà phê bột gia vị (hoặc muối), 1 thìa cà phê đường, 1 thìa cà phê ngũ vị hương và 2 thìa canh rượu vang đỏ. Trộn đều tay, bọc kín đĩa thịt để trong ngăn mát tủ lạnh tối thiểu 2 tiếng hoặc ướp qua đêm để thớ thịt ngấm sâu gia vị.",
+      "durationMinutes": 120
+    },
+    {
+      "title": "Xào sốt cà chua và làm săn thịt",
+      "description": "Bắc nồi đáy dày lên bếp, đun chảy 1 thìa canh bơ nhạt ở lửa vừa. Cho hành tây băm vào đảo đều cho thơm và trong lại. Tiếp tục cho cà chua tươi bổ múi cau và sốt cà chua cô đặc (tomato puree) vào xào khoảng 3 phút đến khi cà chua mềm nhuyễn và ra màu đỏ cam đẹp mắt. Trút toàn bộ phần thịt bò đã ướp (cùng cả phần nước ướp tiết ra) và tỏi băm vào xào chung. Đảo đều trên lửa vừa khoảng 5 phút đến khi thớ thịt bò săn lại hoàn toàn và chuyển sang màu chín.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Ninh mềm thịt bò",
+      "description": "Đổ nước sôi vào nồi sao cho mực nước ngập mặt thịt bò (bắt buộc dùng nước sôi để thớ thịt không bị co rút dai cứng). Vặn lửa lớn cho nước sôi bùng lên, sau đó dùng muôi hớt sạch toàn bộ bọt bẩn nổi trên mặt. Thả 1 lá nguyệt quế và 2 thìa canh rượu vang đỏ còn lại vào nồi. Đậy hé nắp vung, hạ nhỏ lửa ninh liu riu trong khoảng 90 đến 120 phút. Trong lúc ninh, thỉnh thoảng kiểm tra nếu nước cạn thì châm thêm nước sôi. Ninh đến khi phần gân và thịt bò mềm nhừ dẻo quánh, nước sốt sánh sệt tự nhiên.",
+      "durationMinutes": 90
+    },
+    {
+      "title": "Hoàn thành và thưởng thức",
+      "description": "Khi thịt bò đã đạt độ mềm như ý, nếm lại nước sốt và nêm thêm một chút muối/gia vị cho vừa khẩu vị gia đình. Múc bò sốt vang ra tô sâu lòng, rắc rau mùi thái nhỏ và hạt tiêu đen xay lên trên. Dùng nóng kèm bánh mì giòn hoặc làm nước chan cho phở tươi.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2011/09/bo-sot-vang1.jpg",
+      "altText": "Bò sốt vang",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

@@ -273,6 +273,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
         {/* Khối Ảnh chính Hero Image (Tỷ lệ 16:9) */}
         <div className="relative w-full pt-[56.25%] rounded-3xl overflow-hidden shadow-lg bg-[var(--bg-surface-alt)] border border-[var(--border-subtle)]">
           <Image
+            referrerPolicy="no-referrer"
             src={selectedImage}
             alt={recipe.title}
             fill
@@ -298,6 +299,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
                 title={`Xem ảnh ${idx + 1}`}
               >
                 <Image
+                  referrerPolicy="no-referrer"
                   src={imgUrl}
                   alt={`Thumbnail ${idx + 1}`}
                   fill
@@ -516,6 +518,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
                       {step.imageUrl && (
                         <div className="relative w-full pt-[52%] rounded-xl overflow-hidden mt-3 border border-[var(--border-subtle)] bg-[var(--bg-surface-alt)]">
                           <Image
+                            referrerPolicy="no-referrer"
                             src={step.imageUrl}
                             alt={`Ảnh minh họa bước ${step.stepNumber}`}
                             fill

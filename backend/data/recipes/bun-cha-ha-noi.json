@@ -1,0 +1,168 @@
+{
+  "title": "Bún chả Hà Nội",
+  "originalTitle": "Bún chả Hà Nội",
+  "description": "Bún chả truyền thống chuẩn phong cách Hà Nội với chả miếng nạc vai mềm ngọt và chả viên băm dẻo thơm, nướng xém nâu cánh gián trên than hoa hoặc lò nướng, ăn cùng nước chấm pha ấm tỉ lệ vàng và dưa góp đu đủ su hào giòn rụm.",
+  "categoryName": "Món bún & phở",
+  "authorEmail": "chef.minhkhoi@culinaryblog.local",
+  "prepTimeMinutes": 40,
+  "cookTimeMinutes": 30,
+  "servings": 6,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/bun-cha-ha-noi/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Thịt nạc vai hoặc ba chỉ heo",
+      "quantity": 450.0,
+      "unit": "gram",
+      "notes": "Chọn miếng dắt mỡ, rửa sạch, thái lát mỏng làm chả miếng"
+    },
+    {
+      "name": "Thịt lợn xay (có chút mỡ)",
+      "quantity": 450.0,
+      "unit": "gram",
+      "notes": "Chọn phần thịt vai xay để làm chả viên không bị khô bã"
+    },
+    {
+      "name": "Đường cát trắng",
+      "quantity": 70.0,
+      "unit": "gram",
+      "notes": "Dùng để đun thắng nước hàng (nước màu)"
+    },
+    {
+      "name": "Nước nóng",
+      "quantity": 150.0,
+      "unit": "ml",
+      "notes": "Đổ vào chảo khi đường chuyển màu cánh gián đậm"
+    },
+    {
+      "name": "Hành khô (hành hương)",
+      "quantity": 50.0,
+      "unit": "gram (6-8 củ)",
+      "notes": "Bóc vỏ, băm nhuyễn vắt lấy nước cốt ướp thịt"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 15.0,
+      "unit": "gram (3-5 tép)",
+      "notes": "Bóc vỏ, băm thật nhuyễn"
+    },
+    {
+      "name": "Nước mắm ngon truyền thống",
+      "quantity": 45.0,
+      "unit": "ml (3 thìa canh)",
+      "notes": "Ướp thịt và pha nước chấm"
+    },
+    {
+      "name": "Dầu hào",
+      "quantity": 30.0,
+      "unit": "ml (2 thìa canh)",
+      "notes": "Gia vị ướp thịt tạo độ bóng mềm và đậm đà"
+    },
+    {
+      "name": "Hạt tiêu xay",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Ướp cả 2 loại thịt"
+    },
+    {
+      "name": "Rau củ dưa góp (su hào, cà rốt, đu đủ)",
+      "quantity": 400.0,
+      "unit": "gram",
+      "notes": "Gọt vỏ, tỉa hoa, thái lát mỏng"
+    },
+    {
+      "name": "Đường cát (ngâm dưa góp)",
+      "quantity": 25,
+      "unit": "g",
+      "notes": "Ngâm dưa góp giòn ngọt"
+    },
+    {
+      "name": "Nước cốt chanh (ngâm dưa góp)",
+      "quantity": 15,
+      "unit": "ml",
+      "notes": "Ngâm dưa góp giòn ngọt"
+    },
+    {
+      "name": "Muối tinh (ngâm dưa góp)",
+      "quantity": 0.75,
+      "unit": "tsp",
+      "notes": "Ngâm dưa góp giòn ngọt"
+    },
+    {
+      "name": "Đường cát (nước chấm)",
+      "quantity": 25,
+      "unit": "g",
+      "notes": "Pha nước chấm ấm dịu"
+    },
+    {
+      "name": "Nước cốt chanh (nước chấm)",
+      "quantity": 15,
+      "unit": "ml",
+      "notes": "Pha nước chấm ấm dịu"
+    },
+    {
+      "name": "Nước ấm (nước chấm)",
+      "quantity": 175,
+      "unit": "ml",
+      "notes": "Pha nước chấm ấm dịu"
+    },
+    {
+      "name": "Nước mắm (nước chấm)",
+      "quantity": 18,
+      "unit": "ml",
+      "notes": "Pha nước chấm ấm dịu"
+    },
+    {
+      "name": "Bún tươi",
+      "quantity": 1200.0,
+      "unit": "gram",
+      "notes": "Bún sợi nhỏ tươi ngon"
+    },
+    {
+      "name": "Rau sống tổng hợp",
+      "quantity": 1.0,
+      "unit": "rổ lớn",
+      "notes": "Xà lách, tía tô, kinh giới, rau mùi ta, húng láng"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Làm nước hàng (nước màu)",
+      "description": "Cho 70g đường và 2 thìa canh nước vào chảo nhỏ, đun lửa vừa cho đường tan chảy và chuyển dần từ màu vàng mật sang nâu cánh gián đậm. Nhanh tay trút 150ml nước sôi nóng vào chảo khuấy đều (cẩn thận hơi nước bắn), đun sôi nhẹ cho hòa tan hoàn toàn rồi để nguội.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Sơ chế và ướp thịt chả miếng và chả viên",
+      "description": "Thịt nạc vai thái lát mỏng vừa ăn để làm chả miếng. Phần thịt xay để riêng vào tô làm chả viên. Hành khô và tỏi băm nhuyễn (nên vắt lấy nước cốt hành tỏi ướp thịt để khi nướng không bị cháy xém cặn hành tỏi). Ướp từng phần thịt với nước mắm, dầu hào, đường, tiêu và nước hàng. Đảo đều, bọc kín để trong tủ lạnh tối thiểu 2 tiếng hoặc qua đêm. Trước khi nướng, nặn phần thịt xay thành các viên tròn dẹt vừa ăn.",
+      "durationMinutes": 120
+    },
+    {
+      "title": "Làm dưa góp ngâm giòn",
+      "description": "Su hào, cà rốt, đu đủ xanh thái lát mỏng, bóp nhẹ với chút muối tinh rồi xả nước lạnh vắt ráo. Trộn rau củ với 25g đường trước trong 15 phút để rút nước tạo độ giòn sần sật, sau đó mới cho 15ml nước cốt chanh (hoặc giấm) và 3/4 thìa cà phê muối vào trộn đều.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Nướng chả",
+      "description": "Nếu nướng than hoa: Kẹp thịt vào vỉ nướng, quạt than đều tay đến khi hai mặt chả xém vàng nâu óng ả và dậy mùi khói thơm nức. Nếu nướng lò / nồi chiên không dầu: Xếp chả lên khay có rãnh thoát mỡ, nướng ở 190°C - 200°C trong khoảng 15 phút, lật mặt giữa chừng cho chả chín vàng đều.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Pha nước chấm và dọn ăn",
+      "description": "Hòa tan 25g đường vào 175ml nước ấm, thêm 15ml nước cốt chanh và 18ml nước mắm theo tỉ lệ chuẩn. Nếm thử thấy vị chua ngọt mặn thanh dịu nhẹ. Khi ăn, múc nước chấm ấm ra bát, thả chả nướng nóng hổi, dưa góp và tỏi ớt băm vào. Ăn kèm đĩa bún tươi và rổ rau thơm các loại.",
+      "durationMinutes": 10
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2012/06/BunChaHanoi.jpg",
+      "altText": "Bún chả Hà Nội",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

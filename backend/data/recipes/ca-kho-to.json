@@ -1,0 +1,121 @@
+{
+  "title": "Cá kho tộ",
+  "originalTitle": "Cá kho tộ",
+  "description": "Cá kho tộ truyền thống với miếng cá săn chắc, đậm đà màu nâu cánh gián bóng bẩy, quyện cùng vị béo ngậy của thịt ba chỉ xém cạnh, mùi thơm của hành tỏi phi và vị cay the nồng ấm của tiêu ớt.",
+  "categoryName": "Món kho đậm đà",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 25,
+  "cookTimeMinutes": 45,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/ca-kho/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Cá tươi (cá basa, cá lóc hoặc cá thu)",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Cắt khúc dày 2.5 - 3cm, rửa sạch, thấm thật khô ráo"
+    },
+    {
+      "name": "Thịt ba chỉ heo",
+      "quantity": 200.0,
+      "unit": "gram",
+      "notes": "Thái miếng mỏng vừa ăn"
+    },
+    {
+      "name": "Muối tinh",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Dùng ướp cá ban đầu giúp cơ thịt cá săn chắc, rút nước và khử tanh"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 4.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3.0,
+      "unit": "tép",
+      "notes": "Bóc vỏ, băm nhuyễn"
+    },
+    {
+      "name": "Ớt hiểm đỏ",
+      "quantity": 3.0,
+      "unit": "trái",
+      "notes": "Để nguyên quả hoặc cắt lát chéo"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 60.0,
+      "unit": "ml (4 thìa canh)",
+      "notes": "Phi hành tỏi và xào ba chỉ"
+    },
+    {
+      "name": "Nước hàng (nước màu chưng)",
+      "quantity": 45.0,
+      "unit": "ml (3 thìa canh)",
+      "notes": "Tạo màu nâu cánh gián óng ả"
+    },
+    {
+      "name": "Nước mắm ngon truyền thống",
+      "quantity": 50.0,
+      "unit": "ml (3.5 thìa canh)",
+      "notes": "Gia vị kho chính tạo vị mặn sâu thơm ngon"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 15.0,
+      "unit": "gram (1 thìa canh)",
+      "notes": "Cân bằng vị mặn ngọt"
+    },
+    {
+      "name": "Hạt tiêu xay (hoặc tiêu hạt đập dập)",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Tạo mùi thơm nồng"
+    },
+    {
+      "name": "Nước sôi",
+      "quantity": 150.0,
+      "unit": "ml",
+      "notes": "Châm vào nồi khi kho"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp cá săn thịt với muối",
+      "description": "Khúc cá rửa sạch, có thể rửa qua chút rượu trắng pha gừng đập dập để khử sạch tanh. Thấm thật khô nước trên mình cá. Ướp khúc cá với 1 thìa cà phê muối tinh trong 20 phút trước khi nấu. Muối giúp rút bớt dịch tanh và làm từng thớ cơ của cá săn chắc lại, khi kho lâu không bị vỡ nát.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Phi thơm hành tỏi và xào thịt ba chỉ",
+      "description": "Đun nóng 4 thìa canh dầu ăn trong chảo hoặc nồi kho. Cho một nửa lượng hành tỏi băm vào phi vàng giòn, sau đó vớt riêng phần hành tỏi phi này ra bát nhỏ để riêng. Cho thịt ba chỉ vào chính chảo dầu đó đảo đều trên lửa vừa cho thịt tiết bớt mỡ và xém cạnh vàng nhẹ rồi tắt bếp.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Xếp nguyên liệu vào tộ và ướp gia vị",
+      "description": "Dùng tộ hoặc nồi đất (nếu có). Xếp lớp thịt ba chỉ xuống đáy nồi (vừa chống dính cháy đáy, vừa giúp mỡ thấm đều vào cá). Xếp các khúc cá lên trên lớp thịt ba chỉ. Rải ớt hiểm, phần hành tỏi băm sống còn lại lên mặt cá. Rưới nước hàng, nước mắm ngon, đường cát và hạt tiêu vào nồi. Để nguyên 15 phút cho cá ngấm sâu gia vị trước khi bật lửa.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Kho cá liu riu sánh sệt keo cánh gián",
+      "description": "Bắc tộ cá lên bếp, đun lửa vừa cho sôi bùng lên trong 5 phút. Đổ 150ml nước sôi nóng vào sâm sấp mặt cá. Hạ nhỏ lửa liu riu, mở hé vung nồi kho trong khoảng 40 đến 45 phút cho nước kho cạn sánh lại, keo sệt và bám đều một lớp màu nâu cánh gián bóng bẩy lên từng khúc cá. Trước khi tắt bếp, rắc phần hành tỏi phi vàng ở bước 2 và tiêu xay lên trên mặt. Ăn nóng kèm cơm trắng và đĩa rau luộc chấm nước kho.",
+      "durationMinutes": 45
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2012/10/CaKhoTo.jpg",
+      "altText": "Cá kho tộ",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

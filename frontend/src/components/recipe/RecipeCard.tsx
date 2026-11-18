@@ -46,6 +46,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
         className="relative block w-full pt-[62.5%] overflow-hidden bg-[var(--bg-surface-alt)]"
       >
         <Image
+          referrerPolicy="no-referrer"
           src={fallbackImage}
           alt={recipe.title}
           fill

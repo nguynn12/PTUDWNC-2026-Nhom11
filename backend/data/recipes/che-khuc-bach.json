@@ -1,0 +1,115 @@
+{
+  "title": "Chè khúc bạch",
+  "originalTitle": "Chè khúc bạch",
+  "description": "Món chè khúc bạch thanh mát giải nhiệt mùa hè với từng viên thạch sữa mềm dẻo béo ngậy từ kem tươi whipping cream và gelatin, chan cùng nước đường phèn lá dứa ngọt thanh dịu mát, quả nhãn giòn ngọt và hạnh nhân lát rang vàng giòn rụm.",
+  "categoryName": "Món tráng miệng",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 25,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/cach-lam-che-khuc-bach/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Sữa tươi không đường",
+      "quantity": 150.0,
+      "unit": "ml",
+      "notes": "Nguyên liệu làm thạch khúc bạch"
+    },
+    {
+      "name": "Kem tươi (Whipping cream 30-35% béo)",
+      "quantity": 150.0,
+      "unit": "ml",
+      "notes": "Tạo độ ngậy béo mềm mướt đặc trưng"
+    },
+    {
+      "name": "Đường cát trắng (cho vào thạch)",
+      "quantity": 40.0,
+      "unit": "gram",
+      "notes": "Độ ngọt thanh nhẹ cho thạch"
+    },
+    {
+      "name": "Bột gelatin (hoặc lá gelatin)",
+      "quantity": 10.0,
+      "unit": "gram",
+      "notes": "Chất tạo đông dẻo dai tự nhiên"
+    },
+    {
+      "name": "Chiết xuất vani",
+      "quantity": 0.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Tạo mùi thơm kem sữa"
+    },
+    {
+      "name": "Bột trà xanh Matcha (tùy chọn)",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Hòa chút nước ấm tạo màu xanh và vị matcha"
+    },
+    {
+      "name": "Đường phèn",
+      "quantity": 80.0,
+      "unit": "gram",
+      "notes": "Nấu nước đường tạo vị ngọt thanh tao không gắt"
+    },
+    {
+      "name": "Nước lọc (nấu nước đường)",
+      "quantity": 500.0,
+      "unit": "ml",
+      "notes": "Nước đường thanh mát"
+    },
+    {
+      "name": "Lá dứa (lá nếp)",
+      "quantity": 3.0,
+      "unit": "lá",
+      "notes": "Rửa sạch, bó lại thả vào nước đường"
+    },
+    {
+      "name": "Nhãn tươi hoặc vải thiều (bóc vỏ, bỏ hạt)",
+      "quantity": 20.0,
+      "unit": "quả",
+      "notes": "Tạo vị ngọt giòn tự nhiên"
+    },
+    {
+      "name": "Hạnh nhân lát",
+      "quantity": 30.0,
+      "unit": "gram",
+      "notes": "Rang nhỏ lửa đến khi vàng giòn thơm nức"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Nấu hỗn hợp thạch sữa khúc bạch",
+      "description": "Cho 10g bột gelatin vào chén nhỏ cùng 40ml nước lạnh ngâm trong 10 phút cho bột nở mềm hoàn toàn. Cho sữa tươi không đường, whipping cream và 40g đường vào nồi nhỏ, đun ở lửa nhỏ khuấy nhẹ cho tan đường đến khi hỗn hợp ấm khoảng 60°C (tuyệt đối không đun sôi làm tách béo). Trút chén gelatin đã nở vào nồi sữa ấm, khuấy đều tay cho gelatin tan hoàn toàn. Thêm 1/2 thìa cà phê vani. Nếu muốn làm thạch hai màu: chia một nửa hỗn hợp sữa ra bát, hòa tan 1 thìa cà phê bột trà xanh với 1 thìa nước ấm rồi đổ vào khuấy đều lọc qua rây.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Đổ khuôn và làm đông thạch",
+      "description": "Đổ hỗn hợp thạch sữa trắng và thạch trà xanh vào 2 hộp thủy tinh hoặc khuôn chữ nhật nông lòng. Hớt bỏ các bọt khí li ti trên mặt để bề mặt thạch láng mịn. Để nguội hẳn ở nhiệt độ phòng rồi đậy nắp cất vào ngăn mát tủ lạnh tối thiểu 4-5 tiếng cho thạch đông cứng hoàn toàn và đạt độ dẻo dai đàn hồi.",
+      "durationMinutes": 240
+    },
+    {
+      "title": "Nấu nước đường phèn lá dứa thanh mát",
+      "description": "Cho 500ml nước lọc, 80g đường phèn và bó lá dứa vào nồi, đun sôi ở lửa vừa cho đường phèn tan hết và nước dậy mùi thơm ngát của lá dứa. Thả cùi nhãn (hoặc vải) đã bóc vỏ bỏ hạt vào nồi nước đường, đun sôi lăn tăn trở lại trong 1 phút rồi tắt bếp ngay để nhãn giữ được độ giòn. Để nồi nước đường nguội hẳn rồi cho vào ngăn mát tủ lạnh làm mát.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Rang hạnh nhân và hoàn thành bát chè",
+      "description": "Cho hạnh nhân lát vào chảo khô, rang trên lửa nhỏ đảo đều tay đến khi các lát hạnh nhân chuyển màu vàng rơm giòn rụm và thơm nức thì trút ra đĩa để nguội. Lấy khuôn thạch khúc bạch ra khỏi tủ lạnh, dùng dao gợn sóng cắt thạch thành các khối vuông quân cờ nhỏ vừa ăn (khoảng 2x2cm). Múc các viên thạch khúc bạch trắng và xanh vào bát, múc quả nhãn và chan nước đường phèn lá dứa mát lạnh lên trên. Rắc nhiều hạnh nhân lát giòn rụm lên mặt bát chè. Thêm vài viên đá lạnh và thưởng thức.",
+      "durationMinutes": 10
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2016/04/cách-làm-chè-khúc-bạch-banner.jpg",
+      "altText": "Chè khúc bạch",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}
