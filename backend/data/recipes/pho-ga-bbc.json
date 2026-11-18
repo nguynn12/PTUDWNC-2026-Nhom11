@@ -19,7 +19,8 @@
     "protein": 31.0,
     "carbohydrates": 68.0,
     "fat": 4.0,
-    "fiber": 5.0
+    "fiber": 5.0,
+    "sodium": 1133.0
   },
   "ingredients": [
     {

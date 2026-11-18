@@ -18,21 +18,77 @@
     "calories": 169.9,
     "protein": 13.9,
     "fiber": 1.7,
-    "sodium": 565.3
+    "sodium": 565.3,
+    "carbohydrates": 7.8,
+    "fat": 9.2
   },
   "ingredients": [
-    { "name": "Sườn non", "quantity": 300, "unit": "g", "notes": "Chặt miếng khoảng 3 cm, ướp trước khi nấu" },
-    { "name": "Hạt sen tươi", "quantity": 100, "unit": "g" },
-    { "name": "Bắp non", "quantity": 50, "unit": "g", "notes": "Cắt miếng vừa ăn" },
-    { "name": "Bông cải xanh", "quantity": 100, "unit": "g", "notes": "Cho vào gần cuối để giữ độ giòn" },
-    { "name": "Cà rốt", "quantity": 50, "unit": "g", "notes": "Cắt hoặc tỉa tùy ý" },
-    { "name": "Nấm hương", "quantity": 5, "unit": "tai", "notes": "Ngâm cho mềm rồi cắt đôi" },
-    { "name": "Hạt nêm vị heo", "quantity": 1, "unit": "muỗng cà phê", "notes": "Dùng để ướp sườn" },
-    { "name": "Hạt nêm vị heo", "quantity": 1, "unit": "muỗng canh", "notes": "Dùng để nêm nước canh" },
-    { "name": "Nước", "quantity": 1.5, "unit": "lít" },
-    { "name": "Nước mắm", "quantity": 0.5, "unit": "muỗng canh", "notes": "Nêm sau khi tắt bếp" },
-    { "name": "Tiêu", "notes": "Dùng để ướp sườn và rắc khi dùng; lượng tùy khẩu vị" },
-    { "name": "Hành lá, ngò rí", "notes": "Cắt nhỏ để trang trí; lượng tùy ý" }
+    {
+      "name": "Sườn non",
+      "quantity": 300,
+      "unit": "g",
+      "notes": "Chặt miếng khoảng 3 cm, ướp trước khi nấu"
+    },
+    {
+      "name": "Hạt sen tươi",
+      "quantity": 100,
+      "unit": "g"
+    },
+    {
+      "name": "Bắp non",
+      "quantity": 50,
+      "unit": "g",
+      "notes": "Cắt miếng vừa ăn"
+    },
+    {
+      "name": "Bông cải xanh",
+      "quantity": 100,
+      "unit": "g",
+      "notes": "Cho vào gần cuối để giữ độ giòn"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 50,
+      "unit": "g",
+      "notes": "Cắt hoặc tỉa tùy ý"
+    },
+    {
+      "name": "Nấm hương",
+      "quantity": 5,
+      "unit": "tai",
+      "notes": "Ngâm cho mềm rồi cắt đôi"
+    },
+    {
+      "name": "Hạt nêm vị heo",
+      "quantity": 1,
+      "unit": "muỗng cà phê",
+      "notes": "Dùng để ướp sườn"
+    },
+    {
+      "name": "Hạt nêm vị heo",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Dùng để nêm nước canh"
+    },
+    {
+      "name": "Nước",
+      "quantity": 1.5,
+      "unit": "lít"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 0.5,
+      "unit": "muỗng canh",
+      "notes": "Nêm sau khi tắt bếp"
+    },
+    {
+      "name": "Tiêu",
+      "notes": "Dùng để ướp sườn và rắc khi dùng; lượng tùy khẩu vị"
+    },
+    {
+      "name": "Hành lá, ngò rí",
+      "notes": "Cắt nhỏ để trang trí; lượng tùy ý"
+    }
   ],
   "steps": [
     {

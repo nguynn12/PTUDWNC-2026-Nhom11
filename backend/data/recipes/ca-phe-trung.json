@@ -18,7 +18,9 @@
     "calories": 187.0,
     "protein": 6.0,
     "carbohydrates": 21.0,
-    "fat": 9.0
+    "fat": 9.0,
+    "fiber": 0.1,
+    "sodium": 59.0
   },
   "ingredients": [
     {
