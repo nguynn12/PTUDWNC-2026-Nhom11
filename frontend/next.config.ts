@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const backendUrl = process.env.BACKEND_API_URL || "http://localhost:5000";
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   reactStrictMode: true,
   turbopack: {
     root: process.cwd(),

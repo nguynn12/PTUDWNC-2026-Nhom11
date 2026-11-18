@@ -32,7 +32,7 @@ export function Providers({ children }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       {children}
       <AuthToastHost />
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+      {/* <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" /> */}
     </QueryClientProvider>
   );
 }
