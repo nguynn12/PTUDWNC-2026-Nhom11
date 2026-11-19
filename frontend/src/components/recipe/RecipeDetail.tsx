@@ -152,10 +152,10 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
     nutrition: recipe.nutrition
       ? {
           "@type": "NutritionInformation",
-          calories: recipe.nutrition.calories ? `${recipe.nutrition.calories} calories` : undefined,
-          fatContent: recipe.nutrition.fatGrams ? `${recipe.nutrition.fatGrams} g` : undefined,
-          carbohydrateContent: recipe.nutrition.carbsGrams ? `${recipe.nutrition.carbsGrams} g` : undefined,
-          proteinContent: recipe.nutrition.proteinGrams ? `${recipe.nutrition.proteinGrams} g` : undefined,
+          calories: recipe.nutrition.calories != null ? `${recipe.nutrition.calories} calories` : undefined,
+          fatContent: recipe.nutrition.fatGrams != null ? `${recipe.nutrition.fatGrams} g` : undefined,
+          carbohydrateContent: recipe.nutrition.carbsGrams != null ? `${recipe.nutrition.carbsGrams} g` : undefined,
+          proteinContent: recipe.nutrition.proteinGrams != null ? `${recipe.nutrition.proteinGrams} g` : undefined,
         }
       : undefined,
   };
@@ -352,13 +352,13 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
           </div>
         </div>
 
-        {Boolean(recipe.nutrition?.calories) && (
+        {recipe.nutrition?.calories != null && (
           <div className="col-span-2 sm:col-span-4 lg:col-span-1 text-center p-2 rounded-xl bg-[var(--secondary-light)]/60">
             <div className="text-xs text-[var(--secondary)] uppercase tracking-wider font-bold">
               Năng lượng
             </div>
             <div className="text-lg sm:text-xl font-bold text-[var(--secondary)] mt-1">
-              {recipe.nutrition?.calories} kcal
+              {recipe.nutrition.calories} kcal
             </div>
           </div>
         )}

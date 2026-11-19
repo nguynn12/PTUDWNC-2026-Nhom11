@@ -90,6 +90,13 @@ public sealed class PublishRecipeCommandHandler(
             };
         }
 
+        if (recipe.Status != RecipeStatus.Draft)
+        {
+            throw new BusinessRuleValidationException(
+                "Chỉ có thể xuất bản bản nháp. Nếu công thức đang lưu trữ, hãy bỏ lưu trữ trước.",
+                "RECIPE_INVALID_STATUS_TRANSITION");
+        }
+
         // Kiểm tra điều kiện xuất bản theo RESOLVED-CONFLICTS C5: >= 1 nguyên liệu và >= 1 bước thực hiện
         var ingredientsCount = await dbContext.RecipeIngredients
             .CountAsync(i => i.RecipeId == recipe.Id, cancellationToken);

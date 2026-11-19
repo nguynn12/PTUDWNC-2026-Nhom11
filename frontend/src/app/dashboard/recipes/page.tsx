@@ -17,6 +17,7 @@ import {
   FolderUp,
 } from 'lucide-react';
 import { RecipeApi, ApiError } from '@/lib/api-client';
+import { RecipeStatus, toStatusNumber } from '@/lib/enums';
 import { RecipeSummaryDto } from '@/lib/types';
 import { useToast } from '@/components/common/Toast';
 import { ConflictDialog } from '@/components/common/ConflictDialog';
@@ -391,6 +392,7 @@ export default function MyRecipesLifecyclePage() {
               ) : (
                 recipes.map((recipe) => {
                   const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
+                  const isPublished = toStatusNumber(recipe.status) === RecipeStatus.Published;
                   const isBusy = actionInProgress === recipe.id;
 
                   return (
@@ -398,7 +400,7 @@ export default function MyRecipesLifecyclePage() {
                       <TableCell>
                         <div className="space-y-1">
                           <Link
-                            href={`/recipes/${recipe.slug}`}
+                            href={isPublished ? `/recipes/${recipe.slug}` : `/dashboard/recipes/${recipe.id}/edit`}
                             className="font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 group"
                           >
                             <span>{recipe.title}</span>

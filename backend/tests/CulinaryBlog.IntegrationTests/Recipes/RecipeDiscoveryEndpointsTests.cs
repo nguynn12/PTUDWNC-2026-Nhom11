@@ -104,6 +104,10 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
         await Mutate(HttpMethod.Patch, path + "/publish", expected: 422);
         await Mutate(HttpMethod.Post, path + "/ingredients", new { name = "Gạo", quantity = 200, unit = "g", orderIndex = 1 }, expected: 201);
         await Mutate(HttpMethod.Post, path + "/steps", new { stepNumber = 1, title = "Nấu cơm", description = "Vo gạo sạch và nấu chín mềm với lượng nước phù hợp." }, expected: 201);
+        using var otherAuthorPublish = new HttpRequestMessage(HttpMethod.Patch, path + "/publish");
+        otherAuthorPublish.Headers.TryAddWithoutValidation("If-Match", "\"1\"");
+        using var forbiddenPublish = await author.SendAsync(otherAuthorPublish);
+        Assert.Equal(HttpStatusCode.Forbidden, forbiddenPublish.StatusCode);
         Assert.Equal(1, (await Mutate(HttpMethod.Patch, path + "/publish")).GetProperty("status").GetInt32());
         using var oldSlugRedirect = await guest.GetAsync($"/api/v1/recipes/{oldSlug}");
         Assert.Equal(HttpStatusCode.MovedPermanently, oldSlugRedirect.StatusCode);
@@ -111,7 +115,14 @@ public class RecipeDiscoveryEndpointsTests : IClassFixture<CustomWebApplicationF
         Assert.Equal(0, (await Mutate(HttpMethod.Patch, path + "/unpublish")).GetProperty("status").GetInt32());
         Assert.Equal(0, (await Mutate(HttpMethod.Patch, path + "/unpublish")).GetProperty("status").GetInt32());
         Assert.Equal(2, (await Mutate(HttpMethod.Patch, path + "/archive")).GetProperty("status").GetInt32());
+        using var archivedPublish = new HttpRequestMessage(HttpMethod.Patch, path + "/publish");
+        archivedPublish.Headers.TryAddWithoutValidation("If-Match", "\"1\"");
+        using var rejected = await admin.SendAsync(archivedPublish);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, rejected.StatusCode);
+        using var rejectedJson = JsonDocument.Parse(await rejected.Content.ReadAsStringAsync());
+        Assert.Equal("RECIPE_INVALID_STATUS_TRANSITION", rejectedJson.RootElement.GetProperty("type").GetString());
         Assert.Equal(0, (await Mutate(HttpMethod.Patch, path + "/unarchive")).GetProperty("status").GetInt32());
+        Assert.Equal(1, (await Mutate(HttpMethod.Patch, path + "/publish")).GetProperty("status").GetInt32());
         await Mutate(HttpMethod.Delete, path, expected: 204);
         using var trash = await admin.GetAsync("/api/v1/admin/recipes/trash");
         Assert.Equal(HttpStatusCode.OK, trash.StatusCode);

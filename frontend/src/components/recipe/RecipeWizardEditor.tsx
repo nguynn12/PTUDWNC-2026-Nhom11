@@ -50,6 +50,21 @@ interface RecipeWizardEditorProps {
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB theo SRS Mục 8.3
+const MAX_NUTRITION_VALUE = 999999.99;
+const NUTRITION_FIELDS = [
+  { key: 'calories', label: 'Calo (kcal)' },
+  { key: 'protein', label: 'Chất đạm (g)' },
+  { key: 'fat', label: 'Chất béo (g)' },
+  { key: 'carbohydrates', label: 'Tinh bột (g)' },
+  { key: 'fiber', label: 'Chất xơ (g)' },
+  { key: 'sodium', label: 'Natri (mg)' },
+] as const;
+
+type EditableNutrition = Pick<RecipeNutritionDto, (typeof NUTRITION_FIELDS)[number]['key']>;
+
+function hasNutritionValues(nutrition: EditableNutrition) {
+  return NUTRITION_FIELDS.some(({ key }) => nutrition[key] != null);
+}
 
 const COMMON_UNITS = [
   'g',
@@ -100,6 +115,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     return result;
   }
   const [recipeStatus, setRecipeStatus] = useState<RecipeStatusValue>(RecipeStatus.Draft);
+  const canPublish = recipeStatus !== RecipeStatus.Archived;
 
   // Danh mục (Categories)
   const [categories, setCategories] = useState<CategoryOptionDto[]>([]);
@@ -114,14 +130,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const [cookTimeMinutes, setCookTimeMinutes] = useState<number>(30);
   const [servings, setServings] = useState<number>(4);
   const [hasNutrition, setHasNutrition] = useState<boolean>(false);
-  const [nutrition, setNutrition] = useState<RecipeNutritionDto>({
-    calories: 450,
-    protein: 25,
-    fat: 15,
-    carbohydrates: 50,
-    fiber: 4,
-    sodium: 600,
-  });
+  const [nutrition, setNutrition] = useState<EditableNutrition>({});
   const [savingStep1, setSavingStep1] = useState(false);
   const [step1Errors, setStep1Errors] = useState<Record<string, string>>({});
 
@@ -196,12 +205,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         updateXmin(detail.concurrencyToken ?? detail.xmin ?? null);
         setRecipeStatus(toStatusNumber(detail.status));
 
-        if (detail.nutrition) {
-          setHasNutrition(true);
-          setNutrition(detail.nutrition);
-        } else {
-          setHasNutrition(false);
-        }
+        const values = detail.nutrition;
+        const loadedNutrition = {
+          calories: values?.calories,
+          protein: values?.protein ?? values?.proteinGrams,
+          fat: values?.fat ?? values?.fatGrams,
+          carbohydrates: values?.carbohydrates ?? values?.carbsGrams,
+          fiber: values?.fiber ?? values?.fiberGrams,
+          sodium: values?.sodium ?? values?.sodiumMilligrams,
+        };
+        setNutrition(loadedNutrition);
+        setHasNutrition(hasNutritionValues(loadedNutrition));
 
         const loadedIngs = detail.ingredients || [];
         setIngredients(loadedIngs);
@@ -286,6 +300,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     if (servings < 1 || servings > 100) {
       errs.servings = 'Khẩu phần phục vụ phải từ 1 đến 100 người.';
     }
+    if (hasNutrition && NUTRITION_FIELDS.some(({ key }) => {
+      const value = nutrition[key];
+      return value != null && (!Number.isFinite(value) || value < 0 || value > MAX_NUTRITION_VALUE);
+    })) {
+      errs.nutrition = 'Chỉ số dinh dưỡng phải từ 0 đến 999.999,99. Có thể để trống ô chưa có số liệu.';
+    }
     setStep1Errors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -306,7 +326,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         cookTimeMinutes: Number(cookTimeMinutes),
         servings: Number(servings),
         difficulty,
-        nutrition: hasNutrition ? nutrition : null,
+        nutrition: hasNutrition && hasNutritionValues(nutrition) ? nutrition : null,
       };
 
       if (!recipeId) {
@@ -329,6 +349,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         );
       }
 
+      if (!hasNutrition) {
+        setNutrition({});
+      }
       if (goNextStep) {
         setActiveStep(2);
       }
@@ -768,7 +791,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
   // Xuất bản ngay từ Bước 4
   const handlePublishNow = async () => {
-    if (!recipeId) return;
+    if (!recipeId || !canPublish) return;
     if (ingredients.length === 0 || steps.length === 0) {
       showWarning(
         'Chưa đủ điều kiện xuất bản',
@@ -837,7 +860,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         </div>
 
         <div className="header-actions">
-          {recipeId && (
+          {recipeId && canPublish && (
             <button
               type="button"
               className="btn btn-primary btn-sm"
@@ -1114,7 +1137,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               </div>
 
               {/* Bảng thông tin Dinh dưỡng tùy chọn (RecipeNutrition) */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4">
+              <fieldset disabled={savingStep1} className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-[var(--text-primary)]">
                     <input
@@ -1132,86 +1155,34 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
                 {hasNutrition && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Calo (kcal)</label>
-                      <Input
-                        type="number"
-                        min={0}
-                        value={nutrition.calories ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, calories: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất đạm (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.protein ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, protein: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất béo (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.fat ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, fat: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Tinh bột (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.carbohydrates ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, carbohydrates: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất xơ (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.fiber ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, fiber: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Natri (mg)</label>
-                      <Input
-                        type="number"
-                        step="1"
-                        min={0}
-                        value={nutrition.sodium ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, sodium: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
+                    {NUTRITION_FIELDS.map(({ key, label }) => (
+                      <label key={key} className="space-y-1 text-xs text-[var(--text-muted)] font-medium">
+                        <span>{label}</span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          max={MAX_NUTRITION_VALUE}
+                          value={nutrition[key] ?? ''}
+                          onChange={e => {
+                            const { value, valueAsNumber } = e.currentTarget;
+                            setNutrition(prev => ({ ...prev, [key]: value === '' ? null : valueAsNumber }));
+                          }}
+                          className="text-xs py-1"
+                        />
+                      </label>
+                    ))}
                   </div>
                 )}
-              </div>
+                {hasNutrition && step1Errors.nutrition && (
+                  <p role="alert" className="text-xs text-[var(--danger)]">{step1Errors.nutrition}</p>
+                )}
+                {!hasNutrition && hasNutritionValues(nutrition) && (
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Thông tin dinh dưỡng sẽ được xóa khi lưu. Bật lại để giữ các chỉ số đã nhập.
+                  </p>
+                )}
+              </fieldset>
 
               {/* Thanh điều hướng footer Bước 1 */}
               <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)] flex-wrap gap-3">
@@ -1987,15 +1958,19 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                   <Link href="/dashboard/recipes">
                     <Button variant="outline">Lưu Nháp & Về Danh sách</Button>
                   </Link>
-                  <Button
-                    type="button"
-                    variant="default"
-                    onClick={handlePublishNow}
-                    className="gap-2"
-                  >
-                    <CheckCircleIcon size={18} />
-                    <span>Hoàn tất & Xuất bản Công thức</span>
-                  </Button>
+                  {canPublish ? (
+                    <Button
+                      type="button"
+                      variant="default"
+                      onClick={handlePublishNow}
+                      className="gap-2"
+                    >
+                      <CheckCircleIcon size={18} />
+                      <span>Hoàn tất & Xuất bản Công thức</span>
+                    </Button>
+                  ) : (
+                    <span className="text-xs text-[var(--text-muted)]">Bỏ lưu trữ trong danh sách công thức trước khi xuất bản.</span>
+                  )}
                 </div>
               </div>
             </div>

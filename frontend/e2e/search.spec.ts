@@ -54,6 +54,59 @@ test.afterEach(async ({ page }) => {
   await page.unrouteAll({ behavior: 'wait' });
 });
 
+test.describe("Hồi quy kho công thức trước demo", () => {
+  test("giữ tổng kết quả API khi chuyển sang trang tiếp theo", async ({ page }) => {
+    const backend = process.env.PLAYWRIGHT_API_URL || "http://localhost:5000";
+    const response = await page.request.get(`${backend}/api/v1/recipes?pageSize=12`);
+    expect(response.ok()).toBeTruthy();
+    const { meta } = await response.json();
+    expect(meta.total).toBeGreaterThan(12);
+
+    await page.goto("/recipes?sortBy=title&sortOrder=asc");
+    const total = page.getByText(`Tìm thấy ${meta.total} công thức`, { exact: true });
+    await expect(total).toBeVisible();
+    const pagination = page.getByRole("navigation", { name: "Điều hướng phân trang" });
+    await pagination.getByRole("link", { name: "2", exact: true }).click();
+    await expect(page).toHaveURL(/\/recipes\?.*\bpage=2\b/);
+    const params = new URL(page.url()).searchParams;
+    expect(params.get("sortBy")).toBe("title");
+    expect(params.get("sortOrder")).toBe("asc");
+    await expect(pagination.locator('[aria-current="page"]')).toHaveText("2");
+    await expect(total).toBeVisible();
+  });
+
+  test("hiển thị tổng 0 và trạng thái rỗng khi API trả thành công", async ({ page }) => {
+    await page.goto("/recipes?categoryId=00000000-0000-0000-0000-ffffffffffff");
+    await expect(page.getByText("Tìm thấy 0 công thức", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Không tìm thấy công thức phù hợp" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Điều hướng phân trang" })).toHaveCount(0);
+  });
+
+  test("báo bộ lọc không hợp lệ và cho đặt lại", async ({ page }) => {
+    await page.goto("/recipes?categoryId=khong-hop-le");
+    await expect(page.getByRole("alert").getByRole("heading", { name: "Bộ lọc không hợp lệ" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Không tìm thấy công thức phù hợp" })).toHaveCount(0);
+    await page.getByRole("link", { name: "Đặt lại bộ lọc", exact: true }).click();
+    await expect(page).toHaveURL(/\/recipes$/);
+    await expect(page.getByRole("article").first()).toBeVisible();
+  });
+
+  test("báo mất kết nối backend và giữ tham số khi thử lại", async ({ page }) => {
+    const outageUrl = process.env.PLAYWRIGHT_OUTAGE_BASE_URL;
+    test.skip(!outageUrl, "Cần bản frontend kiểm thử trỏ vào backend không khả dụng.");
+    const url = new URL("/recipes?page=2&maxTotalTime=60", outageUrl).href;
+    await page.goto(url);
+    await expect(page.getByRole("alert").getByRole("heading", { name: "Không thể tải danh sách công thức" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Không tìm thấy công thức phù hợp" })).toHaveCount(0);
+    const retry = page.getByRole("link", { name: "Thử lại", exact: true });
+    const navigation = page.waitForRequest(request => request.isNavigationRequest() && request.url() === url);
+    await retry.click();
+    await navigation;
+    await expect(page).toHaveURL(url);
+    await expect(page.getByRole("alert")).toBeVisible();
+  });
+});
+
 test("Công thức dùng ảnh đúng nguồn và không hiện bảng dinh dưỡng khi chưa có số liệu", async ({ page }) => {
   await page.goto("/recipes/bo-sot-vang");
   await expect(page.getByRole("heading", { level: 1, name: "Bò sốt vang", exact: true })).toBeVisible();
@@ -162,6 +215,25 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
     expect(data.concurrencyToken).toBeGreaterThan(0);
     return { title, id: data.id as string };
   }
+
+  test("Hồi quy dashboard: tên bài Published mở trang công khai, bài riêng mở editor", async ({ page }) => {
+    // Cố định ba trạng thái trong phản hồi danh sách để kiểm tra liên kết mà không sửa dữ liệu demo.
+    const recipes = [
+      { id: "b0000000-0000-4000-8000-000000000001", title: "Món đã xuất bản", slug: "mon-da-xuat-ban", status: 1 },
+      { id: "b0000000-0000-4000-8000-000000000002", title: "Món đang nháp", slug: "mon-dang-nhap", status: 0 },
+      { id: "b0000000-0000-4000-8000-000000000003", title: "Món đã lưu trữ", slug: "mon-da-luu-tru", status: 2 },
+    ];
+    await page.route("**/api/v1/recipes?**", route => {
+      if (new URL(route.request().url()).searchParams.get("mine") !== "true") return route.fallback();
+      return route.fulfill({
+        json: { data: recipes, meta: { page: 1, pageSize: 10, total: recipes.length, totalPages: 1 } },
+      });
+    });
+    await page.goto("/dashboard/recipes");
+    await expect(page.getByRole("link", { name: recipes[0].title, exact: true })).toHaveAttribute("href", "/recipes/mon-da-xuat-ban");
+    await expect(page.getByRole("link", { name: recipes[1].title, exact: true })).toHaveAttribute("href", `/dashboard/recipes/${recipes[1].id}/edit`);
+    await expect(page.getByRole("link", { name: recipes[2].title, exact: true })).toHaveAttribute("href", `/dashboard/recipes/${recipes[2].id}/edit`);
+  });
 
   test("Tạo bản nháp, mở lại và lưu đúng danh mục cùng If-Match", async ({ page }) => {
     const { id, title } = await createDraft(page);
