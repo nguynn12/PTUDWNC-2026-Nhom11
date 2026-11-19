@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { toStatusNumber, toStatusLabel } from "../src/lib/enums";
 
 test("Trạng thái công thức thống nhất giữa enum số và chuỗi", () => {
@@ -229,7 +230,7 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
         json: { data: recipes, meta: { page: 1, pageSize: 10, total: recipes.length, totalPages: 1 } },
       });
     });
-    await page.goto("/dashboard/recipes");
+    await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
     await expect(page.getByRole("link", { name: recipes[0].title, exact: true })).toHaveAttribute("href", "/recipes/mon-da-xuat-ban");
     await expect(page.getByRole("link", { name: recipes[1].title, exact: true })).toHaveAttribute("href", `/dashboard/recipes/${recipes[1].id}/edit`);
     await expect(page.getByRole("link", { name: recipes[2].title, exact: true })).toHaveAttribute("href", `/dashboard/recipes/${recipes[2].id}/edit`);
@@ -237,9 +238,11 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
 
   test("Tạo bản nháp, mở lại và lưu đúng danh mục cùng If-Match", async ({ page }) => {
     const { id, title } = await createDraft(page);
+    await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
     const loaded = page.waitForResponse(response => response.url().endsWith(`/recipes/${id}`)
       && response.request().method() === "GET");
-    await page.goto(`/dashboard/recipes/${id}/edit`);
+    await page.getByRole("link", { name: title, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/dashboard/recipes/${id}/edit$`));
     expect((await loaded).status()).toBe(200);
     await expect(page.getByPlaceholder("Ví dụ: Phở Bò Truyền Thống Hà Nội Nước Trong...")).toHaveValue(title);
     await expect(page.locator("select").first()).toHaveValue(/[0-9a-f-]{36}/);
@@ -267,7 +270,7 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
       initialCompleted();
     });
     try {
-      await page.goto("/dashboard/recipes");
+      await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
       await initialRequest;
       await page.getByPlaceholder("Tìm theo tên công thức...").fill(`khong-co-mon-${Date.now()}`);
       await expect(page.getByRole("heading", { name: "Không tìm thấy công thức nào", exact: true })).toBeVisible();
@@ -306,14 +309,12 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
     await expect(retry).toBeEnabled();
     const uploaded = page.waitForResponse(response => response.url().includes(`/recipes/${id}/images`) && response.request().method() === 'POST');
     await retry.click();
-    expect((await uploaded).status()).toBe(201);
+    const completedUpload = await uploaded;
+    expect(completedUpload.status()).toBe(201);
+    const { authorization } = await completedUpload.request().allHeaders();
+    expect(authorization).toBeDefined();
     const backend = process.env.PLAYWRIGHT_API_URL || 'http://localhost:5000';
-    const login = await page.request.post(`${backend}/api/v1/auth/login`, {
-      data: { email: process.env.E2E_AUTHOR_EMAIL, password: process.env.E2E_AUTHOR_PASSWORD },
-    });
-    expect(login.status()).toBe(200);
-    const token = (await login.json()).data.accessToken;
-    const images = await page.request.get(`${backend}/api/v1/recipes/${id}/images`, { headers: { Authorization: `Bearer ${token}` } });
+    const images = await page.request.get(`${backend}/api/v1/recipes/${id}/images`, { headers: { authorization } });
     expect(images.status()).toBe(200);
     expect((await images.json()).data).toHaveLength(2);
     expect(uploads).toBe(3);
@@ -346,7 +347,10 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
     expect(response.status()).toBe(200);
     expect((await response.json()).data.status).toBe(1);
     expect(response.request().headers()["if-match"]).toMatch(/^"[1-9]\d*"$/);
-    await page.goto('/search?q=' + encodeURIComponent(title));
+    const search = page.getByRole("searchbox", { name: "Tìm món ăn, nguyên liệu...", exact: true });
+    await search.fill(title);
+    await search.press("Enter");
+    await expect(page).toHaveURL(url => url.pathname === "/search" && url.searchParams.get("q") === title);
     await expect(page.getByRole('link', { name: new RegExp(title) }).first()).toBeVisible();
   });
 });

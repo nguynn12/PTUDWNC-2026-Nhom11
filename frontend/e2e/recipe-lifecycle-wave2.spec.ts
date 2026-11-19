@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 const apiUrl = process.env.PLAYWRIGHT_API_URL;
 const authorEmail = process.env.E2E_AUTHOR_EMAIL;
