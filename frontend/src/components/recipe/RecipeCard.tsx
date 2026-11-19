@@ -43,6 +43,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
       {/* Khối Ảnh bìa công thức với tỷ lệ 16:10 */}
       <Link
         href={`/recipes/${recipe.slug}`}
+        prefetch={false}
         className="relative block w-full pt-[62.5%] overflow-hidden bg-[var(--bg-surface-alt)]"
       >
         <Image
@@ -106,6 +107,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
         <h3 className="text-lg font-bold leading-snug tracking-tight m-0">
           <Link
             href={`/recipes/${recipe.slug}`}
+            prefetch={false}
             className="line-clamp-2 text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors duration-200"
           >
             {recipe.title}
@@ -137,6 +139,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
 
           <Link
             href={`/recipes/${recipe.slug}`}
+            prefetch={false}
             className="inline-flex items-center text-xs font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] whitespace-nowrap transition-colors"
           >
             Xem cách làm

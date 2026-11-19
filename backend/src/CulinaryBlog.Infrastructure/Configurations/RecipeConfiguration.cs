@@ -135,7 +135,9 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             nutrition.Property(n => n.Source)
                 .HasConversion<short>()
                 .HasColumnName("Nutrition_Source")
-                .HasDefaultValue(NutritionSource.Manual)
+                // The owned value sets Manual explicitly, including when it is
+                // added to an existing recipe whose shared column is NULL.
+                .ValueGeneratedNever()
                 .IsRequired();
         });
 

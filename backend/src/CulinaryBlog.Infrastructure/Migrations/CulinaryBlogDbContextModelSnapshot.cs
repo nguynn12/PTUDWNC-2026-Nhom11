@@ -812,9 +812,7 @@ namespace CulinaryBlog.Infrastructure.Migrations
                                 .HasColumnName("Nutrition_Sodium");
 
                             b1.Property<short>("Source")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("smallint")
-                                .HasDefaultValue((short)0)
                                 .HasColumnName("Nutrition_Source");
 
                             b1.HasKey("RecipeId");
