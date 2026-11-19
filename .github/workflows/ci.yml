@@ -29,11 +29,22 @@ jobs:
       - name: Build solution
         run: dotnet build backend/CulinaryBlog.slnx --no-restore -c Release
 
-      # QA-03: thu coverage thật (coverlet.collector có sẵn trong 2 project test), không chỉ chạy test.
-      - name: Run Tests & Coverage
+      - name: Run Unit Tests & Coverage
         run: >
-          dotnet test backend/CulinaryBlog.slnx --no-build -c Release --verbosity normal
-          --collect:"XPlat Code Coverage" --results-directory ./coverage
+          dotnet test backend/tests/CulinaryBlog.UnitTests/CulinaryBlog.UnitTests.csproj
+          --no-build -c Release --verbosity normal
+          --collect:"XPlat Code Coverage" --results-directory ./coverage/unit
+
+      - name: Run Integration Tests & Coverage
+        run: >
+          dotnet test backend/tests/CulinaryBlog.IntegrationTests/CulinaryBlog.IntegrationTests.csproj
+          --no-build -c Release --verbosity normal
+          --collect:"XPlat Code Coverage" --results-directory ./coverage/integration
+
+      - name: Enforce NFR-MAINT-002 unit coverage
+        shell: bash
+        run: |
+          python3 backend/scripts/check_unit_coverage.py coverage/unit/*/coverage.cobertura.xml --minimum 80 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Coverage summary
         if: always()
@@ -48,6 +59,13 @@ jobs:
         with:
           name: backend-coverage
           path: coverage-report/
+
+      - name: Upload NFR-MAINT-002 unit coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage-nfr-maint-002
+          path: coverage/unit/*/coverage.cobertura.xml
 
       # Xuất báo cáo dependency để phát hiện advisory mới trong các lần build sau.
       - name: NuGet vulnerability report (informational)

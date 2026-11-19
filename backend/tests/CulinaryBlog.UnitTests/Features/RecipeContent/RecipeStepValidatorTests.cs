@@ -108,6 +108,55 @@ public class RecipeStepValidatorTests
     }
 
     [Fact]
+    public void ValidateCreate_TitleOverLimit_ReportsTitleError()
+    {
+        var request = new CreateRecipeStepRequest
+        {
+            Title = new string('B', 201),
+            Description = "Trộn các nguyên liệu trước khi nấu."
+        };
+
+        var error = Assert.Throws<ValidationException>(() => RecipeStepValidator.ValidateCreate(request));
+        Assert.Equal("Title", Assert.Single(error.Errors).Key);
+    }
+
+    [Fact]
+    public void ValidateUpdate_ReportsTitleDescriptionAndDurationErrorsTogether()
+    {
+        var request = new UpdateRecipeStepRequest
+        {
+            Title = new string('B', 201),
+            Description = new string('D', 2001),
+            DurationMinutes = -1
+        };
+
+        var error = Assert.Throws<ValidationException>(() => RecipeStepValidator.ValidateUpdate(request));
+        Assert.Equal(new[] { "Description", "DurationMinutes", "Title" }, error.Errors.Keys.Order());
+    }
+
+    [Fact]
+    public void ValidateUpdate_RejectsWhitespaceDescription()
+    {
+        var request = new UpdateRecipeStepRequest { Description = "  ", DurationMinutes = 0 };
+
+        var error = Assert.Throws<ValidationException>(() => RecipeStepValidator.ValidateUpdate(request));
+        Assert.Equal("Description", Assert.Single(error.Errors).Key);
+    }
+
+    [Fact]
+    public void ValidateUpdate_AcceptsLengthLimitsAndZeroDuration()
+    {
+        var request = new UpdateRecipeStepRequest
+        {
+            Title = new string('B', 200),
+            Description = new string('D', 2000),
+            DurationMinutes = 0
+        };
+
+        Assert.Null(Record.Exception(() => RecipeStepValidator.ValidateUpdate(request)));
+    }
+
+    [Fact]
     public void ValidateReorder_EmptyStepIds_ShouldThrowBadRequestException()
     {
         // Arrange
