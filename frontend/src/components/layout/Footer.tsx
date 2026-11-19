@@ -73,18 +73,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/categories/mon-chinh"
+                  href="/categories/mon-ham-ca-ri"
                   className="hover:text-primary transition-colors inline-block"
                 >
-                  Món chính gia đình
+                  Món hầm & Cà ri
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/categories/an-chay-thuc-duong"
+                  href="/categories/mon-chay"
                   className="hover:text-primary transition-colors inline-block"
                 >
-                  Ăn chay & thực dưỡng thanh tịnh
+                  Món chay
                 </Link>
               </li>
             </ul>

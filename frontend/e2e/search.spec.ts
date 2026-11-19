@@ -25,7 +25,6 @@ test("Khách xem công thức đã xuất bản không bị gắn nhãn lưu tr�
   await expect(page.getByRole('heading', { level: 1, name: 'Thịt xiên nướng', exact: true })).toBeVisible();
   await expect(page.getByText(/Công thức đang ở trạng thái/)).toHaveCount(0);
   await expect(page.getByText('Lưu trữ', { exact: true })).toHaveCount(0);
-  await expect(page.getByText('Công thức này chưa được bổ sung số liệu dinh dưỡng.', { exact: true })).toBeVisible();
 });
 
 test("Khách xem ảnh gà nướng sả và đủ trường dinh dưỡng đã nhập", async ({ page }) => {
@@ -108,10 +107,11 @@ test.describe("Hồi quy kho công thức trước demo", () => {
   });
 });
 
-test("Công thức dùng ảnh đúng nguồn và không hiện bảng dinh dưỡng khi chưa có số liệu", async ({ page }) => {
+test("Bò sốt vang hiển thị ảnh gốc, dinh dưỡng và xuất hiện trong danh mục mới", async ({ page }) => {
   await page.goto("/recipes/bo-sot-vang");
   await expect(page.getByRole("heading", { level: 1, name: "Bò sốt vang", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Giá trị dinh dưỡng \(mỗi khẩu phần\)/ })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Giá trị dinh dưỡng \(mỗi khẩu phần\)/ })).toBeVisible();
+  await expect(page.getByText("620 mg", { exact: true })).toBeVisible();
   const image = page.getByRole("img", { name: "Bò sốt vang", exact: true }).first();
   await expect(image)
     .toHaveAttribute("src", "https://www.savourydays.com/wp-content/uploads/2011/09/bo-sot-vang1.jpg");
@@ -127,6 +127,11 @@ test("Công thức dùng ảnh đúng nguồn và không hiện bảng dinh dư�
     expect.objectContaining({ name: "Nước cốt chanh (ngâm dưa góp)", quantity: 15, unit: "ml" }),
     expect.objectContaining({ name: "Muối tinh (ngâm dưa góp)", quantity: 0.75, unit: "tsp" }),
   ]));
+
+  await page.getByRole("contentinfo").getByRole("link", { name: "Món hầm & Cà ri", exact: true }).click();
+  await expect(page).toHaveURL(/\/categories\/mon-ham-ca-ri$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Món hầm & Cà ri", exact: true })).toBeVisible();
+  await expect(page.locator('a[href="/recipes/bo-sot-vang"]').first()).toBeVisible();
 });
 
 test.describe("Luồng tìm kiếm món ăn E2E (FR-SRCH-001 -> FR-SRCH-004)", () => {
@@ -351,7 +356,11 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
     await search.fill(title);
     await search.press("Enter");
     await expect(page).toHaveURL(url => url.pathname === "/search" && url.searchParams.get("q") === title);
-    await expect(page.getByRole('link', { name: new RegExp(title) }).first()).toBeVisible();
+    const result = page.getByRole('link', { name: new RegExp(title) }).first();
+    await expect(result).toBeVisible();
+    await result.click();
+    await expect(page.getByRole('heading', { level: 1, name: title, exact: true })).toBeVisible();
+    await expect(page.getByText('Công thức này chưa được bổ sung số liệu dinh dưỡng.', { exact: true })).toBeVisible();
   });
 });
 
