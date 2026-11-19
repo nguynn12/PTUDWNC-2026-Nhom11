@@ -1,8 +1,8 @@
 {
   "title": "Gà kho gừng",
   "originalTitle": "Vietnamese Caramel Ginger Chicken",
-  "description": "Đùi gà không da kho với nước màu caramel, gừng sợi và hành khô cho đến khi nước sốt đặc lại thành lớp bóng. Món đưa cơm, làm một chảo.",
-  "categoryName": "Món kho đậm đà",
+  "description": "Món kho kinh điển đưa cơm số một trong mâm cơm gia đình người Việt, đặc biệt vào những ngày se lạnh hay mưa rào. Từng miếng thịt gà đùi vàng óng ánh màu caramel cánh gián bắt mắt, vị mặn ngọt đậm đà thấm sâu vào từng thớ thịt mềm ngọt, hòa quyện vị cay ấm nồng nàn của gừng tươi thái sợi và mùi hành củ phi thơm lừng.",
+  "categoryName": "Món kho",
   "authorEmail": "chef.thuha@culinaryblog.local",
   "prepTimeMinutes": 7,
   "cookTimeMinutes": 15,
@@ -83,29 +83,34 @@
   ],
   "steps": [
     {
-      "title": "Ướp gà",
-      "description": "Trộn gà với nước mắm và ớt, để riêng trong lúc chuẩn bị các nguyên liệu khác."
+      "stepNumber": 1,
+      "title": "Sơ chế và ướp thịt gà",
+      "durationMinutes": 15,
+      "description": "Thịt đùi gà rút xương hoặc chặt miếng vừa ăn, rửa sạch với nước muối loãng. Ướp gà với 2 muỗng canh nước mắm ngon, 1 thìa hạt nêm, tiêu xay và một nửa phần gừng thái sợi trong 15 phút cho ngấm đều gia vị."
     },
     {
-      "title": "Chọn chảo",
-      "description": "Dùng chảo chống dính lớn (khoảng 30 cm) để nước sốt cạn nhanh hơn."
+      "stepNumber": 2,
+      "title": "Thắng nước màu caramel cánh gián",
+      "durationMinutes": 3,
+      "description": "Đặt chảo sâu lòng lên bếp, cho 1 muỗng canh dầu ăn và 1.5 muỗng canh đường nâu vào. Đun ở lửa vừa, không khuấy, để đường tự tan chảy và chuyển sang màu cánh gián hổ phách đậm đẹp mắt và sủi bọt lăn tăn."
     },
     {
-      "title": "Làm caramel",
-      "description": "Trộn dầu và đường trong chảo nguội rồi bật lửa vừa lớn. Khi đường vừa chảy, tắt bếp, cẩn thận cho gà, gừng và hành vào đảo nhanh."
+      "stepNumber": 3,
+      "title": "Xào săn thịt gà lên màu óng ả",
+      "durationMinutes": 5,
+      "description": "Nhanh tay trút hành tím băm và phần gừng thái sợi còn lại vào đảo nhanh 10 giây cho dậy mùi thơm nức. Trút toàn bộ đĩa thịt gà đã ướp vào, tăng lửa lớn và đảo đều tay liên tục trong 4-5 phút cho từng miếng gà săn chắc, áo đều lớp caramel bóng bẩy."
     },
     {
-      "title": "Áp chảo mặt ngoài",
-      "description": "Đặt chảo lại lên bếp, đảo cho đến khi gà chuyển từ hồng sang trắng, chưa vàng và chưa chín hẳn."
+      "stepNumber": 4,
+      "title": "Kho gà liu riu sánh sốt đậm đà",
+      "durationMinutes": 10,
+      "description": "Đổ khoảng 100ml nước nóng (hoặc nước dừa tươi) vào chảo, đun sôi bùng rồi hạ lửa vừa liu riu. Nấu không đậy nắp trong 10-12 phút để nước kho cạn dần, keo lại thành lớp sốt sền sệt cánh gián bám chặt quanh từng miếng gà."
     },
     {
-      "title": "Kho 10 phút",
-      "description": "Thêm nước sôi, đun sôi mạnh 10–12 phút đến khi nước cạn thành lớp sốt sánh. Khi cạn bớt, đảo đều để gà lên màu đẹp.",
-      "durationMinutes": 12
-    },
-    {
-      "title": "Dọn ăn",
-      "description": "Dọn với cơm trắng, thêm ớt và ngò rí; có thể ăn cùng dưa leo đập hoặc gỏi bắp cải."
+      "stepNumber": 5,
+      "title": "Hoàn thiện và thưởng thức",
+      "durationMinutes": 2,
+      "description": "Thêm vài lát ớt đỏ tươi, rắc hành lá cắt khúc và tiêu xay thơm nức mũi. Tắt bếp, múc thịt gà kho gừng ra đĩa sâu lòng, ăn kèm cơm trắng nóng hổi và đĩa dưa leo giòn mát."
     }
   ],
   "images": [

@@ -1,8 +1,8 @@
 {
   "title": "Cháo gà",
   "originalTitle": "Vietnamese Chicken and Long-Grain Rice Congee",
-  "description": "Cháo gà nấu từ nước luộc gà thơm gừng và sả, ăn kèm thịt gà xé, ngò rí, hành lá, tiêu và chanh. Món ăn nhẹ bụng, hợp khi mệt hoặc bữa sáng.",
-  "categoryName": "Món cháo bồi bổ",
+  "description": "Món ăn ấm lòng, bồi bổ sức khỏe tuyệt vời của người Việt. Nồi cháo nấu từ hạt gạo rang thơm nở hoa bung đều, sánh mịn màng trong làn nước luộc gà ngọt lịm xương tủy, điểm xuyết từng thớ thịt gà ta xé phay dai ngọt chắc nịch, ấm nồng hương gừng tươi thái chỉ, tiêu sọ cay the và hành hoa tía tô thái nhỏ.",
+  "categoryName": "Món cháo",
   "authorEmail": "chef.quocviet@culinaryblog.local",
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 120,
@@ -75,22 +75,28 @@
   ],
   "steps": [
     {
-      "title": "Luộc gà",
-      "description": "Cho gà vào nồi lớn, đổ nước ngập, thêm gừng, sả và muối, đun sôi rồi hạ nhỏ lửa, đậy nắp liu riu 1–1,5 giờ.",
-      "durationMinutes": 90
+      "stepNumber": 1,
+      "title": "Luộc gà ta lấy nước dùng ngọt thơm",
+      "durationMinutes": 45,
+      "description": "Gà ta làm sạch, xát muối và gừng khử mùi. Cho gà vào nồi lớn, đổ ngập nước lạnh, thêm củ gừng đập dập, củ hành tím nướng và 1 thìa cà phê muối. Đun sôi rồi hạ lửa nhỏ liu riu luộc trong 30-40 phút cho gà chín tới, da vàng óng mọng nước. Vớt gà ra ngâm ngay vào âu nước đá lạnh 5 phút cho da gà săn giòn."
     },
     {
-      "title": "Xé gà",
-      "description": "Lọc nước luộc đổ lại vào nồi. Để gà nguội, lọc bỏ xương và da, xé thành miếng vừa ăn."
+      "stepNumber": 2,
+      "title": "Rang gạo thơm nở hoa",
+      "durationMinutes": 10,
+      "description": "Vo sạch gạo tẻ cùng một nắm nhỏ gạo nếp (tạo độ sánh dẻo). Để ráo nước rồi cho lên chảo rang ở lửa nhỏ khoảng 5-7 phút đến khi hạt gạo chuyển màu trắng đục và dậy mùi thơm thoang thoảng (bí quyết giúp cháo thơm đặc trưng và không bị nát vữa khi ninh lâu)."
     },
     {
-      "title": "Nấu cháo",
-      "description": "Cho gạo vào nước luộc gà, đun sôi rồi hạ lửa vừa nấu 30 phút, khuấy thỉnh thoảng; thêm nước hoặc muối nếu cần. Nấu thêm khoảng 45 phút nếu muốn cháo nhuyễn hơn.",
-      "durationMinutes": 30
+      "stepNumber": 3,
+      "title": "Ninh cháo sánh mịn",
+      "durationMinutes": 45,
+      "description": "Lọc nước luộc gà qua rây cho trong, đun sôi trở lại rồi trút phần gạo đã rang vào nồi. Khuấy đều tay một lần rồi hạ lửa nhỏ hé vung, ninh liu riu trong 45 phút cho hạt gạo nở bung đều, sánh mịn mượt mà. Nêm nếm thêm muối, hạt nêm và chút nước mắm cho vừa khẩu vị."
     },
     {
-      "title": "Dọn ăn",
-      "description": "Múc cháo ra tô, thêm thịt gà, ngò rí, hẹ, tiêu và vắt chanh."
+      "stepNumber": 4,
+      "title": "Xé thịt gà và hoàn thiện tô cháo",
+      "durationMinutes": 10,
+      "description": "Lọc lấy thịt gà luộc, xé sợi vừa ăn theo thớ. Múc cháo đang sôi lục bục ra tô sâu lòng, xếp thịt gà xé lên trên, rải nhiều hành hoa, tía tô, ngò rí thái nhỏ, gừng tươi thái sợi chỉ mỏng manh và rắc thật nhiều tiêu xay. Vắt thêm miếng chanh tươi và thưởng thức ngay khi còn nóng hổi toát mồ hôi giải cảm."
     }
   ],
   "images": [

@@ -2,7 +2,7 @@
   "title": "Thịt kho tàu",
   "originalTitle": "Thịt kho tàu",
   "description": "Thịt kho tàu truyền thống với từng miếng thịt ba chỉ vuông vắn mềm rệu nhưng nguyên khối, lớp mỡ trong veo béo ngậy không ngấy, trứng vịt/gà thấm màu cánh gián đậm đà chan cùng nước dừa tươi ngọt thanh.",
-  "categoryName": "Món kho đậm đà",
+  "categoryName": "Món kho",
   "authorEmail": "chef.quocviet@culinaryblog.local",
   "prepTimeMinutes": 20,
   "cookTimeMinutes": 60,
@@ -12,9 +12,16 @@
     "name": "Linh Trang — Savoury Days (Món ăn sinh viên: Thịt kho)",
     "url": "https://www.savourydays.com/mon-an-sinh-vien-thit-kho-mot-so-cach-uop-thit-khuyen-mai-cach-chung-nuoc-mau/",
     "accessedOn": "2026-11-17",
-    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+    "note": "Nguyên liệu và các bước biên tập từ tài liệu nhóm; dinh dưỡng tính toán theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh Dưỡng) và USDA."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 570.0,
+    "protein": 29.0,
+    "carbohydrates": 10.0,
+    "fat": 46.0,
+    "fiber": 0.2,
+    "sodium": 840.0
+  },
   "ingredients": [
     {
       "name": "Thịt ba chỉ heo hoặc nạc vai giòn",

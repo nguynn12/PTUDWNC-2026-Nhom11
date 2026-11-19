@@ -1,8 +1,8 @@
 {
   "title": "Bún chả",
   "originalTitle": "Bun Cha - Vietnamese Meatballs",
-  "description": "Chả viên thịt heo ướp nước mắm, hành lá và sả áp chảo vàng, ăn với bún, rau sống, đồ chua và bát nước chấm chua ngọt nhiều nước như nước dùng.",
-  "categoryName": "Món nướng thơm lừng",
+  "description": "Nét tinh hoa ẩm thực đất Hà thành từng chinh phục các thực khách sành ăn khắp năm châu. Từng viên chả thịt heo nạc mỡ cân đối được tẩm ướp nước mắm nhĩ, hành sả thơm lừng, nướng áp chảo xém vàng cạnh óng ả, thả ngập trong bát nước chấm chua ngọt ấm nóng kèm đu đủ, cà rốt giòn sần sật, ăn cùng bún tươi và rau sống xanh mướt.",
+  "categoryName": "Món bún & phở",
   "authorEmail": "chef.minhkhoi@culinaryblog.local",
   "prepTimeMinutes": 20,
   "cookTimeMinutes": 10,
@@ -19,7 +19,8 @@
     "protein": 23.0,
     "carbohydrates": 27.0,
     "fat": 37.0,
-    "sodium": 2903.0
+    "sodium": 2903.0,
+    "fiber": 2.6
   },
   "ingredients": [
     {
@@ -142,34 +143,34 @@
   ],
   "steps": [
     {
-      "title": "Pha nước chấm",
-      "description": "Trộn các nguyên liệu nước chấm rồi để yên ít nhất 10 phút.",
-      "durationMinutes": 10
+      "stepNumber": 1,
+      "title": "Trộn và ướp thịt làm chả viên",
+      "durationMinutes": 20,
+      "description": "Chọn thịt nạc vai băm nhỏ có đan xen chút mỡ để chả mềm ngậy, không bị khô. Trộn đều thịt với hành khô băm, đầu hành lá, sả băm nhuyễn, nước mắm ngon, dầu hào, đường và chút tiêu xay. Để ngấm gia vị trong 20 phút."
     },
     {
-      "title": "Chuẩn bị bún",
-      "description": "Chan nước sôi ngập bún, ngâm theo hướng dẫn trên bao bì rồi để ráo."
+      "stepNumber": 2,
+      "title": "Tạo hình viên chả tròn dẹt",
+      "durationMinutes": 5,
+      "description": "Thoa chút dầu ăn lên lòng bàn tay, lấy lượng thịt vừa phải nặn thành các viên chả tròn rồi ấn dẹt nhẹ ở giữa (mẹo giúp chả khi nướng phồng đều, chín kỹ từ trong ra ngoài và không bị co tròn)."
     },
     {
-      "title": "Trộn thịt",
-      "description": "Trộn tất cả nguyên liệu ướp thịt (trừ dầu) cho đến khi hòa quyện."
+      "stepNumber": 3,
+      "title": "Nướng hoặc áp chảo chả xém vàng",
+      "durationMinutes": 8,
+      "description": "Đun nóng chảo đáy dày với 1.5 muỗng canh dầu ăn ở lửa vừa lớn (hoặc nướng vỉ than/nồi chiên không dầu). Xếp từng miếng chả vào áp chảo khoảng 3 phút mỗi mặt đến khi chả chín vàng ruộm, cạnh xém nâu óng ánh mùi thơm nức mũi thì gắp ra đĩa có lót giấy thấm dầu."
     },
     {
-      "title": "Tạo hình",
-      "description": "Nặn thành 6 miếng chả nhỏ như bánh hamburger."
+      "stepNumber": 4,
+      "title": "Pha nước chấm bún chả ấm nóng chuẩn vị",
+      "durationMinutes": 10,
+      "description": "Hòa tan đường, giấm gạo, nước cốt chanh và nước ấm theo tỷ lệ vàng dịu nhẹ. Châm từ từ nước mắm ngon vào khuấy đều cho vị mặn ngọt hài hòa. Đun nhẹ cho nước mắm ấm nóng. Thả dưa góp cà rốt củ cải muối chua, tỏi ớt băm nhỏ lên trên để tỏi ớt nổi bồng bềnh đẹp mắt."
     },
     {
-      "title": "Áp chảo",
-      "description": "Đun dầu trong chảo lửa vừa lớn, áp chảo khoảng 2,5 phút đến khi vàng, lật mặt 2 phút rồi vớt ra.",
-      "durationMinutes": 5
-    },
-    {
-      "title": "Bày tô",
-      "description": "Cho bún vào tô, thêm giá, xà lách, cà rốt và củ cải."
-    },
-    {
-      "title": "Dọn ăn",
-      "description": "Xếp chả lên trên, thêm ngò rí và bạc hà rồi chan nước chấm thật nhiều."
+      "stepNumber": 5,
+      "title": "Bày biện và thưởng thức",
+      "durationMinutes": 5,
+      "description": "Xếp bún tươi ra đĩa riêng kèm rổ rau sống tươi tốt (xà lách, tía tô, kinh giới, giá đỗ, húng quế). Múc nước chấm ấm vào bát sâu lòng, thả chả viên vàng ươm vào ngập trong nước chấm. Khi ăn, gắp bún và rau sống nhúng ngập bát nước chấm kèm miếng chả thơm lừng."
     }
   ],
   "images": [

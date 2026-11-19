@@ -1,8 +1,8 @@
 {
   "title": "Gỏi gà bắp cải",
   "originalTitle": "Vietnamese Chicken Salad",
-  "description": "Gỏi gà xé với bắp cải, cà rốt, hành tây, đậu phộng rang và ngò rí, trộn nước mắm chua ngọt cay. Làm trong 30 phút, ăn ngay khi trộn.",
-  "categoryName": "Salad & Gỏi",
+  "description": "Món gỏi dân dã, thanh mát và cực kỳ đưa miệng của người miền Trung. Từng miếng thịt gà ta xé phay dai ngọt đậm đà quyện cùng bắp cải thái mỏng giòn sần sật, hành tây ngâm giấm đường không còn hăng, thơm the nồng nàn hương rau răm, bùi bùi đậu phộng rang và nước mắm chua ngọt pha tỏi ớt cay nồng đậm đà.",
+  "categoryName": "Gỏi & Nộm",
   "authorEmail": "chef.thuha@culinaryblog.local",
   "prepTimeMinutes": 30,
   "cookTimeMinutes": 0,
@@ -109,16 +109,34 @@
   ],
   "steps": [
     {
-      "title": "Pha nước trộn",
-      "description": "Khuấy đều ớt xanh, giấm gạo, nước cốt chanh, nước mắm, tỏi, đường, dầu mè, dầu thực vật và tiêu cho đến khi đường tan."
+      "stepNumber": 1,
+      "title": "Thái và ngâm bắp cải, hành tây giòn tan",
+      "durationMinutes": 15,
+      "description": "Bắp cải bào sợi thật mỏng. Hành tây thái lát mỏng. Cho ngay bắp cải và hành tây vào âu nước đá lạnh có pha 2 muỗng canh giấm gạo và 1 muỗng canh đường, ngâm trong 15 phút. Bí quyết này giúp hành tây khử sạch mùi hăng cay, bắp cải hút nước đá trở nên giòn tan sần sật. Sau đó vớt ra bóp nhẹ cho ráo nước hoàn toàn."
     },
     {
-      "title": "Trộn rau và gà",
-      "description": "Cho gà, bắp cải, cà rốt, hành tây, đậu phộng và ngò rí vào tô lớn, trộn đều."
+      "stepNumber": 2,
+      "title": "Xé phay thịt gà ta",
+      "durationMinutes": 10,
+      "description": "Thịt gà ta luộc chín để nguội, dùng tay xé theo thớ thịt thành từng miếng vừa ăn (xé tay giúp thịt ngấm gia vị tốt hơn thái dao). Ướp nhẹ thịt gà với chút muối tiêu và nước cốt chanh."
     },
     {
-      "title": "Trộn gỏi",
-      "description": "Rưới nước trộn lên, trộn lại lần nữa và dùng ngay."
+      "stepNumber": 3,
+      "title": "Pha nước sốt gỏi chua ngọt đậm đà",
+      "durationMinutes": 5,
+      "description": "Giã tỏi và ớt tươi trong cối, pha cùng 3 muỗng canh nước mắm ngon, 2.5 muỗng canh đường, 2 muỗng canh nước cốt chanh và chút xíu dầu mè. Khuấy đều cho đường tan sánh mịn."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Bóp gỏi nhẹ tay thấm vị",
+      "durationMinutes": 5,
+      "description": "Cho thịt gà xé, bắp cải, hành tây và rau răm cắt nhỏ vào âu lớn. Rưới từ từ 2/3 lượng nước sốt gỏi vào, dùng tay đeo găng bóp trộn nhẹ nhàng đều tay trong 2 phút cho các nguyên liệu ngấm đều vị chua cay mặn ngọt mà không bị nát hay ra nước."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Hoàn thiện và bày đĩa",
+      "durationMinutes": 5,
+      "description": "Trút gỏi gà ra đĩa lớn, rưới phần sốt còn lại lên trên, rắc đậu phộng rang giã dập và hành phi giòn rụm. Thưởng thức kèm bánh phồng tôm giòn tan."
     }
   ],
   "images": [

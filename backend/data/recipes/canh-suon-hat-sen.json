@@ -1,7 +1,7 @@
 {
   "title": "Canh sườn hạt sen",
   "originalTitle": "Canh Sườn Hạt Sen",
-  "description": "Món canh thanh mát nấu từ sườn non, hạt sen tươi, bắp non, cà rốt, nấm hương và bông cải xanh. Nước canh ngọt tự nhiên từ xương và rau củ, dễ nấu, hợp bữa cơm gia đình.",
+  "description": "Bát canh thanh mát, bổ dưỡng xua tan mệt mỏi, kết hợp hoàn hảo giữa vị ngọt sâu từ sườn non ninh nhừ và vị bùi bở thanh tao của hạt sen tươi. Nước canh trong veo ngọt lịm tự nhiên từ xương và rau củ tươi non như bắp ngọt, bông cải xanh, cà rốt và nấm hương thơm lừng, là lựa chọn lý tưởng cho bữa cơm gia đình đầm ấm.",
   "categoryName": "Món canh",
   "authorEmail": "chef.minhkhoi@culinaryblog.local",
   "prepTimeMinutes": 10,
@@ -18,48 +18,108 @@
     "calories": 169.9,
     "protein": 13.9,
     "fiber": 1.7,
-    "sodium": 565.3
+    "sodium": 565.3,
+    "carbohydrates": 7.8,
+    "fat": 9.2
   },
   "ingredients": [
-    { "name": "Sườn non", "quantity": 300, "unit": "g", "notes": "Chặt miếng khoảng 3 cm, ướp trước khi nấu" },
-    { "name": "Hạt sen tươi", "quantity": 100, "unit": "g" },
-    { "name": "Bắp non", "quantity": 50, "unit": "g", "notes": "Cắt miếng vừa ăn" },
-    { "name": "Bông cải xanh", "quantity": 100, "unit": "g", "notes": "Cho vào gần cuối để giữ độ giòn" },
-    { "name": "Cà rốt", "quantity": 50, "unit": "g", "notes": "Cắt hoặc tỉa tùy ý" },
-    { "name": "Nấm hương", "quantity": 5, "unit": "tai", "notes": "Ngâm cho mềm rồi cắt đôi" },
-    { "name": "Hạt nêm vị heo", "quantity": 1, "unit": "muỗng cà phê", "notes": "Dùng để ướp sườn" },
-    { "name": "Hạt nêm vị heo", "quantity": 1, "unit": "muỗng canh", "notes": "Dùng để nêm nước canh" },
-    { "name": "Nước", "quantity": 1.5, "unit": "lít" },
-    { "name": "Nước mắm", "quantity": 0.5, "unit": "muỗng canh", "notes": "Nêm sau khi tắt bếp" },
-    { "name": "Tiêu", "notes": "Dùng để ướp sườn và rắc khi dùng; lượng tùy khẩu vị" },
-    { "name": "Hành lá, ngò rí", "notes": "Cắt nhỏ để trang trí; lượng tùy ý" }
+    {
+      "name": "Sườn non",
+      "quantity": 300,
+      "unit": "g",
+      "notes": "Chặt miếng khoảng 3 cm, ướp trước khi nấu"
+    },
+    {
+      "name": "Hạt sen tươi",
+      "quantity": 100,
+      "unit": "g"
+    },
+    {
+      "name": "Bắp non",
+      "quantity": 50,
+      "unit": "g",
+      "notes": "Cắt miếng vừa ăn"
+    },
+    {
+      "name": "Bông cải xanh",
+      "quantity": 100,
+      "unit": "g",
+      "notes": "Cho vào gần cuối để giữ độ giòn"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 50,
+      "unit": "g",
+      "notes": "Cắt hoặc tỉa tùy ý"
+    },
+    {
+      "name": "Nấm hương",
+      "quantity": 5,
+      "unit": "tai",
+      "notes": "Ngâm cho mềm rồi cắt đôi"
+    },
+    {
+      "name": "Hạt nêm vị heo",
+      "quantity": 1,
+      "unit": "muỗng cà phê",
+      "notes": "Dùng để ướp sườn"
+    },
+    {
+      "name": "Hạt nêm vị heo",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Dùng để nêm nước canh"
+    },
+    {
+      "name": "Nước",
+      "quantity": 1.5,
+      "unit": "lít"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 0.5,
+      "unit": "muỗng canh",
+      "notes": "Nêm sau khi tắt bếp"
+    },
+    {
+      "name": "Tiêu",
+      "notes": "Dùng để ướp sườn và rắc khi dùng; lượng tùy khẩu vị"
+    },
+    {
+      "name": "Hành lá, ngò rí",
+      "notes": "Cắt nhỏ để trang trí; lượng tùy ý"
+    }
   ],
   "steps": [
     {
-      "title": "Sơ chế nguyên liệu",
-      "description": "Ướp sườn với hạt nêm và chút tiêu. Cắt bắp non và bông cải xanh vừa ăn, tỉa cà rốt, ngâm nấm hương cho mềm rồi cắt đôi.",
-      "durationMinutes": 10
+      "stepNumber": 1,
+      "title": "Sơ chế sườn non khử mùi",
+      "durationMinutes": 10,
+      "description": "Sườn non chặt miếng vừa ăn (khoảng 3cm), ngâm nước muối loãng 10 phút rồi chần qua nước sôi già có vài lát gừng trong 2 phút để nhả hết bọt bẩn. Rửa sạch lại dưới vòi nước lạnh rồi ướp sườn với 1 thìa cà phê hạt nêm và chút tiêu trắng."
     },
     {
-      "title": "Đun sôi nước",
-      "description": "Cho 1,5 lít nước vào nồi, đun sôi ở lửa vừa."
+      "stepNumber": 2,
+      "title": "Chuẩn bị rau củ quả tươi",
+      "durationMinutes": 10,
+      "description": "Hạt sen tươi rửa sạch, thông bỏ tâm sen xanh để canh không bị đắng. Bắp non cắt đôi, cà rốt tỉa hoa thái lát, bông cải xanh cắt miếng vừa ăn, nấm hương ngâm nở mềm cắt bỏ chân nấm."
     },
     {
-      "title": "Ninh sườn",
-      "description": "Cho sườn đã ướp vào nồi cùng 1 muỗng canh hạt nêm, ninh nhỏ lửa khoảng 15 phút cho sườn mềm và nước canh ngọt.",
-      "durationMinutes": 15
+      "stepNumber": 3,
+      "title": "Ninh sườn lấy nước ngọt tự nhiên",
+      "durationMinutes": 20,
+      "description": "Đun sôi 1.5 lít nước trong nồi sâu lòng, thả sườn đã ướp vào cùng 1 muỗng canh hạt nêm. Hạ lửa nhỏ ninh liu riu trong 15-20 phút, thường xuyên hớt sạch bọt nổi để nước canh luôn trong vắt."
     },
     {
-      "title": "Thêm rau củ và hạt sen",
-      "description": "Cho bắp non, cà rốt, hạt sen và nấm hương vào, nấu thêm cho các nguyên liệu thấm vị."
+      "stepNumber": 4,
+      "title": "Nấu hạt sen và rau củ chín mềm",
+      "durationMinutes": 10,
+      "description": "Cho hạt sen tươi, bắp non, cà rốt và nấm hương vào nồi canh cùng ninh với sườn thêm 10 phút cho hạt sen chín bở mềm tơi mà không bị nát."
     },
     {
-      "title": "Cho bông cải xanh",
-      "description": "Thêm bông cải xanh, nấu đến khi vừa chín tới thì dừng để rau còn xanh giòn."
-    },
-    {
-      "title": "Nêm nếm và hoàn thiện",
-      "description": "Tắt bếp, nêm nửa muỗng canh nước mắm, rắc hành lá, ngò rí và chút tiêu rồi dùng nóng."
+      "stepNumber": 5,
+      "title": "Thêm bông cải xanh và hoàn thiện",
+      "durationMinutes": 5,
+      "description": "Thả bông cải xanh vào nấu tiếp khoảng 2-3 phút cho vừa chín tới giữ trọn màu xanh mướt và độ giòn ngọt. Tắt bếp, nêm nửa muỗng canh nước mắm nhĩ thơm lừng, rắc hành lá ngò rí cắt nhỏ và chút tiêu xay. Múc ra tô dùng nóng."
     }
   ],
   "images": [

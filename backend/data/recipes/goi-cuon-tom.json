@@ -1,8 +1,8 @@
 {
   "title": "Gỏi cuốn tôm",
   "originalTitle": "Vietnamese Fresh Spring Rolls",
-  "description": "Gỏi cuốn tôm với bún, xà lách và rau thơm cuốn trong bánh tráng, chấm nước mắm chua ngọt và tương hoisin đậu phộng. Món nhẹ, không qua chiên.",
-  "categoryName": "Món cuốn thanh mát",
+  "description": "Món ăn thanh tao nổi danh toàn cầu và là niềm tự hào của ẩm thực Việt Nam. Lớp bánh tráng mỏng manh trong suốt ôm ấp những con tôm luộc đỏ au nổi bật, cùng sợi bún trắng ngần, xà lách xanh tươi, lá hẹ thanh tú và các loại rau thơm miền nhiệt đới, ăn kèm bát nước chấm tương đen bơ đậu phộng béo bùi hoặc nước mắm chua ngọt thanh vị.",
+  "categoryName": "Món cuốn",
   "authorEmail": "author@culinaryblog.local",
   "prepTimeMinutes": 45,
   "cookTimeMinutes": 5,
@@ -114,29 +114,34 @@
   ],
   "steps": [
     {
-      "title": "Luộc bún",
-      "description": "Đun sôi nước có chút muối, cho bún vào, nấu 3–5 phút đến khi vừa chín, vớt ra để nguội.",
-      "durationMinutes": 5
+      "stepNumber": 1,
+      "title": "Luộc và sơ chế tôm đẹp mắt",
+      "durationMinutes": 10,
+      "description": "Luộc tôm sú trong nước sôi có chút muối và gừng trong 3 phút cho tôm chín tới, vớt ra ngâm nước đá lạnh rồi bóc vỏ, bỏ chỉ đen sống lưng. Dùng dao sắc xẻ đôi tôm theo sống lưng tạo thành hai nửa lát tôm phẳng phiu, đỏ tươi bắt mắt."
     },
     {
-      "title": "Làm mềm bánh tráng",
-      "description": "Nhúng từng tờ bánh tráng vào nước ấm khoảng 1 giây cho mềm."
+      "stepNumber": 2,
+      "title": "Chuẩn bị bún và rau sống",
+      "durationMinutes": 10,
+      "description": "Bún tươi chần sơ nước sôi, để thật ráo nước. Xà lách, rau húng quế, ngò rí và hẹ rửa sạch, vẩy ráo nước hoàn toàn. Cắt hẹ thành từng đoạn dài khoảng 12cm."
     },
     {
-      "title": "Xếp nhân",
-      "description": "Trải bánh tráng ra, xếp thành hàng ở giữa: 2 nửa con tôm, bún, xà lách, bạc hà, ngò rí và húng quế, chừa mỗi bên khoảng 5 cm."
+      "stepNumber": 3,
+      "title": "Kỹ thuật cuộn gỏi tôm lộ mặt đẹp mắt",
+      "durationMinutes": 15,
+      "description": "Nhúng bánh tráng vào đĩa nước ấm khoảng 1 giây cho vừa mềm dẻo, trải ra thớt. Đặt lá xà lách, rau thơm và một nhúm bún vào 1/3 góc dưới bánh tráng. Cách một khoảng nhỏ ở giữa, đặt 2-3 lát tôm nằm ngửa (mặt lưng đỏ tươi áp sát mặt bánh tráng). Gập mép dưới phủ qua lớp rau bún, gập hai mép bên vào trong, đặt cọng hẹ thò đầu ra ngoài rồi cuộn tròn thật chặt tay qua các lát tôm."
     },
     {
-      "title": "Cuốn",
-      "description": "Gập hai mép bánh vào trong rồi cuốn chặt lại. Làm tiếp với phần còn lại."
+      "stepNumber": 4,
+      "title": "Pha hai loại nước chấm chuẩn vị",
+      "durationMinutes": 10,
+      "description": "Làm nước mắm chua ngọt: tỏi ớt băm nhuyễn pha cùng nước mắm, đường, chanh và nước ấm. Làm sốt tương đen: khuấy tương hoisin cùng bơ đậu phộng trên lửa nhỏ cho sánh mịn, rắc đậu phộng rang giã dập lên trên."
     },
     {
-      "title": "Pha nước chấm",
-      "description": "Trộn nước, nước cốt chanh, đường, nước mắm, tỏi và tương ớt tỏi. Riêng tương hoisin trộn với đậu phộng băm."
-    },
-    {
-      "title": "Dọn ăn",
-      "description": "Dọn gỏi cuốn kèm cả hai loại nước chấm."
+      "stepNumber": 5,
+      "title": "Bày biện",
+      "durationMinutes": 5,
+      "description": "Xếp gỏi cuốn đều đặn lên đĩa, dùng ngay trong ngày để vỏ bánh mềm dai ngon nhất, không bảo quản tủ lạnh làm cứng bánh."
     }
   ],
   "images": [

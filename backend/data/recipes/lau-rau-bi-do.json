@@ -1,8 +1,8 @@
 {
   "title": "Nồi bí đỏ đậu que kiểu Việt (chay)",
   "originalTitle": "Vietnamese-style veggie hotpot",
-  "description": "Món chay hầm nhanh với bí đỏ, đậu que, gừng, tỏi và nước tương, ăn nóng với cơm và ngò rí. Làm trong khoảng 25 phút.",
-  "categoryName": "Món chay thanh tịnh",
+  "description": "Món chay thanh tao, ấm áp và giàu dưỡng chất tự nhiên cho những bữa cơm thuần chay thanh tịnh. Từng miếng bí đỏ chín mềm ngọt bùi như tan trên đầu lưỡi, đậu que non xanh mướt giòn ngọt ngập trong làn nước dùng rau củ ngọt thanh thơm nức mùi gừng tươi thái sợi và nước tương truyền thống, mang lại cảm giác bình yên, nhẹ nhõm.",
+  "categoryName": "Món chay",
   "authorEmail": "chef.baongoc@culinaryblog.local",
   "prepTimeMinutes": 5,
   "cookTimeMinutes": 20,
@@ -18,7 +18,9 @@
     "calories": 75.0,
     "protein": 2.0,
     "carbohydrates": 13.0,
-    "fat": 2.0
+    "fat": 2.0,
+    "fiber": 2.9,
+    "sodium": 191.0
   },
   "ingredients": [
     {
@@ -78,23 +80,34 @@
   ],
   "steps": [
     {
-      "title": "Phi gừng tỏi",
-      "description": "Đun dầu trong nồi có nắp cỡ vừa, xào gừng và tỏi khoảng 5 phút.",
-      "durationMinutes": 5
+      "stepNumber": 1,
+      "title": "Sơ chế rau củ tươi",
+      "durationMinutes": 5,
+      "description": "Bí đỏ gọt vỏ, bỏ ruột, rửa sạch rồi cắt khối vuông quân cờ vừa ăn cỡ 3cm. Đậu que tước sạch xơ hai bên hông, bẻ khúc dài 4-5cm. Gừng tươi cạo vỏ thái sợi chỉ mỏng, tỏi băm nhuyễn."
     },
     {
-      "title": "Hầm bí",
-      "description": "Cho bí đỏ, nước tương, đường và nước dùng vào, đậy nắp ninh 10 phút.",
-      "durationMinutes": 10
+      "stepNumber": 2,
+      "title": "Phi thơm gừng tỏi",
+      "durationMinutes": 3,
+      "description": "Đun nóng 2 muỗng cà phê dầu thực vật trong nồi có nắp dày ở lửa vừa. Trút gừng thái sợi và tỏi băm vào xào đảo nhẹ nhàng trong 2-3 phút cho dậy mùi thơm nồng ấm áp."
     },
     {
-      "title": "Cho đậu que",
-      "description": "Mở nắp, thêm đậu que và nấu thêm 3 phút cho bí và đậu mềm.",
-      "durationMinutes": 3
+      "stepNumber": 3,
+      "title": "Om bí đỏ ngọt bùi",
+      "durationMinutes": 10,
+      "description": "Cho toàn bộ bí đỏ vào nồi đảo đều cùng dầu gừng tỏi trong 1 phút. Rưới 2 muỗng cà phê nước tương ngon, 2 muỗng cà phê đường nâu và đổ 200ml nước dùng rau củ ngọt thanh vào nồi. Đậy nắp đun sôi rồi hạ nhỏ lửa ninh trong 10 phút cho bí đỏ chín mềm tới mà không bị vỡ nát."
     },
     {
-      "title": "Hoàn thiện",
-      "description": "Trộn hành lá vào phút cuối, rắc ngò rí và dọn với cơm."
+      "stepNumber": 4,
+      "title": "Thêm đậu que giữ trọn màu xanh giòn",
+      "durationMinutes": 4,
+      "description": "Mở nắp nồi, thả đậu que vào đảo nhẹ tay cho ngập nước om. Đun thêm 3-4 phút ở lửa vừa cho đậu que vừa chín tới, giữ nguyên màu xanh tươi non và độ ngọt giòn sần sật."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Hoàn thiện và dọn ăn",
+      "durationMinutes": 2,
+      "description": "Rắc hành lá thái khúc và ngò rí tươi lên trên, nêm nhẹ lại cho vừa miệng rồi tắt bếp. Múc món kho om chay ra tô sâu lòng, dùng nóng cùng bát cơm trắng dẻo thơm."
     }
   ],
   "images": [

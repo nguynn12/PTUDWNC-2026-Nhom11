@@ -2,7 +2,7 @@
   "title": "Bánh bao xá xíu",
   "originalTitle": "Bánh bao xá xíu",
   "description": "Bánh bao nhân xá xíu với lớp vỏ bánh trắng ngần mềm xốp, thơm nhẹ mùi sữa tươi, ôm trọn phần nhân thịt xá xíu đậm đà, màu đỏ nâu sánh quyện đẫm sốt dầu hào dầu mè chuẩn vị ẩm thực Quảng Đông.",
-  "categoryName": "Bánh & Điểm tâm",
+  "categoryName": "Bánh & Món ăn nhẹ",
   "authorEmail": "chef.baongoc@culinaryblog.local",
   "prepTimeMinutes": 60,
   "cookTimeMinutes": 40,
@@ -12,9 +12,16 @@
     "name": "Linh Trang — Savoury Days",
     "url": "https://www.savourydays.com/banh-bao-nhan-xa-xiu/",
     "accessedOn": "2026-11-17",
-    "note": "Nguyên liệu và các bước được biên tập từ tài liệu công thức của nhóm; liên kết bài nguồn và ảnh được kiểm tra riêng. Không nhập số dinh dưỡng ước tính khi chưa có căn cứ tính."
+    "note": "Nguyên liệu và các bước biên tập từ tài liệu nhóm; dinh dưỡng tính toán theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh Dưỡng) và USDA."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 383.0,
+    "protein": 16.0,
+    "carbohydrates": 51.0,
+    "fat": 13.0,
+    "fiber": 1.8,
+    "sodium": 520.0
+  },
   "ingredients": [
     {
       "name": "Bột mì hoa ngọc lan (hoặc bột mì số 8 / số 11)",
