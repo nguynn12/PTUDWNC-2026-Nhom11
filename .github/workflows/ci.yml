@@ -87,12 +87,18 @@ jobs:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
 
   e2e:
-    name: E2E (PostgreSQL, Redis, MinIO, Playwright) ${{ matrix.shard }}/2
+    name: E2E (PostgreSQL, Redis, MinIO, Playwright) ${{ matrix.label }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        include:
+          - shard: 1
+            label: 1/2
+          - shard: 2
+            label: 2/2
+          - shard: production-prefetch
+            label: production-prefetch
     env:
       E2E_AUTHOR_EMAIL: e2e-author@example.test
       E2E_AUTHOR_PASSWORD: E2ePass!2026_Only
@@ -171,8 +177,12 @@ jobs:
           npm --prefix frontend start > "$RUNNER_TEMP/e2e-web.log" 2>&1 &
           npx --yes wait-on http://localhost:3000 --timeout 60000
       - name: Run Playwright
-        # Each shard has its own API and fixed-window rate limits.
-        run: npm --prefix frontend run test:e2e -- --shard=${{ matrix.shard }}/2
+        if: matrix.shard != 'production-prefetch'
+        run: npm --prefix frontend run test:e2e -- --shard=${{ matrix.shard }}/2 --grep-invert 'guest-production-browsing\.spec\.ts'
+      - name: Run Playwright with production prefetch
+        if: matrix.shard == 'production-prefetch'
+        # The real browsing scenario needs its own API rate-limit budget.
+        run: npm --prefix frontend run test:e2e -- e2e/guest-production-browsing.spec.ts
       - name: Upload diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
