@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { cache, Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Clock, Flame, Sparkles } from "lucide-react";
 import type { CategoryDetailDto, RecipeSummaryDto, GetRecipesParams } from "@/types/api";
 
+const loadCategory = cache(getCategoryBySlug);
+
 // ISR 600 giây (10 phút) theo đặc tả SRS
 export const revalidate = 600;
 
@@ -26,7 +28,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const category = await getCategoryBySlug(slug);
+    const category = await loadCategory(slug);
     if (!category) {
       return {
         title: "Danh Mục Không Tồn Tại",
@@ -81,7 +83,7 @@ export default async function CategoryDetailPage({ params, searchParams }: PageP
   let fetchError: unknown = null;
 
   try {
-    category = await getCategoryBySlug(slug);
+    category = await loadCategory(slug);
   } catch (err: unknown) {
     const errorStatus = (err as { status?: number })?.status;
     // Nếu API trả về 404 thực sự thì điều hướng tới trang 404 chuẩn của Next.js
