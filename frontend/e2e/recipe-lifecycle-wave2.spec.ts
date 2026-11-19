@@ -82,6 +82,39 @@ test.describe("Vòng đời và dinh dưỡng Đợt 2", () => {
     });
   }
 
+  test("Cập nhật dinh dưỡng từ null, giữ số 0 và số thập phân khi mở lại editor", async ({ page }) => {
+    await fillRecipe(page);
+    const { data } = await createDraft(page);
+    expect(data.nutrition).toBeNull();
+
+    await openEditor(page, data.id, data.title);
+    await expect(nutritionToggle(page)).not.toBeChecked();
+    expect((await saveEdit(page, data.id)).nutrition).toBeNull();
+
+    await openEditor(page, data.id, data.title);
+    await nutritionToggle(page).check();
+    await page.getByLabel("Calo (kcal)", { exact: true }).fill("0");
+    await page.getByLabel("Chất đạm (g)", { exact: true }).fill("7.25");
+    expect((await saveEdit(page, data.id)).nutrition).toMatchObject({
+      calories: 0, protein: 7.25, fat: null, carbohydrates: null, fiber: null, sodium: null,
+    });
+
+    await openEditor(page, data.id, data.title);
+    await expect(nutritionToggle(page)).toBeChecked();
+    await expect(page.getByLabel("Calo (kcal)", { exact: true })).toHaveValue("0");
+    await expect(page.getByLabel("Chất đạm (g)", { exact: true })).toHaveValue("7.25");
+
+    await page.getByLabel("Chất đạm (g)", { exact: true }).fill("8.75");
+    expect((await saveEdit(page, data.id)).nutrition).toMatchObject({ calories: 0, protein: 8.75 });
+    await openEditor(page, data.id, data.title);
+    await expect(page.getByLabel("Chất đạm (g)", { exact: true })).toHaveValue("8.75");
+
+    await nutritionToggle(page).uncheck();
+    expect((await saveEdit(page, data.id)).nutrition).toBeNull();
+    await openEditor(page, data.id, data.title);
+    await expect(nutritionToggle(page)).not.toBeChecked();
+  });
+
   test("Lưu số 0 và chỉ số nhập riêng, sửa và bỏ chọn có chủ đích", async ({ page }) => {
     await fillRecipe(page);
     await nutritionToggle(page).check();
