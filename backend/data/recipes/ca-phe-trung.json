@@ -1,0 +1,85 @@
+{
+  "title": "Cà phê trứng",
+  "originalTitle": "Vietnamese egg coffee",
+  "description": "Biểu tượng ẩm thực tao nhã của phố cổ Hà Nội ra đời từ những năm 1940. Lớp kem trứng vàng óng ánh, sánh mịn bồng bềnh như mây, thơm béo ngậy mùi sữa và vani mà không hề tanh, ngự trị trên nền cà phê đen nóng hổi đậm đà, mang đến trải nghiệm hương vị đan xen tuyệt hảo giữa đắng và ngọt béo.",
+  "categoryName": "Đồ uống & Trà",
+  "authorEmail": "author@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 0,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-egg-coffee",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 187.0,
+    "protein": 6.0,
+    "carbohydrates": 21.0,
+    "fat": 9.0,
+    "fiber": 0.1,
+    "sodium": 59.0
+  },
+  "ingredients": [
+    {
+      "name": "Lòng đỏ trứng",
+      "quantity": 4,
+      "unit": "quả"
+    },
+    {
+      "name": "Sữa đặc",
+      "quantity": 150,
+      "unit": "ml"
+    },
+    {
+      "name": "Vani",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Cà phê espresso đậm",
+      "quantity": 200,
+      "unit": "ml",
+      "notes": "Khoảng 4 shot đôi"
+    },
+    {
+      "name": "Sô-cô-la đen",
+      "notes": "Bào nhỏ, tùy chọn"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Tách lòng đỏ và chuẩn bị đánh kem",
+      "durationMinutes": 5,
+      "description": "Khéo léo tách riêng 4 lòng đỏ trứng gà tươi mới, tuyệt đối không để dính lòng trắng. Cho lòng đỏ vào âu sạch cùng 150ml sữa đặc có đường và 1 thìa cà phê chiết xuất vani tự nhiên (hoặc vài giọt rượu rum để khử mùi tanh trứng hoàn toàn)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Đánh bông kem trứng sánh mịn",
+      "durationMinutes": 7,
+      "description": "Dùng máy đánh trứng đánh ở tốc độ cao liên tục trong 5-7 phút. Khi hỗn hợp chuyển từ màu vàng đậm sang vàng kem nhạt, thể tích tăng gấp 3 lần, sánh dẻo đạt trạng thái chóp mềm mịn (ribbon stage) thì dừng lại. Lớp kem đạt chuẩn sẽ nhẹ xốp và nổi hoàn toàn trên mặt nước."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Pha cà phê nóng đậm đà",
+      "durationMinutes": 5,
+      "description": "Pha 4 ly cà phê đen nóng nguyên chất (pha phin hoặc espresso đậm đà). Cà phê cần phải thật nóng để khi đổ kem lên, hơi nóng sẽ làm chín nhẹ lớp kem trứng."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Giữ nhiệt và hoàn thiện",
+      "durationMinutes": 3,
+      "description": "Đặt ly thủy tinh vào một bát con chứa nước sôi để giữ ấm cà phê trong suốt quá trình thưởng thức. Rót cà phê nóng ngập 1/2 ly, nhẹ nhàng múc từng muỗng kem trứng bồng bềnh phủ đầy mặt ly. Rưới vài giọt cà phê đen tạo vân nghệ thuật hoặc rắc chút bột cacao/sô-cô-la đen bào mịn lên mặt. Dùng muỗng nhỏ múc từng lớp kem trứng cùng cà phê nhâm nhi chậm rãi."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/vietnamese-egg-coffee-7823671.jpg",
+      "altText": "Cà phê trứng",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

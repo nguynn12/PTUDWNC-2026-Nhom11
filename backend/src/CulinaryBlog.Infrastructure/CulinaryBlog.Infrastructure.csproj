@@ -22,7 +22,6 @@
     <PackageReference Include="Google.Apis.Auth" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="AWSSDK.S3" />
-    <PackageReference Include="SixLabors.ImageSharp" />
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

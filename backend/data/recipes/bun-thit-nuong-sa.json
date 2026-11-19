@@ -1,0 +1,197 @@
+{
+  "title": "Bún thịt nướng sả",
+  "originalTitle": "Vietnamese Lemongrass Pork Noodle Bowls (Bun Thit Nuong)",
+  "description": "Bún thịt nướng sả phương Nam quyến rũ thực khách bởi từng dải thịt nướng thơm lừng mùi sả ớt, đậm đà vị mật ong và nước mắm truyền thống, lớp ngoài vàng ruộm bốc khói nghi ngút. Tô bún đầy đặn sắc màu với rau sống xanh mát, đồ chua giải ngấy, mỡ hành óng ả, đậu phộng bùi bùi quyện nước mắm tỏi ớt chua ngọt trứ danh.",
+  "categoryName": "Món bún & phở",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 10,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/vietnamese-pork-noodle-bowls/",
+    "accessedOn": "2026-11-16",
+    "note": "Nguyên liệu và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, giữ đơn vị gốc); các bước được diễn đạt lại. Thịt heo ướp sả được nguồn viết ở một công thức riêng nên chưa có chi tiết ướp và nướng ở đây. Nguồn cần ướp thịt 1 ngày và ngâm đồ chua 2 giờ, không tính vào thời gian chuẩn bị 30 phút. Dinh dưỡng tính khi ăn hết phần nước chấm."
+  },
+  "nutrition": {
+    "calories": 622,
+    "protein": 23,
+    "carbohydrates": 94,
+    "fat": 18,
+    "fiber": 5,
+    "sodium": 2362
+  },
+  "ingredients": [
+    {
+      "name": "Thịt heo nướng ướp sả",
+      "quantity": 8,
+      "unit": "miếng",
+      "notes": "Đã ướp qua đêm; theo công thức riêng, đủ cho 4 người"
+    },
+    {
+      "name": "Bún khô (sợi gạo mảnh)",
+      "quantity": 200,
+      "unit": "g",
+      "notes": "Có thể thay bằng miến hoặc loại bún gạo khô mảnh khác"
+    },
+    {
+      "name": "Xà lách mềm (xà lách bơ)",
+      "quantity": 1,
+      "unit": "cây",
+      "notes": "Xé miếng vừa ăn; có thể thay bằng 4 cốc xà lách bào"
+    },
+    {
+      "name": "Dưa leo",
+      "quantity": 2,
+      "unit": "quả",
+      "notes": "Bổ đôi theo chiều dọc, thái xéo dày khoảng 3 mm"
+    },
+    {
+      "name": "Giá đỗ",
+      "quantity": 2,
+      "unit": "cốc"
+    },
+    {
+      "name": "Húng lủi",
+      "quantity": 1,
+      "unit": "nắm"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 1,
+      "unit": "nắm"
+    },
+    {
+      "name": "Đậu phộng rang không muối",
+      "quantity": 0.25,
+      "unit": "cốc",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Ớt đỏ",
+      "notes": "Thái lát, tùy chọn"
+    },
+    {
+      "name": "Chanh",
+      "notes": "Cắt múi, tùy chọn nhưng nên có"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 2,
+      "unit": "củ vừa",
+      "notes": "Đồ chua: gọt vỏ, cắt que dày 2–3 mm"
+    },
+    {
+      "name": "Củ cải trắng",
+      "quantity": 0.5,
+      "unit": "củ lớn",
+      "notes": "Đồ chua: gọt vỏ, cắt giống cà rốt"
+    },
+    {
+      "name": "Nước sôi",
+      "quantity": 1.5,
+      "unit": "cốc",
+      "notes": "Đồ chua"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 0.5,
+      "unit": "cốc",
+      "notes": "Đồ chua"
+    },
+    {
+      "name": "Muối",
+      "quantity": 4,
+      "unit": "muỗng cà phê",
+      "notes": "Đồ chua"
+    },
+    {
+      "name": "Giấm gạo",
+      "quantity": 0.75,
+      "unit": "cốc",
+      "notes": "Đồ chua; có thể thay bằng giấm táo"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 4.5,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 4.5,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Giấm gạo",
+      "quantity": 3,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Nước cốt chanh",
+      "quantity": 3,
+      "unit": "muỗng canh",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Nước",
+      "quantity": 0.5,
+      "unit": "cốc",
+      "notes": "Nước chấm"
+    },
+    {
+      "name": "Ớt hiểm",
+      "quantity": 2,
+      "unit": "trái",
+      "notes": "Nước chấm: bỏ hạt, băm nhỏ"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 5,
+      "unit": "tép",
+      "notes": "Nước chấm: băm nhỏ"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Làm đồ chua cà rốt củ cải",
+      "durationMinutes": 120,
+      "description": "Cà rốt và củ cải gọt vỏ, thái sợi que. Ngâm trong hỗn hợp giấm gạo, đường và muối trong 2 giờ cho rau củ mềm dịu, giòn rụm thanh mát rồi vớt ra để ráo."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Ướp thịt heo nướng sả đậm đà",
+      "durationMinutes": 30,
+      "description": "Thịt nạc vai hoặc thịt ba chỉ thái lát mỏng vừa ăn. Ướp thịt với sả băm nhuyễn, tỏi băm, hành tím băm, mật ong, nước mắm ngon, dầu hào, tiêu và một thìa dầu ăn để thịt luôn mềm mướt. Đậy kín để trong ngăn mát tủ lạnh ít nhất 4 tiếng hoặc qua đêm."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Pha nước mắm chua ngọt miền Nam",
+      "durationMinutes": 10,
+      "description": "Hòa tan đường và nước ấm theo tỷ lệ 1:1, thêm nước mắm ngon và nước cốt chanh tươi, khuấy đều cho vị chua ngọt dịu đằm. Cuối cùng cho tỏi và ớt băm nhỏ vào để tỏi ớt nổi đẹp trên mặt nước chấm."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Nướng thịt dậy mùi khói thơm",
+      "durationMinutes": 10,
+      "description": "Xếp thịt lên vỉ nướng trên than hoa đỏ rực (hoặc nồi chiên không dầu ở 190°C). Trở đều hai mặt khoảng 8-10 phút, phết nước ướp lên mặt thịt trong khi nướng để thịt không bị khô, nướng đến khi thịt chín vàng ươm, cháy xém nhẹ cạnh thơm lừng."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Làm mỡ hành và bày tô",
+      "durationMinutes": 10,
+      "description": "Hành lá thái nhỏ, cho vào bát cùng chút muối và đường. Đun sôi dầu ăn rồi rót trực tiếp vào bát hành tạo tiếng xèo vui tai, giữ trọn màu xanh non mướt mát. Xếp bún tươi vào tô, phủ xà lách, rau thơm, giá đỗ, dưa leo, gắp thịt nướng nóng hổi lên trên, rưới mỡ hành, rắc đậu phộng rang giã dập và chan nước mắm chua ngọt thưởng thức."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2023/04/Vietnamese-noodles-lemongrass-pork-6.jpg",
+      "altText": "Tô bún thịt nướng sả với rau sống, đồ chua và nước chấm",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

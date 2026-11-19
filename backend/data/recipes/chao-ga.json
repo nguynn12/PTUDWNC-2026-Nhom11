@@ -1,0 +1,109 @@
+{
+  "title": "Cháo gà",
+  "originalTitle": "Vietnamese Chicken and Long-Grain Rice Congee",
+  "description": "Món ăn ấm lòng, bồi bổ sức khỏe tuyệt vời của người Việt. Nồi cháo nấu từ hạt gạo rang thơm nở hoa bung đều, sánh mịn màng trong làn nước luộc gà ngọt lịm xương tủy, điểm xuyết từng thớ thịt gà ta xé phay dai ngọt chắc nịch, ấm nồng hương gừng tươi thái chỉ, tiêu sọ cay the và hành hoa tía tô thái nhỏ.",
+  "categoryName": "Món cháo",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 120,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/37707/vietnamese-chicken-and-long-grain-rice-congee/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 643.0,
+    "protein": 53.0,
+    "carbohydrates": 10.0,
+    "fat": 42.0,
+    "fiber": 1.0,
+    "sodium": 1943.0
+  },
+  "ingredients": [
+    {
+      "name": "Gạo thơm",
+      "quantity": 0.125,
+      "unit": "cốc"
+    },
+    {
+      "name": "Gà ta nguyên con",
+      "quantity": 1.1,
+      "unit": "kg"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 3,
+      "unit": "khúc 5 cm"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "cây",
+      "notes": "Cắt khúc"
+    },
+    {
+      "name": "Muối",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Nêm theo khẩu vị"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.25,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Hẹ",
+      "quantity": 0.125,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Tiêu đen xay",
+      "notes": "Theo khẩu vị"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt 8 múi"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Luộc gà ta lấy nước dùng ngọt thơm",
+      "durationMinutes": 45,
+      "description": "Gà ta làm sạch, xát muối và gừng khử mùi. Cho gà vào nồi lớn, đổ ngập nước lạnh, thêm củ gừng đập dập, củ hành tím nướng và 1 thìa cà phê muối. Đun sôi rồi hạ lửa nhỏ liu riu luộc trong 30-40 phút cho gà chín tới, da vàng óng mọng nước. Vớt gà ra ngâm ngay vào âu nước đá lạnh 5 phút cho da gà săn giòn."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Rang gạo thơm nở hoa",
+      "durationMinutes": 10,
+      "description": "Vo sạch gạo tẻ cùng một nắm nhỏ gạo nếp (tạo độ sánh dẻo). Để ráo nước rồi cho lên chảo rang ở lửa nhỏ khoảng 5-7 phút đến khi hạt gạo chuyển màu trắng đục và dậy mùi thơm thoang thoảng (bí quyết giúp cháo thơm đặc trưng và không bị nát vữa khi ninh lâu)."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Ninh cháo sánh mịn",
+      "durationMinutes": 45,
+      "description": "Lọc nước luộc gà qua rây cho trong, đun sôi trở lại rồi trút phần gạo đã rang vào nồi. Khuấy đều tay một lần rồi hạ lửa nhỏ hé vung, ninh liu riu trong 45 phút cho hạt gạo nở bung đều, sánh mịn mượt mà. Nêm nếm thêm muối, hạt nêm và chút nước mắm cho vừa khẩu vị."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Xé thịt gà và hoàn thiện tô cháo",
+      "durationMinutes": 10,
+      "description": "Lọc lấy thịt gà luộc, xé sợi vừa ăn theo thớ. Múc cháo đang sôi lục bục ra tô sâu lòng, xếp thịt gà xé lên trên, rải nhiều hành hoa, tía tô, ngò rí thái nhỏ, gừng tươi thái sợi chỉ mỏng manh và rắc thật nhiều tiêu xay. Vắt thêm miếng chanh tươi và thưởng thức ngay khi còn nóng hổi toát mồ hôi giải cảm."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.media-allrecipes.com/userphotos/6750773.jpg",
+      "altText": "Cháo gà",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

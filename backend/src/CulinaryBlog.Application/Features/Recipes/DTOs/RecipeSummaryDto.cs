@@ -13,8 +13,8 @@ public class RecipeSummaryDto
     public int PrepTimeMinutes { get; init; }
     public int CookTimeMinutes { get; init; }
     public int Servings { get; init; }
-    public string Difficulty { get; init; } = string.Empty;
-    public string Status { get; init; } = string.Empty;
+    public CulinaryBlog.Domain.Enums.RecipeDifficulty Difficulty { get; init; }
+    public CulinaryBlog.Domain.Enums.RecipeStatus Status { get; init; }
     public Guid CategoryId { get; init; }
     public string? CategoryName { get; init; }
     public string? CategorySlug { get; init; }
@@ -22,4 +22,5 @@ public class RecipeSummaryDto
     public string? AuthorName { get; set; }
     public DateTimeOffset? PublishedAt { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
+    public uint? ConcurrencyToken { get; init; }
 }

@@ -50,9 +50,9 @@ public sealed class ChangePasswordCommandHandler : IRequestHandler<ChangePasswor
 
         if (!await _identityService.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword))
         {
-            throw new UnauthorizedException(
-                "Mật khẩu hiện tại không đúng.",
-                ErrorCodes.AuthInvalidCredentials);
+            // 422 theo trường currentPassword, KHÔNG phải 401: trình duyệt coi 401 là phiên hết hạn và sẽ
+            // đăng xuất người dùng chỉ vì họ gõ sai mật khẩu hiện tại.
+            throw new ValidationException("currentPassword", "Mật khẩu hiện tại không đúng.");
         }
 
         await RefreshTokenRevoker.RevokeAllAsync(

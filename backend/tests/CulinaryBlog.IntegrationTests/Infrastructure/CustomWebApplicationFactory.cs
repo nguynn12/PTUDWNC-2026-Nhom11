@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
+using System.Net;
 
 namespace CulinaryBlog.IntegrationTests.Infrastructure;
 
@@ -22,6 +24,27 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     private readonly string _dbName = "IntegrationTestDb_" + Guid.NewGuid();
     private bool _databaseSeeded;
     private readonly object _lock = new();
+    private static int _nextClientAddress;
+
+    protected override void ConfigureClient(HttpClient client)
+    {
+        base.ConfigureClient(client);
+        client.DefaultRequestHeaders.Add("X-Test-Client-IP", $"2001:db8::{Interlocked.Increment(ref _nextClientAddress):x}");
+    }
+
+    private sealed class ClientAddressStartupFilter : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+        {
+            app.Use((context, proceed) =>
+            {
+                if (IPAddress.TryParse(context.Request.Headers["X-Test-Client-IP"], out var address))
+                    context.Connection.RemoteIpAddress = address;
+                return proceed();
+            });
+            next(app);
+        };
+    }
 
     // Dữ liệu mẫu ID cố định để dễ dàng assert trong test case
     public static readonly Guid AppetizerCategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111");
@@ -39,6 +62,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["IsTesting"] = "true",
+                ["Redis:InstanceName"] = $"CulinaryBlogTests:{_dbName}:",
                 ["ASPNETCORE_ENVIRONMENT"] = "Testing",
                 ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Database=fake_test_db;Username=test;Password=test",
                 ["JwtSettings:Secret"] = "SuperSecretKeyForIntegrationTestingPurposesOnly1234567890!@#$%",
@@ -55,6 +79,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+            // TestServer không có kết nối TCP; gán địa chỉ transport riêng cho từng client.
+            // Bộ lọc này chỉ có trong project test, không bật việc tin X-Forwarded-For ở ứng dụng.
+            services.AddSingleton<IStartupFilter>(new ClientAddressStartupFilter());
             // 1. Gỡ bỏ đăng ký DbContext PostgreSQL hiện tại
             var dbContextDescriptors = services.Where(d =>
                 d.ServiceType == typeof(DbContextOptions<CulinaryBlogDbContext>) ||
@@ -71,6 +98,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var hangfireHostedServices = services.Where(d =>
                 d.ServiceType == typeof(IHostedService) &&
                 (d.ImplementationType?.FullName?.Contains("Hangfire", StringComparison.OrdinalIgnoreCase) == true ||
+                 d.ImplementationFactory?.Method.DeclaringType?.Namespace?.StartsWith("Hangfire", StringComparison.Ordinal) == true ||
                  d.ServiceType.FullName?.Contains("Hangfire", StringComparison.OrdinalIgnoreCase) == true)).ToList();
 
             foreach (var descriptor in hangfireHostedServices)

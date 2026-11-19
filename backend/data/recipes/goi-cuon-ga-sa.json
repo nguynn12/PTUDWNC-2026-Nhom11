@@ -1,0 +1,144 @@
+{
+  "title": "Gỏi cuốn gà sả",
+  "originalTitle": "Lemongrass Chicken Rice Paper Rolls",
+  "description": "Một khúc biến tấu hiện đại đầy mê hoặc của món cuốn Việt Nam. Từng cuốn bánh tráng trong suốt khoe trọn phần nhân bắt mắt với thịt đùi gà ướp sả áp chảo xém cạnh thơm lừng, bắp cải tím giòn sần sật, cà rốt cam tươi, bún trắng mềm mại và rau thơm the mát, chấm ngập trong chén sốt bơ đậu phộng béo bùi sánh đặc ngất ngây.",
+  "categoryName": "Món cuốn",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 25,
+  "cookTimeMinutes": 6,
+  "servings": 10,
+  "difficulty": "Medium",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/lemongrass-chicken-rice-paper-rolls/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 163.0,
+    "protein": 7.0,
+    "carbohydrates": 18.0,
+    "fat": 7.0,
+    "fiber": 1.0,
+    "sodium": 337.0
+  },
+  "ingredients": [
+    {
+      "name": "Đùi gà không xương",
+      "quantity": 350,
+      "unit": "g",
+      "notes": "Thái rất mỏng, rộng khoảng 2,5 cm, dày 3 mm"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1.5,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Đường nâu",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Bào nhuyễn hoặc dạng nhuyễn"
+    },
+    {
+      "name": "Nước cốt chanh",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 1,
+      "unit": "tép",
+      "notes": "Bào nhuyễn"
+    },
+    {
+      "name": "Dầu canola",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Để áp chảo"
+    },
+    {
+      "name": "Bánh tráng tròn",
+      "quantity": 10,
+      "unit": "tờ",
+      "notes": "Khoảng 22 cm"
+    },
+    {
+      "name": "Bún khô",
+      "quantity": 70,
+      "unit": "g"
+    },
+    {
+      "name": "Bắp cải xanh",
+      "quantity": 1,
+      "unit": "cốc",
+      "notes": "Thái thật mỏng"
+    },
+    {
+      "name": "Bắp cải tím",
+      "quantity": 1,
+      "unit": "cốc",
+      "notes": "Thái thật mỏng"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Bóc vỏ, thái sợi mảnh"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.25,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Sốt đậu phộng",
+      "notes": "Dùng để chấm"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Ướp thịt gà hương sả thơm lừng",
+      "durationMinutes": 15,
+      "description": "Thịt đùi gà lọc xương thái dải dài cỡ ngón tay. Ướp thịt với sả băm nhuyễn, nước mắm ngon, tỏi băm, mật ong, dầu hào và chút tiêu trong 15 phút cho ngấm đều gia vị."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Áp chảo thịt gà xém cạnh",
+      "durationMinutes": 6,
+      "description": "Đun nóng 1 muỗng canh dầu ăn trong chảo lớn ở lửa to. Cho thịt gà vào đảo nhanh tay liên tục trong 5-6 phút đến khi thịt gà chín săn, xém nâu các cạnh và bốc mùi sả thơm lừng thì trút ra đĩa để nguội bớt."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Nấu sốt bơ đậu phộng béo ngậy",
+      "durationMinutes": 5,
+      "description": "Cho bơ đậu phộng mịn, tương đen hoisin, chút sữa tươi (hoặc nước cốt dừa), tỏi băm và giấm gạo vào chảo nhỏ. Đun ở lửa nhỏ khuấy đều tay đến khi sốt sánh mịn màng, nêm chút ớt băm tạo vị the ấm."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Kỹ thuật cuốn gỏi đều tay",
+      "durationMinutes": 15,
+      "description": "Nhúng nhanh bánh tráng vào nước ấm trong 2 giây rồi trải phẳng lên thớt sạch. Xếp lần lượt lá bạc hà, ngò rí, thịt gà sả áp chảo, cà rốt bào sợi, bắp cải tím thái mỏng và một nhúm bún tươi lên trên. Gập mép dưới bánh tráng phủ kín nhân, gập hai bên mép hông vào trong rồi cuộn tròn thật chặt tay."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Bày biện và dọn ăn",
+      "durationMinutes": 5,
+      "description": "Cắt đôi từng cuốn gỏi theo góc chéo 45 độ, dựng đứng trên đĩa để lộ phần nhân đa sắc tuyệt đẹp. Dọn kèm chén sốt bơ đậu phộng rắc thêm đậu phộng giã dập và vài lát ớt đỏ."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2025/09/Lemongrass-chicken-rice-paper-rolls_3.jpg",
+      "altText": "Gỏi cuốn gà sả",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

@@ -238,10 +238,9 @@ namespace CulinaryBlog.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RecipeId")
-                        .HasDatabaseName("IX_RecipeImages_RecipeId");
-
-                    b.HasIndex("RecipeId", "IsPrimary")
-                        .HasDatabaseName("IX_RecipeImages_RecipeId_IsPrimary");
+                        .IsUnique()
+                        .HasDatabaseName("IX_RecipeImages_RecipeId_Primary_Unique")
+                        .HasFilter("\"IsPrimary\" = true AND \"IsDeleted\" = false");
 
                     b.HasIndex("RecipeId", "OrderIndex")
                         .HasDatabaseName("IX_RecipeImages_RecipeId_OrderIndex");

@@ -68,20 +68,41 @@ public class SitemapService : ISitemapService
         }
 
         // 3. Công thức nấu ăn (CHỈ LẤY Published và chưa bị xóa mềm, LOẠI BỎ Draft/Archived/Deleted theo NFR-SEO)
-        var recipes = await _dbContext.Recipes
-            .AsNoTracking()
-            .Where(r => !r.IsDeleted && r.Status == RecipeStatus.Published)
-            .OrderByDescending(r => r.PublishedAt)
-            .Select(r => new { r.Slug, LastMod = r.UpdatedAt ?? r.PublishedAt ?? r.CreatedAt })
-            .ToListAsync(cancellationToken);
-
-        foreach (var recipe in recipes)
+        // OPS-09, OPS-10: Phân trang/chia batch nạp dữ liệu tránh tràn RAM khi số lượng công thức lớn
+        const int batchSize = 1000;
+        var skip = 0;
+        while (true)
         {
-            urls.Add(CreateUrlElement(
-                $"{baseUrl}/recipes/{recipe.Slug}",
-                recipe.LastMod,
-                "weekly",
-                "0.9"));
+            var batch = await _dbContext.Recipes
+                .AsNoTracking()
+                .Where(r => !r.IsDeleted && r.Status == RecipeStatus.Published)
+                .OrderByDescending(r => r.PublishedAt)
+                .ThenBy(r => r.Id)
+                .Select(r => new { r.Slug, LastMod = r.UpdatedAt ?? r.PublishedAt ?? r.CreatedAt })
+                .Skip(skip)
+                .Take(batchSize)
+                .ToListAsync(cancellationToken);
+
+            if (batch.Count == 0)
+            {
+                break;
+            }
+
+            foreach (var recipe in batch)
+            {
+                urls.Add(CreateUrlElement(
+                    $"{baseUrl}/recipes/{recipe.Slug}",
+                    recipe.LastMod,
+                    "weekly",
+                    "0.9"));
+            }
+
+            if (batch.Count < batchSize)
+            {
+                break;
+            }
+
+            skip += batchSize;
         }
 
         var urlset = new XElement(Ns + "urlset", urls);

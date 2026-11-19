@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
+using StackExchange.Redis;
 using CulinaryBlog.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -53,75 +55,30 @@ public static class HealthEndpoints
                 };
             }
 
-            // 2. Kiểm tra Redis Cache (TCP Socket check cổng 6379 hoặc connection string)
+            // Cùng nguồn cấu hình với Infrastructure.DependencyInjection; không dùng địa chỉ cố định.
             var redisSw = Stopwatch.StartNew();
-            var redisHost = "localhost";
-            var redisPort = 6379;
-            var isRedisHealthy = false;
-            try
+            var (redisEndpoint, isRedisHealthy) = await CheckRedisAsync(configuration, cancellationToken);
+            checks["redis"] = new
             {
-                using var tcpClient = new TcpClient();
-                var connectTask = tcpClient.ConnectAsync(redisHost, redisPort);
-                var completed = await Task.WhenAny(connectTask, Task.Delay(1000, cancellationToken));
-                if (completed == connectTask && tcpClient.Connected)
-                {
-                    isRedisHealthy = true;
-                }
-                redisSw.Stop();
-                checks["redis"] = new
-                {
-                    status = isRedisHealthy ? "Healthy" : "Degraded",
-                    type = "Redis Cache",
-                    responseTimeMs = redisSw.ElapsedMilliseconds,
-                    endpoint = $"{redisHost}:{redisPort}"
-                };
-            }
-            catch
-            {
-                redisSw.Stop();
-                checks["redis"] = new
-                {
-                    status = "Degraded",
-                    type = "Redis Cache",
-                    responseTimeMs = redisSw.ElapsedMilliseconds,
-                    endpoint = $"{redisHost}:{redisPort}"
-                };
-            }
+                status = isRedisHealthy ? "Healthy" : "Degraded",
+                type = "Redis Cache",
+                responseTimeMs = redisSw.ElapsedMilliseconds,
+                endpoint = redisEndpoint
+            };
 
-            // 3. Kiểm tra MinIO Storage (TCP Socket check cổng 9000)
             var minioSw = Stopwatch.StartNew();
-            var minioHost = "localhost";
-            var minioPort = 9000;
-            var isMinioHealthy = false;
-            try
+            var minioEndpoint = configuration["Minio:Endpoint"] ?? "http://localhost:9000";
+            var validMinioEndpoint = Uri.TryCreate(minioEndpoint, UriKind.Absolute, out var minioUri)
+                && (minioUri.Scheme == Uri.UriSchemeHttp || minioUri.Scheme == Uri.UriSchemeHttps);
+            var isMinioHealthy = validMinioEndpoint
+                && await CanConnectAsync(minioUri!.Host, minioUri.Port, cancellationToken);
+            checks["storage"] = new
             {
-                using var minioClient = new TcpClient();
-                var connectTask = minioClient.ConnectAsync(minioHost, minioPort);
-                var completed = await Task.WhenAny(connectTask, Task.Delay(1000, cancellationToken));
-                if (completed == connectTask && minioClient.Connected)
-                {
-                    isMinioHealthy = true;
-                }
-                minioSw.Stop();
-                checks["storage"] = new
-                {
-                    status = isMinioHealthy ? "Healthy" : "Degraded",
-                    type = "MinIO Object Storage",
-                    responseTimeMs = minioSw.ElapsedMilliseconds,
-                    endpoint = $"{minioHost}:{minioPort}"
-                };
-            }
-            catch
-            {
-                minioSw.Stop();
-                checks["storage"] = new
-                {
-                    status = "Degraded",
-                    type = "MinIO Object Storage",
-                    responseTimeMs = minioSw.ElapsedMilliseconds,
-                    endpoint = $"{minioHost}:{minioPort}"
-                };
-            }
+                status = isMinioHealthy ? "Healthy" : "Degraded",
+                type = "MinIO Object Storage",
+                responseTimeMs = minioSw.ElapsedMilliseconds,
+                endpoint = validMinioEndpoint ? minioUri!.GetLeftPart(UriPartial.Authority) : "Invalid configuration"
+            };
 
             totalSw.Stop();
 
@@ -170,14 +127,8 @@ public static class HealthEndpoints
                 if (!databaseReady)
                     return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
 
-                var redisHost = configuration["Redis:Host"] ?? "localhost";
-                var redisPort = int.TryParse(configuration["Redis:Port"], out var configuredPort)
-                    ? configuredPort
-                    : 6379;
-                using var redis = new TcpClient();
-                var connection = redis.ConnectAsync(redisHost, redisPort);
-                var completed = await Task.WhenAny(connection, Task.Delay(1000, cancellationToken));
-                if (completed != connection || !redis.Connected)
+                var (_, redisReady) = await CheckRedisAsync(configuration, cancellationToken);
+                if (!redisReady)
                     return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
 
                 return Results.Ok(new
@@ -197,10 +148,77 @@ public static class HealthEndpoints
             }
         })
         .WithName("GetReadinessProbe")
-        .WithSummary("Readiness Probe kiểm tra kết nối cơ sở dữ liệu")
+        .WithSummary("Readiness Probe kiểm tra PostgreSQL và Redis theo cấu hình ứng dụng")
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status503ServiceUnavailable);
 
         return group;
     }
+    public static (string Host, int Port) ResolveRedisEndpoint(IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Redis")
+            ?? configuration["Redis:ConnectionString"];
+        if (!string.IsNullOrWhiteSpace(connectionString))
+        {
+            var options = ConfigurationOptions.Parse(connectionString);
+            return options.EndPoints.First() switch
+            {
+                DnsEndPoint dns => (dns.Host, dns.Port == 0 ? 6379 : dns.Port),
+                IPEndPoint ip => (ip.Address.ToString(), ip.Port == 0 ? 6379 : ip.Port),
+                _ => ("localhost", 6379)
+            };
+        }
+
+        return (configuration["Redis:Host"] ?? "localhost",
+            int.TryParse(configuration["Redis:Port"], out var port) ? port : 6379);
+    }
+
+    public static (string Host, int Port) ResolveMinioEndpoint(IConfiguration configuration) =>
+        Uri.TryCreate(configuration["Minio:Endpoint"], UriKind.Absolute, out var uri)
+            ? (uri.Host, uri.Port) : ("localhost", 9000);
+
+    private static async Task<(string Endpoint, bool Healthy)> CheckRedisAsync(
+        IConfiguration configuration, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var connectionString = configuration.GetConnectionString("Redis")
+                ?? configuration["Redis:ConnectionString"]
+                ?? "localhost:6379";
+            var options = ConfigurationOptions.Parse(connectionString);
+            var addresses = new List<string>();
+            var healthy = false;
+            foreach (var endpoint in options.EndPoints)
+            {
+                var (host, port) = endpoint switch
+                {
+                    DnsEndPoint dns => (dns.Host, dns.Port),
+                    IPEndPoint ip => (ip.Address.ToString(), ip.Port),
+                    _ => ("", 0)
+                };
+                if (string.IsNullOrWhiteSpace(host)) continue;
+                if (port == 0) port = options.Ssl ? 6380 : 6379;
+                addresses.Add($"{host}:{port}");
+                healthy |= await CanConnectAsync(host, port, cancellationToken);
+            }
+            return (string.Join(",", addresses), healthy);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch { return ("Invalid configuration", false); }
+    }
+
+    private static async Task<bool> CanConnectAsync(string host, int port, CancellationToken cancellationToken)
+    {
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(1));
+        try
+        {
+            using var client = new TcpClient();
+            await client.ConnectAsync(host, port, timeout.Token);
+            return client.Connected;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch { return false; }
+    }
+
 }

@@ -98,7 +98,6 @@ export default async function CategoryDetailPage({ params, searchParams }: PageP
       <div className="py-12">
         <Container>
           <ErrorState
-            error={fetchError}
             title="Không thể tải thông tin danh mục"
             message="Đã có sự cố kết nối tới máy chủ. Vui lòng kiểm tra lại dịch vụ Backend hoặc thử lại sau ít phút."
             showBackHome={true}

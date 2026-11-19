@@ -6,6 +6,9 @@ namespace CulinaryBlog.Application.Features.Categories.DTOs;
 /// </summary>
 public class CategoryDetailDto
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public CulinaryBlog.Application.Common.Models.PagedResult<CulinaryBlog.Application.Features.Recipes.DTOs.RecipeSummaryDto> Recipes { get; set; } = new();
+
     /// <summary>
     /// Mã định danh duy nhất của danh mục (UUID v4).
     /// </summary>

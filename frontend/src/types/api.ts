@@ -4,11 +4,11 @@
 // ============================================================================
 
 // ----------------------------------------------------------------------------
-// ENUMS & CONSTANTS
+// ENUMS & CONSTANTS (Chuẩn hóa wire format D2 / FE-03)
 // ----------------------------------------------------------------------------
-export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
-export type DifficultyLevel = RecipeDifficulty | number;
-export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | number;
+export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 1 | 2 | 3 | 4 | number;
+export type DifficultyLevel = RecipeDifficulty;
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2 | number;
 
 // ----------------------------------------------------------------------------
 // COMMON RESPONSE & PAGINATION
@@ -190,6 +190,7 @@ export interface RecipeSummaryDto {
   publishedAt?: string | null;
   createdAt: string;
   updatedAt?: string | null;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null; // Concurrency token phục vụ If-Match
   isDeleted?: boolean;
   deletedAt?: string | null;
@@ -197,6 +198,7 @@ export interface RecipeSummaryDto {
 }
 
 export interface RecipeDetailDto {
+  category?: { id: string; name: string; slug: string } | null;
   id: string;
   title: string;
   slug: string;
@@ -222,12 +224,14 @@ export interface RecipeDetailDto {
   createdAt: string;
   updatedAt?: string | null;
   rowVersion?: string;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
 }
 
 export interface RecipeFullDetailDto extends RecipeDetailDto {
   prepTimeMinutes?: number;
   cookTimeMinutes?: number;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
 }
 

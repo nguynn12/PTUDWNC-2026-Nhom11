@@ -3,12 +3,31 @@ import type { NextConfig } from "next";
 const backendUrl = process.env.BACKEND_API_URL || "http://localhost:5000";
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   reactStrictMode: true,
   turbopack: {
     root: process.cwd(),
   },
   images: {
+    // Biến thể WebP đã được tối ưu ở backend; browser dùng PublicUrl trực tiếp.
+    // Tránh optimizer trong container truy cập localhost của chính container web.
+    unoptimized: true,
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.media-allrecipes.com",
+        pathname: "/userphotos/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.savourydays.com",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "helenrecipes.com",
+        pathname: "/wp-content/uploads/**",
+      },
       {
         protocol: "http",
         hostname: "localhost",
@@ -40,6 +59,26 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "monngonmoingay.com",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.recipetineats.com",
+        pathname: "/tachyon/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.allrecipes.com",
+        pathname: "/thmb/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.immediate.co.uk",
+        pathname: "/production/**",
       },
       {
         protocol: "https",

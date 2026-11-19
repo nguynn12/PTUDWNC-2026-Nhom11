@@ -1,0 +1,114 @@
+{
+  "title": "Cơm chiên cà chua",
+  "originalTitle": "Red Vietnamese Fried Rice",
+  "description": "Món cơm chiên sắc đỏ hồng tươi tắn, hấp dẫn và thơm nức mũi mùi bơ tỏi quyến rũ. Từng hạt cơm tơi xốp, vàng xém cạnh bóng bẩy bao phủ đều bởi sốt cà chua cô đặc đậm đà, điểm xuyết giăm bông thơm mặn mà, hạt đậu Hà Lan ngọt bùi và trứng chiên vàng xốp mềm tơi, là món ăn nhanh gọn mà đầy đủ dưỡng chất cho cả gia đình.",
+  "categoryName": "Bánh & Món ăn nhẹ",
+  "authorEmail": "author@culinaryblog.local",
+  "prepTimeMinutes": 8,
+  "cookTimeMinutes": 7,
+  "servings": 2,
+  "difficulty": "Easy",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/red-vietnamese-fried-rice/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 544.0,
+    "protein": 22.0,
+    "carbohydrates": 72.0,
+    "fat": 18.0,
+    "fiber": 6.0,
+    "sodium": 1375.0
+  },
+  "ingredients": [
+    {
+      "name": "Bơ nhạt",
+      "quantity": 30,
+      "unit": "g"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3,
+      "unit": "tép",
+      "notes": "Băm nhuyễn"
+    },
+    {
+      "name": "Giăm bông",
+      "quantity": 0.5,
+      "unit": "cốc",
+      "notes": "Cắt hạt lựu"
+    },
+    {
+      "name": "Đậu Hà Lan đông lạnh",
+      "quantity": 1,
+      "unit": "cốc"
+    },
+    {
+      "name": "Cơm gạo thơm để qua đêm",
+      "quantity": 2.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Cà chua cô đặc",
+      "quantity": 2,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 2,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Nước tương",
+      "quantity": 2,
+      "unit": "muỗng cà phê",
+      "notes": "Loại thường hoặc nhạt, không dùng nước tương đen"
+    },
+    {
+      "name": "Đường trắng",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Trứng",
+      "quantity": 2,
+      "unit": "quả",
+      "notes": "Đánh tan"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Chuẩn bị cơm và nguyên liệu",
+      "durationMinutes": 5,
+      "description": "Dùng cơm nguội để tủ lạnh qua đêm, bóp tơi hạt cơm giúp cơm khi chiên săn hạt và không bị bết dính. Giăm bông thái hạt lựu nhỏ, tỏi băm nhuyễn, đậu Hà Lan rửa sạch để ráo."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Phi thơm bơ tỏi và xào giăm bông",
+      "durationMinutes": 2,
+      "description": "Đặt chảo sâu lòng lên bếp ở lửa lớn, làm tan chảy 1 muỗng canh bơ lạt, trút tỏi băm vào phi nhanh 10 giây cho dậy mùi thơm nức. Cho tiếp giăm bông và đậu Hà Lan vào đảo nhanh tay trong 1 phút cho giăm bông se vàng cạnh."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Chiên cơm cùng sốt cà chua cô đặc",
+      "durationMinutes": 3,
+      "description": "Trút toàn bộ cơm nguội đã bóp tơi vào chảo, thêm 2 muỗng canh sốt cà chua cô đặc (tomato paste). Đảo đều tay liên tục trên lửa lớn trong 2-3 phút cho từng hạt cơm tơi xốp, bám đều màu đỏ hồng óng ả và hơi xém cạnh dậy mùi khói thơm chảo."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Nêm nếm gia vị và đảo trứng xốp mềm",
+      "durationMinutes": 2,
+      "description": "Rưới 1 muỗng canh nước mắm ngon quanh thành chảo, thêm chút nước tương và đường, đảo thật nhanh tay. Dồn cơm sang một góc chảo, cho chút bơ vào góc trống làm tan chảy rồi đập trứng vào, dùng đũa khuấy nhanh cho trứng vừa chín xốp mềm thì đảo lẫn vào khối cơm. Tắt bếp, rắc tiêu xay và hành lá thái nhỏ rồi múc ra đĩa dùng nóng."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2022/09/Red-Vietnamese-Fried-Rice_2-SQ.jpg",
+      "altText": "Cơm chiên cà chua",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

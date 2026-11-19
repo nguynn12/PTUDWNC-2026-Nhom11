@@ -5,6 +5,7 @@ using CulinaryBlog.API.Filters;
 using CulinaryBlog.API.Middlewares;
 using CulinaryBlog.API.OpenApi;
 using CulinaryBlog.Application;
+using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Domain.Constants;
 using CulinaryBlog.Infrastructure;
 using CulinaryBlog.Infrastructure.Jobs;
@@ -12,6 +13,7 @@ using CulinaryBlog.Infrastructure.Persistence;
 using CulinaryBlog.Infrastructure.Persistence.Seeding;
 using CulinaryBlog.Infrastructure.Seeders;
 using Hangfire;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
@@ -70,8 +72,26 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddPresentation(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddCulinaryTelemetry(builder.Configuration);
 
+// Chỉ nhận địa chỉ chuyển tiếp từ các proxy được cấu hình tường minh.
+// Chạy trực tiếp không cấu hình proxy: bỏ qua hoàn toàn X-Forwarded-* từ client.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    var proxies = builder.Configuration.GetSection("ReverseProxy:KnownProxies").Get<string[]>() ?? [];
+    var networks = builder.Configuration.GetSection("ReverseProxy:KnownNetworks").Get<string[]>() ?? [];
+    options.ForwardedHeaders = ForwardedHeaders.None;
+    if (proxies.Length == 0 && networks.Length == 0) return;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+    foreach (var proxy in proxies) options.KnownProxies.Add(System.Net.IPAddress.Parse(proxy));
+    foreach (var network in networks) options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+    options.ForwardLimit = 1;
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 app.UseStaticFiles();
 
@@ -83,13 +103,34 @@ if (!app.Environment.IsDevelopment())
 
 app.Use(async (context, next) =>
 {
-    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-    context.Response.Headers["X-Frame-Options"] = "DENY";
-    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    context.Response.Headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
+    var ratePolicy = context.GetEndpoint()?.Metadata
+        .GetMetadata<Microsoft.AspNetCore.RateLimiting.EnableRateLimitingAttribute>()?.PolicyName;
+    // Ghi lúc bắt đầu response để exception handler không xóa mất các header này.
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        context.Response.Headers["X-Frame-Options"] = "DENY";
+        context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+        context.Response.Headers["Content-Security-Policy"] = IsToolingPath(context.Request.Path)
+            ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; " +
+              "font-src 'self' data: https://fonts.gstatic.com https://fonts.scalar.com https://cdn.jsdelivr.net; " +
+              "img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'"
+            : "default-src 'none'; frame-ancestors 'none'";
+        if (ratePolicy != null)
+        {
+            var limit = ratePolicy switch
+            {
+                CulinaryBlog.API.RateLimiting.AuthRateLimiting.PolicyName => CulinaryBlog.API.RateLimiting.AuthRateLimiting.PermitLimit,
+                CulinaryBlog.API.RateLimiting.UploadRateLimiting.PolicyName => CulinaryBlog.API.RateLimiting.UploadRateLimiting.PermitLimit,
+                _ => CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PermitLimit
+            };
+            context.Response.Headers["X-RateLimit-Limit"] = limit.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+        return Task.CompletedTask;
+    });
     await next();
 });
-
 // CORS đặt đầu pipeline: preflight OPTIONS trả ngay (không tính rate limit) và header CORS
 // vẫn có trên response lỗi (401/429/500) để trình duyệt đọc được Problem Details.
 app.UseCors(CorsSetup.PolicyName);
@@ -131,27 +172,44 @@ if (app.Environment.IsDevelopment())
 
     app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
     app.MapGet("/docs", () => Results.Redirect("/scalar/v1"));
+}
 
-    try
+try
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
+    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+
+    if (dbContext.Database.IsRelational() &&
+        (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Database:AutoMigrate")))
     {
-        using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryBlogDbContext>();
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        // 1. Áp dụng schema migration cho mọi môi trường (kể cả Production trong container)
+        await initialiser.InitialiseAsync();
 
-        if (dbContext.Database.IsRelational())
+        // 2. Chỉ nạp tài khoản, danh mục và công thức khi có cờ bật chủ đích hoặc ở Development.
+        if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("SeedData:Enabled"))
         {
-            await initialiser.InitialiseAsync();
             await initialiser.SeedAsync();
-            await CategorySeeder.SeedAsync(dbContext);
-            await RecipeSeeder.SeedAsync(dbContext);
-            await RecipeDetailSeeder.SeedAsync(dbContext);
+
+            // Chỉ nạp công thức từ JSON đã biên tập; bộ nạp tự tạo các danh mục cần dùng.
+            // Không tự sinh dữ liệu Bogus khi DB mới hoặc thiếu tệp dữ liệu.
+            var recipeDataPath = app.Configuration["Seeding:RecipeDataPath"]
+                ?? Path.Combine(AppContext.BaseDirectory, RecipeDataImporter.DefaultFolder);
+            var importResult = await RecipeDataImporter.ImportAsync(dbContext, recipeDataPath, app.Logger);
+            if (importResult.Imported > 0)
+                await scope.ServiceProvider.GetRequiredService<ICacheInvalidator>().InvalidateAllAsync();
         }
     }
-    catch (Exception ex)
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    if (!app.Environment.IsDevelopment())
     {
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
+        logger.LogCritical(ex, "Không thể khởi tạo cơ sở dữ liệu, dừng ứng dụng.");
+        throw;
     }
+    logger.LogWarning(ex, "Chưa thể kết nối đến cơ sở dữ liệu PostgreSQL để migrate/seed (vui lòng bật Docker nếu cần dữ liệu thật). API và Scalar UI vẫn khởi động bình thường.");
 }
 
 app.UseAuthentication();
@@ -163,12 +221,14 @@ if (!app.Environment.IsEnvironment("Testing"))
 {
     app.UseHangfireDashboard("/hangfire", new DashboardOptions
     {
-        Authorization = [new HangfireAdminAuthorizationFilter(allowAnonymousInDev: true)],
+        Authorization = [new HangfireAdminAuthorizationFilter()],
         DashboardTitle = "Culinary Blog - Background Jobs"
     });
 
     try
     {
+        RecurringJob.AddOrUpdate<CulinaryBlog.Infrastructure.Services.RecipeImageJobs>(
+            "reconcile-recipe-images", job => job.ReconcileAsync(CancellationToken.None), "*/15 * * * *");
         RecurringJob.AddOrUpdate<PurgeExpiredRecipesJob>(
             "purge-expired-recipes-30days",
             job => job.ExecuteAsync(CancellationToken.None),
@@ -188,12 +248,7 @@ if (!app.Environment.IsEnvironment("Testing"))
 
 // Nhóm /api/v1 có phiên bản (Asp.Versioning, SRS 5.2). Các module gắn endpoint vào nhóm này.
 var api = app.MapVersionedApi()
-    .RequireRateLimiting(CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PolicyName)
-    .AddEndpointFilter(async (context, next) =>
-    {
-        context.HttpContext.Response.Headers["X-RateLimit-Limit"] = CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PermitLimit.ToString();
-        return await next(context);
-    });
+    .RequireRateLimiting(CulinaryBlog.API.RateLimiting.GeneralRateLimiting.PolicyName);
 
 // 1. Phân hệ Xác thực & Quản lý người dùng (Thành viên 1)
 api.MapAuthEndpoints();
@@ -270,4 +325,10 @@ app.MapHealthEndpoints();
 
 app.Run();
 
-public partial class Program;
+public partial class Program
+{
+    private static readonly string[] ToolingPrefixes = ["/scalar", "/openapi", "/hangfire", "/docs"];
+
+    private static bool IsToolingPath(PathString path) =>
+        ToolingPrefixes.Any(prefix => path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase));
+}

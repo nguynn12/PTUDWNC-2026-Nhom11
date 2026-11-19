@@ -69,12 +69,30 @@ public sealed class CreateRecipeCommandHandler(
             Status = RecipeStatus.Draft,
             CategoryId = request.CategoryId,
             AuthorId = authorId,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            Nutrition = request.Nutrition != null
+                ? new CulinaryBlog.Domain.ValueObjects.RecipeNutrition
+                {
+                    Calories = request.Nutrition.Calories,
+                    Protein = request.Nutrition.Protein,
+                    Carbohydrates = request.Nutrition.Carbohydrates,
+                    Fat = request.Nutrition.Fat,
+                    Fiber = request.Nutrition.Fiber,
+                    Sodium = request.Nutrition.Sodium,
+                    Source = NutritionSource.Manual
+                }
+                : null
         };
 
         // 5. Thêm mới qua IRepository và commit qua IUnitOfWork
         recipeRepository.Add(recipe);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Lấy concurrency token xmin thực tế sau khi lưu vào database
+        var currentXmin = await dbContext.Recipes
+            .Where(r => r.Id == recipe.Id)
+            .Select(r => EF.Property<uint>(r, "xmin"))
+            .FirstOrDefaultAsync(cancellationToken);
 
         return new RecipeResponseDto
         {
@@ -91,7 +109,18 @@ public sealed class CreateRecipeCommandHandler(
             AuthorId = recipe.AuthorId,
             PublishedAt = recipe.PublishedAt,
             CreatedAt = recipe.CreatedAt,
-            UpdatedAt = recipe.UpdatedAt
+            UpdatedAt = recipe.UpdatedAt,
+            ConcurrencyToken = currentXmin != 0 ? currentXmin : null,
+            Nutrition = recipe.Nutrition != null ? new RecipeNutritionDto
+            {
+                Calories = recipe.Nutrition.Calories,
+                Protein = recipe.Nutrition.Protein,
+                Carbohydrates = recipe.Nutrition.Carbohydrates,
+                Fat = recipe.Nutrition.Fat,
+                Fiber = recipe.Nutrition.Fiber,
+                Sodium = recipe.Nutrition.Sodium,
+                Source = recipe.Nutrition.Source.ToString()
+            } : null
         };
     }
 }

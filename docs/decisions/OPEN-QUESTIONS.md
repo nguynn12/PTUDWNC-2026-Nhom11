@@ -2,7 +2,7 @@
 
 **Trạng thái:** mục 1 đã chốt ngày 2026-09-23 (chuyển sang `RESOLVED-CONFLICTS.md` mục D7). 3 điểm còn lại (mục 2–4) vẫn còn mơ hồ hoặc tự mâu thuẫn trong `SRS.md` v1.2.0, kể cả sau khi đã áp dụng toàn bộ `RESOLVED-CONFLICTS.md`. Chưa có quyết định chính thức từ nhóm.
 
-**QUY TẮC BẮT BUỘC cho AI coding agent:** nếu 1 task được giao chạm vào bất kỳ mục nào dưới đây (tên file/class/bảng trùng khớp), **dừng lại và hỏi người dùng trước khi viết code**, dù trong mục có ghi "đề xuất" — đề xuất chỉ là gợi ý tham khảo, **không phải quyết định đã chốt**, không được tự ý áp dụng.
+**QUY TẮC BẮT BUỘC cho người triển khai:** nếu 1 task được giao chạm vào bất kỳ mục nào dưới đây (tên file/class/bảng trùng khớp), **dừng lại và hỏi người dùng trước khi viết code**, dù trong mục có ghi "đề xuất" — đề xuất chỉ là gợi ý tham khảo, **không phải quyết định đã chốt**, không được tự ý áp dụng.
 
 ---
 

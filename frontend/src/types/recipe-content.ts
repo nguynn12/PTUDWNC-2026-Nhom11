@@ -10,9 +10,9 @@ import type { ApiProblemDetails, RecipeAuthorDto } from "./api";
 // ENUMS & ĐỘ KHÓ / TRẠNG THÁI CÔNG THỨC
 // ----------------------------------------------------------------------------
 
-export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | 0 | 1 | 2;
-export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2;
-export type DifficultyLevel = RecipeDifficulty | number;
+export type RecipeDifficulty = "Easy" | "Medium" | "Hard" | "Expert" | 1 | 2 | 3 | 4 | number;
+export type RecipeStatus = "Draft" | "Published" | "Archived" | "Deleted" | 0 | 1 | 2 | number;
+export type DifficultyLevel = RecipeDifficulty;
 
 // ----------------------------------------------------------------------------
 // 1. NGUYÊN LIỆU CÔNG THỨC (FR-RCP-009, Quyết định E1 & E2)
@@ -174,6 +174,7 @@ export interface CreateRecipePayload {
 }
 
 export interface UpdateRecipePayload extends CreateRecipePayload {
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
 }
 
@@ -191,6 +192,7 @@ export interface RecipeFullDetailDto {
   difficulty: RecipeDifficulty | number;
   status: RecipeStatus | number;
   categoryId: string;
+  category?: { id: string; name: string; slug: string } | null;
   categoryName?: string | null;
   categorySlug?: string | null;
   authorId?: string;
@@ -200,6 +202,7 @@ export interface RecipeFullDetailDto {
   createdAt: string;
   updatedAt?: string | null;
   primaryImageUrl?: string | null;
+  concurrencyToken?: string | number | null;
   xmin?: string | number | null;
   isDeleted?: boolean;
   deletedAt?: string | null;

@@ -37,11 +37,17 @@ public class RecipeLifecycleAuthorizationAndConcurrencyTests
 
     private sealed class TestFileStorageService : IFileStorageService
     {
+        public bool FailDeletes { get; set; }
+        public List<string> DeletedUrls { get; } = [];
         public Task<string> UploadAsync(System.IO.Stream stream, string fileName, string contentType, string? folder = null, CancellationToken cancellationToken = default)
             => Task.FromResult($"https://storage.test/{folder}/{fileName}");
 
         public Task DeleteAsync(string fileUrl, CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+        {
+            if (FailDeletes) throw new IOException("Storage unavailable");
+            DeletedUrls.Add(fileUrl);
+            return Task.CompletedTask;
+        }
     }
 
     private CulinaryBlogDbContext CreateInMemoryDbContext()
@@ -389,6 +395,32 @@ public class RecipeLifecycleAuthorizationAndConcurrencyTests
         Assert.NotNull(restored);
         Assert.False(restored.IsDeleted);
         Assert.Null(restored.DeletedAt);
+    }
+
+    [Fact]
+    public async Task PurgeJob_PreservesMetadataOnStorageFailure_RetriesAllVariants_AndSkipsFreshOrRestoredRecipes()
+    {
+        using var db = CreateInMemoryDbContext();
+        var expired = new Recipe { Title = "Expired", AuthorId = "author", IsDeleted = true,
+            DeletedAt = DateTimeOffset.UtcNow.AddDays(-35) };
+        var fresh = new Recipe { Title = "Fresh", AuthorId = "author", IsDeleted = true,
+            DeletedAt = DateTimeOffset.UtcNow.AddDays(-1) };
+        var restored = new Recipe { Title = "Restored", AuthorId = "author", IsDeleted = false };
+        expired.Images.Add(new RecipeImage { RecipeId = expired.Id, OriginalUrl = "original.jpg",
+            MediumUrl = "medium.jpg", ThumbnailUrl = "thumb.jpg" });
+        db.Recipes.AddRange(expired, fresh, restored);
+        await db.SaveChangesAsync();
+        var storage = new TestFileStorageService { FailDeletes = true };
+        var service = new RecipePurgeService(db, new UnitOfWork(db), new EfRepository<Recipe>(db),
+            storage, NullLogger<RecipePurgeService>.Instance);
+        await Assert.ThrowsAsync<AggregateException>(() => service.PurgeExpiredRecipesAsync());
+        Assert.True(await db.Recipes.IgnoreQueryFilters().AnyAsync(r => r.Id == expired.Id));
+        storage.FailDeletes = false;
+        Assert.Equal(1, await service.PurgeExpiredRecipesAsync());
+        Assert.Equal(3, storage.DeletedUrls.Distinct().Count());
+        Assert.Equal(0, await service.PurgeExpiredRecipesAsync());
+        Assert.True(await db.Recipes.IgnoreQueryFilters().AnyAsync(r => r.Id == fresh.Id));
+        Assert.True(await db.Recipes.AnyAsync(r => r.Id == restored.Id));
     }
 
     [Fact]

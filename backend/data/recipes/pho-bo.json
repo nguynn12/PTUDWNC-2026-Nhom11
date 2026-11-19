@@ -1,0 +1,151 @@
+{
+  "title": "Phở bò",
+  "originalTitle": "Pho (Vietnamese Noodle Soup)",
+  "description": "Món ăn quốc hồn quốc túy của nền ẩm thực Việt Nam. Nồi nước dùng trong veo, ngọt sâu lắng từ xương bò hầm ròng rã suốt nhiều giờ đồng hồ cùng hành tây, gừng nướng cháy xém và hoa hồi thơm nức mũi. Chan ngập tô bánh phở mềm mượt cùng từng lát thịt thăn bò tái hồng mềm tan ngọt lịm trên đầu lưỡi, tạo nên một bản giao hưởng vị giác khó quên.",
+  "categoryName": "Món bún & phở",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 425,
+  "servings": 4,
+  "difficulty": "Hard",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/228443/authentic-pho/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 509.0,
+    "protein": 35.0,
+    "carbohydrates": 66.0,
+    "fat": 11.0,
+    "fiber": 4.0,
+    "sodium": 3519.0
+  },
+  "ingredients": [
+    {
+      "name": "Xương ống bò (chân giò và đầu gối)",
+      "quantity": 1.8,
+      "unit": "kg"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 1,
+      "unit": "củ vừa",
+      "notes": "Không bóc vỏ, bổ đôi"
+    },
+    {
+      "name": "Gừng tươi",
+      "quantity": 5,
+      "unit": "lát"
+    },
+    {
+      "name": "Muối",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Hoa hồi",
+      "quantity": 2,
+      "unit": "cái"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 2.5,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước",
+      "quantity": 4,
+      "unit": "lít"
+    },
+    {
+      "name": "Bánh phở khô",
+      "quantity": 225,
+      "unit": "g"
+    },
+    {
+      "name": "Thịt bò thăn",
+      "quantity": 680,
+      "unit": "g",
+      "notes": "Thái mỏng"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 0.5,
+      "unit": "cốc",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Giá đỗ",
+      "quantity": 1.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Húng quế Thái",
+      "quantity": 1,
+      "unit": "bó"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt 4 múi"
+    },
+    {
+      "name": "Tương hoisin",
+      "quantity": 0.25,
+      "unit": "cốc"
+    },
+    {
+      "name": "Tương ớt tỏi",
+      "quantity": 0.25,
+      "unit": "cốc"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Nướng xương và hành gừng dậy hương thơm",
+      "durationMinutes": 45,
+      "description": "Xương ống và xương sườn bò xếp lên khay nướng ở 220°C trong 30-40 phút cho chảy bớt mỡ và vàng nâu xém cạnh. Nướng hành tây bổ đôi và củ gừng trên bếp cho cháy xém vỏ, cạo sạch muội than và đập dập nhẹ."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Ninh nước dùng xương bò trong veo",
+      "durationMinutes": 360,
+      "description": "Cho xương bò nướng vào nồi lớn ngập 4 lít nước sạch. Đun sôi bùng rồi hạ lửa thật nhỏ liu riu hé vung. Thường xuyên dùng muôi hớt sạch bọt nổi và váng mỡ thừa để nước dùng trong vắt. Thả hành nướng, gừng nướng và hoa hồi rang thơm vào nồi, ninh nhỏ lửa trong 6-8 tiếng để chắt lọc trọn vẹn chất ngọt tủy xương."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Lọc nước dùng và nêm nếm gia vị",
+      "durationMinutes": 15,
+      "description": "Vớt bỏ toàn bộ xương và bã gia vị, lọc nước dùng qua khăn xô hoặc rây mịn sang nồi sạch. Nêm nước mắm ngon nguyên chất, muối hạt và chút đường phèn thanh dịu, đun sôi liu riu trên bếp giữ nước luôn nóng già."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Chần bánh phở tươi",
+      "durationMinutes": 2,
+      "description": "Đun sôi một nồi nước riêng, thả bánh phở vào chần nhanh trong 20-30 giây cho bánh phở nóng mềm rồi vớt ra xóc ráo nước, chia đều vào 4 tô lớn."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Hoàn thiện bát phở bò nóng hổi",
+      "durationMinutes": 5,
+      "description": "Thịt thăn bò tươi thái thật mỏng ngang thớ, xếp đều lên mặt bánh phở. Rắc nhiều hành hoa, rau mùi ta thái nhỏ và hành tây thái lát mỏng. Múc nước dùng đang sôi sùng sục chan ngập mặt thịt bò (nước sôi già sẽ làm thịt bò tái chín tới hồng mềm mọng nước). Thưởng thức nóng kèm đĩa giá đỗ, húng quế, chanh tươi và ớt thái lát."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.media-allrecipes.com/userphotos/8986511.jpg",
+      "altText": "Phở bò",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

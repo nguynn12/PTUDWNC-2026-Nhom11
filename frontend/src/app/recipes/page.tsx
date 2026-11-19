@@ -1,6 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { toDifficultyNumber } from "@/lib/enums";
+import { AppError } from "@/lib/errors";
 import { getRecipes } from "@/lib/api/recipes";
 import { getCategories } from "@/lib/api/categories";
 import { RecipeFilterSidebar } from "@/components/recipe/RecipeFilterSidebar";
@@ -8,11 +10,13 @@ import { RecipeToolbar } from "@/components/recipe/RecipeToolbar";
 import { RecipeListWrapper } from "@/components/recipe/RecipeListWrapper";
 import { Pagination } from "@/components/common/Pagination";
 import { EmptyState } from "@/components/common/EmptyState";
+import { ErrorState } from "@/components/common/ErrorState";
+import { Button } from "@/components/ui/button";
 import type {
   RecipeSummaryDto,
   CategoryDto,
   GetRecipesParams,
-  RecipeDifficulty,
+
 } from "@/types/api";
 
 // Đánh dấu Server-Side Rendering (SSR) động theo URL searchParams (SRS Mục 5.1)
@@ -47,12 +51,17 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
   const page = Math.max(1, Number(resolvedParams.page) || 1);
   const pageSize = 12;
   const categoryId = resolvedParams.categoryId || undefined;
-  const difficulty = (resolvedParams.difficulty as RecipeDifficulty) || undefined;
+  const difficulty = toDifficultyNumber(resolvedParams.difficulty);
   const maxTotalTime = resolvedParams.maxTotalTime ? Number(resolvedParams.maxTotalTime) : undefined;
   const minCalories = resolvedParams.minCalories ? Number(resolvedParams.minCalories) : undefined;
   const maxCalories = resolvedParams.maxCalories ? Number(resolvedParams.maxCalories) : undefined;
   const sortBy = (resolvedParams.sortBy as GetRecipesParams["sortBy"]) || "newest";
   const sortOrder = (resolvedParams.sortOrder as "asc" | "desc") || "desc";
+  const hasInvalidFilter =
+    Boolean(resolvedParams.difficulty && difficulty === undefined) ||
+    (maxTotalTime !== undefined && (!Number.isInteger(maxTotalTime) || maxTotalTime < 0)) ||
+    [minCalories, maxCalories].some(value => value !== undefined && (!Number.isFinite(value) || value < 0)) ||
+    (minCalories !== undefined && maxCalories !== undefined && minCalories > maxCalories);
 
   const queryParams: GetRecipesParams = {
     page,
@@ -70,26 +79,35 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
   let categories: CategoryDto[] = [];
   let totalCount = 0;
   let totalPages = 1;
+  let loadError: AppError | null = null;
 
   try {
+    if (hasInvalidFilter) throw new AppError({ status: 400 });
+
     const [recRes, catRes] = await Promise.all([
-      getRecipes(queryParams).catch(() => ({ data: [], meta: null })),
-      getCategories().catch(() => []),
+      getRecipes(queryParams),
+      getCategories(),
     ]);
 
-    recipes = recRes.data || [];
-    categories = catRes || [];
-
-    if (recRes.meta) {
-      totalCount = recRes.meta.totalCount || recipes.length;
-      totalPages = recRes.meta.totalPages || 1;
-    } else {
-      totalCount = recipes.length;
+    const total = recRes.meta?.total ?? recRes.meta?.totalCount;
+    if (!recRes.meta || total === undefined || !Array.isArray(recRes.data)) {
+      throw new AppError({ status: 502, message: "Máy chủ trả dữ liệu danh sách chưa đầy đủ. Vui lòng thử lại." });
     }
-  } catch {
-    recipes = [];
-    categories = [];
+
+    recipes = recRes.data;
+    categories = catRes;
+    totalCount = total;
+    totalPages = recRes.meta.totalPages;
+  } catch (error) {
+    loadError = AppError.from(error);
   }
+
+  const invalidFilter = loadError?.status === 400 || loadError?.status === 422;
+  const retryParams = new URLSearchParams();
+  for (const [name, value] of Object.entries(resolvedParams)) {
+    if (typeof value === "string") retryParams.set(name, value);
+  }
+  const retryUrl = retryParams.size > 0 ? `/recipes?${retryParams}` : "/recipes";
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
@@ -118,38 +136,49 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
         </p>
       </div>
 
-      {/* Bố cục 2 cột: Sidebar bộ lọc bên trái + Danh sách bài viết bên phải */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        {/* CỘT 1: SIDEBAR BỘ LỌC ĐA TIÊU CHÍ */}
-        <RecipeFilterSidebar categories={categories} />
-
-        {/* CỘT 2: TOOLBAR & DANH SÁCH BÀI VIẾT */}
-        <div className="flex-1 min-w-0 w-full">
-          <RecipeToolbar
-            totalCount={totalCount}
-            currentSort={sortBy}
-            currentOrder={sortOrder}
+      {loadError ? (
+        <div className="space-y-4">
+          <ErrorState
+            title={invalidFilter ? "Bộ lọc không hợp lệ" : "Không thể tải danh sách công thức"}
+            message={invalidFilter ? "Hãy đặt lại bộ lọc và chọn lại các tiêu chí tìm kiếm." : loadError.message}
+            showBackHome={false}
           />
-
-          {recipes.length > 0 ? (
-            <>
-              {/* Lưới / Danh sách thẻ công thức */}
-              <RecipeListWrapper recipes={recipes} />
-
-              {/* Phân trang đồng bộ URL */}
-              <Pagination page={page} totalPages={totalPages} />
-            </>
-          ) : (
-            <EmptyState
-              icon="🔍"
-              title="Không tìm thấy công thức phù hợp"
-              description="Hãy thử nới lỏng các tiêu chí lọc (thời gian, calo, độ khó) để tìm thấy nhiều món ăn ngon hơn."
-              actionText="Xóa toàn bộ bộ lọc"
-              actionHref="/recipes"
-            />
-          )}
+          <div className="flex justify-center">
+            <Button asChild>
+              {/* Tải lại tài liệu để thử lại yêu cầu server với nguyên bộ lọc và trang hiện tại. */}
+              <a href={invalidFilter ? "/recipes" : retryUrl}>
+                {invalidFilter ? "Đặt lại bộ lọc" : "Thử lại"}
+              </a>
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <RecipeFilterSidebar categories={categories} />
+          <div className="flex-1 min-w-0 w-full">
+            <RecipeToolbar
+              totalCount={totalCount}
+              currentSort={sortBy}
+              currentOrder={sortOrder}
+            />
+
+            {recipes.length > 0 ? (
+              <>
+                <RecipeListWrapper recipes={recipes} />
+                <Pagination page={page} totalPages={totalPages} />
+              </>
+            ) : (
+              <EmptyState
+                icon="🔍"
+                title="Không tìm thấy công thức phù hợp"
+                description="Hãy thử nới lỏng các tiêu chí lọc (thời gian, calo, độ khó) để tìm thấy nhiều món ăn ngon hơn."
+                actionText="Xóa toàn bộ bộ lọc"
+                actionHref="/recipes"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

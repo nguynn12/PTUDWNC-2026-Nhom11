@@ -24,6 +24,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
         {/* Khung ảnh đại diện danh mục */}
         <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-primary/20 bg-muted shadow-xs shrink-0 mb-3.5 transition-transform duration-300 group-hover:scale-105 group-hover:border-primary/50">
           <Image
+            referrerPolicy="no-referrer"
             src={fallbackImage}
             alt={category.name}
             fill

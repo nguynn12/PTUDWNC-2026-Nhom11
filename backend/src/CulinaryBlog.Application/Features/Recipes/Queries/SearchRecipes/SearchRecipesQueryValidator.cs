@@ -41,6 +41,10 @@ public class SearchRecipesQueryValidator : AbstractValidator<SearchRecipesQuery>
         RuleFor(x => x.PageSize)
             .InclusiveBetween(1, 50).WithMessage("Kích thước trang (pageSize) phải nằm trong khoảng từ 1 đến 50.");
 
+        RuleFor(x => x.Difficulty)
+            .IsInEnum().When(x => x.Difficulty.HasValue)
+            .WithMessage("Mức độ khó không hợp lệ.");
+
         // 3. Kiểm tra tiêu chí sắp xếp (FR-SRCH-003)
         RuleFor(x => x.SortBy)
             .Must(sortBy => string.IsNullOrWhiteSpace(sortBy) || AllowedSortBy.Contains(sortBy.Trim().ToLowerInvariant()))

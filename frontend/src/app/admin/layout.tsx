@@ -1,12 +1,12 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef, useState, useSyncExternalStore } from 'react';
+import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   DashboardIcon,
   BookOpenIcon,
-  PlusCircleIcon,
   TrashIcon,
   ArrowUpRightIcon,
   FlameIcon,
@@ -15,16 +15,31 @@ import { ToastProvider } from '@/components/common/Toast';
 import { RequireRole } from '@/components/auth/RequireRole';
 import { useCurrentUser } from '@/store/auth-store';
 
+function subscribeToViewport(onChange: () => void) {
+  const media = window.matchMedia('(max-width: 900px)');
+  media.addEventListener('change', onChange);
+  return () => media.removeEventListener('change', onChange);
+}
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const user = useCurrentUser();
+  const isMobile = useSyncExternalStore(subscribeToViewport, () => window.matchMedia('(max-width: 900px)').matches, () => false);
+  const [sidebarOverride, setSidebarOverride] = useState<boolean | null>(null);
+  const sidebarOpen = sidebarOverride ?? !isMobile;
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const closeSidebar = () => {
+    setSidebarOverride(false);
+    toggleRef.current?.focus();
+  };
 
   return (
     <ToastProvider>
       <RequireRole role="Admin">
         <div className="dashboard-wrapper">
+        {isMobile && sidebarOpen && <button className="sidebar-backdrop" aria-label="Đóng menu quản trị" onClick={closeSidebar} />}
         {/* SIDEBAR NAVIGATION */}
-        <aside className="dashboard-sidebar">
+        <aside id="admin-sidebar" className="dashboard-sidebar" hidden={!sidebarOpen} onKeyDown={(event) => { if (event.key === 'Escape') closeSidebar(); }}>
           <div className="sidebar-brand">
             <div className="sidebar-logo-icon">
               <FlameIcon size={22} />
@@ -33,9 +48,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <div className="sidebar-brand-title">Culinary Blog</div>
               <div className="sidebar-brand-subtitle">Admin Hub</div>
             </div>
+            <button type="button" className="sidebar-close" onClick={closeSidebar} aria-label="Đóng thanh điều hướng" title="Đóng thanh điều hướng"><X size={20} /></button>
           </div>
 
-          <nav className="sidebar-nav">
+          <nav className="sidebar-nav" aria-label="Điều hướng quản trị" onClick={(event) => { if (isMobile && (event.target as HTMLElement).closest('a')) closeSidebar(); }}>
             <div className="sidebar-nav-heading">Quản trị Hệ thống</div>
             
             <Link
@@ -104,7 +120,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </aside>
 
         {/* MAIN CONTENT CONTAINER */}
-          <div className="dashboard-main">{children}</div>
+        <div className="dashboard-main">
+          <div className="dashboard-toolbar">
+            <button ref={toggleRef} type="button" className="btn btn-secondary btn-sm" aria-expanded={sidebarOpen} aria-controls="admin-sidebar" onClick={() => setSidebarOverride(!sidebarOpen)}>
+              <Menu size={18} /><span>{sidebarOpen ? 'Ẩn menu' : 'Mở menu quản trị'}</span>
+            </button>
+          </div>
+          {children}
+        </div>
         </div>
       </RequireRole>
     </ToastProvider>

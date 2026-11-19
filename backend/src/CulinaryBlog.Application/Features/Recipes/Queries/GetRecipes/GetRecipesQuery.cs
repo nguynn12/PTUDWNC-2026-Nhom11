@@ -19,9 +19,10 @@ using MediatR;
 /// <param name="MinCalories">Lượng calo tối thiểu (kcal).</param>
 /// <param name="MaxCalories">Lượng calo tối đa (kcal).</param>
 /// <param name="SortBy">Trường sắp xếp (publishedAt, newest, totalTime, quickest, prepTime, cookTime, calories, title, servings).</param>
-/// <param name="SortOrder">Thứ tự sắp xếp (asc hoặc desc, mặc định desc cho publishedAt).</param>
+/// <param name="SortOrder">Thứ tự sắp xếp (asc hoặc desc, mặc định createdAt giảm dần theo quyết định C1).</param>
 /// <param name="Mine">Khi true, chỉ lấy các bài viết của tác giả hiện tại (bao gồm Draft, Published, Archived).</param>
 /// <param name="Status">Lọc theo trạng thái bài viết cụ thể (khi mine=true).</param>
+/// <param name="AuthorId">Lọc theo định danh tác giả cụ thể (phục vụ Admin/nghiệp vụ lọc tác giả - API-14).</param>
 public record GetRecipesQuery(
     int Page = 1,
     int PageSize = 12,
@@ -35,5 +36,7 @@ public record GetRecipesQuery(
     string? SortBy = null,
     string? SortOrder = null,
     bool? Mine = null,
-    RecipeStatus? Status = null
+    RecipeStatus? Status = null,
+    string? Q = null,
+    string? AuthorId = null
 ) : IRequest<PagedResult<RecipeSummaryDto>>;

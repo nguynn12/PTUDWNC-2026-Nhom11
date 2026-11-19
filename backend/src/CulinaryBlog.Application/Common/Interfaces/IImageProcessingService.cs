@@ -16,7 +16,7 @@ public record ImageVariantResult(
 
 /// <summary>
 /// Giao diện xử lý biến đổi hình ảnh (Image Resizing & Optimization).
-/// Hiện thực theo yêu cầu FR-JOB-002: sinh thumbnail 300x300 và medium 800x600 bằng ImageSharp.
+/// Hiện thực theo yêu cầu FR-JOB-002: sinh thumbnail 300x300 và medium 800x600 bằng Magick.NET.
 /// </summary>
 public interface IImageProcessingService
 {
@@ -28,4 +28,11 @@ public interface IImageProcessingService
         Stream sourceStream,
         string originalFileName,
         CancellationToken cancellationToken = default);
+}
+
+/// <summary>Xếp tác vụ ảnh vào hàng đợi bền vững, tách khỏi HTTP request.</summary>
+public interface IRecipeImageJobs
+{
+    void EnqueueResize(Guid imageId);
+    void EnqueueDelete(string fileUrl);
 }

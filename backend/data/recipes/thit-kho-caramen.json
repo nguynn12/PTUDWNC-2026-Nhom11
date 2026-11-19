@@ -1,0 +1,120 @@
+{
+  "title": "Thịt heo kho caramel",
+  "originalTitle": "Vietnamese-style caramel pork",
+  "description": "Món thịt kho mang phong vị Nam Bộ quyến rũ với từng miếng thịt vai heo nạc mỡ đan xen mềm ngậy, áo lớp sốt caramel nâu óng ả sóng sánh. Vị mặn mòi của nước mắm nhĩ hòa quyện vị ngọt thanh của caramel đường nâu, cay ấm nồng nàn của gừng củ và ớt đỏ, ăn kèm cơm trắng nóng hổi và đĩa cải thìa luộc xanh giòn mướt mát thì không gì sánh bằng.",
+  "categoryName": "Món kho",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-style-caramel-pork",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 350.0,
+    "protein": 24.0,
+    "carbohydrates": 19.0,
+    "fat": 20.0,
+    "fiber": 0.5,
+    "sodium": 484.0
+  },
+  "ingredients": [
+    {
+      "name": "Dầu đậu phộng",
+      "quantity": 1.5,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Thịt vai heo",
+      "quantity": 500,
+      "unit": "g",
+      "notes": "Cắt miếng vừa ăn"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 2,
+      "unit": "củ",
+      "notes": "Băm nhỏ"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Bào nhuyễn"
+    },
+    {
+      "name": "Ớt đỏ",
+      "quantity": 1,
+      "unit": "trái",
+      "notes": "Bỏ hạt, băm nhỏ"
+    },
+    {
+      "name": "Đường nâu",
+      "quantity": 75,
+      "unit": "g"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Thêm tùy khẩu vị"
+    },
+    {
+      "name": "Tương ớt",
+      "quantity": 1.5,
+      "unit": "muỗng cà phê",
+      "notes": "1–2 muỗng cà phê, dùng sriracha"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 4,
+      "unit": "cây",
+      "notes": "Bổ đôi, xé sợi"
+    },
+    {
+      "name": "Cơm trắng",
+      "notes": "Ăn kèm"
+    },
+    {
+      "name": "Cải thìa",
+      "notes": "Ăn kèm"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Sơ chế và áp chảo thịt heo săn chắc",
+      "durationMinutes": 5,
+      "description": "Thịt vai heo rửa sạch, cắt miếng vuông quân cờ vừa ăn. Đun nóng 1 muỗng canh dầu ăn trong chảo sâu lòng ở lửa lớn, cho thịt heo vào áp chảo nhanh từng mẻ khoảng 3-4 phút cho các mặt thịt săn chắc, xém vàng nhẹ và tươm bớt mỡ thừa rồi vớt ra đĩa."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Phi thơm hành gừng ớt",
+      "durationMinutes": 3,
+      "description": "Hạ lửa vừa, tận dụng chút mỡ trong chảo phi thơm hành khô băm nhỏ, gừng nạo nhuyễn và ớt đỏ băm trong 1-2 phút cho bốc mùi thơm nồng nàn."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Nấu sốt caramel sóng sánh và kho thịt",
+      "durationMinutes": 12,
+      "description": "Cho 75g đường nâu, 1 muỗng canh nước mắm ngon, 1.5 thìa cà phê tương ớt sriracha và 200ml nước ấm vào chảo. Khuấy đều tay ở lửa vừa cho đường tan chảy hòa quyện. Trút toàn bộ thịt heo đã áp chảo vào, đun sôi bùng rồi hạ lửa vừa đun sôi mạnh không đậy nắp trong 10-12 phút để nước kho cạn dần và sánh keo lại thành lớp sốt caramel bóng bẩy bám chặt từng miếng thịt."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Hoàn thiện và dọn ăn",
+      "durationMinutes": 3,
+      "description": "Nếm lại nước kho, thêm chút nước mắm nếu thích vị mặn đậm hơn. Rắc hành lá thái sợi và tiêu sọ thơm nức mũi. Dọn thịt kho caramel ra đĩa sâu lòng, ăn cùng cơm trắng dẻo thơm và cải thìa luộc xanh mướt chấm ngập nước sốt caramel."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/vietnamese-caramel-pork-5e1c6e0.jpg",
+      "altText": "Thịt heo kho caramel",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

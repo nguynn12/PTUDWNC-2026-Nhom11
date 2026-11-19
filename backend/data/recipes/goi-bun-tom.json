@@ -1,0 +1,123 @@
+{
+  "title": "Gỏi bún tôm",
+  "originalTitle": "Vietnamese prawn salad",
+  "description": "Món gỏi trộn thanh mát, tươi mới và tràn đầy năng lượng cho những ngày hè oi ả. Tôm sú tươi luộc chín đỏ au ngọt lịm kết hợp cùng sợi bún gạo mềm dai, dưa leo giòn rụm, cà rốt bào sợi thanh mát, rau thơm the the và đậu phộng rang bùi bùi giã dập, hòa quyện trong nước sốt chanh tỏi ớt chua ngọt đánh thức mọi giác quan.",
+  "categoryName": "Gỏi & Nộm",
+  "authorEmail": "chef.baongoc@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 0,
+  "servings": 2,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-prawn-salad",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 579.0,
+    "protein": 27.0,
+    "carbohydrates": 117.0,
+    "fat": 4.0,
+    "fiber": 2.0,
+    "sodium": 223.0
+  },
+  "ingredients": [
+    {
+      "name": "Tỏi",
+      "quantity": 1,
+      "unit": "tép nhỏ",
+      "notes": "Băm"
+    },
+    {
+      "name": "Ớt đỏ",
+      "quantity": 1,
+      "unit": "trái nhỏ",
+      "notes": "Bỏ hạt, băm nhỏ"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 2,
+      "unit": "quả",
+      "notes": "Lấy nước"
+    },
+    {
+      "name": "Bún gạo mảnh",
+      "quantity": 250,
+      "unit": "g"
+    },
+    {
+      "name": "Tôm sú luộc",
+      "quantity": 150,
+      "unit": "g",
+      "notes": "Bổ đôi theo sống lưng"
+    },
+    {
+      "name": "Dưa leo",
+      "quantity": 0.5,
+      "unit": "quả",
+      "notes": "Bóc vỏ, bỏ ruột, cắt sợi que"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Cắt sợi que hoặc bào"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 6,
+      "unit": "cây",
+      "notes": "Xé sợi"
+    },
+    {
+      "name": "Ngò rí hoặc bạc hà",
+      "quantity": 1,
+      "unit": "nắm"
+    },
+    {
+      "name": "Đậu phộng rang",
+      "quantity": 1,
+      "unit": "muỗng canh",
+      "notes": "Băm"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Luộc tôm sú ngọt giòn",
+      "durationMinutes": 5,
+      "description": "Đun sôi nồi nước có thả vài lát gừng và cọng sả đập dập. Thả tôm sú tươi vào luộc chín tới trong khoảng 3 phút đến khi tôm cong tròn và chuyển sang màu đỏ au. Vớt tôm ra ngâm ngay vào âu nước đá lạnh 3 phút để tôm giòn thịt, sau đó bóc vỏ, chừa đuôi và chẻ đôi dọc sống lưng."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Trộn nước sốt gỏi chua ngọt thanh tao",
+      "durationMinutes": 5,
+      "description": "Giã nhuyễn tỏi và ớt hiểm trong cối cùng đường cát. Thêm nước cốt chanh tươi và 3 muỗng canh nước ấm, khuấy đều cho đường tan hoàn toàn tạo nên vị chua thanh mặn ngọt hài hòa."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Sơ chế bún và rau củ tươi",
+      "durationMinutes": 10,
+      "description": "Chần bún gạo qua nước sôi cho sợi bún mềm tơi rồi để thật ráo nước. Dưa leo bỏ ruột thái sợi que mỏng, cà rốt bào sợi, hành lá chẻ sợi, rau bạc hà và ngò rí rửa sạch để ráo."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Trộn gỏi và hoàn thiện",
+      "durationMinutes": 5,
+      "description": "Cho bún vào 2 tô sâu lòng, xếp tôm luộc đỏ au lên trên cùng dưa leo, cà rốt và rau thơm. Rưới đều nước sốt chanh tỏi ớt khắp tô, rắc đậu phộng rang giã dập lên trên cùng và trộn đều nhẹ tay khi thưởng thức."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-285531_12-3d9c12b.jpg",
+      "altText": "Gỏi bún tôm",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

@@ -11,9 +11,30 @@ const AUTH_ONLY_PAGES = ["/auth/login", "/auth/register"];
  * Chuyển hướng sớm dựa trên cookie đánh dấu (không chứa token). Đây chỉ là lớp tiện lợi:
  * quyền thật do backend kiểm tra bằng Bearer token, và RequireAuth kiểm tra lại phía client.
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const loggedIn = request.cookies.get(AUTH_FLAG_COOKIE)?.value === "1";
   const { pathname, search } = request.nextUrl;
+
+  // API trả 301 cho slug cũ. Giữ mã 301 ở URL trang web thay vì để HTTP client tự theo redirect.
+  if ((request.method === "GET" || request.method === "HEAD") && /^\/recipes\/[^/]+$/.test(pathname)) {
+    const backend = process.env.BACKEND_API_URL || "http://localhost:5000";
+    try {
+      const response = await fetch(`${backend}/api/v1${pathname}`, {
+        redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(3000),
+        headers: { Accept: "application/json" },
+      });
+      const location = response.headers.get("location");
+      if (response.status === 301 && location) {
+        const destination = new URL(location, backend);
+        const match = /^\/api\/v1\/recipes\/([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(destination.pathname);
+        if (destination.origin === new URL(backend).origin && match && `/recipes/${match[1]}` !== pathname) {
+          return NextResponse.redirect(new URL(`/recipes/${match[1]}${search}`, request.url), 301);
+        }
+      }
+    } catch {
+      // Trang chi tiết tự xử lý lỗi/404 khi backend không sẵn sàng.
+    }
+  }
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   if (isProtected && !loggedIn) {
@@ -29,5 +50,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*", "/admin/:path*", "/profile", "/profile/:path*", "/auth/:path*"],
+  matcher: ["/recipes/:slug", "/dashboard", "/dashboard/:path*", "/admin/:path*", "/profile", "/profile/:path*", "/auth/:path*"],
 };

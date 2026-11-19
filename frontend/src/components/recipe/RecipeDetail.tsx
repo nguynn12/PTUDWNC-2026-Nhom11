@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 
 import { useAuthStore } from "@/store/auth-store";
+import { getDifficultyVariant, RecipeStatus, toStatusNumber } from "@/lib/enums";
 import type { RecipeDetailDto, RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
 
 
@@ -56,13 +57,16 @@ function getDifficultyBadge(diff: RecipeDifficulty | number): {
   label: string;
   variant: "easy" | "medium" | "hard";
 } {
-  if (diff === "Easy" || diff === 0) return { label: "Độ khó: Dễ", variant: "easy" };
-  if (diff === "Hard" || diff === 2) return { label: "Độ khó: Khó", variant: "hard" };
-  return { label: "Độ khó: Vừa", variant: "medium" };
+  const info = getDifficultyVariant(diff);
+  return { label: `Độ khó: ${info.label}`, variant: info.variant };
+
+
 }
 
 export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps) {
   const diff = getDifficultyBadge(recipe.difficulty);
+  const status = toStatusNumber(recipe.status);
+  const isPrivateRecipe = recipe.status !== undefined && status !== RecipeStatus.Published;
   const user = useAuthStore((s) => s.user);
 
   // Quyền xem và sửa: Tác giả hoặc Quản trị viên
@@ -132,8 +136,8 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
       name: recipe.author?.displayName || recipe.author?.userName || "Culinary Blog",
     },
     datePublished: recipe.publishedAt,
-    prepTime: `PT${recipe.prepTime || 15}M`,
-    cookTime: `PT${recipe.cookTime || 30}M`,
+    prepTime: `PT${recipe.prepTime ?? 0}M`,
+    cookTime: `PT${recipe.cookTime ?? 0}M`,
     totalTime: `PT${recipe.totalTime || (recipe.prepTime || 0) + (recipe.cookTime || 0) || 45}M`,
     recipeYield: `${recipe.servings || 4} khẩu phần`,
     recipeCategory: recipe.categoryName,
@@ -148,10 +152,10 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
     nutrition: recipe.nutrition
       ? {
           "@type": "NutritionInformation",
-          calories: recipe.nutrition.calories ? `${recipe.nutrition.calories} calories` : undefined,
-          fatContent: recipe.nutrition.fatGrams ? `${recipe.nutrition.fatGrams} g` : undefined,
-          carbohydrateContent: recipe.nutrition.carbsGrams ? `${recipe.nutrition.carbsGrams} g` : undefined,
-          proteinContent: recipe.nutrition.proteinGrams ? `${recipe.nutrition.proteinGrams} g` : undefined,
+          calories: recipe.nutrition.calories != null ? `${recipe.nutrition.calories} calories` : undefined,
+          fatContent: recipe.nutrition.fatGrams != null ? `${recipe.nutrition.fatGrams} g` : undefined,
+          carbohydrateContent: recipe.nutrition.carbsGrams != null ? `${recipe.nutrition.carbsGrams} g` : undefined,
+          proteinContent: recipe.nutrition.proteinGrams != null ? `${recipe.nutrition.proteinGrams} g` : undefined,
         }
       : undefined,
   };
@@ -201,12 +205,12 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
             <Badge variant={diff.variant} className="text-xs font-semibold">
               {diff.label}
             </Badge>
-            {recipe.status && recipe.status !== "Published" && (
+            {isPrivateRecipe && (
               <Badge
-                variant={recipe.status === "Draft" ? "statusDraft" : "statusArchived"}
+                variant={status === RecipeStatus.Draft ? "statusDraft" : "statusArchived"}
                 className="text-xs"
               >
-                {recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}
+                {status === RecipeStatus.Draft ? "Bản nháp" : "Lưu trữ"}
               </Badge>
             )}
           </div>
@@ -224,11 +228,11 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
         </div>
 
         {/* Cảnh báo chế độ xem trước dành riêng cho bản nháp / lưu trữ */}
-        {recipe.status && recipe.status !== "Published" && (
+        {isPrivateRecipe && (
           <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs sm:text-sm flex items-center gap-2">
             <span>⚠️</span>
             <span>
-              Công thức đang ở trạng thái <strong>{recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}</strong>. Chỉ tác giả và quản trị viên mới có thể xem nội dung này.
+              Công thức đang ở trạng thái <strong>{status === RecipeStatus.Draft ? "Bản nháp" : "Lưu trữ"}</strong>. Chỉ tác giả và quản trị viên mới có thể xem nội dung này.
             </span>
           </div>
         )}
@@ -271,6 +275,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
         {/* Khối Ảnh chính Hero Image (Tỷ lệ 16:9) */}
         <div className="relative w-full pt-[56.25%] rounded-3xl overflow-hidden shadow-lg bg-[var(--bg-surface-alt)] border border-[var(--border-subtle)]">
           <Image
+            referrerPolicy="no-referrer"
             src={selectedImage}
             alt={recipe.title}
             fill
@@ -296,6 +301,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
                 title={`Xem ảnh ${idx + 1}`}
               >
                 <Image
+                  referrerPolicy="no-referrer"
                   src={imgUrl}
                   alt={`Thumbnail ${idx + 1}`}
                   fill
@@ -315,7 +321,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
             Chuẩn bị
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
-            {recipe.prepTime || 15} phút
+            {recipe.prepTime ?? 0} phút
           </div>
         </div>
 
@@ -324,16 +330,16 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
             Nấu nướng
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1">
-            {recipe.cookTime || 30} phút
+            {recipe.cookTime ?? 0} phút
           </div>
         </div>
 
         <div className="text-center p-2 rounded-xl bg-[var(--bg-surface-alt)]/60">
           <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-bold">
-            Tổng thời gian
+            Chuẩn bị + nấu
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--primary)] mt-1">
-            {recipe.totalTime || ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 15) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 30)) || 45} phút
+            {recipe.totalTime ?? ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) + (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0))} phút
           </div>
         </div>
 
@@ -346,17 +352,19 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
           </div>
         </div>
 
-        {Boolean(recipe.nutrition?.calories) && (
+        {recipe.nutrition?.calories != null && (
           <div className="col-span-2 sm:col-span-4 lg:col-span-1 text-center p-2 rounded-xl bg-[var(--secondary-light)]/60">
             <div className="text-xs text-[var(--secondary)] uppercase tracking-wider font-bold">
               Năng lượng
             </div>
             <div className="text-lg sm:text-xl font-bold text-[var(--secondary)] mt-1">
-              {recipe.nutrition?.calories} kcal
+              {recipe.nutrition.calories} kcal
             </div>
           </div>
         )}
       </section>
+
+      <p className="text-sm text-[var(--text-secondary)] -mt-6 mb-8">Thời gian ướp, ngâm hoặc chờ (nếu có) được nêu trong từng bước.</p>
 
       {/* BỐ CỤC NỘI DUNG: NGUYÊN LIỆU + DINH DƯỠNG & CÁC BƯỚC THỰC HIỆN */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
@@ -415,7 +423,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
                 </h3>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {recipe.nutrition.calories && (
+                  {recipe.nutrition.calories !== undefined && recipe.nutrition.calories !== null && (
                     <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
                       <div className="text-xs text-[var(--text-muted)] font-medium">Calo</div>
                       <div className="text-base font-bold text-[var(--primary)] mt-0.5">
@@ -455,12 +463,28 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
                       </div>
                     </div>
                   )}
+                  {recipe.nutrition.sodiumMilligrams !== undefined && recipe.nutrition.sodiumMilligrams !== null && (
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border-subtle)] text-center">
+                      <div className="text-xs text-[var(--text-muted)] font-medium">Natri</div>
+                      <div className="text-base font-bold text-[var(--text-primary)] mt-0.5">
+                        {recipe.nutrition.sodiumMilligrams} mg
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* DÒNG LƯU Ý BẮT BUỘC THEO ĐẶC TẢ SRS DÒNG 1295 */}
                 <p className="text-xs text-[var(--text-muted)] italic border-l-2 border-amber-500 pl-2.5 m-0 leading-relaxed">
                   “Thông tin dinh dưỡng do tác giả cung cấp và chỉ mang tính tham khảo.”
                 </p>
+              </div>
+            </Card>
+          )}
+          {!recipe.nutrition && (
+            <Card className="rounded-2xl border-[var(--border-subtle)] bg-[var(--bg-surface-alt)]/50 shadow-xs">
+              <div className="p-5 sm:p-6 space-y-2">
+                <h3 className="text-lg font-bold m-0">Thông tin dinh dưỡng</h3>
+                <p className="text-sm text-[var(--text-secondary)] m-0">Công thức này chưa được bổ sung số liệu dinh dưỡng.</p>
               </div>
             </Card>
           )}
@@ -514,6 +538,7 @@ export function RecipeDetail({ recipe, relatedRecipes = [] }: RecipeDetailProps)
                       {step.imageUrl && (
                         <div className="relative w-full pt-[52%] rounded-xl overflow-hidden mt-3 border border-[var(--border-subtle)] bg-[var(--bg-surface-alt)]">
                           <Image
+                            referrerPolicy="no-referrer"
                             src={step.imageUrl}
                             alt={`Ảnh minh họa bước ${step.stepNumber}`}
                             fill

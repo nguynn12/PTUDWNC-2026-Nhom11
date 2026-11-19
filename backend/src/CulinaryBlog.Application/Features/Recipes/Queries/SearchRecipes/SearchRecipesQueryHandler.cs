@@ -81,7 +81,7 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
         {
             baseQuery = _dbContext.Recipes
                 .FromSqlInterpolated($@"
-                    SELECT * FROM ""Recipes""
+                    SELECT *, xmin FROM ""Recipes""
                     WHERE ""Status"" = {(short)RecipeStatus.Published}
                       AND ""IsDeleted"" = false
                       AND (
@@ -174,15 +174,16 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
                 PrepTimeMinutes = r.PrepTimeMinutes,
                 CookTimeMinutes = r.CookTimeMinutes,
                 Servings = r.Servings,
-                Difficulty = r.Difficulty.ToString(),
-                Status = r.Status.ToString(),
+                Difficulty = r.Difficulty,
+                Status = r.Status,
                 CategoryId = r.CategoryId,
                 CategoryName = r.Category != null ? r.Category.Name : null,
                 CategorySlug = r.Category != null ? r.Category.Slug : null,
                 AuthorId = r.AuthorId,
                 AuthorName = null,
                 PublishedAt = r.PublishedAt,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                ConcurrencyToken = EF.Property<uint>(r, "xmin") != 0 ? EF.Property<uint>(r, "xmin") : null
             })
             .ToListAsync(cancellationToken);
 
@@ -219,9 +220,12 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
 
         return normalizedSortBy switch
         {
-            "publishedat" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
+            "publishedat" or "newest" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
+            "createdat" => isAsc ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt),
+            "preptime" => isAsc ? query.OrderBy(r => r.PrepTimeMinutes) : query.OrderByDescending(r => r.PrepTimeMinutes),
+            "servings" => isAsc ? query.OrderBy(r => r.Servings) : query.OrderByDescending(r => r.Servings),
             "cooktime" => isAsc ? query.OrderBy(r => r.CookTimeMinutes) : query.OrderByDescending(r => r.CookTimeMinutes),
-            "totaltime" => isAsc
+            "totaltime" or "quickest" => isAsc
                 ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
                 : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
             "calories" => isAsc

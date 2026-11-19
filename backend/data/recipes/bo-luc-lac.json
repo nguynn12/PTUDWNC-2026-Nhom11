@@ -1,0 +1,169 @@
+{
+  "title": "Bò lúc lắc",
+  "originalTitle": "Bò lúc lắc",
+  "description": "Bò lúc lắc chuẩn vị ẩm thực miền Nam của tác giả Helen Lê với từng khối thịt thăn bò mềm mọng nước, áp chảo nhiệt cao xém cạnh thơm lừng, xào cùng ớt chuông giòn ngọt và ăn kèm đĩa hành tím ngâm giấm đường chua ngọt thanh tao.",
+  "categoryName": "Món xào",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 10,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Helen Lê — Helen's Recipes (Da Nang Cuisine)",
+    "url": "https://helenrecipes.com/recipe-40-bo-luc-lac-vietnamese-shaking-beef/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước biên tập từ tài liệu nhóm; dinh dưỡng tính toán theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh Dưỡng) và USDA."
+  },
+  "nutrition": {
+    "calories": 366.0,
+    "protein": 33.0,
+    "carbohydrates": 8.0,
+    "fat": 22.0,
+    "fiber": 2.1,
+    "sodium": 650.0
+  },
+  "ingredients": [
+    {
+      "name": "Thịt thăn bò mềm (sirloin hoặc tenderloin)",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Thấm khô ráo, cắt khối vuông quân cờ 2.5cm"
+    },
+    {
+      "name": "Tỏi băm nhuyễn",
+      "quantity": 30.0,
+      "unit": "gram (2 thìa canh)",
+      "notes": "Chia 1 tsp ướp thịt bò, phần còn lại phi thơm xào"
+    },
+    {
+      "name": "Nước tương (xì dầu)",
+      "quantity": 30.0,
+      "unit": "ml (2 thìa canh)",
+      "notes": "Gia vị ướp bò tạo vị đậm đà thơm dịu"
+    },
+    {
+      "name": "Dầu hào",
+      "quantity": 30.0,
+      "unit": "ml (2 thìa canh)",
+      "notes": "Gia vị ướp bò tạo độ bóng và mềm thịt"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 10.0,
+      "unit": "gram (2 thìa cà phê)",
+      "notes": "Ướp thịt bò"
+    },
+    {
+      "name": "Muối tinh",
+      "quantity": 1.0,
+      "unit": "nhúm nhỏ",
+      "notes": "Ướp thịt bò"
+    },
+    {
+      "name": "Hạt tiêu đen xay",
+      "quantity": 0.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Ướp thịt bò"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 45.0,
+      "unit": "ml (3 thìa canh)",
+      "notes": "1 thìa canh ướp thịt bò, 2 thìa canh dùng xào áp chảo"
+    },
+    {
+      "name": "Ớt chuông xanh và đỏ",
+      "quantity": 150.0,
+      "unit": "gram (1 quả lớn)",
+      "notes": "Rửa sạch, bỏ hạt, cắt khối vuông 2.5cm"
+    },
+    {
+      "name": "Hành tây",
+      "quantity": 100.0,
+      "unit": "gram (1 củ nhỏ)",
+      "notes": "Bóc vỏ, cắt múi cau vuông 2.5cm"
+    },
+    {
+      "name": "Hành tím (ngâm chua)",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Bào mỏng ngâm 15 phút tạo đồ chua ăn kèm"
+    },
+    {
+      "name": "Đường cát (ngâm hành)",
+      "quantity": 1,
+      "unit": "tbsp",
+      "notes": "Bào mỏng ngâm 15 phút tạo đồ chua ăn kèm"
+    },
+    {
+      "name": "Giấm (ngâm hành)",
+      "quantity": 2,
+      "unit": "tbsp",
+      "notes": "Bào mỏng ngâm 15 phút tạo đồ chua ăn kèm"
+    },
+    {
+      "name": "Xà lách hoặc xà lách xoong",
+      "quantity": 1,
+      "unit": "bó nhỏ",
+      "notes": "Rửa sạch, cà chua thái lát mỏng xếp lót đáy đĩa"
+    },
+    {
+      "name": "Cà chua (lót đĩa)",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Rửa sạch, cà chua thái lát mỏng xếp lót đáy đĩa"
+    },
+    {
+      "name": "Muối tinh (chấm kèm)",
+      "quantity": 0.5,
+      "unit": "tsp",
+      "notes": "Gia vị chấm truyền thống"
+    },
+    {
+      "name": "Hạt tiêu xay (chấm kèm)",
+      "quantity": 0.5,
+      "unit": "tsp",
+      "notes": "Gia vị chấm truyền thống"
+    },
+    {
+      "name": "Chanh tươi (chấm kèm)",
+      "quantity": 0.5,
+      "unit": "quả",
+      "notes": "Gia vị chấm truyền thống"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Thái khối và ướp thịt bò",
+      "description": "Thịt bò thấm thật khô ráo bằng khăn giấy, cắt khối vuông quân cờ khoảng 2.5cm đều nhau. Ướp thịt bò với 1 thìa cà phê tỏi băm, 2 thìa cà phê đường, 1 nhúm muối, 2 thìa canh xì dầu, 2 thìa canh dầu hào, 1/2 thìa cà phê tiêu đen và 1 thìa canh dầu ăn (dầu ăn giúp khóa ẩm giữ thịt mềm). Trộn đều và để ngấm ở nhiệt độ phòng trong 30 phút.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Sơ chế rau củ và ngâm hành giấm đường",
+      "description": "Hành tím bóc vỏ, bào lát mỏng rồi ngâm với 1 thìa canh đường và 2 thìa canh giấm gạo trong 15 phút để giảm hăng và tạo độ giòn chua ngọt. Ớt chuông và hành tây cắt miếng vuông tương đương kích thước miếng thịt bò. Xếp rau xà lách và cà chua thái lát ra đĩa sẵn.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Xào nhanh ớt chuông và hành tây",
+      "description": "Đặt chảo lớn lên bếp lửa lớn, cho 1 thìa canh dầu ăn và chút tỏi băm vào phi thơm. Trút ớt chuông và hành tây vào đảo nhanh tay trên lửa cực lớn trong 1.5 - 2 phút cho rau củ chín tái, vẫn giữ được màu sắc tươi tắn và độ giòn ngọt. Trút ra đĩa riêng.",
+      "durationMinutes": 3
+    },
+    {
+      "title": "Áp chảo và lắc bò lửa lớn (shaking)",
+      "description": "Dùng chảo gang hoặc chảo sâu lòng thật nóng, cho 1 thìa canh dầu ăn còn lại vào đun nóng già rồi cho tỏi băm vào phi thơm. Trút toàn bộ thịt bò vào trải đều một lớp sát mặt chảo, để yên trong 1 phút không đảo để mặt dưới xém nâu vàng giòn. Cầm cán chảo lắc mạnh (thao tác 'lúc lắc') để đảo mặt thịt bò, xào thêm 1-2 phút trên lửa lớn cho thớ thịt chín tới, bên trong vẫn giữ được màu hồng mềm mọng nước. Trút nhanh đĩa ớt chuông hành tây ở bước 3 vào chảo bò, lắc đều 30 giây rồi tắt bếp ngay.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Bày đĩa và dọn ăn kèm muối tiêu chanh",
+      "description": "Trút bò lúc lắc nóng hổi lên đĩa đã lót sẵn rau xà lách, cà chua và hành tím ngâm giấm đường. Dùng nóng ngay kèm cơm trắng, cơm chiên cà chua hoặc khoai tây chiên, chấm cùng đĩa muối tiêu chanh tươi.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://helenrecipes.com/wp-content/uploads/2012/07/bo-luc-lac-recipe-1.jpg",
+      "altText": "Bò lúc lắc",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

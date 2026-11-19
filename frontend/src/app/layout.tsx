@@ -28,6 +28,9 @@ export const viewport: Viewport = {
   themeColor: "#c85a17",
 };
 
+// OPS-11: địa chỉ triển khai lấy từ NEXT_PUBLIC_SITE_URL (cùng biến với robots.ts/sitemap.ts), mặc định localhost.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
   title: {
     default: "Culinary Blog — Khám Phá & Chia Sẻ Công Thức Nấu Ăn",
@@ -45,12 +48,13 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Trần Quốc Quân", url: "https://github.com/nguynn12/PTUDWNC-2026-Nhom11" }],
   creator: "Trần Quốc Quân (Nhóm 11 - PTUDWNC)",
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Culinary Blog — Khám Phá & Chia Sẻ Công Thức Nấu Ăn",
     description:
       "Nền tảng blog ẩm thực cao cấp: tra cứu hàng ngàn công thức nấu ăn chuẩn vị, thực đơn theo danh mục và thông tin dinh dưỡng trực quan.",
-    url: "http://localhost:3000",
+    url: SITE_URL,
     siteName: "Culinary Blog",
     locale: "vi_VN",
     type: "website",

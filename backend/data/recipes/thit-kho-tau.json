@@ -1,0 +1,110 @@
+{
+  "title": "Thịt kho tàu",
+  "originalTitle": "Thịt kho tàu",
+  "description": "Thịt kho tàu truyền thống với từng miếng thịt ba chỉ vuông vắn mềm rệu nhưng nguyên khối, lớp mỡ trong veo béo ngậy không ngấy, trứng vịt/gà thấm màu cánh gián đậm đà chan cùng nước dừa tươi ngọt thanh.",
+  "categoryName": "Món kho",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 60,
+  "servings": 5,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Linh Trang — Savoury Days (Món ăn sinh viên: Thịt kho)",
+    "url": "https://www.savourydays.com/mon-an-sinh-vien-thit-kho-mot-so-cach-uop-thit-khuyen-mai-cach-chung-nuoc-mau/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước biên tập từ tài liệu nhóm; dinh dưỡng tính toán theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh Dưỡng) và USDA."
+  },
+  "nutrition": {
+    "calories": 570.0,
+    "protein": 29.0,
+    "carbohydrates": 10.0,
+    "fat": 46.0,
+    "fiber": 0.2,
+    "sodium": 840.0
+  },
+  "ingredients": [
+    {
+      "name": "Thịt ba chỉ heo hoặc nạc vai giòn",
+      "quantity": 600.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, cắt miếng vuông to bản khoảng 4x4cm"
+    },
+    {
+      "name": "Trứng gà hoặc trứng vịt",
+      "quantity": 5.0,
+      "unit": "quả",
+      "notes": "Luộc chín, bóc vỏ sạch sẽ"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 4.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm thật nhỏ"
+    },
+    {
+      "name": "Nước mắm ngon nguyên chất",
+      "quantity": 45.0,
+      "unit": "ml (3 thìa canh)",
+      "notes": "Ướp thịt tạo hương vị truyền thống"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 15.0,
+      "unit": "gram (1 thìa canh)",
+      "notes": "Ướp cùng thịt"
+    },
+    {
+      "name": "Hạt nêm",
+      "quantity": 5.0,
+      "unit": "gram (1 thìa cà phê)",
+      "notes": "Ướp thịt"
+    },
+    {
+      "name": "Hạt tiêu đen xay",
+      "quantity": 0.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Ướp thịt"
+    },
+    {
+      "name": "Nước màu (nước hàng tự chưng)",
+      "quantity": 30.0,
+      "unit": "ml (2 thìa canh)",
+      "notes": "Tạo màu vàng nâu óng ả"
+    },
+    {
+      "name": "Nước dừa tươi nguyên chất",
+      "quantity": 400.0,
+      "unit": "ml",
+      "notes": "Kho thịt tạo vị ngọt thanh dịu và giúp mỡ trong veo"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp thịt sâu vị",
+      "description": "Thịt ba chỉ rửa sạch, cạo sạch bì, cắt khối vuông to bản khoảng 4cm (thịt kho miếng to khi ninh nhừ sẽ mềm mọng và không bị nát). Ướp thịt với hành tím băm nhỏ, 3 thìa canh nước mắm, 1 thìa canh đường, 1 thìa cà phê hạt nêm và hạt tiêu xay. Để thịt kho đạt độ ngon đậm đà nhất, nên ướp thịt trong ngăn mát tủ lạnh tối thiểu 4 tiếng hoặc để qua đêm để gia vị thấm tận sâu vào tâm miếng thịt.",
+      "durationMinutes": 240
+    },
+    {
+      "title": "Luộc trứng và chưng nước màu",
+      "description": "Luộc chín 5 quả trứng trong nước sôi khoảng 8 phút, vớt ra ngâm ngay vào nước đá lạnh để dễ bóc vỏ sạch láng mịn. Tự chưng nước hàng: Đun 2 thìa canh đường cát với chút nước trên lửa vừa đến khi chuyển màu cánh gián thì cho thêm 3 thìa canh nước sôi vào khuấy đều.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Xào săn thịt và nấu cùng nước dừa",
+      "description": "Cho thịt đã ướp vào nồi, bật lửa vừa đảo đều tay cùng 2 thìa canh nước hàng trong khoảng 5 phút đến khi bề mặt miếng thịt săn lại và lên màu nâu óng. Đổ 400ml nước dừa tươi (hoặc nước sôi) vào ngập mặt thịt. Đun lửa lớn cho nồi thịt sôi bùng lên, sau đó dùng muôi vớt sạch toàn bộ bọt nổi.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Hầm mềm thịt và kho cùng trứng",
+      "description": "Hạ nhỏ lửa ninh liu riu trong khoảng 35-40 phút cho đến khi thớ thịt bắt đầu mềm và phần mỡ chuyển sang màu trong veo. Thả trứng luộc vào nồi, tiếp tục kho nhỏ lửa thêm 15-20 phút để trứng ngấm gia vị và chuyển màu vàng nâu đẹp mắt. Nếm lại nước kho cho vừa khẩu vị, khi nước kho hơi sánh sệt thì tắt bếp. Dùng nóng kèm cơm trắng và dưa chua muối.",
+      "durationMinutes": 50
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2011/10/thit-kho-trung.jpg",
+      "altText": "Thịt kho tàu",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

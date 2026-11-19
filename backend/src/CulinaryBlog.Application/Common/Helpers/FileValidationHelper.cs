@@ -3,16 +3,19 @@ namespace CulinaryBlog.Application.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SixLabors.ImageSharp;
+using ImageMagick;
 
 /// <summary>
 /// Tiện ích xác thực tệp tin hình ảnh an toàn theo SRS v1.2.0 (FR-RCP-008, FR-FILE-001) và Lab 8.
 /// Kiểm tra dung lượng tối đa 5MB trước khi xử lý, MIME types cho phép (JPEG, PNG, WebP, AVIF),
-/// kiểm tra chữ ký Magic Bytes và giải mã ảnh thực nghiệm bằng SixLabors.ImageSharp.
+/// kiểm tra chữ ký Magic Bytes và giải mã ảnh thực nghiệm bằng Magick.NET.
 /// </summary>
 public static class FileValidationHelper
 {
     public const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
+
+    /// <summary>Giới hạn số điểm ảnh (chống ảnh nén nhỏ nhưng giải nén rất lớn).</summary>
+    public const long MaxPixels = 40_000_000;
 
     private static readonly HashSet<string> AllowedMimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -34,7 +37,7 @@ public static class FileValidationHelper
 
     /// <summary>
     /// Kiểm tra tính hợp lệ toàn diện của file hình ảnh: dung lượng <= 5MB, đuôi file, MIME type,
-    /// Magic Bytes và giải mã nội dung ảnh thực tế bằng ImageSharp.
+    /// Magic Bytes và giải mã nội dung ảnh thực tế bằng Magick.NET.
     /// </summary>
     public static (bool IsValid, string? ErrorMessage) ValidateImage(
         Stream stream,
@@ -69,44 +72,47 @@ public static class FileValidationHelper
             return (false, "Nội dung tệp tin không đúng với định dạng hình ảnh đã khai báo (sai chữ ký Magic Bytes).");
         }
 
-        // 2. Giải mã cấu trúc ảnh thực nghiệm bằng ImageSharp (với các file có nội dung > 64 bytes thực tế)
-        if (stream.CanSeek && stream.Length > 64 && !extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
+        // Giải mã cả dữ liệu pixel; metadata/header hợp lệ chưa đủ chứng minh là ảnh.
+        if (!CanDecodeImage(stream, extension))
         {
-            if (!CanDecodeWithImageSharp(stream, extension))
-            {
-                return (false, "Nội dung tệp tin hình ảnh bị hỏng hoặc không thể giải mã thành ảnh hợp lệ.");
-            }
+            return (false, "Nội dung tệp tin hình ảnh bị hỏng hoặc không thể giải mã thành ảnh hợp lệ.");
         }
 
         return (true, null);
     }
 
     /// <summary>
-    /// Giải mã thông số ảnh thực sự bằng SixLabors.ImageSharp (kích thước, định dạng hợp lệ).
+    /// Giải mã thông số ảnh thực sự bằng Magick.NET (kích thước, định dạng hợp lệ).
     /// </summary>
-    public static bool CanDecodeWithImageSharp(Stream stream, string extension)
+    public static bool CanDecodeImage(Stream stream, string extension)
     {
-        if (extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (!stream.CanRead)
+        if (!stream.CanRead || !stream.CanSeek)
         {
             return false;
         }
 
-        long originalPosition = 0;
-        if (stream.CanSeek)
-        {
-            originalPosition = stream.Position;
-            stream.Position = 0;
-        }
+        var originalPosition = stream.Position;
+        stream.Position = 0;
 
         try
         {
-            var imageInfo = Image.Identify(stream);
-            return imageInfo != null && imageInfo.Width > 0 && imageInfo.Height > 0;
+            if (extension.Equals(".avif", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!HasValidAvifStructure(stream)) return false;
+                stream.Position = 0;
+                var info = new MagickImageInfo(stream);
+                if (info.Width == 0 || info.Height == 0 || (long)info.Width * info.Height > MaxPixels) return false;
+                stream.Position = 0;
+                using var decoded = new MagickImage(stream);
+                return decoded.Width > 0 && decoded.Height > 0;
+            }
+
+            var imageInfo = new MagickImageInfo(stream);
+            if (imageInfo.Width == 0 || imageInfo.Height == 0 ||
+                (long)imageInfo.Width * imageInfo.Height > MaxPixels) return false;
+            stream.Position = 0;
+            using var image = new MagickImage(stream);
+            return image.Width == imageInfo.Width && image.Height == imageInfo.Height;
         }
         catch
         {
@@ -114,11 +120,52 @@ public static class FileValidationHelper
         }
         finally
         {
-            if (stream.CanSeek)
+            stream.Position = originalPosition;
+        }
+    }
+
+    /// <summary>
+    /// Kiểm tra hộp <c>ftyp</c> đầu tệp AVIF: kích thước hộp nằm trong tệp và brand chính hoặc
+    /// brand tương thích là <c>avif</c>/<c>avis</c>.
+    /// </summary>
+    private static bool HasValidAvifStructure(Stream stream)
+    {
+        Span<byte> head = stackalloc byte[8];
+        if (stream.Read(head) < 8 || !head.Slice(4, 4).SequenceEqual("ftyp"u8))
+        {
+            return false;
+        }
+
+        var boxSize = (long)System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(head);
+        // Tối thiểu: 8 (header) + 4 (major brand) + 4 (minor version); và không vượt quá tệp.
+        if (boxSize < 16 || boxSize > stream.Length)
+        {
+            return false;
+        }
+
+        var body = new byte[boxSize - 8];
+        if (stream.Read(body, 0, body.Length) != body.Length)
+        {
+            return false;
+        }
+
+        bool IsAvifBrand(ReadOnlySpan<byte> brand) => brand.SequenceEqual("avif"u8) || brand.SequenceEqual("avis"u8);
+
+        if (IsAvifBrand(body.AsSpan(0, 4)))
+        {
+            return true;
+        }
+
+        // Brand tương thích bắt đầu từ byte 8 của phần thân, mỗi brand 4 byte.
+        for (var i = 8; i + 4 <= body.Length; i += 4)
+        {
+            if (IsAvifBrand(body.AsSpan(i, 4)))
             {
-                stream.Position = originalPosition;
+                return true;
             }
         }
+
+        return false;
     }
 
     /// <summary>

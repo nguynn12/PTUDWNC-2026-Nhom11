@@ -1,6 +1,5 @@
 using CulinaryBlog.Domain.Constants;
 using CulinaryBlog.Infrastructure.Identity;
-using Bogus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,16 +7,9 @@ using Microsoft.Extensions.Logging;
 namespace CulinaryBlog.Infrastructure.Persistence.Seeding;
 
 /// <summary>
-/// Áp dụng migration đang chờ (InitialiseAsync) + sinh dữ liệu mẫu ngẫu nhiên
-/// (SeedAsync) cho môi trường phát triển. Theo mẫu hình Clean Architecture (Jason
-/// Taylor template) — được gọi từ Program.cs lúc khởi động ứng dụng ở môi trường
-/// Development, KHÔNG chạy ở Production.
-///
-/// PHẠM VI: chỉ sinh dữ liệu cho phần Auth/User/Phân quyền (nhiệm vụ được giao —
-/// FR-AUTH-001..010). Sinh dữ liệu Category/Recipe (>=20 categories, >=100 recipes,
-/// mỗi recipe >=10 nguyên liệu và >=5 bước chế biến) thuộc phạm vi của thành viên
-/// phụ trách module Recipe — có thể viết seeder tương tự (Bogus) và gọi nối tiếp
-/// SeedUsersAsync() bên dưới trong cùng SeedAsync(), hoặc trong initialiser riêng.
+/// Áp dụng migration đang chờ và tạo các role/tài khoản cố định phục vụ đăng nhập,
+/// phân quyền và liên kết công thức JSON. Được gọi khi bật migrate/seed trong Program.cs;
+/// không tự sinh người dùng ngẫu nhiên.
 /// </summary>
 public class ApplicationDbContextInitialiser(
     ILogger<ApplicationDbContextInitialiser> logger,
@@ -74,16 +66,18 @@ public class ApplicationDbContextInitialiser(
     }
 
     /// <summary>
-    /// Sinh người dùng mẫu ngẫu nhiên bằng thư viện Bogus — phục vụ kiểm thử đăng
-    /// nhập/phân quyền (FR-AUTH-001..010) mà không cần tự tay đăng ký thủ công từng
-    /// tài khoản. Dùng UserManager.CreateAsync (KHÔNG insert thẳng vào DbSet) để mật
-    /// khẩu được PasswordHasher&lt;ApplicationUser&gt; của Identity hash đúng chuẩn —
-    /// khớp policy đã cấu hình ở DependencyInjection.AddInfrastructure (tối thiểu 8 ký
-    /// tự, có hoa/thường/số/ký tự đặc biệt).
+    /// Tài khoản cố định để liên kết đúng tác giả của các công thức JSON.
     /// </summary>
+    private static readonly (string Email, string DisplayName)[] RecipeAuthors =
+    [
+        ("chef.thuha@culinaryblog.local", "Nguyễn Thu Hà"),
+        ("chef.minhkhoi@culinaryblog.local", "Trần Minh Khôi"),
+        ("chef.baongoc@culinaryblog.local", "Lê Bảo Ngọc"),
+        ("chef.quocviet@culinaryblog.local", "Phạm Quốc Việt"),
+    ];
+
     private async Task SeedUsersAsync()
     {
-        const int sampleUserCount = 15;
         const string samplePassword = "Passw0rd!23";
 
         // Tạo các tài khoản tĩnh dùng cho việc test hệ thống
@@ -91,47 +85,9 @@ public class ApplicationDbContextInitialiser(
         await CreateUserIfNotExists("author@culinaryblog.local", "Author User", samplePassword, Roles.Author, true);
         await CreateUserIfNotExists("author.unverified@culinaryblog.local", "Unverified Author", samplePassword, Roles.Author, false);
 
-        if (await context.Users.CountAsync() >= 18)
-        {
-            logger.LogInformation("AspNetUsers đã có dữ liệu — bỏ qua bước seed user mẫu.");
-            return;
-        }
-
-        var userFaker = new Faker<ApplicationUser>()
-            .CustomInstantiator(f =>
-            {
-                var firstName = f.Name.FirstName();
-                var lastName = f.Name.LastName();
-                var displayName = $"{firstName} {lastName}";
-                var email = f.Internet.Email(firstName, lastName).ToLowerInvariant();
-
-                return ApplicationUser.Create(email, displayName);
-            })
-            .RuleFor(u => u.Bio, f => f.Lorem.Sentence(10))
-            .RuleFor(u => u.AvatarUrl, f => f.Internet.Avatar())
-            .RuleFor(u => u.EmailConfirmed, f => f.Random.Bool(0.7f));
-
-        var sampleUsers = userFaker.Generate(sampleUserCount);
-
-        foreach (var user in sampleUsers)
-        {
-            var result = await userManager.CreateAsync(user, samplePassword);
-
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, Roles.Author);
-            }
-            else
-            {
-                logger.LogWarning(
-                    "Không seed được user mẫu {Email}: {Errors}",
-                    user.Email,
-                    string.Join("; ", result.Errors.Select(e => e.Description)));
-            }
-        }
-
-        logger.LogInformation("Đã seed {Count} user mẫu (role Author, mật khẩu mẫu: {Password}) bằng Bogus.",
-            sampleUserCount, samplePassword);
+        // Tác giả cố định cho công thức thật (backend/data/recipes): email ổn định để bộ nạp liên kết đúng tác giả.
+        foreach (var (email, name) in RecipeAuthors)
+            await CreateUserIfNotExists(email, name, samplePassword, Roles.Author, true);
     }
 
     private async Task CreateUserIfNotExists(string email, string displayName, string password, string role, bool emailConfirmed)

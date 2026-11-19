@@ -1,0 +1,123 @@
+{
+  "title": "Gà kho gừng",
+  "originalTitle": "Vietnamese Caramel Ginger Chicken",
+  "description": "Món kho kinh điển đưa cơm số một trong mâm cơm gia đình người Việt, đặc biệt vào những ngày se lạnh hay mưa rào. Từng miếng thịt gà đùi vàng óng ánh màu caramel cánh gián bắt mắt, vị mặn ngọt đậm đà thấm sâu vào từng thớ thịt mềm ngọt, hòa quyện vị cay ấm nồng nàn của gừng tươi thái sợi và mùi hành củ phi thơm lừng.",
+  "categoryName": "Món kho",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 7,
+  "cookTimeMinutes": 15,
+  "servings": 5,
+  "difficulty": "Medium",
+  "source": {
+    "name": "RecipeTin Eats",
+    "url": "https://www.recipetineats.com/vietnamese-caramel-ginger-chicken/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 370.0,
+    "protein": 39.0,
+    "carbohydrates": 14.0,
+    "fat": 17.0,
+    "fiber": 0.4,
+    "sodium": 1032.0
+  },
+  "ingredients": [
+    {
+      "name": "Đùi gà phi lê không da",
+      "quantity": 1,
+      "unit": "kg",
+      "notes": "Cắt miếng lớn khoảng 5 cm"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 3,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Ớt hiểm",
+      "quantity": 1,
+      "unit": "trái",
+      "notes": "Bỏ hạt, băm nhuyễn, tùy chọn"
+    },
+    {
+      "name": "Dầu thực vật",
+      "quantity": 3,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Đường nâu",
+      "quantity": 0.25,
+      "unit": "cốc",
+      "notes": "Nén chặt"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 0.33,
+      "unit": "cốc",
+      "notes": "Thái sợi nhỏ"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 2,
+      "unit": "củ",
+      "notes": "Bổ đôi, thái lát mỏng; có thể thay một nửa bằng hành tím"
+    },
+    {
+      "name": "Nước sôi",
+      "quantity": 0.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Ngò rí hoặc hành lá",
+      "notes": "Rắc lên, nên có"
+    },
+    {
+      "name": "Ớt đỏ",
+      "notes": "Thái lát, tùy chọn"
+    },
+    {
+      "name": "Cơm gạo thơm",
+      "notes": "Ăn kèm"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Sơ chế và ướp thịt gà",
+      "durationMinutes": 15,
+      "description": "Thịt đùi gà rút xương hoặc chặt miếng vừa ăn, rửa sạch với nước muối loãng. Ướp gà với 2 muỗng canh nước mắm ngon, 1 thìa hạt nêm, tiêu xay và một nửa phần gừng thái sợi trong 15 phút cho ngấm đều gia vị."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Thắng nước màu caramel cánh gián",
+      "durationMinutes": 3,
+      "description": "Đặt chảo sâu lòng lên bếp, cho 1 muỗng canh dầu ăn và 1.5 muỗng canh đường nâu vào. Đun ở lửa vừa, không khuấy, để đường tự tan chảy và chuyển sang màu cánh gián hổ phách đậm đẹp mắt và sủi bọt lăn tăn."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Xào săn thịt gà lên màu óng ả",
+      "durationMinutes": 5,
+      "description": "Nhanh tay trút hành tím băm và phần gừng thái sợi còn lại vào đảo nhanh 10 giây cho dậy mùi thơm nức. Trút toàn bộ đĩa thịt gà đã ướp vào, tăng lửa lớn và đảo đều tay liên tục trong 4-5 phút cho từng miếng gà săn chắc, áo đều lớp caramel bóng bẩy."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Kho gà liu riu sánh sốt đậm đà",
+      "durationMinutes": 10,
+      "description": "Đổ khoảng 100ml nước nóng (hoặc nước dừa tươi) vào chảo, đun sôi bùng rồi hạ lửa vừa liu riu. Nấu không đậy nắp trong 10-12 phút để nước kho cạn dần, keo lại thành lớp sốt sền sệt cánh gián bám chặt quanh từng miếng gà."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Hoàn thiện và thưởng thức",
+      "durationMinutes": 2,
+      "description": "Thêm vài lát ớt đỏ tươi, rắc hành lá cắt khúc và tiêu xay thơm nức mũi. Tắt bếp, múc thịt gà kho gừng ra đĩa sâu lòng, ăn kèm cơm trắng nóng hổi và đĩa dưa leo giòn mát."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.recipetineats.com/tachyon/2023/08/Vietnamese-Ginger-Caramel-Chicken_6-close-up.jpg",
+      "altText": "Gà kho gừng",
+      "license": "Ảnh của RecipeTin Eats (recipetineats.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

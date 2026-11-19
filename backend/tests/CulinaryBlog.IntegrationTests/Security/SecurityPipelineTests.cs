@@ -87,6 +87,36 @@ public class SecurityPipelineTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
+    public async Task AuthResponse_ReportsTheActualTenRequestLimit()
+    {
+        using var client = _factory.CreateGuestClient();
+        using var response = await client.PostAsJsonAsync("/api/v1/auth/login", new
+        {
+            email = "not-an-account@example.test", password = "TestPass!2026"
+        });
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Equal("10", Assert.Single(response.Headers.GetValues("X-RateLimit-Limit")));
+    }
+
+    [Fact]
+    public async Task ChangingUntrustedForwardedFor_DoesNotResetRateLimit()
+    {
+        using var client = _factory.CreateGuestClient();
+        var responses = await Task.WhenAll(Enumerable.Range(0, 101).Select(async index =>
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/");
+            request.Headers.Add("X-Forwarded-For", $"198.51.100.{index + 1}");
+            return await client.SendAsync(request);
+        }));
+        try
+        {
+            Assert.Equal(100, responses.Count(response => response.StatusCode == HttpStatusCode.OK));
+            Assert.Single(responses, response => response.StatusCode == HttpStatusCode.TooManyRequests);
+        }
+        finally { foreach (var response in responses) response.Dispose(); }
+    }
+
+    [Fact]
     public async Task HealthEndpoint_BypassesRateLimiter_EvenAfterManyRequests()
     {
         // Arrange: Client gửi nhiều requests tới /health/live

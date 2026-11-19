@@ -1,129 +1,121 @@
 namespace CulinaryBlog.Infrastructure.Services;
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using CulinaryBlog.Application.Common.Interfaces;
+using ImageMagick;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Webp;
-using SixLabors.ImageSharp.Processing;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
-/// <summary>
-/// Dịch vụ xử lý biến đổi kích thước hình ảnh sử dụng SixLabors.ImageSharp.
-/// Đáp ứng yêu cầu FR-JOB-002 (Image Resize 300x300 thumbnail và 800x600 medium).
-/// </summary>
-public class ImageProcessingService : IImageProcessingService
+/// <summary>Sinh ảnh WebP thumbnail và medium từ ảnh đã được kiểm tra.</summary>
+public class ImageProcessingService(ILogger<ImageProcessingService> logger) : IImageProcessingService
 {
-    private readonly ILogger<ImageProcessingService> _logger;
-
-    public ImageProcessingService(ILogger<ImageProcessingService> logger)
+    public Task<(ImageVariantResult? Thumbnail, ImageVariantResult? Medium)> ProcessVariantsAsync(
+        Stream sourceStream, string originalFileName, CancellationToken cancellationToken = default)
     {
-        _logger = logger;
-    }
-
-    /// <inheritdoc />
-    public async Task<(ImageVariantResult? Thumbnail, ImageVariantResult? Medium)> ProcessVariantsAsync(
-        Stream sourceStream,
-        string originalFileName,
-        CancellationToken cancellationToken = default)
-    {
-        if (sourceStream == null || sourceStream.Length == 0)
-        {
-            return (null, null);
-        }
-
-        var ext = Path.GetExtension(originalFileName).ToLowerInvariant();
-        if (ext == ".avif")
-        {
-            // Định dạng AVIF chưa hỗ trợ decode trực tiếp bởi SixLabors core mà không có custom codec
-            _logger.LogInformation("Bỏ qua resize ImageSharp cho định dạng AVIF: {FileName}", originalFileName);
-            return (null, null);
-        }
-
-        long originalPos = 0;
-        if (sourceStream.CanSeek)
-        {
-            originalPos = sourceStream.Position;
-            sourceStream.Position = 0;
-        }
-
+        if (!sourceStream.CanSeek || sourceStream.Length == 0)
+            return Task.FromResult<(ImageVariantResult?, ImageVariantResult?)>((null, null));
+        var position = sourceStream.Position;
         try
         {
-            // Tạo bản sao stream để ImageSharp có thể đọc độc lập
-            using var copyStream = new MemoryStream();
-            await sourceStream.CopyToAsync(copyStream, cancellationToken);
-            copyStream.Position = 0;
-
-            using var image = await Image.LoadAsync(copyStream, cancellationToken);
-            var baseName = Path.GetFileNameWithoutExtension(originalFileName);
-
-            // 1. Tạo Thumbnail (300x300, Crop cân đối trung tâm)
-            ImageVariantResult? thumbnailResult = null;
-            try
-            {
-                using var thumbClone = image.Clone(ctx => ctx.Resize(new ResizeOptions
-                {
-                    Size = new Size(300, 300),
-                    Mode = ResizeMode.Crop
-                }));
-
-                var thumbStream = new MemoryStream();
-                await thumbClone.SaveAsWebpAsync(thumbStream, new WebpEncoder { Quality = 80 }, cancellationToken);
-                thumbStream.Position = 0;
-
-                thumbnailResult = new ImageVariantResult(
-                    thumbStream,
-                    $"{baseName}_thumb.webp",
-                    "image/webp",
-                    thumbClone.Width,
-                    thumbClone.Height);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Lỗi khi tạo ảnh Thumbnail 300x300 cho {FileName}", originalFileName);
-            }
-
-            // 2. Tạo Medium (800x600, giữ nguyên tỉ lệ khung hình Max)
-            ImageVariantResult? mediumResult = null;
-            try
-            {
-                using var mediumClone = image.Clone(ctx => ctx.Resize(new ResizeOptions
-                {
-                    Size = new Size(800, 600),
-                    Mode = ResizeMode.Max
-                }));
-
-                var mediumStream = new MemoryStream();
-                await mediumClone.SaveAsWebpAsync(mediumStream, new WebpEncoder { Quality = 85 }, cancellationToken);
-                mediumStream.Position = 0;
-
-                mediumResult = new ImageVariantResult(
-                    mediumStream,
-                    $"{baseName}_medium.webp",
-                    "image/webp",
-                    mediumClone.Width,
-                    mediumClone.Height);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Lỗi khi tạo ảnh Medium 800x600 cho {FileName}", originalFileName);
-            }
-
-            return (thumbnailResult, mediumResult);
+            cancellationToken.ThrowIfCancellationRequested();
+            sourceStream.Position = 0;
+            using var image = new MagickImage(sourceStream);
+            var name = Path.GetFileNameWithoutExtension(originalFileName);
+            using var thumb = image.Clone();
+            thumb.Resize(new MagickGeometry(300, 300) { FillArea = true });
+            thumb.Crop(300, 300, Gravity.Center);
+            thumb.ResetPage();
+            thumb.Quality = 80;
+            using var medium = image.Clone();
+            medium.Resize(new MagickGeometry(800, 600));
+            medium.Quality = 85;
+            return Task.FromResult<(ImageVariantResult?, ImageVariantResult?)>((
+                Encode(thumb, name + "_thumb.webp"), Encode(medium, name + "_medium.webp")));
         }
-        catch (Exception ex)
+        catch (OperationCanceledException) { throw; }
+        catch (MagickException ex)
         {
-            _logger.LogWarning(ex, "Không thể giải mã hoặc xử lý ảnh ImageSharp cho tệp: {FileName}. Giữ nguyên ảnh gốc.", originalFileName);
-            return (null, null);
+            logger.LogWarning(ex, "Không thể xử lý ảnh {FileName}", originalFileName);
+            return Task.FromResult<(ImageVariantResult?, ImageVariantResult?)>((null, null));
         }
-        finally
+        finally { sourceStream.Position = position; }
+    }
+
+    private static ImageVariantResult Encode(IMagickImage<byte> image, string name)
+    {
+        var stream = new MemoryStream();
+        image.Write(stream, MagickFormat.WebP);
+        stream.Position = 0;
+        return new(stream, name, "image/webp", checked((int)image.Width), checked((int)image.Height));
+    }
+}
+
+/// <summary>Hangfire lưu các tác vụ ảnh trong PostgreSQL và thử lại khi dịch vụ tạm lỗi.</summary>
+public sealed class RecipeImageJobs(
+    IBackgroundJobClient jobs,
+    IApplicationDbContext context,
+    IAmazonS3 s3,
+    IOptions<MinioSettings> settings,
+    IImageProcessingService processor,
+    IFileStorageService storage,
+    ICacheInvalidator cache) : IRecipeImageJobs
+{
+    public void EnqueueResize(Guid imageId) => jobs.Enqueue<RecipeImageJobs>(job => job.ResizeAsync(imageId, CancellationToken.None));
+    public void EnqueueDelete(string fileUrl) => jobs.Enqueue<RecipeImageJobs>(job => job.DeleteAsync(fileUrl, CancellationToken.None));
+
+    [AutomaticRetry(Attempts = 3)]
+    public Task DeleteAsync(string fileUrl, CancellationToken ct) => storage.DeleteAsync(fileUrl, ct);
+
+    [AutomaticRetry(Attempts = 3)]
+    [DisableConcurrentExecution(120)]
+    public async Task ResizeAsync(Guid imageId, CancellationToken ct)
+    {
+        var image = await context.RecipeImages.FirstOrDefaultAsync(i => i.Id == imageId, ct);
+        if (image == null || image.IsDeleted || (image.ThumbnailUrl != null && image.MediumUrl != null)) return;
+        var bucket = settings.Value.BucketName;
+        var path = new Uri(image.OriginalUrl).AbsolutePath.TrimStart('/');
+        var prefix = bucket + "/";
+        if (!path.StartsWith(prefix, StringComparison.Ordinal)) throw new InvalidOperationException("Ảnh gốc không thuộc bucket đã cấu hình.");
+        var key = Uri.UnescapeDataString(path[prefix.Length..]);
+        using var response = await s3.GetObjectAsync(new GetObjectRequest { BucketName = bucket, Key = key }, ct);
+        using var input = new MemoryStream();
+        await response.ResponseStream.CopyToAsync(input, ct);
+        input.Position = 0;
+        var (thumbnail, medium) = await processor.ProcessVariantsAsync(input, Path.GetFileName(key), ct);
+        using var thumbnailStream = thumbnail?.Stream;
+        using var mediumStream = medium?.Stream;
+        if (thumbnail == null || medium == null) throw new InvalidDataException("Không thể tạo đủ các kích thước ảnh.");
+        // Ghi từng URL để retry không tải lại biến thể đã lưu thành công.
+        if (image.ThumbnailUrl == null)
         {
-            if (sourceStream.CanSeek)
-            {
-                sourceStream.Position = originalPos;
-            }
+            image.ThumbnailUrl = await storage.UploadAsync(thumbnail.Stream, thumbnail.FileName, thumbnail.ContentType, $"recipes/{image.RecipeId}", ct);
+            await context.SaveChangesAsync(ct);
         }
+        if (image.MediumUrl == null)
+        {
+            image.MediumUrl = await storage.UploadAsync(medium.Stream, medium.FileName, medium.ContentType, $"recipes/{image.RecipeId}", ct);
+            await context.SaveChangesAsync(ct);
+        }
+        var recipe = await context.Recipes.AsNoTracking().FirstOrDefaultAsync(r => r.Id == image.RecipeId, ct);
+        await cache.InvalidateRecipeAsync(image.RecipeId, recipe?.Slug, ct);
+    }
+
+    [AutomaticRetry(Attempts = 3)]
+    [DisableConcurrentExecution(60)]
+    public async Task ReconcileAsync(CancellationToken ct)
+    {
+        var deleted = await context.RecipeImages.IgnoreQueryFilters().AsNoTracking()
+            .Where(i => i.IsDeleted).Select(i => new { i.OriginalUrl, i.ThumbnailUrl, i.MediumUrl }).ToListAsync(ct);
+        foreach (var image in deleted)
+            foreach (var url in new[] { image.OriginalUrl, image.ThumbnailUrl, image.MediumUrl })
+                if (!string.IsNullOrWhiteSpace(url)) await DeleteAsync(url, ct);
+        var prefix = settings.Value.PublicUrl.TrimEnd('/') + "/" + settings.Value.BucketName + "/";
+        var pending = await context.RecipeImages.AsNoTracking()
+            .Where(i => i.OriginalUrl.StartsWith(prefix) && (i.ThumbnailUrl == null || i.MediumUrl == null))
+            .Select(i => i.Id).ToListAsync(ct);
+        foreach (var id in pending) EnqueueResize(id);
     }
 }

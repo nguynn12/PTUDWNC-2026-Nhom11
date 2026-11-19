@@ -1,0 +1,80 @@
+{
+  "title": "Cà phê sữa đá",
+  "originalTitle": "Vietnamese Iced Coffee",
+  "description": "Di sản văn hóa đường phố của người Việt từng được truyền thông quốc tế ca ngợi là một trong những món cà phê ngon nhất thế giới. Vị đậm đắng nồng nàn đặc trưng của hạt cà phê Robusta rang mộc truyền thống hòa quyện hoàn hảo với lớp sữa đặc ngọt béo ngậy, khuấy tan đều trong từng viên đá mát lạnh xua tan cái nóng oi ả.",
+  "categoryName": "Đồ uống & Trà",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 5,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Allrecipes",
+    "url": "https://www.allrecipes.com/recipe/77768/vietnamese-iced-coffee/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 129.0,
+    "protein": 3.0,
+    "carbohydrates": 22.0,
+    "fat": 3.0,
+    "sodium": 64.0,
+    "fiber": 0.1
+  },
+  "ingredients": [
+    {
+      "name": "Nước",
+      "quantity": 1,
+      "unit": "lít"
+    },
+    {
+      "name": "Cà phê rang đậm xay",
+      "quantity": 0.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Sữa đặc có đường",
+      "quantity": 0.5,
+      "unit": "cốc"
+    },
+    {
+      "name": "Đá viên",
+      "quantity": 16,
+      "unit": "viên"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Chuẩn bị và tráng phin nhôm",
+      "durationMinutes": 2,
+      "description": "Tráng phin nhôm pha cà phê qua nước sôi già để khử trùng và làm nóng phin, giúp giữ nhiệt tốt hơn khi chiết xuất cà phê."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Ủ cà phê nở đều",
+      "durationMinutes": 3,
+      "description": "Cho bột cà phê Robusta rang xay nguyên chất vào phin (khoảng 25g mỗi phin), lắc nhẹ cho mặt cà phê phẳng, đặt gài nắp nén với lực vừa phải. Rót khoảng 20ml nước sôi (92-95°C) vào phin, đậy nắp ủ trong 2-3 phút cho bột cà phê ngấm đủ nước và nở bung đều, dậy mùi thơm nức."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Chiết xuất từng giọt cà phê đậm đặc",
+      "durationMinutes": 5,
+      "description": "Rót tiếp 50-60ml nước sôi vào phin, đậy nắp và để cà phê nhỏ từng giọt chậm rãi xuống ly. Tốc độ nhỏ giọt lý tưởng khoảng 1 giọt/giây để chắt lọc trọn vẹn tinh túy và vị đắng đậm đà của cà phê."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Pha chế và thưởng thức cùng đá",
+      "durationMinutes": 3,
+      "description": "Cho 2 muỗng canh sữa đặc có đường vào đáy ly thủy tinh. Rót cà phê nóng mới chiết xuất vào, dùng muỗng khuấy thật đều tay đến khi sữa đặc tan hoàn toàn và bề mặt nổi bọt mịn màng. Cho đá viên đầy ly, khuấy nhanh tay cho cà phê lạnh đều và thưởng thức từng ngụm sảng khoái."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.media-allrecipes.com/userphotos/5198429.jpg",
+      "altText": "Cà phê sữa đá",
+      "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

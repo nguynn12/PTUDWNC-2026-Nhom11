@@ -33,7 +33,7 @@ public sealed class ChangePasswordCommandHandlerTests
     }
 
     [Fact]
-    public async Task DoiMatKhauSaiMatKhauHienTai_TraAuthInvalidCredentials()
+    public async Task DoiMatKhauSaiMatKhauHienTai_Tra422TaiTruongCurrentPassword()
     {
         var handler = new ChangePasswordCommandHandler(
             new FakeCurrentUser("user-1"),
@@ -43,12 +43,12 @@ public sealed class ChangePasswordCommandHandlerTests
             new FakeUnitOfWork(),
             new FakeClientInfo());
 
-        var exception = await Assert.ThrowsAsync<UnauthorizedException>(() =>
+        var exception = await Assert.ThrowsAsync<ValidationException>(() =>
             handler.Handle(
                 new ChangePasswordCommand("wrong", "NewPassword1!"),
                 TestContext.Current.CancellationToken));
 
-        Assert.Equal(ErrorCodes.AuthInvalidCredentials, exception.ErrorCode);
+        Assert.True(exception.Errors.ContainsKey("currentPassword"));
     }
 
     [Fact]

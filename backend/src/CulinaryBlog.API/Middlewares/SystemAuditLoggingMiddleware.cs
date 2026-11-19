@@ -31,7 +31,8 @@ public sealed class SystemAuditLoggingMiddleware(
             stopwatch.Stop();
             var statusCode = requestException is null
                 ? context.Response.StatusCode
-                : StatusCodes.Status500InternalServerError;
+                : GlobalExceptionHandler.Map(requestException).StatusCode;
+
             var level = statusCode >= 500
                 ? "Error"
                 : statusCode >= 400

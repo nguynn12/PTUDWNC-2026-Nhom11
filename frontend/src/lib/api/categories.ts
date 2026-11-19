@@ -20,8 +20,8 @@ export async function getCategories(): Promise<CategoryDto[]> {
  * FR-CAT-002: Lấy thông tin chi tiết danh mục theo Slug chuẩn SEO (Public)
  */
 export async function getCategoryBySlug(slug: string): Promise<CategoryDetailDto> {
-  const response = await apiClient.get<never, ApiResponse<CategoryDetailDto>>(`/categories/${slug}`);
-  return response.data;
+  const response = await apiClient.get<never, ApiResponse<{ category: CategoryDetailDto }>>(`/categories/${slug}`);
+  return response.data.category;
 }
 
 /**

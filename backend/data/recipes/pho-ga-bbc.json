@@ -1,0 +1,193 @@
+{
+  "title": "Phở gà kiểu Việt",
+  "originalTitle": "Vietnamese chicken noodle soup",
+  "description": "Tô phở gà thanh tao, nước dùng vàng óng ánh lớp váng mỡ gà tự nhiên ngọt lịm từ xương gà ninh cùng sả, gừng nướng, hoa hồi, quế chi ấm áp. Từng thớ thịt gà ta mềm ngọt mọng nước, sợi bánh phở trắng ngần dẻo dai hòa quyện cùng hành hoa, lá chanh non thái chỉ thơm ngát và hành phi giòn tan, đem lại cảm giác thanh mát và ấm áp trọn vẹn.",
+  "categoryName": "Món bún & phở",
+  "authorEmail": "author@culinaryblog.local",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 25,
+  "servings": 6,
+  "difficulty": "Easy",
+  "source": {
+    "name": "BBC Good Food",
+    "url": "https://www.bbcgoodfood.com/recipes/vietnamese-chicken-noodle-soup",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu, thời gian, khẩu phần và dinh dưỡng lấy theo trang nguồn (dịch sang tiếng Việt, đổi sang đơn vị mét khi thuận tiện); các bước được diễn đạt lại."
+  },
+  "nutrition": {
+    "calories": 442.0,
+    "protein": 31.0,
+    "carbohydrates": 68.0,
+    "fat": 4.0,
+    "fiber": 5.0,
+    "sodium": 1133.0
+  },
+  "ingredients": [
+    {
+      "name": "Dầu thực vật",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Hành khô",
+      "quantity": 3,
+      "unit": "củ",
+      "notes": "Thái lát"
+    },
+    {
+      "name": "Tỏi",
+      "quantity": 3,
+      "unit": "tép",
+      "notes": "Thái lát"
+    },
+    {
+      "name": "Sả",
+      "quantity": 1,
+      "unit": "cây",
+      "notes": "Cắt khúc"
+    },
+    {
+      "name": "Gừng",
+      "quantity": 2.5,
+      "unit": "cm",
+      "notes": "Thái lát"
+    },
+    {
+      "name": "Hoa hồi",
+      "quantity": 3,
+      "unit": "cái"
+    },
+    {
+      "name": "Quế",
+      "quantity": 1,
+      "unit": "thanh"
+    },
+    {
+      "name": "Hạt ngò",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Ngũ vị hương",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Tiêu đen hạt",
+      "quantity": 0.25,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Đường cát",
+      "quantity": 1,
+      "unit": "muỗng cà phê"
+    },
+    {
+      "name": "Nước mắm",
+      "quantity": 1,
+      "unit": "muỗng canh"
+    },
+    {
+      "name": "Nước dùng gà",
+      "quantity": 1.4,
+      "unit": "lít"
+    },
+    {
+      "name": "Ức gà",
+      "quantity": 500,
+      "unit": "g",
+      "notes": "Khoảng 3 miếng lớn"
+    },
+    {
+      "name": "Bún gạo",
+      "quantity": 450,
+      "unit": "g"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 4,
+      "unit": "cây",
+      "notes": "Thái xéo mỏng"
+    },
+    {
+      "name": "Cà rốt",
+      "quantity": 1,
+      "unit": "củ",
+      "notes": "Bào sợi hoặc bào dải"
+    },
+    {
+      "name": "Giá đỗ",
+      "quantity": 150,
+      "unit": "g"
+    },
+    {
+      "name": "Ngò rí",
+      "quantity": 1,
+      "unit": "bó lớn",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Bạc hà",
+      "quantity": 1,
+      "unit": "bó nhỏ",
+      "notes": "Cắt nhỏ"
+    },
+    {
+      "name": "Ớt đỏ",
+      "quantity": 1,
+      "unit": "trái",
+      "notes": "Thái lát mỏng, tùy chọn"
+    },
+    {
+      "name": "Hành phi",
+      "quantity": 2,
+      "unit": "muỗng canh",
+      "notes": "Tùy chọn"
+    },
+    {
+      "name": "Chanh",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Cắt múi"
+    }
+  ],
+  "steps": [
+    {
+      "stepNumber": 1,
+      "title": "Phi hành tỏi và rang thảo mộc",
+      "durationMinutes": 5,
+      "description": "Đun nóng 1 muỗng canh dầu ăn trong chảo nhỏ, phi thơm hành khô thái lát và tỏi đến khi vàng ruộm vớt ra làm hành phi. Trên chảo đó, rang sơ hoa hồi, thanh quế, hạt ngò và tiêu hạt ở lửa nhỏ cho dậy mùi thơm nức."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Nấu nước dùng gà thanh ngọt",
+      "durationMinutes": 20,
+      "description": "Cho nước dùng gà (1.4 lít) vào nồi lớn cùng sả đập dập, gừng thái lát, túi thảo mộc rang thơm, ức gà và đùi gà. Đun sôi rồi hạ lửa nhỏ liu riu đậy nắp trong 15-20 phút cho thịt gà chín ngọt mềm mọng và ngấm trọn vẹn hương thơm thảo mộc."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Lọc nước dùng và xé thịt gà",
+      "durationMinutes": 10,
+      "description": "Vớt thịt gà ra ngâm nước đá lạnh 3 phút cho da gà giòn dai rồi dùng tay xé hoặc thái lát mỏng vừa ăn. Lọc nước dùng qua rây mịn bỏ bã gia vị, đun sôi trở lại và nêm nước mắm ngon, hạt nêm, chút đường cho vị ngọt thanh đậm đà vừa miệng."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Chần bánh phở",
+      "durationMinutes": 3,
+      "description": "Nấu nồi nước sôi riêng, chần bánh phở trong 20-30 giây cho sợi phở mềm tơi, vớt ra lắc ráo nước rồi chia đều vào 6 tô lớn."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Bày biện tô phở gà hoàn chỉnh",
+      "durationMinutes": 5,
+      "description": "Xếp thịt gà xé lên mặt bánh phở, rắc hành lá thái nhỏ, giá đỗ, ngò rí, vài lát ớt sừng và đặc biệt là một nhúm lá chanh non thái sợi chỉ mỏng manh (linh hồn của món phở gà). Múc nước dùng đang sôi sùng sục chan ngập mặt tô phở, rắc hành phi vàng giòn lên trên cùng và vắt chút chanh tươi thưởng thức ngay."
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chicken-pho-5fb5771.jpg",
+      "altText": "Phở gà kiểu Việt",
+      "license": "Ảnh của BBC Good Food (bbcgoodfood.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}
