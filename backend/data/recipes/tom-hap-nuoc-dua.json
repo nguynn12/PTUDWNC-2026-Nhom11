@@ -14,29 +14,36 @@
     "accessedOn": "2026-11-20",
     "note": "Công thức dân dã miền Tây thơm béo đậm đà."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 155,
+    "protein": 25,
+    "carbohydrates": 4.8,
+    "fat": 3.2,
+    "fiber": 0.5,
+    "sodium": 390
+  },
   "ingredients": [
     {
       "name": "Tôm sú hoặc tôm càng xanh sống",
-      "quantity": 500.0,
+      "quantity": 500,
       "unit": "gram",
       "notes": "Rửa sạch, cắt bớt râu và chân"
     },
     {
       "name": "Nước dừa xiêm tươi",
-      "quantity": 300.0,
+      "quantity": 300,
       "unit": "ml",
       "notes": "Lấy từ 1 trái dừa xiêm ngọt thanh"
     },
     {
       "name": "Hành tím",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "củ",
       "notes": "Thái lát mỏng"
     },
     {
       "name": "Muối ớt xanh hoặc muối tiêu chanh",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "thìa canh",
       "notes": "Dùng chấm kèm khi ăn nóng"
     }

@@ -14,41 +14,48 @@
     "accessedOn": "2026-11-20",
     "note": "Công thức chế biến mực hấp giữ độ giòn ngọt tự nhiên."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 160,
+    "protein": 26.5,
+    "carbohydrates": 4.2,
+    "fat": 2.8,
+    "fiber": 0.8,
+    "sodium": 430
+  },
   "ingredients": [
     {
       "name": "Mực ống hoặc mực nang tươi",
-      "quantity": 500.0,
+      "quantity": 500,
       "unit": "gram",
       "notes": "Làm sạch ruột, túi mực, khứa vảy rồng đẹp mắt"
     },
     {
       "name": "Gừng tươi",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "củ vừa",
       "notes": "Cạo vỏ, thái sợi chỉ mỏng"
     },
     {
       "name": "Sả tươi",
-      "quantity": 3.0,
+      "quantity": 3,
       "unit": "nhánh",
       "notes": "Đập dập, cắt khúc ngắn"
     },
     {
       "name": "Hành lá",
-      "quantity": 3.0,
+      "quantity": 3,
       "unit": "nhánh",
       "notes": "Cắt khúc 4cm"
     },
     {
       "name": "Ớt sừng",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "trái",
       "notes": "Bỏ hạt, thái sợi"
     },
     {
       "name": "Nước mắm gừng chấm kèm",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "thìa canh",
       "notes": "Pha cùng đường, chanh, gừng giã nhuyễn và ớt"
     }

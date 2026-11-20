@@ -14,35 +14,42 @@
     "accessedOn": "2026-11-20",
     "note": "Món chay bổ dưỡng thanh đạm đưa cơm."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 110,
+    "protein": 4.5,
+    "carbohydrates": 12,
+    "fat": 5.2,
+    "fiber": 3.8,
+    "sodium": 420
+  },
   "ingredients": [
     {
       "name": "Nấm đùi gà tươi",
-      "quantity": 400.0,
+      "quantity": 400,
       "unit": "gram",
       "notes": "Rửa sạch, cắt khoanh tròn dày 1.5cm rồi khía ô vuông trên mặt"
     },
     {
       "name": "Tiêu xanh và tiêu đen giã dập",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "thìa canh",
       "notes": "Tạo vị cay ấm và thơm nồng đặc trưng"
     },
     {
       "name": "Nước tương ngon (xì dầu)",
-      "quantity": 3.0,
+      "quantity": 3,
       "unit": "thìa canh",
       "notes": "Nước sốt kho nấm đậm đà"
     },
     {
       "name": "Dầu hào chay và đường nâu",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "thìa canh mỗi loại",
       "notes": "Tạo độ sánh mượt và màu sắc hấp dẫn"
     },
     {
       "name": "Hành boa-rô (tỏi tây)",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "cây",
       "notes": "Thái lát phi thơm khử tanh chay"
     }

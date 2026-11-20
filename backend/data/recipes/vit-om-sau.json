@@ -14,35 +14,42 @@
     "accessedOn": "2026-11-20",
     "note": "Công thức vịt kho sấu đậm đà chuẩn vị miền Bắc."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 495,
+    "protein": 34,
+    "carbohydrates": 18.5,
+    "fat": 31,
+    "fiber": 2.8,
+    "sodium": 680
+  },
   "ingredients": [
     {
       "name": "Thịt vịt cỏ hoặc vịt bầu",
-      "quantity": 1000.0,
+      "quantity": 1000,
       "unit": "gram",
       "notes": "Làm sạch, khử mùi hôi với rượu gừng, chặt miếng vừa ăn"
     },
     {
       "name": "Quả sấu tươi",
-      "quantity": 8.0,
+      "quantity": 8,
       "unit": "quả",
       "notes": "Cạo sạch vỏ xanh, khía nhẹ"
     },
     {
       "name": "Khoai sọ",
-      "quantity": 300.0,
+      "quantity": 300,
       "unit": "gram",
       "notes": "Gọt vỏ, ngâm nước muối khử ngứa, bổ đôi"
     },
     {
       "name": "Sả, gừng, tỏi, hành khô",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "bộ gia vị",
       "notes": "Băm nhỏ để ướp và xào thơm"
     },
     {
       "name": "Mùi tàu (ngò gai) và rau ngổ",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "mớ nhỏ",
       "notes": "Rửa sạch thái nhỏ rắc lên nồi om"
     }

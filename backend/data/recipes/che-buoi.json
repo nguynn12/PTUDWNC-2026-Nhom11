@@ -14,41 +14,48 @@
     "accessedOn": "2026-11-20",
     "note": "Bí quyết sơ chế cùi bưởi giòn không đắng và nấu chè bưởi chuẩn vị."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 245,
+    "protein": 4.8,
+    "carbohydrates": 46.2,
+    "fat": 5.5,
+    "fiber": 3.6,
+    "sodium": 45
+  },
   "ingredients": [
     {
       "name": "Cùi bưởi da xanh",
-      "quantity": 200.0,
+      "quantity": 200,
       "unit": "gram",
       "notes": "Lấy phần cùi trắng dày, gọt sạch vỏ xanh"
     },
     {
       "name": "Đậu xanh xát vỏ",
-      "quantity": 150.0,
+      "quantity": 150,
       "unit": "gram",
       "notes": "Ngâm nước ấm 2 tiếng cho nở mềm"
     },
     {
       "name": "Bột năng nguyên chất",
-      "quantity": 120.0,
+      "quantity": 120,
       "unit": "gram",
       "notes": "Dùng áo cùi bưởi và tạo độ sánh cho chè"
     },
     {
       "name": "Đường thốt nốt",
-      "quantity": 200.0,
+      "quantity": 200,
       "unit": "gram",
       "notes": "Tạo vị ngọt thanh và màu vàng hổ phách"
     },
     {
       "name": "Nước cốt dừa đậm đặc",
-      "quantity": 200.0,
+      "quantity": 200,
       "unit": "ml",
       "notes": "Nấu sánh với chút muối và bột năng"
     },
     {
       "name": "Muối hạt",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "thìa canh",
       "notes": "Dùng bóp cùi bưởi khử đắng"
     }

@@ -14,35 +14,42 @@
     "accessedOn": "2026-11-20",
     "note": "Bữa sáng quen thuộc giàu dinh dưỡng."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 540,
+    "protein": 26.5,
+    "carbohydrates": 48,
+    "fat": 27,
+    "fiber": 3.2,
+    "sodium": 890
+  },
   "ingredients": [
     {
       "name": "Trứng gà tươi",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "quả",
       "notes": "Ốp la lòng đào"
     },
     {
       "name": "Pate gan thơm ngon",
-      "quantity": 100.0,
+      "quantity": 100,
       "unit": "gram",
       "notes": "Cắt lát vừa ăn"
     },
     {
       "name": "Xúc xích hun khói",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "cây",
       "notes": "Khía xéo thân xúc xích"
     },
     {
       "name": "Sốt cà chua đậm đà",
-      "quantity": 100.0,
+      "quantity": 100,
       "unit": "ml",
       "notes": "Nấu từ cà chua tươi, hành tây và bơ"
     },
     {
       "name": "Bánh mì giòn",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "ổ",
       "notes": "Ăn kèm nóng giòn"
     }

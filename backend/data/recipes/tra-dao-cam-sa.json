@@ -14,41 +14,48 @@
     "accessedOn": "2026-11-20",
     "note": "Công thức giải nhiệt hiện đại thanh mát."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 125,
+    "protein": 1,
+    "carbohydrates": 30.5,
+    "fat": 0.2,
+    "fiber": 1.5,
+    "sodium": 15
+  },
   "ingredients": [
     {
       "name": "Trà túi lọc (trà đen hoặc Earl Grey)",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "gói",
       "notes": "Ủ lấy nước cốt trà thơm đậm"
     },
     {
       "name": "Sả tươi",
-      "quantity": 3.0,
+      "quantity": 3,
       "unit": "nhánh",
       "notes": "Rửa sạch, đập dập, cắt khúc"
     },
     {
       "name": "Cam vàng tươi",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "quả",
       "notes": "Vắt lấy nước, chừa 2 lát mỏng trang trí"
     },
     {
       "name": "Đào ngâm",
-      "quantity": 4.0,
+      "quantity": 4,
       "unit": "miếng",
       "notes": "Cắt múi cau vừa ăn"
     },
     {
       "name": "Nước si-rô đào ngâm",
-      "quantity": 30.0,
+      "quantity": 30,
       "unit": "ml",
       "notes": "Tạo vị ngọt thơm đặc trưng"
     },
     {
       "name": "Đường phèn hoặc đường cát",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "thìa canh",
       "notes": "Hòa tan vào trà ấm"
     },

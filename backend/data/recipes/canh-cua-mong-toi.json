@@ -14,35 +14,42 @@
     "accessedOn": "2026-11-20",
     "note": "Canh cua đồng mồng tơi rau đay thanh mát dân dã."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 125,
+    "protein": 12.8,
+    "carbohydrates": 6.2,
+    "fat": 5.4,
+    "fiber": 2.8,
+    "sodium": 640
+  },
   "ingredients": [
     {
       "name": "Cua đồng xay nhuyễn",
-      "quantity": 400.0,
+      "quantity": 400,
       "unit": "gram",
       "notes": "Cua đồng tươi giã lọc lấy nước ngọt"
     },
     {
       "name": "Rau mồng tơi và rau đay",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "mớ",
       "notes": "Nhặt lá non, rửa sạch, thái nhỏ vừa ăn"
     },
     {
       "name": "Mướp hương",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "quả",
       "notes": "Gọt vỏ, bổ đôi rồi thái lát xéo"
     },
     {
       "name": "Hành khô",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "củ",
       "notes": "Băm nhỏ phi thơm gạch cua"
     },
     {
       "name": "Gia vị nêm canh",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "bộ gia vị",
       "notes": "Nước mắm ngon, bột canh, hạt nêm, chút mắm tôm ngon"
     }

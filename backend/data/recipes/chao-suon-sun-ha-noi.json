@@ -14,29 +14,36 @@
     "accessedOn": "2026-11-20",
     "note": "Cháo sườn gạo xay sánh mịn ăn kèm sườn sụn non, quẩy giòn và ruốc thịt bông tơi."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 385,
+    "protein": 22,
+    "carbohydrates": 45.5,
+    "fat": 13,
+    "fiber": 1.2,
+    "sodium": 720
+  },
   "ingredients": [
     {
       "name": "Sườn sụn non heo",
-      "quantity": 500.0,
+      "quantity": 500,
       "unit": "gram",
       "notes": "Chần nước sôi, chặt miếng nhỏ mỏng vừa ăn"
     },
     {
       "name": "Bột gạo tẻ và bột gạo nếp",
-      "quantity": 250.0,
+      "quantity": 250,
       "unit": "gram",
       "notes": "Tỉ lệ 4 tẻ : 1 nếp khuấy đều với nước lọc"
     },
     {
       "name": "Nước hầm xương heo",
-      "quantity": 1200.0,
+      "quantity": 1200,
       "unit": "ml",
       "notes": "Ninh xương tủy lấy nước ngọt trong"
     },
     {
       "name": "Quẩy giòn và ruốc thịt (chà bông)",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "đĩa nhỏ",
       "notes": "Ăn kèm cháo nóng rắc thêm tiêu bột và ớt bột"
     }

@@ -14,47 +14,54 @@
     "accessedOn": "2026-11-20",
     "note": "Công thức bò lá lốt thơm ngon chuẩn vị."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 345,
+    "protein": 27,
+    "carbohydrates": 6.5,
+    "fat": 23.5,
+    "fiber": 2.1,
+    "sodium": 520
+  },
   "ingredients": [
     {
       "name": "Thịt bò băm nhuyễn",
-      "quantity": 400.0,
+      "quantity": 400,
       "unit": "gram",
       "notes": "Chọn phần thịt có chút mỡ để không bị khô"
     },
     {
       "name": "Thịt nạc vai heo xay",
-      "quantity": 150.0,
+      "quantity": 150,
       "unit": "gram",
       "notes": "Trộn cùng thịt bò để tăng độ mềm ngậy"
     },
     {
       "name": "Lá lốt tươi bánh tẻ",
-      "quantity": 40.0,
+      "quantity": 40,
       "unit": "lá",
       "notes": "Rửa sạch, lau khô, chừa lại vài lá băm nhỏ ướp thịt"
     },
     {
       "name": "Sả băm nhuyễn",
-      "quantity": 2.0,
+      "quantity": 2,
       "unit": "thìa canh",
       "notes": "Tạo hương thơm dậy mùi"
     },
     {
       "name": "Hành tím và tỏi băm",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "thìa canh mỗi loại",
       "notes": "Băm nhuyễn khử tanh"
     },
     {
       "name": "Đậu phộng rang và mỡ hành",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "bát nhỏ",
       "notes": "Rắc lên mặt khi món chín"
     },
     {
       "name": "Gia vị ướp thịt",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "bộ gia vị",
       "notes": "Dầu hào, nước mắm, tiêu đen, đường, dầu màu điều"
     }

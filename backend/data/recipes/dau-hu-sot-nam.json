@@ -14,41 +14,48 @@
     "accessedOn": "2026-11-20",
     "note": "Món chay thanh đạm giàu dinh dưỡng từ đậu hũ và nấm."
   },
-  "nutrition": null,
+  "nutrition": {
+    "calories": 165,
+    "protein": 12.5,
+    "carbohydrates": 9.8,
+    "fat": 8.5,
+    "fiber": 3.4,
+    "sodium": 480
+  },
   "ingredients": [
     {
       "name": "Đậu hũ non (đậu hũ lụa)",
-      "quantity": 300.0,
+      "quantity": 300,
       "unit": "gram",
       "notes": "Cắt khoanh tròn dày 2cm"
     },
     {
       "name": "Nấm đông cô tươi",
-      "quantity": 100.0,
+      "quantity": 100,
       "unit": "gram",
       "notes": "Khía chữ thập trên mũ nấm"
     },
     {
       "name": "Nấm rơm tươi",
-      "quantity": 100.0,
+      "quantity": 100,
       "unit": "gram",
       "notes": "Rửa sạch, chẻ đôi"
     },
     {
       "name": "Hành boa-rô (tỏi tây)",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "cây",
       "notes": "Thái nhỏ phần gốc trắng và lá xanh"
     },
     {
       "name": "Gia vị sốt chay",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "bộ gia vị",
       "notes": "Nước tương, dầu hào chay, dầu mè thơm, hạt nêm nấm"
     },
     {
       "name": "Bột năng",
-      "quantity": 1.0,
+      "quantity": 1,
       "unit": "thìa cà phê",
       "notes": "Hòa tan với 2 thìa nước tạo độ sánh"
     }
