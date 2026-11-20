@@ -111,10 +111,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Each runner has its own API rate-limit window. Keep the suites small enough for fast runners.
           - shard: 1
-            label: 1/2
+            label: 1/4
           - shard: 2
-            label: 2/2
+            label: 2/4
+          - shard: 3
+            label: 3/4
+          - shard: 4
+            label: 4/4
           - shard: production-prefetch
             label: production-prefetch
     env:
@@ -196,7 +201,7 @@ jobs:
           npx --yes wait-on http://localhost:3000 --timeout 60000
       - name: Run Playwright
         if: matrix.shard != 'production-prefetch'
-        run: npm --prefix frontend run test:e2e -- --shard=${{ matrix.shard }}/2 --grep-invert 'guest-production-browsing\.spec\.ts'
+        run: npm --prefix frontend run test:e2e -- --shard=${{ matrix.shard }}/4 --grep-invert 'guest-production-browsing\.spec\.ts'
       - name: Run Playwright with production prefetch
         if: matrix.shard == 'production-prefetch'
         # The real browsing scenario needs its own API rate-limit budget.
