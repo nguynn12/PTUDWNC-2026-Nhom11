@@ -1,0 +1,85 @@
+{
+  "title": "Đậu hũ non sốt nấm đông cô",
+  "originalTitle": "Đậu hũ non sốt nấm đông cô nấm rơm thanh đạm",
+  "description": "Món chay thanh đạm bổ dưỡng với từng lát đậu hũ non mềm mịn núng nính tan ngay đầu lưỡi, phủ lớp sốt nấm đông cô và nấm rơm giòn ngọt sánh nâu óng ả, thơm lừng dầu mè và hành boa-rô phi.",
+  "categoryName": "Món chay",
+  "authorEmail": "chef.minhkhoi@culinaryblog.com",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 15,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/dau-hu-xot-nam/",
+    "accessedOn": "2026-11-20",
+    "note": "Món chay thanh đạm giàu dinh dưỡng từ đậu hũ và nấm."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Đậu hũ non (đậu hũ lụa)",
+      "quantity": 300.0,
+      "unit": "gram",
+      "notes": "Cắt khoanh tròn dày 2cm"
+    },
+    {
+      "name": "Nấm đông cô tươi",
+      "quantity": 100.0,
+      "unit": "gram",
+      "notes": "Khía chữ thập trên mũ nấm"
+    },
+    {
+      "name": "Nấm rơm tươi",
+      "quantity": 100.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, chẻ đôi"
+    },
+    {
+      "name": "Hành boa-rô (tỏi tây)",
+      "quantity": 1.0,
+      "unit": "cây",
+      "notes": "Thái nhỏ phần gốc trắng và lá xanh"
+    },
+    {
+      "name": "Gia vị sốt chay",
+      "quantity": 1.0,
+      "unit": "bộ gia vị",
+      "notes": "Nước tương, dầu hào chay, dầu mè thơm, hạt nêm nấm"
+    },
+    {
+      "name": "Bột năng",
+      "quantity": 1.0,
+      "unit": "thìa cà phê",
+      "notes": "Hòa tan với 2 thìa nước tạo độ sánh"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Hấp nóng đậu hũ non",
+      "description": "Cắt đậu hũ non thành từng khoanh tròn dày khoảng 2cm, xếp ngay ngắn vào đĩa sâu lòng. Đặt vào xửng hấp nóng 5 phút rồi chắt bỏ nước đọng trong đĩa.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Xào nấm thấm gia vị",
+      "description": "Phi thơm gốc hành boa-rô với chút dầu ăn. Cho nấm đông cô và nấm rơm vào xào chín tới trên lửa lớn. Nêm nước tương, dầu hào chay, hạt nêm nấm và 100ml nước lọc, đun sôi nhẹ cho nấm ngấm vị đậm đà.",
+      "durationMinutes": 8
+    },
+    {
+      "title": "Làm sánh nước sốt nấm",
+      "description": "Rót từ từ nước bột năng đã hòa tan vào chảo nấm, khuấy nhẹ tay đến khi nước sốt sánh mịn, bóng bẩy. Rưới thêm 1 thìa cà phê dầu mè thơm và tiêu xay rồi tắt bếp.",
+      "durationMinutes": 3
+    },
+    {
+      "title": "Hoàn thiện món ăn",
+      "description": "Rưới đều toàn bộ phần nấm xào và nước sốt óng ả lên trên đĩa đậu hũ non nóng hổi. Rắc hành boa-rô thái nhỏ lên trên. Thưởng thức ngay khi còn nóng cùng cơm trắng.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://monngonmoingay.com/wp-content/uploads/2017/09/dau-hu-xot-nam-500.jpg",
+      "altText": "Đậu hũ non sốt nấm đông cô",
+      "license": "Ảnh của Món Ngon Mỗi Ngày (monngonmoingay.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

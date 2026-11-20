@@ -9,10 +9,10 @@
   "servings": 4,
   "difficulty": "Medium",
   "source": {
-    "name": "Linh Trang — Savoury Days",
-    "url": "https://www.savourydays.com/chao-suon-sun-ha-noi/",
+    "name": "Helen Lê — Helen's Recipes",
+    "url": "https://helenrecipes.com/recipe-ice-congee-w-ribs-and-fried-bread-sticks-chao-suon/",
     "accessedOn": "2026-11-20",
-    "note": "Cháo sườn bột xay phố cổ Hà Nội thơm ngon."
+    "note": "Cháo sườn gạo xay sánh mịn ăn kèm sườn sụn non, quẩy giòn và ruốc thịt bông tơi."
   },
   "nutrition": null,
   "ingredients": [
@@ -65,9 +65,9 @@
   ],
   "images": [
     {
-      "url": "https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=800&auto=format&fit=crop",
+      "url": "https://helenrecipes.com/wp-content/uploads/2019/03/9-1.png",
       "altText": "Cháo sườn sụn Hà Nội",
-      "license": "Unsplash Food Photography License"
+      "license": "Ảnh của Helen's Recipes (helenrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
     }
   ]
 }

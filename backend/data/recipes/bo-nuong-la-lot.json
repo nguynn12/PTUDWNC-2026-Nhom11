@@ -1,0 +1,91 @@
+{
+  "title": "Bò nướng lá lốt",
+  "originalTitle": "Bò cuốn lá lốt nướng than hoa thơm nức mũi",
+  "description": "Món nướng nức tiếng Nam Bộ với từng cuốn thịt bò xay quyện mỡ chài béo ngọt đậm đà gia vị, bọc trong lớp lá lốt xanh bóng nướng than hoa thơm nức mũi, ăn kèm bún tươi, bánh tráng, rau sống và chấm mắm nêm cay nồng.",
+  "categoryName": "Món nướng",
+  "authorEmail": "chef.quocviet@culinaryblog.com",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/bo-la-lot-chien/",
+    "accessedOn": "2026-11-20",
+    "note": "Công thức bò lá lốt thơm ngon chuẩn vị."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Thịt bò băm nhuyễn",
+      "quantity": 400.0,
+      "unit": "gram",
+      "notes": "Chọn phần thịt có chút mỡ để không bị khô"
+    },
+    {
+      "name": "Thịt nạc vai heo xay",
+      "quantity": 150.0,
+      "unit": "gram",
+      "notes": "Trộn cùng thịt bò để tăng độ mềm ngậy"
+    },
+    {
+      "name": "Lá lốt tươi bánh tẻ",
+      "quantity": 40.0,
+      "unit": "lá",
+      "notes": "Rửa sạch, lau khô, chừa lại vài lá băm nhỏ ướp thịt"
+    },
+    {
+      "name": "Sả băm nhuyễn",
+      "quantity": 2.0,
+      "unit": "thìa canh",
+      "notes": "Tạo hương thơm dậy mùi"
+    },
+    {
+      "name": "Hành tím và tỏi băm",
+      "quantity": 1.0,
+      "unit": "thìa canh mỗi loại",
+      "notes": "Băm nhuyễn khử tanh"
+    },
+    {
+      "name": "Đậu phộng rang và mỡ hành",
+      "quantity": 1.0,
+      "unit": "bát nhỏ",
+      "notes": "Rắc lên mặt khi món chín"
+    },
+    {
+      "name": "Gia vị ướp thịt",
+      "quantity": 1.0,
+      "unit": "bộ gia vị",
+      "notes": "Dầu hào, nước mắm, tiêu đen, đường, dầu màu điều"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ướp nhân thịt bò",
+      "description": "Trộn đều thịt bò băm, thịt heo xay với sả, hành tỏi băm, 1 thìa canh dầu hào, 1 thìa canh nước mắm, 1 thìa cà phê đường, tiêu xay và vài lá lốt thái chỉ mỏng. Ướp 20 phút cho thấm vị.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Cuốn bò lá lốt",
+      "description": "Đặt mặt trái lá lốt lên thớt (mặt gân ngửa lên), múc một lượng thịt vừa đủ vào giữa, gập hai mép lá lại rồi cuộn tròn chặt tay. Dùng cuống lá gài lại để cố định mép cuốn.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Nướng thịt chín thơm",
+      "description": "Xếp các cuốn bò lên vỉ nướng than hoa hoặc nồi chiên không dầu (180°C), phết một lớp dầu ăn mỏng lên bề mặt. Nướng khoảng 10-12 phút, lật mặt đều tay đến khi lá lốt sém cạnh và tỏa mùi thơm ngào ngạt.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Bày đĩa và thưởng thức",
+      "description": "Xếp bò lá lốt ra đĩa, rưới mỡ hành óng ả và rắc đậu phộng rang giòn lên trên. Cuốn bánh tráng cùng bún, rau sống và chấm mắm nêm pha thơm ớt chua ngọt.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://monngonmoingay.com/wp-content/uploads/2022/10/bo-la-lot-chien.jpg",
+      "altText": "Bò nướng lá lốt",
+      "license": "Ảnh của Món Ngon Mỗi Ngày (monngonmoingay.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}
