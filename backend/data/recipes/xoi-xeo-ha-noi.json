@@ -1,0 +1,79 @@
+{
+  "title": "Xôi xéo Hà Nội",
+  "originalTitle": "Xôi xéo đỗ xanh hành phi mỡ gà chuẩn vị phố cổ",
+  "description": "Hạt xôi nếp cái hoa vàng dẻo thơm óng ả sắc vàng nghệ tự nhiên, quyện cùng đỗ xanh đồ chín nắm chặt thái mỏng tơi xốp, hành khô phi vàng giòn rụm và mỡ gà thơm ngậy nức mũi của thức quà sáng kinh kỳ.",
+  "categoryName": "Món ăn sáng",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 45,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/xoi-xeo-ha-noi/",
+    "accessedOn": "2026-11-20",
+    "note": "Xôi xéo truyền thống Hà Nội dẻo thơm."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Gạo nếp cái hoa vàng",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Ngâm nước bột nghệ qua đêm để tạo màu vàng ươm"
+    },
+    {
+      "name": "Đậu xanh cà vỏ",
+      "quantity": 250.0,
+      "unit": "gram",
+      "notes": "Ngâm nở 3 tiếng, đồ chín mềm rồi giã mịn"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 200.0,
+      "unit": "gram",
+      "notes": "Bào mỏng, phơi se mặt rồi phi giòn"
+    },
+    {
+      "name": "Mỡ gà nguyên chất",
+      "quantity": 100.0,
+      "unit": "ml",
+      "notes": "Rán vàng lấy mỡ thơm tưới lên xôi"
+    },
+    {
+      "name": "Muối hạt",
+      "quantity": 1.0,
+      "unit": "thìa cà phê",
+      "notes": "Trộn gạo nếp và đậu xanh trước khi đồ"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ngâm và đồ đậu xanh",
+      "description": "Đậu xanh đãi sạch, ngâm 3 tiếng rồi xóc đều với 1/2 thìa cà phê muối. Đồ chín mềm trong 20 phút. Khi đậu còn nóng, giã thật nhuyễn rồi dùng tay nắm thành từng quả bóng tròn thật chặt.",
+      "durationMinutes": 25
+    },
+    {
+      "title": "Đồ xôi nếp vàng óng",
+      "description": "Gạo nếp vo sạch, ngâm nước nghệ 6 tiếng cho ngấm màu vàng tươi. Vớt ra để ráo, xóc chút muối. Cho vào chõ đồ xôi chín dẻo trong 30 phút, vẩy chút mỡ gà đảo đều rồi đồ thêm 10 phút cho hạt xôi bóng bẩy.",
+      "durationMinutes": 40
+    },
+    {
+      "title": "Phi hành thơm giòn",
+      "description": "Hành tím thái mỏng phi ngập trong mỡ gà với lửa vừa đến khi hanh vàng thì vớt ra giấy thấm dầu để hành tự giòn rụm.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Trình bày thành phẩm",
+      "description": "Xới xôi nóng ra đĩa hoặc gói lá chuối. Dùng dao mỏng xéo từng lát đậu xanh tơi xốp lên mặt xôi, rưới mỡ gà thơm lừng và rắc thật nhiều hành phi vàng giòn lên trên.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&auto=format&fit=crop",
+      "altText": "Xôi xéo Hà Nội",
+      "license": "Unsplash Food Photography License"
+    }
+  ]
+}

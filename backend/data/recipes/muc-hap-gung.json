@@ -1,0 +1,85 @@
+{
+  "title": "Mực hấp gừng",
+  "originalTitle": "Mực nang hấp gừng sả giòn ngọt",
+  "description": "Món mực hấp gừng nóng hổi với từng miếng mực tươi giòn sần sật, giữ trọn vị ngọt tự nhiên của biển, thoang thoảng hương gừng ấm nồng và sả đập dập, chấm kèm nước mắm gừng ớt chua ngọt thơm lừng.",
+  "categoryName": "Hải sản tươi sống",
+  "authorEmail": "chef.quocviet@culinaryblog.local",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 10,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/muc-hap-gung/",
+    "accessedOn": "2026-11-20",
+    "note": "Công thức chế biến mực hấp giữ độ giòn ngọt tự nhiên."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Mực ống hoặc mực nang tươi",
+      "quantity": 500.0,
+      "unit": "gram",
+      "notes": "Làm sạch ruột, túi mực, khứa vảy rồng đẹp mắt"
+    },
+    {
+      "name": "Gừng tươi",
+      "quantity": 1.0,
+      "unit": "củ vừa",
+      "notes": "Cạo vỏ, thái sợi chỉ mỏng"
+    },
+    {
+      "name": "Sả tươi",
+      "quantity": 3.0,
+      "unit": "nhánh",
+      "notes": "Đập dập, cắt khúc ngắn"
+    },
+    {
+      "name": "Hành lá",
+      "quantity": 3.0,
+      "unit": "nhánh",
+      "notes": "Cắt khúc 4cm"
+    },
+    {
+      "name": "Ớt sừng",
+      "quantity": 1.0,
+      "unit": "trái",
+      "notes": "Bỏ hạt, thái sợi"
+    },
+    {
+      "name": "Nước mắm gừng chấm kèm",
+      "quantity": 2.0,
+      "unit": "thìa canh",
+      "notes": "Pha cùng đường, chanh, gừng giã nhuyễn và ớt"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế mực và các loại rau củ",
+      "description": "Mực tươi rửa sạch với nước muối pha chút rượu trắng để khử tanh. Khứa vảy rồng nhẹ trên thân mực rồi cắt miếng vừa ăn. Gừng cạo vỏ thái sợi, sả đập dập cắt khúc, hành lá rửa sạch cắt khúc dài.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Ướp mực nhẹ gia vị",
+      "description": "Trộn mực với 1 thìa cà phê hạt nêm, 1/2 thìa cà phê tiêu trắng và một nửa phần gừng sợi. Để nghỉ khoảng 5 phút cho thấm nhẹ gia vị.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Hấp chín mực với gừng sả",
+      "description": "Lót sả đập dập và gừng sợi dưới đáy đĩa sâu lòng. Xếp mực lên trên, rải tiếp phần gừng còn lại, ớt sợi và hành lá lên mặt. Đặt vào xửng nước đang sôi sùng sục, đậy nắp hấp lửa lớn trong 8-10 phút là mực chín giòn tới.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Thưởng thức món ăn",
+      "description": "Múc mực ra dùng nóng ngay kèm nước mắm gừng pha chua cay mặn ngọt hoặc muối tiêu chanh ớt.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=800&auto=format&fit=crop",
+      "altText": "Mực hấp gừng",
+      "license": "Unsplash Food Photography License"
+    }
+  ]
+}

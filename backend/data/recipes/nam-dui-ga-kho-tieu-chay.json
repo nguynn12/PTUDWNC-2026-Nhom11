@@ -1,0 +1,79 @@
+{
+  "title": "Nấm đùi gà kho tiêu chay",
+  "originalTitle": "Nấm đùi gà kho tiêu đen đậm đà đưa cơm ngày rằm",
+  "description": "Món chay thanh tịnh thơm ngon với từng miếng nấm đùi gà dai ngọt tự nhiên, thấm đượm gia vị kho tương sánh đậm màu cánh gián và tiêu đen cay nồng ấm bụng, ăn kèm cơm trắng nóng hổi.",
+  "categoryName": "Món chay",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 15,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/nam-dui-ga-kho-tieu/",
+    "accessedOn": "2026-11-20",
+    "note": "Món chay bổ dưỡng thanh đạm đưa cơm."
+  },
+  "nutrition": null,
+  "ingredients": [
+    {
+      "name": "Nấm đùi gà tươi",
+      "quantity": 400.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, cắt khoanh tròn dày 1.5cm rồi khía ô vuông trên mặt"
+    },
+    {
+      "name": "Tiêu xanh và tiêu đen giã dập",
+      "quantity": 2.0,
+      "unit": "thìa canh",
+      "notes": "Tạo vị cay ấm và thơm nồng đặc trưng"
+    },
+    {
+      "name": "Nước tương ngon (xì dầu)",
+      "quantity": 3.0,
+      "unit": "thìa canh",
+      "notes": "Nước sốt kho nấm đậm đà"
+    },
+    {
+      "name": "Dầu hào chay và đường nâu",
+      "quantity": 1.0,
+      "unit": "thìa canh mỗi loại",
+      "notes": "Tạo độ sánh mượt và màu sắc hấp dẫn"
+    },
+    {
+      "name": "Hành boa-rô (tỏi tây)",
+      "quantity": 1.0,
+      "unit": "cây",
+      "notes": "Thái lát phi thơm khử tanh chay"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế nấm đùi gà",
+      "description": "Nấm đùi gà ngâm nước muối loãng 5 phút, rửa sạch để ráo. Cắt nấm thành các khoanh tròn dày chừng 1.5cm, dùng dao khía các đường ca rô nhỏ trên bề mặt để nấm dễ ngấm sốt.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Áp chảo nấm vàng xém",
+      "description": "Cho chút dầu ăn vào chảo, xếp nấm vào áp chảo hai mặt trên lửa vừa cho hơi xém vàng thơm và rút bớt nước thừa, gắp ra đĩa.",
+      "durationMinutes": 8
+    },
+    {
+      "title": "Nấu sốt kho và om nấm",
+      "description": "Phi thơm hành boa-rô, cho nước tương, dầu hào chay, đường nâu, 1 nhánh tiêu xanh đập dập và 50ml nước lọc vào đun sôi sủi bọt. Trút nấm đã áp chảo vào nồi kho, đậy vung kho lửa nhỏ liu riu 10 phút cho nước sốt ngấm sâu và keo lại.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Hoàn tất món kho",
+      "description": "Rắc thật nhiều tiêu đen xay và vài lát ớt hiểm lên trên rồi tắt bếp. Dùng nóng kèm cơm trắng và dưa leo rau luộc.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop",
+      "altText": "Nấm đùi gà kho tiêu chay",
+      "license": "Unsplash Food Photography License"
+    }
+  ]
+}

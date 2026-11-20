@@ -66,3 +66,18 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 - Rà ngày 18/11: 10 link ảnh `www.allrecipes.com/thmb` trả 403. JSON chuyển sang ảnh gốc công khai `images.media-allrecipes.com/userphotos` lấy từ thư viện ảnh của đúng bài nguồn; đã xem lại nội dung từng ảnh. Trên máy demo, 10 ảnh này được lưu đủ bản gốc, medium và thumbnail trong MinIO, cập nhật 10 bản ghi ảnh và 6 ảnh danh mục dùng chung. Không thay quyền truy cập bucket. Kiểm tra lại 42/42 ảnh tải và giải mã được.
 - Dinh dưỡng hiện có ở 22 món; 20 món mới vẫn chưa có số liệu có căn cứ. Giao diện báo rõ khi thiếu dữ liệu và không quảng bá toàn bộ công thức đều có dinh dưỡng.
 - Các định lượng được bảo toàn theo tài liệu nhóm, chưa xác minh toàn bộ với bài nguồn. Việc ảnh tải được và JSON nhập thành công không thay thế nghiệm thu nội dung từng công thức.
+
+
+## Bổ sung 8 công thức đạt mốc 50 công thức (20/11/2026)
+
+- Kho JSON đạt mốc **50 công thức** thuộc 17 danh mục (thêm 8 món mới nhằm bổ sung đầy đủ cho các danh mục trước đó có 0 hoặc 1 món).
+- 8 món bổ sung gồm:
+  1. `muc-hap-gung.json` (Hải sản tươi sống)
+  2. `tom-hap-nuoc-dua.json` (Hải sản tươi sống)
+  3. `banh-mi-chao.json` (Món ăn sáng)
+  4. `xoi-xeo-ha-noi.json` (Món ăn sáng)
+  5. `com-tam-suon-bi-cha.json` (Món chính)
+  6. `vit-om-sau.json` (Món chính)
+  7. `chao-suon-sun-ha-noi.json` (Món cháo)
+  8. `nam-dui-ga-kho-tieu-chay.json` (Món chay)
+- Đảm bảo 100% danh mục (17/17) đều có ít nhất 2 công thức, xóa bỏ hoàn toàn tình trạng danh mục rỗng.
