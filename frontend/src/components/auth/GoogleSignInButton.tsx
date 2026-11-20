@@ -23,27 +23,50 @@ interface GoogleSignInButtonProps {
   onCredential: (idToken: string, nonce: string) => void;
 }
 
+// Google chỉ giữ lần initialize() cuối cùng và cảnh báo khi gọi nhiều lần, nên khởi tạo đúng một lần
+// cho mỗi lần tải trang; handler luôn trỏ tới component đang hiển thị.
+// FR-AUTH-003: nonce ngẫu nhiên cho mỗi lần tải trang, backend đối chiếu với claim "nonce" trong ID token.
+let pageNonce: string | null = null;
+let initializedClientId: string | null = null;
+let activeHandler: ((idToken: string, nonce: string) => void) | null = null;
+
+function getPageNonce(): string {
+  pageNonce ??= crypto.randomUUID();
+  return pageNonce;
+}
+
 export function GoogleSignInButton({ onCredential }: GoogleSignInButtonProps) {
   const slot = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
-  // FR-AUTH-003: nonce ngẫu nhiên cho mỗi lần mở trang, backend đối chiếu với claim "nonce" trong ID token.
-  const [nonce] = useState(() => crypto.randomUUID());
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    if (!ready || !clientId || !slot.current || !window.google) return;
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      nonce,
-      callback: (response) => onCredential(response.credential, nonce),
-    });
-    window.google.accounts.id.renderButton(slot.current, {
+    activeHandler = onCredential;
+    return () => {
+      if (activeHandler === onCredential) activeHandler = null;
+    };
+  }, [onCredential]);
+
+  useEffect(() => {
+    const google = window.google;
+    if (!ready || !clientId || !slot.current || !google) return;
+    if (initializedClientId !== clientId) {
+      const nonce = getPageNonce();
+      google.accounts.id.initialize({
+        client_id: clientId,
+        nonce,
+        callback: (response) => activeHandler?.(response.credential, nonce),
+      });
+      initializedClientId = clientId;
+    }
+    slot.current.replaceChildren();
+    google.accounts.id.renderButton(slot.current, {
       theme: "outline",
       size: "large",
       text: "continue_with",
       width: 320,
     });
-  }, [ready, clientId, nonce, onCredential]);
+  }, [ready, clientId]);
 
   if (!clientId) {
     return (
