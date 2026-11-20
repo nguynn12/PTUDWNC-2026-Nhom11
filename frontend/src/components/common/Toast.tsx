@@ -90,7 +90,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-      <Toaster richColors position="top-right" closeButton />
+      <Toaster richColors position="bottom-right" className="toaster group management-toast" closeButton />
     </ToastContext.Provider>
   );
 }

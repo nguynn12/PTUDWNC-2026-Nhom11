@@ -28,7 +28,8 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { ManagementPageHeader } from '@/components/layout/ManagementPageHeader';
+import { Card } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -250,47 +251,31 @@ export default function MyRecipesLifecyclePage() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* HEADER KHU VỰC QUẢN LÝ */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-border">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
-            Quản lý Công thức của tôi
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Điều khiển trạng thái vòng đời công thức (Bản nháp ➔ Xuất bản ➔ Lưu trữ ➔ Xóa mềm)
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => loadRecipes()}
-            disabled={loading}
-            className="gap-2 shadow-xs"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            Đồng bộ
-          </Button>
-          <Button asChild size="sm" className="gap-2 shadow-xs">
-            <Link href="/dashboard/recipes/new">
-              <PlusCircle className="w-4 h-4" />
-              Tạo công thức mới
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* XỬ LÝ LỖI TOÀN TRANG NẾU CÓ */}
-      {loadError && !loading && (
-        <ErrorState
-          title="Không thể tải danh sách công thức"
-          message={loadError}
-          onRetry={() => loadRecipes()}
-          retryLabel="Thử nạp lại"
-          showBackHome={false}
-        />
-      )}
+    <div className="management-page">
+      <ManagementPageHeader
+        title="Công thức của tôi"
+        description="Quản lý bản nháp, công thức đã xuất bản và công thức lưu trữ."
+        actions={
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => loadRecipes()}
+              disabled={loading}
+              className="gap-2 shadow-xs"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Làm mới
+            </Button>
+            <Button asChild size="sm" className="gap-2 shadow-xs">
+              <Link href="/dashboard/recipes/new">
+                <PlusCircle className="w-4 h-4" />
+                Tạo công thức mới
+              </Link>
+            </Button>
+          </>
+        }
+      />
 
       {/* FILTER & SEARCH TABS */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
@@ -345,211 +330,204 @@ export default function MyRecipesLifecyclePage() {
         </div>
       </div>
 
-      {/* BẢNG DANH SÁCH CÔNG THỨC */}
-      <Card className="border-border/80 shadow-xs overflow-hidden">
-        <CardContent className="p-0">
-          <Table>
+      {loading ? (
+        <Loading className="h-auto w-full py-8 text-center" text="Đang tải danh sách công thức..." />
+      ) : loadError ? (
+        <ErrorState
+          className="w-full max-w-none"
+          title="Không thể tải danh sách công thức"
+          message={loadError}
+          onRetry={() => loadRecipes()}
+          retryLabel="Thử nạp lại"
+          showBackHome={false}
+        />
+      ) : recipes.length === 0 ? (
+        <EmptyState
+          compact
+          className="w-full max-w-none"
+          title="Không tìm thấy công thức nào"
+          description={searchQuery
+            ? 'Không có công thức nào khớp với từ khóa tìm kiếm.'
+            : activeFilter !== 'ALL'
+              ? 'Chưa có công thức nào thuộc trạng thái này.'
+              : 'Bạn chưa tạo công thức nào.'}
+          action={!searchQuery && activeFilter === 'ALL'
+            ? { label: 'Tạo công thức đầu tiên', href: '/dashboard/recipes/new' }
+            : undefined}
+        />
+      ) : (
+        <Card className="overflow-hidden border-border/80 py-0 shadow-xs">
+          <Table className="min-w-[50rem]" aria-label="Công thức của tôi">
             <TableHeader className="bg-muted/40">
               <TableRow>
-                <TableHead className="w-[30%]">Tên công thức & URL</TableHead>
+                <TableHead className="w-[30%]">Công thức</TableHead>
                 <TableHead>Danh mục</TableHead>
-                <TableHead>Trạng thái Vòng đời</TableHead>
-                <TableHead>Thông số nấu</TableHead>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead>Thời gian và khẩu phần</TableHead>
                 <TableHead>xmin (Token)</TableHead>
-                <TableHead className="text-right">Hành động Vòng đời</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-64 text-center">
-                    <Loading size="lg" text="Đang tải danh sách bài viết..." />
-                  </TableCell>
-                </TableRow>
-              ) : recipes.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-72">
-                    <EmptyState
-                      title="Không tìm thấy công thức nào"
-                      description={
-                        searchQuery
-                          ? 'Không có kết quả nào khớp với từ khóa tìm kiếm của bạn.'
-                          : activeFilter !== 'ALL'
-                          ? 'Chưa có công thức nào thuộc trạng thái này.'
-                          : 'Bạn chưa tạo công thức nấu ăn nào. Hãy bắt đầu chia sẻ bí quyết ẩm thực ngay!'
-                      }
-                      action={
-                        !searchQuery && activeFilter === 'ALL'
-                          ? {
-                              label: 'Tạo công thức đầu tiên',
-                              href: '/dashboard/recipes/new',
-                            }
-                          : undefined
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                recipes.map((recipe) => {
-                  const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
-                  const isPublished = toStatusNumber(recipe.status) === RecipeStatus.Published;
-                  const isBusy = actionInProgress === recipe.id;
+              {recipes.map((recipe) => {
+                const statusStr = (recipe.status ?? 'DRAFT').toString().toUpperCase();
+                const isPublished = toStatusNumber(recipe.status) === RecipeStatus.Published;
+                const isBusy = actionInProgress === recipe.id;
 
-                  return (
-                    <TableRow key={recipe.id} className="hover:bg-muted/30 transition-colors">
-                      <TableCell>
-                        <div className="space-y-1">
-                          <Link
-                            href={isPublished ? `/recipes/${recipe.slug}` : `/dashboard/recipes/${recipe.id}/edit`}
-                            className="font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 group"
-                          >
-                            <span>{recipe.title}</span>
-                            <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
-                          </Link>
-                          <div className="text-xs text-muted-foreground font-mono">
-                            slug: /{recipe.slug}
-                          </div>
+                return (
+                  <TableRow key={recipe.id} className="hover:bg-muted/30 transition-colors">
+                    <TableCell>
+                      <div className="space-y-1">
+                        <Link
+                          href={isPublished ? `/recipes/${recipe.slug}` : `/dashboard/recipes/${recipe.id}/edit`}
+                          className="font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 group"
+                        >
+                          <span>{recipe.title}</span>
+                          <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
+                        </Link>
+                        <div className="text-xs text-muted-foreground font-mono">
+                          slug: /{recipe.slug}
                         </div>
-                      </TableCell>
+                      </div>
+                    </TableCell>
 
-                      <TableCell>
-                        <span className="font-medium text-sm text-foreground">
-                          {recipe.categoryName || 'Món chính'}
+                    <TableCell>
+                      <span className="font-medium text-sm text-foreground">
+                        {recipe.categoryName || 'Món chính'}
+                      </span>
+                    </TableCell>
+
+                    <TableCell>
+                      {renderStatusBadge(recipe.status ?? 'DRAFT')}
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1" title="Thời gian nấu">
+                          <Clock className="w-3.5 h-3.5" />
+                          {(recipe.cookTimeMinutes || recipe.cookTime || 30)}p
                         </span>
-                      </TableCell>
+                        <span className="flex items-center gap-1" title="Khẩu phần">
+                          <Users className="w-3.5 h-3.5" />
+                          {recipe.servings || 4} người
+                        </span>
+                      </div>
+                    </TableCell>
 
-                      <TableCell>
-                        {renderStatusBadge(recipe.status ?? 'DRAFT')}
-                      </TableCell>
+                    <TableCell>
+                      {recipe.concurrencyToken ?? recipe.xmin ? (
+                        <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground border border-border/50">
+                          {recipe.concurrencyToken ?? recipe.xmin}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">mặc định</span>
+                      )}
+                    </TableCell>
 
-                      <TableCell>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1" title="Thời gian nấu">
-                            <Clock className="w-3.5 h-3.5" />
-                            {(recipe.cookTimeMinutes || recipe.cookTime || 30)}p
-                          </span>
-                          <span className="flex items-center gap-1" title="Khẩu phần">
-                            <Users className="w-3.5 h-3.5" />
-                            {recipe.servings || 4} người
-                          </span>
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        {recipe.concurrencyToken ?? recipe.xmin ? (
-                          <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground border border-border/50">
-                            {recipe.concurrencyToken ?? recipe.xmin}
-                          </span>
-                        ) : (
-                          <span className="text-xs text-muted-foreground italic">mặc định</span>
-                        )}
-                      </TableCell>
-
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {/* Nút Xuất bản (Publish) */}
-                          {(statusStr === 'DRAFT' || statusStr === '0') && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handlePublish(recipe)}
-                              disabled={isBusy}
-                              title="Xuất bản công thức"
-                              className="h-8 gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 border-emerald-200"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span className="hidden md:inline">Xuất bản</span>
-                            </Button>
-                          )}
-
-                          {/* Nút Hạ về Nháp (Unpublish) - FE-10 */}
-                          {(statusStr === 'PUBLISHED' || statusStr === '1') && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUnpublish(recipe)}
-                              disabled={isBusy}
-                              title="Hạ bài về bản nháp"
-                              className="h-8 gap-1 text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200"
-                            >
-                              <Undo2 className="w-3.5 h-3.5" />
-                              <span className="hidden md:inline">Hạ nháp</span>
-                            </Button>
-                          )}
-
-                          {/* Nút Lưu trữ (Archive) */}
-                          {(statusStr === 'PUBLISHED' || statusStr === '1') && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleArchive(recipe)}
-                              disabled={isBusy}
-                              title="Lưu trữ công thức"
-                              className="h-8 gap-1 text-slate-700 hover:text-slate-800 hover:bg-slate-50 border-slate-200"
-                            >
-                              <Archive className="w-3.5 h-3.5" />
-                              <span className="hidden md:inline">Lưu trữ</span>
-                            </Button>
-                          )}
-
-                          {/* Nút Bỏ lưu trữ (Unarchive) - FE-10 */}
-                          {(statusStr === 'ARCHIVED' || statusStr === '2') && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUnarchive(recipe)}
-                              disabled={isBusy}
-                              title="Bỏ lưu trữ (chuyển về nháp)"
-                              className="h-8 gap-1 text-sky-700 hover:text-sky-800 hover:bg-sky-50 border-sky-200"
-                            >
-                              <FolderUp className="w-3.5 h-3.5" />
-                              <span className="hidden md:inline">Bỏ lưu trữ</span>
-                            </Button>
-                          )}
-
-                          {/* Nút Chỉnh sửa */}
-                          <Button
-                            asChild
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 gap-1 text-muted-foreground hover:text-foreground"
-                          >
-                            <Link href={`/dashboard/recipes/${recipe.id}/edit`}>
-                              <Edit className="w-3.5 h-3.5" />
-                              <span className="hidden md:inline">Sửa</span>
-                            </Link>
-                          </Button>
-
-                          {/* Nút Xóa tạm (Soft Delete) */}
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {/* Nút Xuất bản (Publish) */}
+                        {(statusStr === 'DRAFT' || statusStr === '0') && (
                           <Button
                             type="button"
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            onClick={() => setDeleteConfirmState({ isOpen: true, recipe })}
+                            onClick={() => handlePublish(recipe)}
                             disabled={isBusy}
-                            title="Chuyển vào thùng rác"
-                            className="h-8 gap-1 text-destructive hover:bg-destructive/10"
+                            title="Xuất bản công thức"
+                            className="h-8 gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 border-emerald-200"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span className="hidden md:inline">Xóa</span>
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span className="hidden md:inline">Xuất bản</span>
                           </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
+                        )}
+
+                        {/* Nút Hạ về Nháp (Unpublish) - FE-10 */}
+                        {(statusStr === 'PUBLISHED' || statusStr === '1') && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUnpublish(recipe)}
+                            disabled={isBusy}
+                            title="Hạ bài về bản nháp"
+                            className="h-8 gap-1 text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                            <span className="hidden md:inline">Hạ nháp</span>
+                          </Button>
+                        )}
+
+                        {/* Nút Lưu trữ (Archive) */}
+                        {(statusStr === 'PUBLISHED' || statusStr === '1') && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleArchive(recipe)}
+                            disabled={isBusy}
+                            title="Lưu trữ công thức"
+                            className="h-8 gap-1 text-slate-700 hover:text-slate-800 hover:bg-slate-50 border-slate-200"
+                          >
+                            <Archive className="w-3.5 h-3.5" />
+                            <span className="hidden md:inline">Lưu trữ</span>
+                          </Button>
+                        )}
+
+                        {/* Nút Bỏ lưu trữ (Unarchive) - FE-10 */}
+                        {(statusStr === 'ARCHIVED' || statusStr === '2') && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUnarchive(recipe)}
+                            disabled={isBusy}
+                            title="Bỏ lưu trữ (chuyển về nháp)"
+                            className="h-8 gap-1 text-sky-700 hover:text-sky-800 hover:bg-sky-50 border-sky-200"
+                          >
+                            <FolderUp className="w-3.5 h-3.5" />
+                            <span className="hidden md:inline">Bỏ lưu trữ</span>
+                          </Button>
+                        )}
+
+                        {/* Nút Chỉnh sửa */}
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 gap-1 text-muted-foreground hover:text-foreground"
+                        >
+                          <Link href={`/dashboard/recipes/${recipe.id}/edit`}>
+                            <Edit className="w-3.5 h-3.5" />
+                            <span className="hidden md:inline">Sửa</span>
+                          </Link>
+                        </Button>
+
+                        {/* Nút Xóa tạm (Soft Delete) */}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDeleteConfirmState({ isOpen: true, recipe })}
+                          disabled={isBusy}
+                          title="Chuyển vào thùng rác"
+                          className="h-8 gap-1 text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span className="hidden md:inline">Xóa</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        </Card>
+      )}
 
       {/* PHÂN TRANG SERVER-SIDE */}
-      {totalPages > 1 && (
+      {!loading && !loadError && recipes.length > 0 && totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
           <p className="text-sm text-muted-foreground">
             Hiển thị trang <span className="font-medium text-foreground">{page}</span> / <span className="font-medium text-foreground">{totalPages}</span> (Tổng cộng <span className="font-medium text-foreground">{totalCount}</span> công thức)

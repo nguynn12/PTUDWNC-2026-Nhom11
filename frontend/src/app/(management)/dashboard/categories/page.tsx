@@ -10,7 +10,10 @@ import {
   useUpdateCategory,
   useDeleteCategory,
 } from "@/hooks/useCategories";
-import { Container } from "@/components/common/Container";
+import { ManagementPageHeader } from "@/components/layout/ManagementPageHeader";
+import { EmptyState } from "@/components/common/EmptyState";
+import { ErrorState } from "@/components/common/ErrorState";
+import { Loading } from "@/components/common/Loading";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +57,6 @@ import {
   FolderKanban,
   UtensilsCrossed,
   Link2,
-  RotateCw,
   Lock,
   Loader2,
   Utensils,
@@ -125,345 +127,297 @@ export default function AdminCategoriesPage() {
   const totalRecipesLinked = categories.reduce((sum: number, c: CategoryDto) => sum + c.recipeCount, 0);
 
   return (
-    <div className="py-8 sm:py-12 bg-background min-h-screen">
-      <Container>
-        {/* Header & Tiêu đề trang */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <Link href="/" className="hover:text-primary transition-colors">
-              Trang chủ
-            </Link>
-            <span>/</span>
-            <span>Bảng điều khiển</span>
-            <span>/</span>
-            <span className="text-primary font-medium">Quản lý Danh mục</span>
-          </div>
+    <div className="management-page">
+      <ManagementPageHeader
+        title="Danh mục món ăn"
+        description="Tạo, chỉnh sửa và sắp xếp các danh mục công thức."
+        actions={
+          <Button onClick={() => setIsCreateOpen(true)} size="sm" className="gap-2">
+            <FolderPlus className="size-4" aria-hidden="true" />
+            Thêm danh mục mới
+          </Button>
+        }
+      />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {!isLoading && !isError && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Card className="border-border/80 py-0 shadow-xs">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <FolderKanban className="w-6 h-6" />
+            </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-serif">
-                Quản Trị Danh Mục Món Ăn
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Quản lý danh sách, cấu hình thứ tự hiển thị và duy trì các chuyên mục ẩm thực (FR-CAT-001 đến FR-CAT-005).
-              </p>
-            </div>
-            <Button
-              onClick={() => setIsCreateOpen(true)}
-              className="gap-2 shrink-0 rounded-xl"
-            >
-              <FolderPlus className="w-4 h-4" />
-              <span>Thêm danh mục mới</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <Card className="border border-border/80 shadow-xs">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <FolderKanban className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{totalCategories}</div>
-                <div className="text-xs text-muted-foreground font-medium">Tổng số danh mục</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border/80 shadow-xs">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
-                <UtensilsCrossed className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{activeCategoriesWithRecipes}</div>
-                <div className="text-xs text-muted-foreground font-medium">Danh mục có bài viết</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border/80 shadow-xs">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-500 flex items-center justify-center shrink-0">
-                <Link2 className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{totalRecipesLinked}</div>
-                <div className="text-xs text-muted-foreground font-medium">Tổng liên kết công thức</div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Toolbar: Tìm kiếm & Sắp xếp */}
-        <Card className="border border-border/80 shadow-xs mb-6">
-          <CardContent className="p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-              <Input
-                type="text"
-                placeholder="Lọc nhanh danh mục theo tên hoặc slug..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-8 h-10 rounded-lg text-sm"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
-                  aria-label="Xóa bộ lọc"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <Label htmlFor="sortSelect" className="text-xs text-muted-foreground whitespace-nowrap">
-                Sắp xếp theo:
-              </Label>
-              <select
-                id="sortSelect"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as "orderIndex" | "name" | "recipeCount")}
-                className="h-10 rounded-lg border border-input bg-background px-3 py-1 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <option value="orderIndex">Thứ tự hiển thị (Mặc định)</option>
-                <option value="name">Tên danh mục (A - Z)</option>
-                <option value="recipeCount">Số lượng công thức (Nhiều nhất)</option>
-              </select>
+              <div className="text-2xl font-bold text-foreground">{totalCategories}</div>
+              <div className="text-xs text-muted-foreground font-medium">Tổng số danh mục</div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Main Data Table */}
-        {isLoading ? (
-          <Card className="border border-border/80 shadow-xs p-8 text-center">
-            <div className="flex flex-col items-center justify-center gap-3 py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Đang tải danh sách danh mục...</p>
+        <Card className="border-border/80 py-0 shadow-xs">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+              <UtensilsCrossed className="w-6 h-6" />
             </div>
-          </Card>
-        ) : isError ? (
-          <Card className="border border-destructive/30 shadow-xs p-8 text-center bg-destructive/5">
-            <div className="flex flex-col items-center justify-center gap-3 py-6">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground">Không thể nạp dữ liệu danh mục</h3>
-              <p className="text-sm text-muted-foreground max-w-md">
-                {error?.detail || error?.message || "Đã xảy ra sự cố khi kết nối tới máy chủ API."}
-              </p>
-              <Button onClick={() => refetch()} variant="outline" size="sm" className="gap-2 mt-2">
-                <RotateCw className="w-4 h-4" />
-                Tải lại dữ liệu
-              </Button>
+            <div>
+              <div className="text-2xl font-bold text-foreground">{activeCategoriesWithRecipes}</div>
+              <div className="text-xs text-muted-foreground font-medium">Danh mục có công thức</div>
             </div>
-          </Card>
-        ) : filteredCategories.length === 0 ? (
-          <Card className="border border-dashed border-border p-12 text-center">
-            <div className="flex flex-col items-center justify-center gap-3 py-4">
-              <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                <FolderKanban className="w-7 h-7" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground">
-                {searchTerm ? "Không tìm thấy danh mục phù hợp" : "Chưa có danh mục nào"}
-              </h3>
-              <p className="text-sm text-muted-foreground max-w-md">
-                {searchTerm
-                  ? `Không có kết quả nào khớp với từ khóa "${searchTerm}". Vui lòng thử từ khóa khác.`
-                  : "Bắt đầu thiết lập hệ thống chuyên mục ẩm thực bằng cách tạo danh mục đầu tiên."}
-              </p>
-              {searchTerm ? (
-                <Button onClick={() => setSearchTerm("")} variant="outline" size="sm">
-                  Xóa bộ lọc tìm kiếm
-                </Button>
-              ) : (
-                <Button onClick={() => setIsCreateOpen(true)} size="sm" className="gap-2">
-                  <FolderPlus className="w-4 h-4" />
-                  Tạo danh mục đầu tiên
-                </Button>
-              )}
-            </div>
-          </Card>
-        ) : (
-          <Card className="border border-border/80 shadow-xs overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[70px] text-center">Ảnh</TableHead>
-                  <TableHead>Tên danh mục</TableHead>
-                  <TableHead>Đường dẫn (Slug)</TableHead>
-                  <TableHead className="w-[100px] text-center">Thứ tự</TableHead>
-                  <TableHead className="w-[120px] text-center">Công thức</TableHead>
-                  <TableHead className="w-[160px] text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCategories.map((cat) => (
-                  <TableRow key={cat.id}>
-                    {/* Thumbnail */}
-                    <TableCell className="text-center">
-                      <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-muted border border-border/60 mx-auto flex items-center justify-center">
-                        {cat.imageUrl ? (
-                          <Image
-                            referrerPolicy="no-referrer"
-                            src={cat.imageUrl}
-                            alt={cat.name}
-                            fill
-                            sizes="44px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <Utensils className="w-5 h-5 text-muted-foreground" />
-                        )}
-                      </div>
-                    </TableCell>
+          </CardContent>
+        </Card>
 
-                    {/* Tên & Mô tả */}
-                    <TableCell>
-                      <div className="font-semibold text-foreground text-sm">
-                        {cat.name}
-                      </div>
-                      {cat.description ? (
-                        <div className="text-xs text-muted-foreground line-clamp-1 max-w-[340px] mt-0.5">
-                          {cat.description}
-                        </div>
+        <Card className="border-border/80 py-0 shadow-xs">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-500 flex items-center justify-center shrink-0">
+              <Link2 className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-foreground">{totalRecipesLinked}</div>
+              <div className="text-xs text-muted-foreground font-medium">Tổng liên kết công thức</div>
+            </div>
+          </CardContent>
+        </Card>
+        </div>
+      )}
+
+      {/* Toolbar: Tìm kiếm & Sắp xếp */}
+      <Card className="border-border/80 py-0 shadow-xs">
+        <CardContent className="p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="text"
+              placeholder="Lọc nhanh danh mục theo tên hoặc slug..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 pr-8 h-10 rounded-lg text-sm"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
+                aria-label="Xóa bộ lọc"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Label htmlFor="sortSelect" className="text-xs text-muted-foreground whitespace-nowrap">
+              Sắp xếp theo:
+            </Label>
+            <select
+              id="sortSelect"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "orderIndex" | "name" | "recipeCount")}
+              className="h-10 max-w-full rounded-lg border border-input bg-background px-3 py-1 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <option value="orderIndex">Thứ tự hiển thị (Mặc định)</option>
+              <option value="name">Tên danh mục (A - Z)</option>
+              <option value="recipeCount">Số lượng công thức (Nhiều nhất)</option>
+            </select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {isLoading ? (
+        <Loading className="h-auto w-full py-8 text-center" text="Đang tải danh sách danh mục..." />
+      ) : isError ? (
+        <ErrorState
+          className="w-full max-w-none"
+          title="Không thể tải danh mục"
+          error={error}
+          onRetry={() => refetch()}
+          showBackHome={false}
+        />
+      ) : filteredCategories.length === 0 ? (
+        <EmptyState
+          compact
+          className="w-full max-w-none"
+          title={searchTerm ? "Không tìm thấy danh mục phù hợp" : "Chưa có danh mục nào"}
+          description={searchTerm
+            ? "Thử một từ khóa khác hoặc xóa bộ lọc."
+            : "Thêm danh mục để sắp xếp công thức theo chủ đề."}
+          icon={<FolderKanban className="size-6" aria-hidden="true" />}
+          action={searchTerm
+            ? { label: "Xóa bộ lọc tìm kiếm", onClick: () => setSearchTerm("") }
+            : { label: "Tạo danh mục đầu tiên", onClick: () => setIsCreateOpen(true) }}
+        />
+      ) : (
+        <Card className="overflow-hidden border-border/80 py-0 shadow-xs">
+          <Table className="min-w-[42rem]" aria-label="Danh mục món ăn">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[70px] text-center">Ảnh</TableHead>
+                <TableHead>Tên danh mục</TableHead>
+                <TableHead>Đường dẫn (Slug)</TableHead>
+                <TableHead className="w-[100px] text-center">Thứ tự</TableHead>
+                <TableHead className="w-[120px] text-center">Công thức</TableHead>
+                <TableHead className="w-[160px] text-right">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCategories.map((cat) => (
+                <TableRow key={cat.id}>
+                  {/* Thumbnail */}
+                  <TableCell className="text-center">
+                    <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-muted border border-border/60 mx-auto flex items-center justify-center">
+                      {cat.imageUrl ? (
+                        <Image
+                          referrerPolicy="no-referrer"
+                          src={cat.imageUrl}
+                          alt={cat.name}
+                          fill
+                          sizes="44px"
+                          className="object-cover"
+                        />
                       ) : (
-                        <span className="text-xs text-muted-foreground italic">
-                          Chưa có mô tả
-                        </span>
+                        <Utensils className="w-5 h-5 text-muted-foreground" />
                       )}
-                    </TableCell>
+                    </div>
+                  </TableCell>
 
-                    {/* Slug */}
-                    <TableCell>
-                      <div className="inline-flex items-center gap-1.5">
-                        <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono text-primary font-medium">
-                          {cat.slug}
-                        </code>
-                        <Link
-                          href={`/categories/${cat.slug}`}
-                          target="_blank"
-                          title="Xem trang công khai"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
+                  {/* Tên & Mô tả */}
+                  <TableCell>
+                    <div className="font-semibold text-foreground text-sm">
+                      {cat.name}
+                    </div>
+                    {cat.description ? (
+                      <div className="text-xs text-muted-foreground line-clamp-1 max-w-[340px] mt-0.5">
+                        {cat.description}
                       </div>
-                    </TableCell>
+                    ) : (
+                      <span className="text-xs text-muted-foreground italic">
+                        Chưa có mô tả
+                      </span>
+                    )}
+                  </TableCell>
 
-                    {/* Thứ tự hiển thị */}
-                    <TableCell className="text-center">
-                      <Badge variant="outline" className="font-mono text-xs font-semibold">
-                        {cat.orderIndex}
-                      </Badge>
-                    </TableCell>
-
-                    {/* Số bài viết */}
-                    <TableCell className="text-center">
-                      <Badge
-                        variant={cat.recipeCount > 0 ? "secondary" : "outline"}
-                        className={
-                          cat.recipeCount > 0
-                            ? "bg-secondary/15 text-secondary font-semibold"
-                            : "text-muted-foreground"
-                        }
+                  {/* Slug */}
+                  <TableCell>
+                    <div className="inline-flex items-center gap-1.5">
+                      <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono text-primary font-medium">
+                        {cat.slug}
+                      </code>
+                      <Link
+                        href={`/categories/${cat.slug}`}
+                        target="_blank"
+                        title="Xem trang công khai"
+                        className="text-muted-foreground hover:text-primary transition-colors"
                       >
-                        {cat.recipeCount} bài
-                      </Badge>
-                    </TableCell>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </TableCell>
 
-                    {/* Actions */}
-                    <TableCell className="text-right whitespace-nowrap">
-                      <div className="inline-flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setEditingCategory(cat)}
-                          className="h-8 px-2.5 text-xs gap-1"
-                          title="Chỉnh sửa thông tin danh mục (FR-CAT-004)"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                          <span>Sửa</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDeletingCategory(cat)}
-                          className="h-8 px-2.5 text-xs gap-1 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
-                          title="Xóa danh mục (FR-CAT-005)"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>Xóa</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        )}
+                  {/* Thứ tự hiển thị */}
+                  <TableCell className="text-center">
+                    <Badge variant="outline" className="font-mono text-xs font-semibold">
+                      {cat.orderIndex}
+                    </Badge>
+                  </TableCell>
 
-        {/* ====================================================================
-            MODAL 1: THÊM MỚI DANH MỤC (CreateCategoryModal)
-            ==================================================================== */}
-        <CreateCategoryDialog
-          open={isCreateOpen}
-          onOpenChange={setIsCreateOpen}
-          onSuccess={(newCat) => {
-            setIsCreateOpen(false);
-            toast.success(`Đã tạo thành công danh mục "${newCat.name}"!`);
+                  {/* Số bài viết */}
+                  <TableCell className="text-center">
+                    <Badge
+                      variant={cat.recipeCount > 0 ? "secondary" : "outline"}
+                      className={
+                        cat.recipeCount > 0
+                          ? "bg-secondary/15 text-secondary font-semibold"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {cat.recipeCount} bài
+                    </Badge>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell className="text-right whitespace-nowrap">
+                    <div className="inline-flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingCategory(cat)}
+                        className="h-8 px-2.5 text-xs gap-1"
+                        title="Chỉnh sửa thông tin danh mục (FR-CAT-004)"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span>Sửa</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDeletingCategory(cat)}
+                        className="h-8 px-2.5 text-xs gap-1 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
+                        title="Xóa danh mục (FR-CAT-005)"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Xóa</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {/* ====================================================================
+          MODAL 1: THÊM MỚI DANH MỤC (CreateCategoryModal)
+          ==================================================================== */}
+      <CreateCategoryDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onSuccess={(newCat) => {
+          setIsCreateOpen(false);
+          toast.success(`Đã tạo thành công danh mục "${newCat.name}"!`);
+        }}
+        onError={(msg) => {
+          toast.error(msg);
+        }}
+        createMutation={createMutation}
+      />
+
+      {/* ====================================================================
+          MODAL 2: CHỈNH SỬA DANH MỤC (EditCategoryModal)
+          ==================================================================== */}
+      {editingCategory && (
+        <EditCategoryDialog
+          category={editingCategory}
+          open={!!editingCategory}
+          onOpenChange={(open) => !open && setEditingCategory(null)}
+          onSuccess={(updatedCat) => {
+            setEditingCategory(null);
+            toast.success(`Đã cập nhật danh mục "${updatedCat.name}"!`);
           }}
           onError={(msg) => {
             toast.error(msg);
           }}
-          createMutation={createMutation}
+          updateMutation={updateMutation}
         />
+      )}
 
-        {/* ====================================================================
-            MODAL 2: CHỈNH SỬA DANH MỤC (EditCategoryModal)
-            ==================================================================== */}
-        {editingCategory && (
-          <EditCategoryDialog
-            category={editingCategory}
-            open={!!editingCategory}
-            onOpenChange={(open) => !open && setEditingCategory(null)}
-            onSuccess={(updatedCat) => {
-              setEditingCategory(null);
-              toast.success(`Đã cập nhật danh mục "${updatedCat.name}"!`);
-            }}
-            onError={(msg) => {
-              toast.error(msg);
-            }}
-            updateMutation={updateMutation}
-          />
-        )}
-
-        {/* ====================================================================
-            MODAL 3: XÓA AN TOÀN DANH MỤC (DeleteCategoryModal)
-            ==================================================================== */}
-        {deletingCategory && (
-          <DeleteCategoryAlertDialog
-            category={deletingCategory}
-            open={!!deletingCategory}
-            onOpenChange={(open) => !open && setDeletingCategory(null)}
-            onSuccess={() => {
-              const name = deletingCategory.name;
-              setDeletingCategory(null);
-              toast.success(`Đã xóa danh mục "${name}" thành công!`);
-            }}
-            onError={(msg) => {
-              toast.error(msg);
-            }}
-            deleteMutation={deleteMutation}
-          />
-        )}
-      </Container>
+      {/* ====================================================================
+          MODAL 3: XÓA AN TOÀN DANH MỤC (DeleteCategoryModal)
+          ==================================================================== */}
+      {deletingCategory && (
+        <DeleteCategoryAlertDialog
+          category={deletingCategory}
+          open={!!deletingCategory}
+          onOpenChange={(open) => !open && setDeletingCategory(null)}
+          onSuccess={() => {
+            const name = deletingCategory.name;
+            setDeletingCategory(null);
+            toast.success(`Đã xóa danh mục "${name}" thành công!`);
+          }}
+          onError={(msg) => {
+            toast.error(msg);
+          }}
+          deleteMutation={deleteMutation}
+        />
+      )}
     </div>
   );
 }

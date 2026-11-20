@@ -16,6 +16,9 @@ import type {
 import { useToast } from '@/components/common/Toast';
 import { ConflictDialog } from '@/components/common/ConflictDialog';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { ErrorState } from '@/components/common/ErrorState';
+import { Loading } from '@/components/common/Loading';
+import { ManagementPageHeader } from '@/components/layout/ManagementPageHeader';
 import {
   BookOpenIcon,
   PlusCircleIcon,
@@ -119,12 +122,16 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
   // Danh mục (Categories)
   const [categories, setCategories] = useState<CategoryOptionDto[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryLoadFailed, setCategoryLoadFailed] = useState(false);
+  const [categoryAttempt, setCategoryAttempt] = useState(0);
   const [loadingInitial, setLoadingInitial] = useState<boolean>(mode === 'edit');
+  const [recipeLoadError, setRecipeLoadError] = useState<string | null>(null);
 
   // --- STATE BƯỚC 1: THÔNG TIN CHUNG & DINH DƯỠNG ---
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [categoryId, setCategoryId] = useState('c1');
+  const [categoryId, setCategoryId] = useState('');
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('Medium');
   const [prepTimeMinutes, setPrepTimeMinutes] = useState<number>(20);
   const [cookTimeMinutes, setCookTimeMinutes] = useState<number>(30);
@@ -182,6 +189,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const loadRecipeData = useCallback(
     async (targetId: string) => {
       setLoadingInitial(true);
+      setRecipeLoadError(null);
       try {
         const detail = await RecipeApi.getRecipeFullDetail(targetId);
         setRecipeId(detail.id);
@@ -231,13 +239,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         });
         setEditingAltMap(altInit);
       } catch (err) {
-        const apiErr = err as ApiError;
-        showError('Không thể tải dữ liệu công thức', apiErr.message);
+        setRecipeLoadError((err as ApiError).message || 'Vui lòng thử lại.');
       } finally {
         setLoadingInitial(false);
       }
     },
-    [showError, updateXmin]
+    [updateXmin]
   );
 
   useEffect(() => {
@@ -253,8 +260,19 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
       if (list.length > 0 && !initialRecipeId) {
         setCategoryId(list[0].id);
       }
+    }).catch(() => {
+      if (!ignore) setCategoryLoadFailed(true);
+    }).finally(() => {
+      if (!ignore) setLoadingCategories(false);
     });
 
+    return () => {
+      ignore = true;
+    };
+  }, [initialRecipeId, categoryAttempt]);
+
+  useEffect(() => {
+    let ignore = false;
     if (mode === 'edit' && initialRecipeId) {
       void Promise.resolve().then(() => {
         if (!ignore) {
@@ -816,51 +834,19 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     }
   };
 
-  if (loadingInitial) {
-    return (
-      <main className="dashboard-content">
-        <div className="section-card">
-          <div className="empty-state">
-            <p className="empty-title">Đang tải dữ liệu chi tiết công thức...</p>
-            <p className="empty-desc">
-              Đồng bộ Thông tin chung, Nguyên liệu, Các bước chế biến, Hình ảnh MinIO và Concurrency Token (xmin).
-            </p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <>
-      {/* HEADER */}
-      <header className="dashboard-header">
-        <div className="header-title-area">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-            <Link href="/dashboard/recipes" className="btn btn-secondary btn-sm">
-              <ChevronLeftIcon size={16} />
-              <span>Danh sách công thức</span>
-            </Link>
-            {recipeId && (
-              <span className="status-badge badge-draft">
-                ID: {recipeId.slice(0, 8)}... {xmin ? `• If-Match xmin="${xmin}"` : ''}
-              </span>
-            )}
-          </div>
-          <h1>
-            {mode === 'create'
-              ? 'Tạo Công Thức Nấu Ăn Mới (Multi-step Wizard)'
-              : `Chỉnh Sửa Công Thức: ${title || '...'}`}
-          </h1>
-          <p>
-            {mode === 'create'
-              ? 'Quy trình 4 bước chuẩn SRS: Thông tin chung ➔ Nguyên liệu định lượng ➔ Các bước thực hiện ➔ Upload Ảnh MinIO'
-              : 'Cập nhật toàn diện nội dung công thức với cơ chế kiểm soát xung đột đồng thời Optimistic Concurrency (If-Match: xmin)'}
-          </p>
-        </div>
-
-        <div className="header-actions">
-          {recipeId && canPublish && (
+  const heading = (
+    <ManagementPageHeader
+      title={mode === 'create' ? 'Tạo công thức mới' : 'Chỉnh sửa công thức'}
+      description={mode === 'create'
+        ? 'Nhập thông tin chung, nguyên liệu, các bước thực hiện và hình ảnh.'
+        : title || 'Cập nhật nội dung và hình ảnh của công thức.'}
+      actions={
+        <>
+          <Link href="/dashboard/recipes" className="btn btn-secondary btn-sm">
+            <ChevronLeftIcon size={16} />
+            <span>Công thức của tôi</span>
+          </Link>
+          {recipeId && canPublish && !loadingInitial && !recipeLoadError && (
             <button
               type="button"
               className="btn btn-primary btn-sm"
@@ -871,10 +857,34 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               <span>Hoàn tất & Xuất bản</span>
             </button>
           )}
-        </div>
-      </header>
+        </>
+      }
+    />
+  );
 
-      <main className="dashboard-content">
+  if (loadingInitial || recipeLoadError) {
+    return (
+      <div className="management-page">
+        {heading}
+        {loadingInitial ? (
+          <Loading className="h-auto w-full py-8 text-center" text="Đang tải công thức..." />
+        ) : (
+          <ErrorState
+            className="w-full max-w-none"
+            title="Không thể tải công thức"
+            message={recipeLoadError ?? undefined}
+            onRetry={initialRecipeId ? () => loadRecipeData(initialRecipeId) : undefined}
+            showBackHome={false}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="management-page">
+      {heading}
+      <div className="min-w-0">
         {/* Thanh Stepper 4 Bước dạng Tabs responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8 p-1.5 bg-[var(--bg-surface-alt)]/60 rounded-2xl border border-[var(--border-subtle)]">
           <button
@@ -1046,14 +1056,30 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                     </label>
                     <Select
                       value={categoryId}
+                      disabled={loadingCategories || categories.length === 0}
                       onChange={e => setCategoryId(e.target.value)}
                     >
-                      {(Array.isArray(categories) ? categories : []).map(cat => (
+                      {categories.length === 0 && (
+                        <option value="">{loadingCategories ? 'Đang tải danh mục...' : 'Chưa chọn được danh mục'}</option>
+                      )}
+                      {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name}
                         </option>
                       ))}
                     </Select>
+                    {categoryLoadFailed ? (
+                      <p role="alert" className="text-xs text-destructive">
+                        Không thể tải danh mục.{" "}
+                        <button type="button" className="underline" onClick={() => {
+                          setCategoryLoadFailed(false);
+                          setLoadingCategories(true);
+                          setCategoryAttempt(attempt => attempt + 1);
+                        }}>Thử lại</button>
+                      </p>
+                    ) : !loadingCategories && categories.length === 0 && (
+                      <p className="text-xs text-muted-foreground">Chưa có danh mục để chọn.</p>
+                    )}
                     {step1Errors.categoryId && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.categoryId}</p>}
                   </div>
 
@@ -1976,7 +2002,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {/* Modal xử lý xung đột 409 Concurrency Conflict */}
       <ConflictDialog
@@ -2003,6 +2029,6 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         onCancel={() => setDeleteConfirm(null)}
         onConfirm={handleConfirmDelete}
       />
-    </>
+    </div>
   );
 }
