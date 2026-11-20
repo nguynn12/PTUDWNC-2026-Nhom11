@@ -96,14 +96,15 @@ test.describe("Hồi quy kho công thức trước demo", () => {
     test.skip(!outageUrl, "Cần bản frontend kiểm thử trỏ vào backend không khả dụng.");
     const url = new URL("/recipes?page=2&maxTotalTime=60", outageUrl).href;
     await page.goto(url);
-    await expect(page.getByRole("alert").getByRole("heading", { name: "Không thể tải danh sách công thức" })).toBeVisible();
+    const loadError = page.getByRole("alert").filter({ has: page.getByRole("heading", { name: "Không thể tải danh sách công thức" }) });
+    await expect(loadError).toBeVisible();
     await expect(page.getByRole("heading", { name: "Không tìm thấy công thức phù hợp" })).toHaveCount(0);
     const retry = page.getByRole("link", { name: "Thử lại", exact: true });
     const navigation = page.waitForRequest(request => request.isNavigationRequest() && request.url() === url);
     await retry.click();
     await navigation;
     await expect(page).toHaveURL(url);
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(loadError).toBeVisible();
   });
 });
 
@@ -235,7 +236,8 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
         json: { data: recipes, meta: { page: 1, pageSize: 10, total: recipes.length, totalPages: 1 } },
       });
     });
-    await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
+    await page.getByRole("navigation", { name: "Điều hướng quản trị" })
+      .getByRole("link", { name: "Công thức của tôi", exact: true }).click();
     await expect(page.getByRole("link", { name: recipes[0].title, exact: true })).toHaveAttribute("href", "/recipes/mon-da-xuat-ban");
     await expect(page.getByRole("link", { name: recipes[1].title, exact: true })).toHaveAttribute("href", `/dashboard/recipes/${recipes[1].id}/edit`);
     await expect(page.getByRole("link", { name: recipes[2].title, exact: true })).toHaveAttribute("href", `/dashboard/recipes/${recipes[2].id}/edit`);
@@ -243,7 +245,8 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
 
   test("Tạo bản nháp, mở lại và lưu đúng danh mục cùng If-Match", async ({ page }) => {
     const { id, title } = await createDraft(page);
-    await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
+    await page.getByRole("navigation", { name: "Điều hướng quản trị" })
+      .getByRole("link", { name: "Công thức của tôi", exact: true }).click();
     const loaded = page.waitForResponse(response => response.url().endsWith(`/recipes/${id}`)
       && response.request().method() === "GET");
     await page.getByRole("link", { name: title, exact: true }).click();
@@ -275,7 +278,8 @@ test.describe("Vòng đời công thức TV3 — API và PostgreSQL thật", () 
       initialCompleted();
     });
     try {
-      await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
+      await page.getByRole("navigation", { name: "Điều hướng quản trị" })
+      .getByRole("link", { name: "Công thức của tôi", exact: true }).click();
       await initialRequest;
       await page.getByPlaceholder("Tìm theo tên công thức...").fill(`khong-co-mon-${Date.now()}`);
       await expect(page.getByRole("heading", { name: "Không tìm thấy công thức nào", exact: true })).toBeVisible();
