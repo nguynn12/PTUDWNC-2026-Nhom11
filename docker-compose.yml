@@ -153,6 +153,9 @@ services:
       Email__From: ${Email__From:-}
     ports:
       - "${API_PORT:-5000}:8080"
+    volumes:
+      # Ảnh lưu cục bộ (avatar, ảnh công thức khi MinIO không sẵn sàng) phải sống sót qua việc build lại container
+      - uploads_data:/app/wwwroot/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -215,5 +218,7 @@ volumes:
     name: culinary-blog-minio-data
   redis_data:
     name: culinary-blog-redis-data
+  uploads_data:
+    name: culinary-blog-uploads-data
   seq_data:
     name: culinary-blog-seq-data

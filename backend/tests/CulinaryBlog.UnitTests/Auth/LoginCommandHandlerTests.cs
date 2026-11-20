@@ -14,7 +14,7 @@ public sealed class LoginCommandHandlerTests
     private static LoginCommandHandler CreateHandler(CredentialCheckResult result) =>
         new(new FakeIdentityService { CredentialResult = result }, new FakeJwtService(), new FakeRefreshTokenRepository(), new FakeUnitOfWork(), new FakeClientInfo());
 
-    private static readonly LoginCommand Command = new("author@culinaryblog.local", "Sai-mat-khau1!");
+    private static readonly LoginCommand Command = new("author@culinaryblog.com", "Sai-mat-khau1!");
 
     [Fact]
     public async Task SaiEmailHoacMatKhau_Tra401ThongBaoChung()

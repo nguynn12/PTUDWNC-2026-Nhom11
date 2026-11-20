@@ -36,12 +36,12 @@ public sealed class JwtBearerSetupTests
     public void AccessToken_CoDuClaimSubEmailRolesJti()
     {
         var raw = new JwtService(Options.Create(Settings))
-            .GenerateAccessToken("user-1", "admin@culinaryblog.local", ["Admin", "Author"], emailConfirmed: true);
+            .GenerateAccessToken("user-1", "admin@culinaryblog.com", ["Admin", "Author"], emailConfirmed: true);
 
         var token = new JwtSecurityTokenHandler().ReadJwtToken(raw);
 
         Assert.Equal("user-1", token.Subject);
-        Assert.Contains(token.Claims, c => c.Type == "email" && c.Value == "admin@culinaryblog.local");
+        Assert.Contains(token.Claims, c => c.Type == "email" && c.Value == "admin@culinaryblog.com");
         Assert.Contains(token.Claims, c => c.Type == "jti");
         Assert.Equal(["Admin", "Author"], token.Claims.Where(c => c.Type == "roles").Select(c => c.Value).Order());
     }
@@ -51,7 +51,7 @@ public sealed class JwtBearerSetupTests
     {
         var options = ConfiguredOptions();
         var raw = new JwtService(Options.Create(Settings))
-            .GenerateAccessToken("user-1", "admin@culinaryblog.local", ["Admin"], emailConfirmed: true);
+            .GenerateAccessToken("user-1", "admin@culinaryblog.com", ["Admin"], emailConfirmed: true);
 
         var result = await options.TokenHandlers[0].ValidateTokenAsync(raw, options.TokenValidationParameters);
 

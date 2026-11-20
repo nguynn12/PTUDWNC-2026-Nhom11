@@ -26,7 +26,7 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
   "originalTitle": "Tên gốc trên trang nguồn (tùy chọn)",
   "description": "Mô tả 10–1800 ký tự (tự viết)",
   "categoryName": "Món canh",
-  "authorEmail": "author@culinaryblog.local",
+  "authorEmail": "author@culinaryblog.com",
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 15,
   "servings": 4,

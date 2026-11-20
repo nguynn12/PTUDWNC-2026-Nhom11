@@ -30,7 +30,7 @@ public sealed class JwtServiceTests
         var service = CreateService(15);
 
         var token = new JwtSecurityTokenHandler().ReadJwtToken(
-            service.GenerateAccessToken("user-1", "author@culinaryblog.local", ["Author"], emailConfirmed: true));
+            service.GenerateAccessToken("user-1", "author@culinaryblog.com", ["Author"], emailConfirmed: true));
 
         var expectedExpiry = DateTime.UtcNow.AddSeconds(service.AccessTokenLifetimeSeconds);
         Assert.InRange(token.ValidTo, expectedExpiry.AddMinutes(-1), expectedExpiry.AddMinutes(1));

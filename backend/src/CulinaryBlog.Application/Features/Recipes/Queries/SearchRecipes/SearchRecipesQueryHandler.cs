@@ -195,6 +195,7 @@ public class SearchRecipesQueryHandler : IRequestHandler<SearchRecipesQuery, Pag
             if (authors.TryGetValue(item.AuthorId, out var author))
             {
                 item.AuthorName = author.DisplayName;
+                item.AuthorAvatarUrl = author.AvatarUrl;
             }
         }
 

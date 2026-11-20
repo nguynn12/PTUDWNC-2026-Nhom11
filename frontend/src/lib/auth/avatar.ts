@@ -12,10 +12,10 @@ export type AvatarMimeType = (typeof AVATAR_TYPES)[number];
 export const AVATAR_ACCEPT = [...AVATAR_TYPES, ".jpg", ".jpeg", ".png", ".webp"].join(",");
 
 /**
- * Chọn ảnh từ thiết bị chỉ được bật khi đặt NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED=true
- * (xem authApi.uploadAvatar).
+ * Chọn ảnh từ thiết bị mặc định BẬT vì backend đã có POST /auth/me/avatar (xem authApi.uploadAvatar).
+ * Đặt NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED=false để tắt khi chạy với backend chưa có endpoint này.
  */
-export const AVATAR_UPLOAD_ENABLED = process.env.NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED === "true";
+export const AVATAR_UPLOAD_ENABLED = process.env.NEXT_PUBLIC_AVATAR_UPLOAD_ENABLED !== "false";
 
 export function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
