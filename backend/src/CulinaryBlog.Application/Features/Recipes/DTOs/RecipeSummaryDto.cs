@@ -20,6 +20,7 @@ public class RecipeSummaryDto
     public string? CategorySlug { get; init; }
     public string AuthorId { get; init; } = string.Empty;
     public string? AuthorName { get; set; }
+    public string? AuthorAvatarUrl { get; set; }
     public DateTimeOffset? PublishedAt { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
 }

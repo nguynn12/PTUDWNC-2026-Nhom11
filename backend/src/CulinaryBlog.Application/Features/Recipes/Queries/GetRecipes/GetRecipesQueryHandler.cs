@@ -178,6 +178,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             if (authors.TryGetValue(item.AuthorId, out var author))
             {
                 item.AuthorName = author.DisplayName;
+                item.AuthorAvatarUrl = author.AvatarUrl;
             }
         }
 

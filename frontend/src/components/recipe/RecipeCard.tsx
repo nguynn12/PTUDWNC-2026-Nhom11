@@ -34,6 +34,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
 
   const authorAvatar =
     recipe.author?.avatarUrl ||
+    recipe.authorAvatarUrl ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
       authorDisplayName
     )}&background=fed8c4&color=c85a17`;

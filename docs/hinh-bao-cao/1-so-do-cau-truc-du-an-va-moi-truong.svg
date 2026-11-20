@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#000">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#000"/></marker></defs>
+  <rect width="1600" height="1000" fill="#fff"/>
+  <text x="800" y="40" text-anchor="middle" font-size="26" font-weight="bold">Sơ đồ cấu trúc dự án và môi trường</text>
+
+  <!-- Docker boundary -->
+  <rect x="180" y="80" width="1240" height="480" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="195" y="105" font-weight="bold">Docker Compose</text>
+
+  <g fill="none" stroke="#000" stroke-width="1.8">
+    <rect x="30" y="265" width="110" height="60"/>
+    <rect x="215" y="265" width="150" height="60"/>
+    <rect x="470" y="150" width="210" height="70"/>
+    <rect x="470" y="340" width="210" height="90"/>
+    <rect x="920" y="120" width="260" height="60"/>
+    <rect x="920" y="205" width="260" height="60"/>
+    <rect x="920" y="290" width="260" height="60"/>
+    <rect x="920" y="375" width="260" height="60"/>
+    <rect x="920" y="460" width="260" height="60"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="85" y="301">Trình duyệt</text>
+    <text x="290" y="291">Nginx</text><text x="290" y="313" font-size="14">cổng 80</text>
+    <text x="575" y="180">Frontend (web)</text><text x="575" y="203" font-size="14">Next.js, cổng 3000</text>
+    <text x="575" y="376">Backend (api)</text><text x="575" y="399" font-size="14">ASP.NET Core .NET 10</text><text x="575" y="418" font-size="14">cổng 5000</text>
+    <text x="1050" y="146">PostgreSQL</text><text x="1050" y="167" font-size="14">dữ liệu chính, hàng đợi Hangfire</text>
+    <text x="1050" y="231">Redis</text><text x="1050" y="252" font-size="14">bộ nhớ đệm</text>
+    <text x="1050" y="316">MinIO</text><text x="1050" y="337" font-size="14">lưu ảnh (có thể không dùng)</text>
+    <text x="1050" y="401">Seq</text><text x="1050" y="422" font-size="14">nhật ký và trace</text>
+    <text x="1050" y="486">pgAdmin</text><text x="1050" y="507" font-size="14">quản trị CSDL</text>
+  </g>
+  <g fill="none" stroke="#000" stroke-width="1.6">
+    <path d="M140 295H215" marker-end="url(#a)"/>
+    <path d="M365 285H410V185H470" marker-end="url(#a)"/>
+    <path d="M365 305H410V385H470" marker-end="url(#a)"/>
+    <path d="M575 220V340" marker-end="url(#a)"/>
+    <path d="M680 385H800V150H920" marker-end="url(#a)"/>
+    <path d="M800 235H920" marker-end="url(#a)"/>
+    <path d="M800 320H920" marker-end="url(#a)"/>
+    <path d="M800 385V405H920" marker-end="url(#a)"/>
+    <path d="M1050 520V535" style="display:none"/>
+  </g>
+  <text x="400" y="178" text-anchor="end" font-size="14">/</text>
+  <text x="400" y="408" text-anchor="end" font-size="14">/api/v1</text>
+  <text x="585" y="285" font-size="14">gọi API khi dựng trang</text>
+  <text x="1050" y="548" text-anchor="middle" font-size="14">pgAdmin kết nối trực tiếp tới PostgreSQL</text>
+
+  <!-- Environment table -->
+  <text x="30" y="615" font-weight="bold">Môi trường</text>
+  <g fill="none" stroke="#000" stroke-width="1.5">
+    <rect x="30" y="630" width="520" height="270"/>
+    <path d="M30 675H550M30 745H550M30 815H550M200 630V900"/>
+  </g>
+  <text x="40" y="659" font-weight="bold">Môi trường</text><text x="210" y="659" font-weight="bold">Cách chạy</text>
+  <text x="40" y="715">Development</text><text x="210" y="705" font-size="15">dotnet run (API :5000)</text><text x="210" y="727" font-size="15">npm run dev (Web :3000)</text>
+  <text x="40" y="785">Docker Compose</text><text x="210" y="775" font-size="15">docker compose up -d --build</text><text x="210" y="797" font-size="15">tự migrate và nạp dữ liệu</text>
+  <text x="40" y="860">CI</text><text x="210" y="850" font-size="15">GitHub Actions: build, test,</text><text x="210" y="872" font-size="15">lint, e2e</text>
+
+  <!-- Folder tree -->
+  <text x="590" y="615" font-weight="bold">Cấu trúc thư mục</text>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="15.5" style="white-space:pre" xml:space="preserve">
+    <text x="590" y="650">backend/</text>
+    <text x="590" y="674">  src/</text>
+    <text x="590" y="698">    CulinaryBlog.API</text>
+    <text x="590" y="722">    CulinaryBlog.Application</text>
+    <text x="590" y="746">    CulinaryBlog.Domain</text>
+    <text x="590" y="770">    CulinaryBlog.Infrastructure</text>
+    <text x="590" y="794">  tests/</text>
+    <text x="590" y="818">  data/recipes/</text>
+    <text x="590" y="842">frontend/</text>
+    <text x="590" y="866">  src/ (app, components, lib...)</text>
+    <text x="590" y="890">infrastructure/nginx/</text>
+    <text x="590" y="914">docker-compose.yml</text>
+  </g>
+
+  <!-- Layers -->
+  <text x="1050" y="615" font-weight="bold">Các lớp của Backend</text>
+  <g fill="none" stroke="#000" stroke-width="1.8">
+    <rect x="1050" y="640" width="220" height="55"/>
+    <rect x="1050" y="740" width="220" height="55"/>
+    <rect x="1050" y="840" width="220" height="55"/>
+    <rect x="1340" y="740" width="220" height="55"/>
+    <path d="M1160 695V740" marker-end="url(#a)"/>
+    <path d="M1160 795V840" marker-end="url(#a)"/>
+    <path d="M1340 767H1270" marker-end="url(#a)"/>
+    <path d="M1450 795V867H1270" marker-end="url(#a)"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="1160" y="673">API</text>
+    <text x="1160" y="773">Application</text>
+    <text x="1160" y="873">Domain</text>
+    <text x="1450" y="773">Infrastructure</text>
+  </g>
+  <text x="1050" y="930" font-size="14">Mũi tên chỉ hướng phụ thuộc giữa các lớp.</text>
+</svg>

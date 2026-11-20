@@ -19,6 +19,8 @@ using Microsoft.Extensions.Options;
 /// </summary>
 public class MinioFileStorageService : IFileStorageService
 {
+    private static DateTime _unavailableUntil = DateTime.MinValue;
+
     private readonly IAmazonS3 _s3Client;
     private readonly MinioSettings _settings;
     private readonly ILogger<MinioFileStorageService> _logger;
@@ -47,6 +49,12 @@ public class MinioFileStorageService : IFileStorageService
         if (!_settings.Enabled)
         {
             _logger.LogInformation("MinIO đang bị vô hiệu hóa trong cấu hình, chuyển sang lưu trữ Local.");
+            return await _fallbackLocalStorage.UploadAsync(stream, fileName, contentType, folder, cancellationToken);
+        }
+
+        // MinIO vừa lỗi: tạm bỏ qua trong một phút để các lần tải ảnh sau không phải chờ hết thời hạn kết nối.
+        if (DateTime.UtcNow < _unavailableUntil)
+        {
             return await _fallbackLocalStorage.UploadAsync(stream, fileName, contentType, folder, cancellationToken);
         }
 
@@ -85,6 +93,7 @@ public class MinioFileStorageService : IFileStorageService
         }
         catch (Exception ex)
         {
+            _unavailableUntil = DateTime.UtcNow.AddMinutes(1);
             _logger.LogError(ex, "Lỗi khi tải file lên MinIO ({ObjectKey}), tự động chuyển sang Fallback Local Storage.", objectKey);
             
             if (stream.CanSeek)

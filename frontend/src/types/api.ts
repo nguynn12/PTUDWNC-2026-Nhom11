@@ -186,6 +186,7 @@ export interface RecipeSummaryDto {
   author?: RecipeAuthorDto | null;
   authorId?: string;
   authorName?: string | null;
+  authorAvatarUrl?: string | null;
   calories?: number | null;
   publishedAt?: string | null;
   createdAt: string;
