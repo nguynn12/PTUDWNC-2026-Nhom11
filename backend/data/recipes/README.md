@@ -99,5 +99,6 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
   - `che-buoi.json`: Ảnh bát chè bưởi truyền thống cùi bưởi giòn từ Savoury Days (HTTP 200).
   - `canh-cua-mong-toi.json`: Ảnh bát canh riêu cua mồng tơi rau đay từ Món Ngon Mỗi Ngày (HTTP 200).
   - `dau-hu-sot-nam.json`: Ảnh đĩa đậu hũ rán sốt nấm chay từ Món Ngon Mỗi Ngày (HTTP 200).
-- Cập nhật ảnh chuẩn xác cho món cũ `vit-om-sau.json`: thay ảnh mẫu bằng ảnh thố vịt om sấu thật từ Món Ngon Mỗi Ngày (HTTP 200).
-- Đối với `chao-suon-sun-ha-noi.json`: do các kho ảnh thuộc tên miền cấu hình chưa có ảnh cháo sườn sụn Hà Nội đạt chuẩn bản quyền mở, nhóm ghi nhận và đề xuất bổ sung qua MinIO khi có ảnh tự chụp thực tế.
+- Cập nhật hoàn thiện 2 ảnh còn thiếu trong bộ 50 món cũ theo yêu cầu của Nhóm trưởng:
+  - `vit-om-sau.json`: thay ảnh minh họa bằng ảnh thật thố vịt om sấu kèm sấu tươi từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `chao-suon-sun-ha-noi.json`: thay ảnh minh họa Unsplash không đúng món bằng ảnh thật bát cháo sườn sụn bột xay rắc quẩy giòn và ruốc thịt từ Helen's Recipes (`https://helenrecipes.com/wp-content/uploads/2019/03/9-1.png`, HTTP 200).
