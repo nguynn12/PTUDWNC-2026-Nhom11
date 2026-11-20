@@ -58,10 +58,10 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/recipes?sort=popular"
+                  href="/recipes?sortBy=totalTime&sortOrder=asc"
                   className="hover:text-primary transition-colors inline-block"
                 >
-                  Món ăn được yêu thích
+                  Món nấu nhanh
                 </Link>
               </li>
               <li>
@@ -83,10 +83,10 @@ export function Footer() {
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li>
                 <Link
-                  href="/categories/mon-chinh"
+                  href="/categories/mon-nuong"
                   className="hover:text-primary transition-colors inline-block"
                 >
-                  Món chính đậm đà
+                  Món nướng
                 </Link>
               </li>
               <li>
