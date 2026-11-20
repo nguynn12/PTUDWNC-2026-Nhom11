@@ -10,7 +10,7 @@ namespace CulinaryBlog.UnitTests.Seeders;
 /// <summary>Bộ nạp dữ liệu thật: công thức phải có tác giả, danh mục, nguyên liệu, bước, nguồn và nạp lặp lại không nhân đôi.</summary>
 public sealed class RecipeDataImporterTests : IDisposable
 {
-    private const string AuthorEmail = "author@culinaryblog.local";
+    private const string AuthorEmail = "author@culinaryblog.com";
     private readonly string _folder = Path.Combine(Path.GetTempPath(), "recipe-import-" + Guid.NewGuid());
 
     public RecipeDataImporterTests() => Directory.CreateDirectory(_folder);
@@ -45,7 +45,7 @@ public sealed class RecipeDataImporterTests : IDisposable
     private const string ValidJson = """
         {
           "title": "Canh thử nghiệm", "description": "Mô tả công thức thử nghiệm đủ dài.",
-          "categoryName": "Món canh", "authorEmail": "author@culinaryblog.local",
+          "categoryName": "Món canh", "authorEmail": "author@culinaryblog.com",
           "prepTimeMinutes": 5, "cookTimeMinutes": 10, "servings": 2, "difficulty": "Medium",
           "source": { "name": "Nguồn", "url": "https://example.com/x" },
           "nutrition": { "calories": 100, "protein": 5 },
