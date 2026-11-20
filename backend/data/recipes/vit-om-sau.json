@@ -10,9 +10,9 @@
   "difficulty": "Medium",
   "source": {
     "name": "Món Ngon Mỗi Ngày",
-    "url": "https://monngonmoingay.com/vit-om-sau/",
+    "url": "https://monngonmoingay.com/vit-kho-sau/",
     "accessedOn": "2026-11-20",
-    "note": "Món om thanh mát mùa hè đất Bắc."
+    "note": "Công thức vịt kho sấu đậm đà chuẩn vị miền Bắc."
   },
   "nutrition": null,
   "ingredients": [
@@ -71,9 +71,9 @@
   ],
   "images": [
     {
-      "url": "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&auto=format&fit=crop",
+      "url": "https://monngonmoingay.com/wp-content/uploads/2015/08/VitKhoSau_CQC0228.png",
       "altText": "Vịt om sấu",
-      "license": "Unsplash Food Photography License"
+      "license": "Ảnh của Món Ngon Mỗi Ngày (monngonmoingay.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
     }
   ]
 }

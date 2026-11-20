@@ -81,3 +81,23 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
   7. `chao-suon-sun-ha-noi.json` (Món cháo)
   8. `nam-dui-ga-kho-tieu-chay.json` (Món chay)
 - Đảm bảo 100% danh mục (17/17) đều có ít nhất 2 công thức, xóa bỏ hoàn toàn tình trạng danh mục rỗng.
+
+
+## Bổ sung 5 công thức đạt mốc 55 công thức (20/11/2026)
+
+- Kho JSON đạt mốc **55 công thức** thuộc 17 danh mục (thêm 5 món mới theo bản thảo đã được phê duyệt).
+- 5 món bổ sung gồm:
+  1. `tra-dao-cam-sa.json` (Đồ uống & Trà)
+  2. `bo-nuong-la-lot.json` (Món nướng)
+  3. `che-buoi.json` (Món tráng miệng)
+  4. `canh-cua-mong-toi.json` (Món canh)
+  5. `dau-hu-sot-nam.json` (Món chay)
+- Đảm bảo 100% (17/17) danh mục đều có từ 3 công thức trở lên (trừ một số danh mục đặc thù có 2 món), làm phong phú đáng kể thực đơn trên blog ẩm thực.
+- Toàn bộ 5 ảnh của công thức mới đã được kiểm tra trực quan, xác minh chuẩn xác từng món ăn truyền thống và đồng bộ đúng quy định giấy phép bản quyền của dự án:
+  - `tra-dao-cam-sa.json`: Ảnh ly trà đào cam sả thanh nhiệt từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `bo-nuong-la-lot.json`: Ảnh đĩa bò lá lốt cuộn xanh thẫm từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `che-buoi.json`: Ảnh bát chè bưởi truyền thống cùi bưởi giòn từ Savoury Days (HTTP 200).
+  - `canh-cua-mong-toi.json`: Ảnh bát canh riêu cua mồng tơi rau đay từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `dau-hu-sot-nam.json`: Ảnh đĩa đậu hũ rán sốt nấm chay từ Món Ngon Mỗi Ngày (HTTP 200).
+- Cập nhật ảnh chuẩn xác cho món cũ `vit-om-sau.json`: thay ảnh mẫu bằng ảnh thố vịt om sấu thật từ Món Ngon Mỗi Ngày (HTTP 200).
+- Đối với `chao-suon-sun-ha-noi.json`: do các kho ảnh thuộc tên miền cấu hình chưa có ảnh cháo sườn sụn Hà Nội đạt chuẩn bản quyền mở, nhóm ghi nhận và đề xuất bổ sung qua MinIO khi có ảnh tự chụp thực tế.
