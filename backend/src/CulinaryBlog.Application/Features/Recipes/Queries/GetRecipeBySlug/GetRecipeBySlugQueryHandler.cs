@@ -19,17 +19,20 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
     private readonly IUserQueryService _userQueryService;
     private readonly ILogger<GetRecipeBySlugQueryHandler> _logger;
     private readonly ICacheService? _cacheService;
+    private readonly ICurrentUserService? _currentUserService;
 
     public GetRecipeBySlugQueryHandler(
         IApplicationDbContext dbContext,
         IUserQueryService userQueryService,
         ILogger<GetRecipeBySlugQueryHandler> logger,
-        ICacheService? cacheService = null)
+        ICacheService? cacheService = null,
+        ICurrentUserService? currentUserService = null)
     {
         _dbContext = dbContext;
         _userQueryService = userQueryService;
         _logger = logger;
         _cacheService = cacheService;
+        _currentUserService = currentUserService;
     }
 
     public async Task<GetRecipeBySlugResult> Handle(GetRecipeBySlugQuery request, CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
         var slug = request.Slug.Trim().ToLowerInvariant();
         var slugCacheKey = $"{CacheConstants.RecipeSlugPrefix}{slug}";
 
-        if (_cacheService != null)
+        if (_cacheService != null && (_currentUserService == null || string.IsNullOrWhiteSpace(_currentUserService.UserId)))
         {
             var cached = await _cacheService.GetAsync<RecipeDetailDto>(slugCacheKey, cancellationToken);
             if (cached != null)
@@ -48,14 +51,22 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
 
         _logger.LogInformation("Truy vấn DB: Chi tiết Recipe theo Slug: '{Slug}'", slug);
 
+        var currentUserId = _currentUserService?.UserId;
+        var isAdmin = _currentUserService?.IsAdmin ?? false;
+
         // Eager load: Category, Ingredients, Steps, Images (và Nutrition là owned entity)
         var recipe = await _dbContext.Recipes
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(r => r.Category)
             .Include(r => r.Ingredients.Where(i => !i.IsDeleted))
             .Include(r => r.Steps.Where(s => !s.IsDeleted))
             .Include(r => r.Images.Where(img => !img.IsDeleted))
-            .FirstOrDefaultAsync(r => r.Slug == slug && !r.IsDeleted && r.Status == RecipeStatus.Published, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Slug == slug && !r.IsDeleted &&
+                (r.Status == RecipeStatus.Published ||
+                 isAdmin ||
+                 (!string.IsNullOrEmpty(currentUserId) && r.AuthorId == currentUserId)),
+                cancellationToken);
 
         if (recipe is null)
         {
@@ -68,7 +79,9 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
             {
                 var targetRecipe = await _dbContext.Recipes
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(r => r.Id == slugHistory.RecipeId && !r.IsDeleted, cancellationToken);
+                    .FirstOrDefaultAsync(r => r.Id == slugHistory.RecipeId && !r.IsDeleted &&
+                        (r.Status == RecipeStatus.Published || isAdmin ||
+                         (!string.IsNullOrEmpty(currentUserId) && r.AuthorId == currentUserId)), cancellationToken);
 
                 if (targetRecipe != null && !string.IsNullOrWhiteSpace(targetRecipe.Slug))
                 {
@@ -84,6 +97,12 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
         var authors = await _userQueryService.GetAuthorSummariesAsync([recipe.AuthorId], cancellationToken);
         var authorSummary = authors.TryGetValue(recipe.AuthorId, out var a) ? a : null;
 
+        // Lấy concurrency token xmin qua LINQ expression
+        var token = await _dbContext.Recipes
+            .Where(r => r.Id == recipe.Id)
+            .Select(r => EF.Property<uint>(r, "xmin"))
+            .FirstOrDefaultAsync(cancellationToken);
+
         // Ánh xạ sang RecipeDetailDto
         var dto = new RecipeDetailDto
         {
@@ -94,11 +113,12 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
             PrepTimeMinutes = recipe.PrepTimeMinutes,
             CookTimeMinutes = recipe.CookTimeMinutes,
             Servings = recipe.Servings,
-            Difficulty = recipe.Difficulty.ToString(),
-            Status = recipe.Status.ToString(),
+            Difficulty = recipe.Difficulty,
+            Status = recipe.Status,
             PublishedAt = recipe.PublishedAt,
             CreatedAt = recipe.CreatedAt,
             UpdatedAt = recipe.UpdatedAt,
+            ConcurrencyToken = token != 0 ? token : null,
             Category = recipe.Category is null ? null : new CategoryDto
             {
                 Id = recipe.Category.Id,
@@ -166,7 +186,7 @@ public class GetRecipeBySlugQueryHandler : IRequestHandler<GetRecipeBySlugQuery,
                 .ToList()
         };
 
-        if (_cacheService != null)
+        if (_cacheService != null && recipe.Status == RecipeStatus.Published)
         {
             await _cacheService.SetAsync(slugCacheKey, dto, CacheConstants.RecipeDetailDuration, cancellationToken);
             await _cacheService.SetAsync($"{CacheConstants.RecipeDetailPrefix}{recipe.Id}", dto, CacheConstants.RecipeDetailDuration, cancellationToken);

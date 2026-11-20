@@ -1,3 +1,4 @@
+using ImageMagick;
 using System.Net;
 using System.Net.Http.Headers;
 using CulinaryBlog.Application.Common.Interfaces;
@@ -5,8 +6,6 @@ using CulinaryBlog.Infrastructure.Identity;
 using CulinaryBlog.IntegrationTests.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 namespace CulinaryBlog.IntegrationTests.Auth;
@@ -94,9 +93,9 @@ public sealed class AvatarUploadEndpointTests(CustomWebApplicationFactory factor
 
     private static byte[] RealPng()
     {
-        using var image = new Image<Rgba32>(8, 8);
+        using var image = new MagickImage(MagickColors.Orange, (uint)(8), (uint)(8));
         using var ms = new MemoryStream();
-        image.SaveAsPng(ms);
+        image.Write(ms, MagickFormat.Png);
         return ms.ToArray();
     }
 

@@ -20,7 +20,8 @@ import {
   SlidersHorizontal,
   RotateCcw,
 } from "lucide-react";
-import type { RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
+import { toDifficultyNumber } from "@/lib/enums";
+import type { RecipeSummaryDto } from "@/types/api";
 
 const trendingKeywords = [
   "Phở bò",
@@ -35,10 +36,10 @@ const trendingKeywords = [
 
 const difficultyOptions = [
   { value: "", label: "Tất cả độ khó" },
-  { value: "Easy", label: "Dễ" },
-  { value: "Medium", label: "Trung bình" },
-  { value: "Hard", label: "Khó" },
-  { value: "Expert", label: "Chuyên gia" },
+  { value: "1", label: "Dễ" },
+  { value: "2", label: "Trung bình" },
+  { value: "3", label: "Khó" },
+  { value: "4", label: "Chuyên gia" },
 ];
 
 const timeOptions = [
@@ -122,14 +123,14 @@ export function SearchClient() {
     page,
     pageSize: 12,
     categoryId: selectedCategory || undefined,
-    difficulty: (selectedDifficulty as RecipeDifficulty) || undefined,
+    difficulty: toDifficultyNumber(selectedDifficulty),
     maxTotalTime: selectedMaxTime ? Number(selectedMaxTime) : undefined,
     sortBy: sortBy || "relevance",
     sortOrder: sortBy === "relevance" || sortBy === "newest" ? "desc" : "asc",
   });
 
   const recipes = data?.data || [];
-  const totalCount = data?.meta?.totalCount || recipes.length;
+  const totalCount = data?.meta?.totalCount ?? data?.meta?.total ?? recipes.length;
   const totalPages = data?.meta?.totalPages || 1;
   const isQueryTooShort = debouncedQuery.length < 2;
 

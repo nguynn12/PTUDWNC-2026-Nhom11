@@ -1,11 +1,10 @@
+using ImageMagick;
 namespace CulinaryBlog.UnitTests.Features.RecipeContent;
 
 using System.IO;
 using System.Threading.Tasks;
 using CulinaryBlog.Infrastructure.Services;
 using Microsoft.Extensions.Logging.Abstractions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 /// <summary>
@@ -24,8 +23,8 @@ public class ImageProcessingServiceTests
     private static MemoryStream CreateValidPngStream(int width = 400, int height = 300)
     {
         var ms = new MemoryStream();
-        using var image = new Image<Rgba32>(width, height);
-        image.SaveAsPng(ms);
+        using var image = new MagickImage(MagickColors.Orange, (uint)(width), (uint)(height));
+        image.Write(ms, MagickFormat.Png);
         ms.Position = 0;
         return ms;
     }

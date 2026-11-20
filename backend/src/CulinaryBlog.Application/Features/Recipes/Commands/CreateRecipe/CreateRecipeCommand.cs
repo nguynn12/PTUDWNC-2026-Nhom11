@@ -17,4 +17,5 @@ public record CreateRecipeCommand : IRequest<RecipeResponseDto>
     public RecipeDifficulty Difficulty { get; init; } = RecipeDifficulty.Easy;
     public Guid CategoryId { get; init; }
     public string? AuthorId { get; init; }
+    public RecipeNutritionDto? Nutrition { get; init; }
 }

@@ -1,7 +1,7 @@
 {
   "title": "Thịt bò xào đậu que",
   "originalTitle": "Thịt Bò Xào Đậu (Vietnamese Stir-Fried Beef and Green Beans)",
-  "description": "Thịt bò thái mỏng ướp tỏi, xào lửa lớn rồi xào cùng hành tây và đậu que. Món xào nhanh gọn, ăn với cơm trắng.",
+  "description": "Món ăn đưa cơm thân thuộc trong mỗi gia đình Việt. Từng miếng thịt bò mềm mọng, không hề khô dai nhờ kỹ thuật ướp bột bắp khóa nước, xào lửa lớn quyện cùng đậu que xanh mướt, ngọt giòn tự nhiên và hành tây thơm phức, dậy mùi tỏi phi nồng nàn.",
   "categoryName": "Món xào",
   "authorEmail": "chef.thuha@culinaryblog.local",
   "prepTimeMinutes": 10,
@@ -82,28 +82,33 @@
   ],
   "steps": [
     {
-      "title": "Ướp bò",
-      "description": "Trộn tỏi, bột bắp, 1 muỗng cà phê dầu và tiêu rồi ướp với thịt bò."
+      "stepNumber": 1,
+      "title": "Sơ chế và ướp thịt bò mềm mọng",
+      "durationMinutes": 15,
+      "description": "Thịt bò thăn thái ngang thớ thành từng lát thật mỏng. Ướp bò với tỏi băm, 1 thìa cà phê bột bắp, 1 thìa cà phê dầu ăn, chút hạt nêm và tiêu xay. Lớp bột bắp và dầu ăn sẽ giữ ẩm, giúp thịt bò xào ở lửa lớn vẫn mềm ngọt, mọng nước và không bị ra nước."
     },
     {
-      "title": "Xào bò",
-      "description": "Đun nóng 2 muỗng canh dầu trong chảo lớn lửa to, xào bò khoảng 2 phút đến khi bắt đầu vàng, múc ra tô.",
-      "durationMinutes": 2
+      "stepNumber": 2,
+      "title": "Xào thịt bò chín tới",
+      "durationMinutes": 3,
+      "description": "Đặt chảo sâu lòng lên bếp, đun nóng 2 muỗng canh dầu ăn ở lửa lớn. Thả thịt bò vào dùng đũa đảo nhanh tay liên tục trong khoảng 1.5 - 2 phút đến khi các thớ thịt vừa chuyển màu tái hồng thì trút ngay ra đĩa riêng, không xào lâu tránh làm thịt bị dai."
     },
     {
-      "title": "Xào rau",
-      "description": "Cho thêm 1 muỗng canh dầu, xào hành tây cho mềm, thêm đậu que và nước dùng, đậy nắp, hạ lửa vừa nấu 4–5 phút cho đậu mềm nhưng còn giòn.",
-      "durationMinutes": 5
+      "stepNumber": 3,
+      "title": "Xào đậu que giòn xanh",
+      "durationMinutes": 6,
+      "description": "Vẫn dùng chảo đó, thêm 1 muỗng canh dầu ăn, phi thơm hành tây thái múi cau. Trút đậu que đã tước xơ, bẻ khúc vào đảo đều ở lửa lớn. Rưới 2 muỗng canh nước dùng (hoặc nước lọc), đậy nắp chảo trong 2-3 phút để hơi nước hấp chín đậu nhanh mà vẫn giữ trọn màu xanh mướt và độ giòn ngọt."
     },
     {
-      "title": "Hoàn thiện",
-      "description": "Cho thịt bò trở lại chảo cùng nước tương, đảo đều 1–2 phút cho nóng rồi dọn ăn.",
-      "durationMinutes": 2
+      "stepNumber": 4,
+      "title": "Hòa quyện và hoàn thành",
+      "durationMinutes": 2,
+      "description": "Mở nắp chảo, trút đĩa thịt bò cùng toàn bộ nước tiết từ thịt vào lại chảo đậu. Nêm 1 muỗng canh dầu hào, 1 muỗng canh nước tương, đảo thật nhanh tay trên lửa lớn trong 1 phút cho các nguyên liệu ngấm đều vị sốt. Tắt bếp, rắc tiêu xay thơm phức và múc ra đĩa thưởng thức cùng cơm nóng."
     }
   ],
   "images": [
     {
-      "url": "https://www.allrecipes.com/thmb/2XjrPThQge6irEBUJuNcX5Dn-ag=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/111393-e7b1be7fe0204555adbacb743e9e314d.jpg",
+      "url": "https://images.media-allrecipes.com/userphotos/111393.jpg",
       "altText": "Thịt bò xào đậu que",
       "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
     }

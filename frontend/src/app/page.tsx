@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -16,11 +17,10 @@ import { Sparkles, Utensils, Search, ArrowRight, Clock, Salad, Zap } from "lucid
 import type { CategoryDto, RecipeSummaryDto } from "@/types/api";
 
 // Cấu hình ISR: Tự động tái sinh trang tĩnh ngầm định sau mỗi 60 giây khi có dữ liệu mới
-// Dữ liệu lấy từ backend lúc chạy; nếu prerender lúc build (backend chưa sẵn sàng) thì trang lỗi bị cache 1 giờ.
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Trang Chủ — Khám Phá Hàng Ngàn Món Ngon & Công Thức Chuẩn Vị",
+  title: "Trang Chủ — Khám Phá Món Ngon & Công Thức Chuẩn Vị",
   description:
     "Culinary Blog - Nền tảng chia sẻ công thức nấu ăn tuyển chọn từ các đầu bếp tài hoa. Định lượng chính xác, dinh dưỡng minh bạch và danh mục phong phú.",
   keywords: [
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Culinary Blog — Nghệ Thuật Ẩm Thực & Hương Vị Đích Thực",
     description:
-      "Khám phá hàng ngàn công thức nấu ăn chuẩn vị, hướng dẫn chi tiết từng bước và bảng dinh dưỡng minh bạch.",
+      "Khám phá các công thức nấu ăn, hướng dẫn từng bước và thông tin dinh dưỡng khi có số liệu.",
     url: "/",
     siteName: "Culinary Blog",
     locale: "vi_VN",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Culinary Blog — Nghệ Thuật Ẩm Thực & Hương Vị Đích Thực",
-    description: "Khám phá hàng ngàn công thức nấu ăn chuẩn vị, hướng dẫn chi tiết từng bước và bảng dinh dưỡng minh bạch.",
+    description: "Khám phá các công thức nấu ăn, hướng dẫn từng bước và thông tin dinh dưỡng khi có số liệu.",
   },
 };
 
@@ -53,6 +53,7 @@ export default async function HomePage() {
   // Lấy dữ liệu thực tế từ Backend API (PostgreSQL)
   let categories: CategoryDto[] = [];
   let recipes: RecipeSummaryDto[] = [];
+  let totalRecipes: number | null = null;
   let fetchError = false;
 
   const [catResult, recResult] = await Promise.allSettled([
@@ -69,10 +70,14 @@ export default async function HomePage() {
 
   if (recResult.status === "fulfilled") {
     recipes = recResult.value?.data || [];
+    totalRecipes = recResult.value?.meta?.total ?? recResult.value?.meta?.totalCount ?? null;
   } else {
     console.error("Lỗi khi tải danh sách công thức:", recResult.reason);
     fetchError = true;
   }
+
+  // Nếu API chưa chạy lúc build, đợi request thật thay vì lưu trang lỗi vào ISR.
+  if (fetchError) await connection();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -97,7 +102,7 @@ export default async function HomePage() {
               </h1>
 
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
-                Khám phá hàng ngàn công thức nấu ăn chuẩn vị từ các đầu bếp tài hoa. Từng bước làm tỉ mỉ, định lượng nguyên liệu chính xác và thông tin dinh dưỡng minh bạch.
+                Khám phá các công thức nấu ăn từ cộng đồng yêu bếp, với hướng dẫn từng bước, định lượng nguyên liệu và thông tin dinh dưỡng khi có số liệu.
               </p>
 
               {/* Nút Call To Action */}
@@ -119,15 +124,15 @@ export default async function HomePage() {
               {/* Thống kê nhanh */}
               <div className="grid grid-cols-3 gap-6 pt-5 border-t border-border/60 mt-1 max-w-lg">
                 <div>
-                  <div className="text-xl sm:text-2xl font-extrabold text-primary font-serif">100+</div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-primary font-serif">{totalRecipes ?? '—'}</div>
                   <div className="text-xs text-muted-foreground mt-0.5">Công thức chuẩn vị</div>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-extrabold text-secondary font-serif">100%</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">Dinh dưỡng minh bạch</div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-secondary font-serif">Tùy món</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Thông tin dinh dưỡng</div>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-500 font-serif">20+</div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-500 font-serif">{catResult.status === 'fulfilled' ? categories.length : '—'}</div>
                   <div className="text-xs text-muted-foreground mt-0.5">Danh mục phong phú</div>
                 </div>
               </div>

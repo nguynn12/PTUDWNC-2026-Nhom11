@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { RecipeApi, ApiError } from '@/lib/api-client';
+import { RecipeStatus, toStatusNumber, toStatusLabel, type RecipeStatusValue } from '@/lib/enums';
 import type {
   CategoryOptionDto,
   DifficultyLevel,
@@ -49,6 +50,21 @@ interface RecipeWizardEditorProps {
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB theo SRS Mục 8.3
+const MAX_NUTRITION_VALUE = 999999.99;
+const NUTRITION_FIELDS = [
+  { key: 'calories', label: 'Calo (kcal)' },
+  { key: 'protein', label: 'Chất đạm (g)' },
+  { key: 'fat', label: 'Chất béo (g)' },
+  { key: 'carbohydrates', label: 'Tinh bột (g)' },
+  { key: 'fiber', label: 'Chất xơ (g)' },
+  { key: 'sodium', label: 'Natri (mg)' },
+] as const;
+
+type EditableNutrition = Pick<RecipeNutritionDto, (typeof NUTRITION_FIELDS)[number]['key']>;
+
+function hasNutritionValues(nutrition: EditableNutrition) {
+  return NUTRITION_FIELDS.some(({ key }) => nutrition[key] != null);
+}
 
 const COMMON_UNITS = [
   'g',
@@ -73,7 +89,33 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const [activeStep, setActiveStep] = useState<number>(1);
   const [recipeId, setRecipeId] = useState<string | null>(initialRecipeId ?? null);
   const [xmin, setXmin] = useState<string | number | null>(null);
-  const [recipeStatus, setRecipeStatus] = useState<string>('Draft');
+  const versionRef = useRef<string | number | null>(null);
+  const updateXmin = useCallback((value: string | number | null) => {
+    versionRef.current = value;
+    setXmin(value);
+  }, []);
+
+  async function mutateContent<T>(operation: (version: string | number) => Promise<T>): Promise<T> {
+    const version = versionRef.current;
+    if (version === null) throw new ApiError({ status: 428, message: 'Vui lòng tải lại công thức trước khi tiếp tục chỉnh sửa.' });
+    let result: T;
+    try { result = await operation(version); }
+    catch (error) {
+      if (error instanceof ApiError && error.status === 409)
+        setConflictState({ isOpen: true, detail: error.message });
+      throw error;
+    }
+    try {
+      const detail = await RecipeApi.getRecipeFullDetail(recipeId!);
+      updateXmin(detail.concurrencyToken ?? detail.xmin ?? null);
+    } catch {
+      updateXmin(null);
+      showWarning('Đã lưu thay đổi', 'Chưa tải được phiên bản mới. Hãy tải lại công thức trước khi sửa tiếp.');
+    }
+    return result;
+  }
+  const [recipeStatus, setRecipeStatus] = useState<RecipeStatusValue>(RecipeStatus.Draft);
+  const canPublish = recipeStatus !== RecipeStatus.Archived;
 
   // Danh mục (Categories)
   const [categories, setCategories] = useState<CategoryOptionDto[]>([]);
@@ -88,14 +130,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const [cookTimeMinutes, setCookTimeMinutes] = useState<number>(30);
   const [servings, setServings] = useState<number>(4);
   const [hasNutrition, setHasNutrition] = useState<boolean>(false);
-  const [nutrition, setNutrition] = useState<RecipeNutritionDto>({
-    calories: 450,
-    protein: 25,
-    fat: 15,
-    carbohydrates: 50,
-    fiber: 4,
-    sodium: 600,
-  });
+  const [nutrition, setNutrition] = useState<EditableNutrition>({});
   const [savingStep1, setSavingStep1] = useState(false);
   const [step1Errors, setStep1Errors] = useState<Record<string, string>>({});
 
@@ -152,24 +187,35 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         setRecipeId(detail.id);
         setTitle(detail.title);
         setDescription(detail.description);
-        setCategoryId(detail.categoryId || 'c1');
+        setCategoryId(detail.categoryId || detail.category?.id || '');
         setDifficulty(
-          detail.difficulty === 0 || detail.difficulty === 'Easy'
+          detail.difficulty === 0 || detail.difficulty === 1 || detail.difficulty === 'Easy'
             ? 'Easy'
-            : detail.difficulty === 2 || detail.difficulty === 'Hard'
-              ? 'Hard'
-              : 'Medium'
+            : detail.difficulty === 2 || detail.difficulty === 'Medium'
+              ? 'Medium'
+              : detail.difficulty === 3 || detail.difficulty === 'Hard'
+                ? 'Hard'
+                : detail.difficulty === 4 || detail.difficulty === 'Expert'
+                  ? 'Expert'
+                  : 'Medium'
         );
         setPrepTimeMinutes(detail.prepTimeMinutes ?? detail.prepTime ?? 15);
         setCookTimeMinutes(detail.cookTimeMinutes ?? detail.cookTime ?? 30);
         setServings(detail.servings);
-        setXmin(detail.xmin ?? null);
-        setRecipeStatus(String(detail.status || 'Draft'));
+        updateXmin(detail.concurrencyToken ?? detail.xmin ?? null);
+        setRecipeStatus(toStatusNumber(detail.status));
 
-        if (detail.nutrition) {
-          setHasNutrition(true);
-          setNutrition(detail.nutrition);
-        }
+        const values = detail.nutrition;
+        const loadedNutrition = {
+          calories: values?.calories,
+          protein: values?.protein ?? values?.proteinGrams,
+          fat: values?.fat ?? values?.fatGrams,
+          carbohydrates: values?.carbohydrates ?? values?.carbsGrams,
+          fiber: values?.fiber ?? values?.fiberGrams,
+          sodium: values?.sodium ?? values?.sodiumMilligrams,
+        };
+        setNutrition(loadedNutrition);
+        setHasNutrition(hasNutritionValues(loadedNutrition));
 
         const loadedIngs = detail.ingredients || [];
         setIngredients(loadedIngs);
@@ -191,7 +237,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         setLoadingInitial(false);
       }
     },
-    [showError]
+    [showError, updateXmin]
   );
 
   useEffect(() => {
@@ -236,20 +282,29 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   // =========================================================
   const validateStep1 = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!title.trim() || title.trim().length < 3) {
-      errs.title = 'Tiêu đề món ăn phải có từ 3 đến 250 ký tự.';
+    if (!categoryId) {
+      errs.categoryId = 'Vui lòng chọn danh mục món ăn.';
     }
-    if (!description.trim() || description.trim().length < 10) {
-      errs.description = 'Mô tả tổng quan món ăn cần ít nhất 10 ký tự.';
+    if (!title.trim() || title.trim().length < 3 || title.trim().length > 200) {
+      errs.title = 'Tiêu đề món ăn phải có từ 3 đến 200 ký tự.';
     }
-    if (prepTimeMinutes < 0 || prepTimeMinutes > 1440) {
-      errs.prepTime = 'Thời gian chuẩn bị phải từ 0 đến 1440 phút.';
+    if (!description.trim() || description.trim().length < 10 || description.trim().length > 2000) {
+      errs.description = 'Mô tả tổng quan món ăn phải từ 10 đến 2000 ký tự.';
+    }
+    if (prepTimeMinutes <= 0 || prepTimeMinutes > 1440) {
+      errs.prepTime = 'Thời gian chuẩn bị phải lớn hơn 0 phút (1 đến 1440 phút).';
     }
     if (cookTimeMinutes < 0 || cookTimeMinutes > 1440) {
       errs.cookTime = 'Thời gian nấu phải từ 0 đến 1440 phút.';
     }
     if (servings < 1 || servings > 100) {
       errs.servings = 'Khẩu phần phục vụ phải từ 1 đến 100 người.';
+    }
+    if (hasNutrition && NUTRITION_FIELDS.some(({ key }) => {
+      const value = nutrition[key];
+      return value != null && (!Number.isFinite(value) || value < 0 || value > MAX_NUTRITION_VALUE);
+    })) {
+      errs.nutrition = 'Chỉ số dinh dưỡng phải từ 0 đến 999.999,99. Có thể để trống ô chưa có số liệu.';
     }
     setStep1Errors(errs);
     return Object.keys(errs).length === 0;
@@ -271,26 +326,32 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         cookTimeMinutes: Number(cookTimeMinutes),
         servings: Number(servings),
         difficulty,
-        nutrition: hasNutrition ? nutrition : null,
+        nutrition: hasNutrition && hasNutritionValues(nutrition) ? nutrition : null,
       };
 
       if (!recipeId) {
         const created = await RecipeApi.createRecipe(payload);
-        setRecipeId(created.id);
-        setXmin(created.xmin ?? null);
+        const resolvedId = created.id || (created as unknown as { data: { id: string } }).data?.id;
+        const resolvedToken = (created as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? created.xmin ?? null;
+        setRecipeId(resolvedId);
+        updateXmin(resolvedToken);
         showSuccess(
           'Đã khởi tạo bản nháp công thức',
-          `Mã công thức: ${created.id.slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
+          `Mã công thức: ${(resolvedId || '').slice(0, 8)}... Hãy tiếp tục thêm Nguyên liệu ở Bước 2.`
         );
       } else {
         const updated = await RecipeApi.updateRecipe(recipeId, payload, xmin);
-        setXmin(updated.xmin ?? xmin);
+        const resolvedToken = (updated as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? updated.xmin ?? xmin;
+        updateXmin(resolvedToken);
         showSuccess(
           'Đã cập nhật thông tin chung',
-          `Phiên bản đồng thời mới (xmin): ${updated.xmin ?? 'Updated'}`
+          `Phiên bản đồng thời mới: ${resolvedToken ?? 'Updated'}`
         );
       }
 
+      if (!hasNutrition) {
+        setNutrition({});
+      }
       if (goNextStep) {
         setActiveStep(2);
       }
@@ -368,25 +429,25 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     try {
       if (editingIngId) {
         const existing = ingredients.find(i => i.id === editingIngId);
-        const updated = await RecipeApi.updateIngredient(recipeId, editingIngId, {
+        const updated = await mutateContent((version) => RecipeApi.updateIngredient(recipeId, editingIngId, {
           name: ingName.trim(),
           quantity: parsedQty,
           unit: parsedUnit,
           notes: ingNotes.trim() || null,
           orderIndex: existing?.orderIndex ?? ingredients.length + 1,
-        });
+        }, version));
         setIngredients(prev =>
           prev.map(item => (item.id === editingIngId ? updated : item))
         );
         showSuccess('Đã cập nhật nguyên liệu', `Đã lưu thay đổi cho "${updated.name}".`);
       } else {
-        const created = await RecipeApi.addIngredient(recipeId, {
+        const created = await mutateContent((version) => RecipeApi.addIngredient(recipeId, {
           name: ingName.trim(),
           quantity: parsedQty,
           unit: parsedUnit,
           notes: ingNotes.trim() || null,
           orderIndex: ingredients.length + 1,
-        });
+        }, version));
         setIngredients(prev => [...prev, created]);
         showSuccess('Đã thêm nguyên liệu', `Đã bổ sung "${created.name}" vào công thức.`);
       }
@@ -444,11 +505,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     setSubmittingStep(true);
     try {
       if (editingStepId) {
-        const updated = await RecipeApi.updateStep(recipeId, editingStepId, {
+        const updated = await mutateContent((version) => RecipeApi.updateStep(recipeId, editingStepId, {
           title: stepTitle.trim(),
           description: stepInstruction.trim(),
           durationMinutes: parsedDuration,
-        });
+        }, version));
         setSteps(prev =>
           prev
             .map(s => (s.id === editingStepId ? updated : s))
@@ -456,12 +517,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         );
         showSuccess('Đã cập nhật bước chế biến', `Bước ${updated.stepNumber}: ${updated.title}`);
       } else {
-        const created = await RecipeApi.addStep(recipeId, {
+        const created = await mutateContent((version) => RecipeApi.addStep(recipeId, {
           stepNumber: steps.length + 1,
           title: stepTitle.trim(),
           description: stepInstruction.trim(),
           durationMinutes: parsedDuration,
-        });
+        }, version));
         setSteps(prev => [...prev, created].sort((a, b) => a.stepNumber - b.stepNumber));
         showSuccess('Đã thêm bước chế biến', `Bước ${created.stepNumber}: ${created.title}`);
       }
@@ -487,9 +548,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     const orderedStepIds = cloned.map(s => s.id);
     setReorderingSteps(true);
     try {
-      const reordered = await RecipeApi.reorderSteps(recipeId, {
+      const reordered = await mutateContent((version) => RecipeApi.reorderSteps(recipeId, {
         stepIds: orderedStepIds,
-      });
+      }, version));
       setSteps(reordered);
       showInfo(
         'Đã sắp xếp lại thứ tự bước nấu',
@@ -568,14 +629,14 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     setUploadProgress(0);
     try {
       const total = filesToUpload.length;
-      const uploadedList: RecipeImageDto[] = [];
+
 
       for (let i = 0; i < total; i++) {
         const file = filesToUpload[i];
         const isFirst = (i === 0) && (imgIsPrimary || images.length === 0);
         const alt = total === 1 ? (imgAltText.trim() || title) : `${imgAltText.trim() || title} (Ảnh ${i + 1})`;
 
-        const uploaded = await RecipeApi.uploadImage(
+        const uploaded = await mutateContent((version) => RecipeApi.uploadImage(
           recipeId,
           file,
           alt,
@@ -583,27 +644,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
           (percent) => {
             const overall = Math.round(((i * 100) + percent) / total);
             setUploadProgress(overall);
-          }
-        );
-        uploadedList.push(uploaded);
+          }, version
+        ));
+        setImages(prev => [
+          ...prev.filter(image => image.id !== uploaded.id)
+            .map(image => uploaded.isPrimary ? { ...image, isPrimary: false } : image),
+          uploaded,
+        ]);
+        setEditingAltMap(prev => ({ ...prev, [uploaded.id]: uploaded.altText || '' }));
+        setSelectedFiles(filesToUpload.slice(i + 1));
+        setSelectedFile(filesToUpload[i + 1] ?? null);
       }
-
-      setImages(prev => {
-        let base = [...prev];
-        for (const uploaded of uploadedList) {
-          if (uploaded.isPrimary) {
-            base = base.map(img => ({ ...img, isPrimary: false }));
-          }
-          base.push(uploaded);
-        }
-        return base;
-      });
-
-      setEditingAltMap(prev => {
-        const next = { ...prev };
-        uploadedList.forEach(u => { next[u.id] = u.altText || ''; });
-        return next;
-      });
 
       setSelectedFile(null);
       setSelectedFiles([]);
@@ -636,17 +687,17 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     const targetImg = images[targetIndex];
 
     try {
-      await RecipeApi.updateImage(recipeId, currentImg.id, {
+      await mutateContent((version) => RecipeApi.updateImage(recipeId, currentImg.id, {
         altText: editingAltMap[currentImg.id] ?? currentImg.altText,
         isPrimary: currentImg.isPrimary,
         orderIndex: targetImg.orderIndex,
-      });
+      }, version));
 
-      await RecipeApi.updateImage(recipeId, targetImg.id, {
+      await mutateContent((version) => RecipeApi.updateImage(recipeId, targetImg.id, {
         altText: editingAltMap[targetImg.id] ?? targetImg.altText,
         isPrimary: targetImg.isPrimary,
         orderIndex: currentImg.orderIndex,
-      });
+      }, version));
 
       setImages(prev => {
         const next = [...prev];
@@ -663,11 +714,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
   const handleSetPrimaryImage = async (img: RecipeImageDto) => {
     if (!recipeId || img.isPrimary) return;
     try {
-      const updated = await RecipeApi.updateImage(recipeId, img.id, {
+      const updated = await mutateContent((version) => RecipeApi.updateImage(recipeId, img.id, {
         altText: editingAltMap[img.id] ?? img.altText,
         isPrimary: true,
         orderIndex: img.orderIndex,
-      });
+      }, version));
       setImages(prev =>
         prev.map(item => ({
           ...item,
@@ -684,11 +735,11 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     if (!recipeId) return;
     const newAlt = editingAltMap[img.id] ?? '';
     try {
-      const updated = await RecipeApi.updateImage(recipeId, img.id, {
+      const updated = await mutateContent((version) => RecipeApi.updateImage(recipeId, img.id, {
         altText: newAlt.trim() || null,
         isPrimary: img.isPrimary,
         orderIndex: img.orderIndex,
-      });
+      }, version));
       setImages(prev => prev.map(item => (item.id === img.id ? updated : item)));
       showSuccess('Đã lưu mô tả ảnh (Alt Text)', 'Metadata ảnh đã được cập nhật qua PATCH API.');
     } catch (err) {
@@ -706,12 +757,12 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
     try {
       if (type === 'ingredient') {
-        await RecipeApi.deleteIngredient(recipeId, id);
+        await mutateContent((version) => RecipeApi.deleteIngredient(recipeId, id, version));
         setIngredients(prev => prev.filter(i => i.id !== id));
         if (editingIngId === id) resetIngredientForm();
         showSuccess('Đã xóa nguyên liệu', `Đã xóa "${label}" khỏi danh sách.`);
       } else if (type === 'step') {
-        await RecipeApi.deleteStep(recipeId, id);
+        await mutateContent((version) => RecipeApi.deleteStep(recipeId, id, version));
         setSteps(prev =>
           prev
             .filter(s => s.id !== id)
@@ -723,7 +774,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
           'Các bước còn lại đã được tự động đánh lại số thứ tự liên tục 1..N.'
         );
       } else if (type === 'image') {
-        await RecipeApi.deleteImage(recipeId, id);
+        await mutateContent((version) => RecipeApi.deleteImage(recipeId, id, version));
         setImages(prev => {
           const remaining = prev.filter(i => i.id !== id);
           if (remaining.length > 0 && !remaining.some(i => i.isPrimary)) {
@@ -740,7 +791,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
   // Xuất bản ngay từ Bước 4
   const handlePublishNow = async () => {
-    if (!recipeId) return;
+    if (!recipeId || !canPublish) return;
     if (ingredients.length === 0 || steps.length === 0) {
       showWarning(
         'Chưa đủ điều kiện xuất bản',
@@ -750,7 +801,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
     }
 
     try {
-      await RecipeApi.publishRecipe(recipeId, xmin);
+      const published = await RecipeApi.publishRecipe(recipeId, xmin);
+      const resolvedToken = (published as unknown as { concurrencyToken?: string | number }).concurrencyToken ?? published?.xmin ?? xmin;
+      updateXmin(resolvedToken);
       showSuccess('Xuất bản công thức thành công!', `Món "${title}" đã được công khai.`);
       router.push('/dashboard/recipes');
     } catch (err) {
@@ -807,7 +860,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
         </div>
 
         <div className="header-actions">
-          {recipeId && (
+          {recipeId && canPublish && (
             <button
               type="button"
               className="btn btn-primary btn-sm"
@@ -962,11 +1015,9 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                   Cung cấp tên món ăn, phân loại danh mục, khẩu phần phục vụ và thông số dinh dưỡng trên mỗi khẩu phần.
                 </p>
               </div>
-              {recipeStatus && (
-                <Badge variant={recipeStatus === 'Draft' ? 'statusDraft' : 'statusPublished'} className="text-xs">
-                  Trạng thái: {recipeStatus}
-                </Badge>
-              )}
+              <Badge variant={recipeStatus === RecipeStatus.Draft ? 'statusDraft' : recipeStatus === RecipeStatus.Archived ? 'statusArchived' : 'statusPublished'} className="text-xs">
+                Trạng thái: {toStatusLabel(recipeStatus)}
+              </Badge>
             </div>
 
             <div className="p-5 sm:p-6 space-y-6">
@@ -976,13 +1027,13 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                     <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                       Tiêu đề công thức <span className="text-[var(--danger)]">*</span>
                     </label>
-                    <span className="text-xs text-[var(--text-muted)]">{title.length}/250 ký tự</span>
+                    <span className="text-xs text-[var(--text-muted)]">{title.length}/200 ký tự</span>
                   </div>
                   <Input
                     type="text"
                     placeholder="Ví dụ: Phở Bò Truyền Thống Hà Nội Nước Trong..."
                     value={title}
-                    maxLength={250}
+                    maxLength={200}
                     onChange={e => setTitle(e.target.value)}
                   />
                   {step1Errors.title && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.title}</p>}
@@ -1003,6 +1054,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                         </option>
                       ))}
                     </Select>
+                    {step1Errors.categoryId && <p className="text-xs text-[var(--danger)] mt-1">{step1Errors.categoryId}</p>}
                   </div>
 
                   <div className="space-y-1.5">
@@ -1016,6 +1068,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                       <option value="Easy">Dễ (Easy) — Phù hợp người mới</option>
                       <option value="Medium">Trung bình (Medium) — Gia đình</option>
                       <option value="Hard">Khó (Hard) — Chuẩn Đầu bếp</option>
+                      <option value="Expert">Chuyên gia (Expert) — Đỉnh cao ẩm thực</option>
                     </Select>
                   </div>
                 </div>
@@ -1084,7 +1137,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
               </div>
 
               {/* Bảng thông tin Dinh dưỡng tùy chọn (RecipeNutrition) */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4">
+              <fieldset disabled={savingStep1} className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface-alt)]/60 border border-[var(--border-subtle)] space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-[var(--text-primary)]">
                     <input
@@ -1102,86 +1155,34 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
 
                 {hasNutrition && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Calo (kcal)</label>
-                      <Input
-                        type="number"
-                        min={0}
-                        value={nutrition.calories ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, calories: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất đạm (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.protein ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, protein: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất béo (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.fat ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, fat: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Tinh bột (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.carbohydrates ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, carbohydrates: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Chất xơ (g)</label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        value={nutrition.fiber ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, fiber: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-[var(--text-muted)] font-medium">Natri (mg)</label>
-                      <Input
-                        type="number"
-                        step="1"
-                        min={0}
-                        value={nutrition.sodium ?? 0}
-                        onChange={e =>
-                          setNutrition(prev => ({ ...prev, sodium: Number(e.target.value) }))
-                        }
-                        className="text-xs py-1"
-                      />
-                    </div>
+                    {NUTRITION_FIELDS.map(({ key, label }) => (
+                      <label key={key} className="space-y-1 text-xs text-[var(--text-muted)] font-medium">
+                        <span>{label}</span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          max={MAX_NUTRITION_VALUE}
+                          value={nutrition[key] ?? ''}
+                          onChange={e => {
+                            const { value, valueAsNumber } = e.currentTarget;
+                            setNutrition(prev => ({ ...prev, [key]: value === '' ? null : valueAsNumber }));
+                          }}
+                          className="text-xs py-1"
+                        />
+                      </label>
+                    ))}
                   </div>
                 )}
-              </div>
+                {hasNutrition && step1Errors.nutrition && (
+                  <p role="alert" className="text-xs text-[var(--danger)]">{step1Errors.nutrition}</p>
+                )}
+                {!hasNutrition && hasNutritionValues(nutrition) && (
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Thông tin dinh dưỡng sẽ được xóa khi lưu. Bật lại để giữ các chỉ số đã nhập.
+                  </p>
+                )}
+              </fieldset>
 
               {/* Thanh điều hướng footer Bước 1 */}
               <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)] flex-wrap gap-3">
@@ -1832,6 +1833,7 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                       <div className="relative w-full pt-[60%] overflow-hidden bg-[var(--bg-surface-alt)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
+                          referrerPolicy="no-referrer"
                           src={img.originalUrl}
                           alt={img.altText || title}
                           className="absolute inset-0 w-full h-full object-cover"
@@ -1956,15 +1958,19 @@ export function RecipeWizardEditor({ mode, initialRecipeId }: RecipeWizardEditor
                   <Link href="/dashboard/recipes">
                     <Button variant="outline">Lưu Nháp & Về Danh sách</Button>
                   </Link>
-                  <Button
-                    type="button"
-                    variant="default"
-                    onClick={handlePublishNow}
-                    className="gap-2"
-                  >
-                    <CheckCircleIcon size={18} />
-                    <span>Hoàn tất & Xuất bản Công thức</span>
-                  </Button>
+                  {canPublish ? (
+                    <Button
+                      type="button"
+                      variant="default"
+                      onClick={handlePublishNow}
+                      className="gap-2"
+                    >
+                      <CheckCircleIcon size={18} />
+                      <span>Hoàn tất & Xuất bản Công thức</span>
+                    </Button>
+                  ) : (
+                    <span className="text-xs text-[var(--text-muted)]">Bỏ lưu trữ trong danh sách công thức trước khi xuất bản.</span>
+                  )}
                 </div>
               </div>
             </div>

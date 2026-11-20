@@ -3,24 +3,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { RecipeSummaryDto, RecipeDifficulty } from "@/types/api";
+import { getDifficultyVariant, RecipeStatus, toStatusNumber } from "@/lib/enums";
+import type { RecipeSummaryDto } from "@/types/api";
 
 interface RecipeCardProps {
   recipe: RecipeSummaryDto;
   priority?: boolean;
 }
 
-function getDifficultyVariant(diff: RecipeDifficulty | number): {
-  label: string;
-  variant: "easy" | "medium" | "hard";
-} {
-  if (diff === "Easy" || diff === 0) return { label: "Dễ", variant: "easy" };
-  if (diff === "Hard" || diff === 2) return { label: "Khó", variant: "hard" };
-  return { label: "Vừa", variant: "medium" };
-}
 
 export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
   const diffInfo = getDifficultyVariant(recipe.difficulty);
+  const status = toStatusNumber(recipe.status);
   const fallbackImage =
     recipe.primaryImageUrl ||
     recipe.thumbnailUrl ||
@@ -40,10 +34,9 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
     )}&background=fed8c4&color=c85a17`;
 
   const totalTime =
-    recipe.totalTime ||
-    (recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) +
-      (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0) ||
-    30;
+    recipe.totalTime ??
+    ((recipe.prepTime ?? recipe.prepTimeMinutes ?? 0) +
+      (recipe.cookTime ?? recipe.cookTimeMinutes ?? 0));
 
   return (
     <article className="h-full" aria-label={recipe.title}>
@@ -51,9 +44,11 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
       {/* Khối Ảnh bìa công thức với tỷ lệ 16:10 */}
       <Link
         href={`/recipes/${recipe.slug}`}
+        prefetch={false}
         className="relative block w-full pt-[62.5%] overflow-hidden bg-[var(--bg-surface-alt)]"
       >
         <Image
+          referrerPolicy="no-referrer"
           src={fallbackImage}
           alt={recipe.title}
           fill
@@ -78,12 +73,12 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
               {diffInfo.label}
             </Badge>
 
-            {recipe.status && recipe.status !== "Published" && (
+            {recipe.status !== undefined && status !== RecipeStatus.Published && (
               <Badge
-                variant={recipe.status === "Draft" ? "statusDraft" : "statusArchived"}
+                variant={status === RecipeStatus.Draft ? "statusDraft" : "statusArchived"}
                 className="shadow-xs"
               >
-                {recipe.status === "Draft" ? "Bản nháp" : "Lưu trữ"}
+                {status === RecipeStatus.Draft ? "Bản nháp" : "Lưu trữ"}
               </Badge>
             )}
           </div>
@@ -94,7 +89,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
       <div className="p-5 flex flex-col flex-1 gap-2.5">
         {/* Chỉ số nhanh: Thời gian & Calo & Khẩu phần */}
         <div className="flex items-center flex-wrap gap-3 text-xs font-medium text-[var(--text-muted)]">
-          <span className="inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1" title="Thời gian chuẩn bị và nấu; xem thời gian ướp, ngâm hoặc chờ trong các bước">
             <span>⏱️</span> {totalTime} phút
           </span>
           {Boolean(recipe.calories) && (
@@ -113,6 +108,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
         <h3 className="text-lg font-bold leading-snug tracking-tight m-0">
           <Link
             href={`/recipes/${recipe.slug}`}
+            prefetch={false}
             className="line-clamp-2 text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors duration-200"
           >
             {recipe.title}
@@ -144,6 +140,7 @@ export function RecipeCard({ recipe, priority = false }: RecipeCardProps) {
 
           <Link
             href={`/recipes/${recipe.slug}`}
+            prefetch={false}
             className="inline-flex items-center text-xs font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] whitespace-nowrap transition-colors"
           >
             Xem cách làm

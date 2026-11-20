@@ -1,7 +1,7 @@
 {
   "title": "Phở bò",
   "originalTitle": "Pho (Vietnamese Noodle Soup)",
-  "description": "Phở bò với nước dùng hầm xương nhiều giờ cùng hành nướng, gừng, hoa hồi; ăn kèm bánh phở, thịt bò thăn thái mỏng, giá, húng quế và chanh. Nước dùng là phần tốn thời gian nhất nhưng làm một lần dùng được nhiều bữa.",
+  "description": "Món ăn quốc hồn quốc túy của nền ẩm thực Việt Nam. Nồi nước dùng trong veo, ngọt sâu lắng từ xương bò hầm ròng rã suốt nhiều giờ đồng hồ cùng hành tây, gừng nướng cháy xém và hoa hồi thơm nức mũi. Chan ngập tô bánh phở mềm mượt cùng từng lát thịt thăn bò tái hồng mềm tan ngọt lịm trên đầu lưỡi, tạo nên một bản giao hưởng vị giác khó quên.",
   "categoryName": "Món bún & phở",
   "authorEmail": "chef.quocviet@culinaryblog.local",
   "prepTimeMinutes": 20,
@@ -111,42 +111,39 @@
   ],
   "steps": [
     {
-      "title": "Nướng xương",
-      "description": "Xếp xương bò lên khay, nướng ở 220°C đến khi vàng nâu.",
-      "durationMinutes": 60
+      "stepNumber": 1,
+      "title": "Nướng xương và hành gừng dậy hương thơm",
+      "durationMinutes": 45,
+      "description": "Xương ống và xương sườn bò xếp lên khay nướng ở 220°C trong 30-40 phút cho chảy bớt mỡ và vàng nâu xém cạnh. Nướng hành tây bổ đôi và củ gừng trên bếp cho cháy xém vỏ, cạo sạch muội than và đập dập nhẹ."
     },
     {
-      "title": "Nướng hành",
-      "description": "Nướng hành tây bổ đôi ở khay khác cho đến khi cháy xém và mềm.",
-      "durationMinutes": 45
+      "stepNumber": 2,
+      "title": "Ninh nước dùng xương bò trong veo",
+      "durationMinutes": 360,
+      "description": "Cho xương bò nướng vào nồi lớn ngập 4 lít nước sạch. Đun sôi bùng rồi hạ lửa thật nhỏ liu riu hé vung. Thường xuyên dùng muôi hớt sạch bọt nổi và váng mỡ thừa để nước dùng trong vắt. Thả hành nướng, gừng nướng và hoa hồi rang thơm vào nồi, ninh nhỏ lửa trong 6-8 tiếng để chắt lọc trọn vẹn chất ngọt tủy xương."
     },
     {
-      "title": "Ninh nước dùng",
-      "description": "Cho xương và hành vào nồi lớn cùng gừng, muối, hoa hồi, nước mắm và 4 lít nước, đun sôi rồi hạ nhỏ lửa ninh 6–10 giờ. Lọc lấy nước dùng.",
-      "durationMinutes": 480
+      "stepNumber": 3,
+      "title": "Lọc nước dùng và nêm nếm gia vị",
+      "durationMinutes": 15,
+      "description": "Vớt bỏ toàn bộ xương và bã gia vị, lọc nước dùng qua khăn xô hoặc rây mịn sang nồi sạch. Nêm nước mắm ngon nguyên chất, muối hạt và chút đường phèn thanh dịu, đun sôi liu riu trên bếp giữ nước luôn nóng già."
     },
     {
-      "title": "Ngâm bánh phở",
-      "description": "Ngâm bánh phở khô trong nước thường khoảng 1 giờ rồi để ráo.",
-      "durationMinutes": 60
+      "stepNumber": 4,
+      "title": "Chần bánh phở tươi",
+      "durationMinutes": 2,
+      "description": "Đun sôi một nồi nước riêng, thả bánh phở vào chần nhanh trong 20-30 giây cho bánh phở nóng mềm rồi vớt ra xóc ráo nước, chia đều vào 4 tô lớn."
     },
     {
-      "title": "Trụng bánh phở",
-      "description": "Đun sôi nước, trụng bánh phở 1 phút rồi vớt ra để ráo. Đun nóng lại nước dùng.",
-      "durationMinutes": 1
-    },
-    {
-      "title": "Bày tô",
-      "description": "Chia bánh phở vào 4 tô, xếp thịt bò thăn sống, ngò rí và hành lá lên trên rồi chan nước dùng thật nóng; để 1–2 phút cho thịt chín tới."
-    },
-    {
-      "title": "Dọn ăn",
-      "description": "Ăn kèm giá, húng quế, chanh, tương hoisin và tương ớt tỏi."
+      "stepNumber": 5,
+      "title": "Hoàn thiện bát phở bò nóng hổi",
+      "durationMinutes": 5,
+      "description": "Thịt thăn bò tươi thái thật mỏng ngang thớ, xếp đều lên mặt bánh phở. Rắc nhiều hành hoa, rau mùi ta thái nhỏ và hành tây thái lát mỏng. Múc nước dùng đang sôi sùng sục chan ngập mặt thịt bò (nước sôi già sẽ làm thịt bò tái chín tới hồng mềm mọng nước). Thưởng thức nóng kèm đĩa giá đỗ, húng quế, chanh tươi và ớt thái lát."
     }
   ],
   "images": [
     {
-      "url": "https://www.allrecipes.com/thmb/SZjdgaXhmkrRNLoOvdxuAktwk3E=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/228443-authentic-pho-DDMFS-4x3-0523f6531ccf4dbeb4b5bde52e007b1e.jpg",
+      "url": "https://images.media-allrecipes.com/userphotos/8986511.jpg",
       "altText": "Phở bò",
       "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
     }

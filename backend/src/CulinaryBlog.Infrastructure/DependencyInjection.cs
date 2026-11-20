@@ -107,6 +107,8 @@ public static class DependencyInjection
         services.AddScoped<FileStorageService>();
         services.AddScoped<IFileStorageService, MinioFileStorageService>();
         services.AddScoped<IImageProcessingService, ImageProcessingService>();
+        services.AddScoped<RecipeImageJobs>();
+        services.AddScoped<IRecipeImageJobs>(provider => provider.GetRequiredService<RecipeImageJobs>());
 
         // ── ASP.NET Core Identity ───────────────────────────────────────────────
         services.AddDataProtection();

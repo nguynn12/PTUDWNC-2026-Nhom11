@@ -1,5 +1,10 @@
 namespace CulinaryBlog.Application.Features.RecipeImages.Services;
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using CulinaryBlog.Application.Features.RecipeImages.DTOs;
 
 /// <summary>
@@ -10,15 +15,18 @@ public interface IRecipeImageService
 {
     /// <summary>
     /// Lấy danh sách toàn bộ hình ảnh minh họa của công thức.
+    /// Kiểm tra quyền tác giả hoặc Admin nếu Recipe ở trạng thái Draft/Archived (SEC-02).
     /// </summary>
     Task<IReadOnlyList<RecipeImageDto>> GetImagesAsync(
         Guid recipeId,
+        string? currentUserId = null,
+        bool isAdmin = false,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Upload hình ảnh minh họa mới cho công thức.
     /// Kiểm tra định dạng Magic Bytes, lưu trữ qua IFileStorageService
-    /// và xử lý gán ảnh chính (IsPrimary) theo quy chuẩn E6 & E7.
+    /// và xử lý gán ảnh chính (IsPrimary) theo quy chuẩn E6 & E7. Hỗ trợ If-Match (API-03).
     /// </summary>
     Task<RecipeImageDto> UploadImageAsync(
         Guid recipeId,
@@ -30,11 +38,13 @@ public interface IRecipeImageService
         bool? isPrimary,
         string? currentUserId,
         bool isAdmin,
+        uint? concurrencyToken = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Cập nhật metadata hình ảnh (altText, orderIndex, isPrimary).
     /// Khi isPrimary = true, tự động set các ảnh khác = false trong cùng transaction (E6).
+    /// Hỗ trợ If-Match (API-03).
     /// </summary>
     Task<RecipeImageDto> UpdateImageAsync(
         Guid recipeId,
@@ -42,16 +52,19 @@ public interface IRecipeImageService
         UpdateRecipeImageRequest request,
         string? currentUserId,
         bool isAdmin,
+        uint? concurrencyToken = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Xóa hình ảnh minh họa của công thức.
     /// Nếu ảnh bị xóa là ảnh chính, tự động bầu ảnh có orderIndex nhỏ nhất còn lại làm ảnh chính (FR-RCP-008).
+    /// Hỗ trợ If-Match (API-03).
     /// </summary>
     Task DeleteImageAsync(
         Guid recipeId,
         Guid imageId,
         string? currentUserId,
         bool isAdmin,
+        uint? concurrencyToken = null,
         CancellationToken cancellationToken = default);
 }

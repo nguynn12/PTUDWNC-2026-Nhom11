@@ -47,8 +47,8 @@
   --bg-surface-elevated: #ffffff;
   --bg-surface-alt: #f3ede4;
   --bg-card: #ffffff;
-  --bg-sidebar: #1e130c;
-  --bg-sidebar-hover: #2c1e14;
+  --bg-sidebar: #f5ece4;
+  --bg-sidebar-hover: #eedbc9;
   --bg-sidebar-active: #5c3a21;
   --bg-overlay: rgba(26, 17, 12, 0.45);
 
@@ -964,33 +964,55 @@
 
 .dashboard-wrapper {
   display: flex;
-  min-height: 100vh;
+  align-items: flex-start;
+  min-height: calc(100dvh - 73px);
 }
 
 .dashboard-sidebar {
   width: 270px;
+  flex-shrink: 0;
+  height: calc(100dvh - 73px);
   background-color: var(--bg-sidebar);
-  color: var(--text-inverse);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
+  position: sticky;
+  top: 73px;
   z-index: 40;
   transition: transform var(--transition-normal);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid var(--border-color);
 }
 
+.dashboard-sidebar[hidden] { display: none; }
+
+.dashboard-toolbar { padding: 16px 32px 0; }
+
+.sidebar-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.sidebar-close:hover { background: var(--bg-sidebar-hover); }
+.sidebar-close:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.sidebar-backdrop { display: none; }
+
 .sidebar-brand {
-  padding: 24px 20px;
+  padding: 20px 14px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-logo-icon {
+  flex-shrink: 0;
   width: 38px;
   height: 38px;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -1003,21 +1025,20 @@
 }
 
 .sidebar-brand-title {
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 800;
-  background: linear-gradient(to right, #FFFFFF, #FED7AA);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 .sidebar-brand-subtitle {
   font-size: 0.72rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .sidebar-nav {
+  min-height: 0;
   padding: 20px 12px;
   flex: 1;
   display: flex;
@@ -1031,7 +1052,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #78716C;
+  color: var(--text-secondary);
   padding: 12px 12px 6px;
 }
 
@@ -1043,22 +1064,24 @@
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   font-weight: 500;
-  color: #D6D3D1;
+  color: var(--text-secondary);
   transition: all var(--transition-fast);
 }
 
 .sidebar-link:hover {
   background-color: var(--bg-sidebar-hover);
-  color: white;
+  color: var(--primary-dark);
   transform: translateX(3px);
 }
 
 .sidebar-link.active {
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  background: var(--bg-sidebar-active);
   color: white;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(224, 83, 40, 0.35);
+  box-shadow: var(--shadow-sm);
 }
+
+.sidebar-link > svg { flex-shrink: 0; }
 
 .sidebar-badge {
   margin-left: auto;
@@ -1066,13 +1089,14 @@
   border-radius: var(--radius-full);
   font-size: 0.72rem;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--bg-card);
+  color: var(--primary-dark);
 }
 
 .sidebar-footer {
   padding: 16px 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: #141210;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-sidebar-hover);
 }
 
 .user-profile-widget {
@@ -1098,7 +1122,7 @@
 .user-info-name {
   font-size: 0.88rem;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1106,7 +1130,7 @@
 
 .user-info-role {
   font-size: 0.72rem;
-  color: #FBBF24;
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -1116,8 +1140,8 @@
 
 .dashboard-main {
   flex: 1;
-  margin-left: 270px;
-  min-height: 100vh;
+  min-width: 0;
+  min-height: calc(100dvh - 73px);
   display: flex;
   flex-direction: column;
 }
@@ -1129,8 +1153,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
   position: sticky;
-  top: 0;
+  top: 73px;
   z-index: 30;
   backdrop-filter: blur(8px);
 }
@@ -1149,12 +1175,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .dashboard-content {
   padding: 32px;
   flex: 1;
+  min-width: 0;
 }
+
+.dashboard-guide > .quick-actions-grid { padding: 20px 24px; margin-bottom: 0; }
+.dashboard-wrapper .section-header { flex-direction: row; flex-wrap: wrap; gap: 12px; margin-bottom: 0; }
 
 /* =========================================================
    CARDS & STATS METRICS (PLAN_02)
@@ -1828,11 +1859,28 @@
 /* Responsive */
 @media (max-width: 900px) {
   .dashboard-sidebar {
-    transform: translateX(-100%);
+    position: fixed;
+    left: 0;
+    width: min(290px, calc(100vw - 48px));
+    box-shadow: var(--shadow-lg);
   }
-  .dashboard-main {
-    margin-left: 0;
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 73px 0 0;
+    background: var(--bg-overlay);
+    z-index: 35;
   }
+}
+
+@media (max-width: 600px) {
+  .dashboard-header { position: static; padding: 16px; }
+  .dashboard-content { padding: 20px 16px; }
+  .dashboard-toolbar { padding: 12px 16px 0; }
+  .dashboard-wrapper .metrics-grid,
+  .dashboard-wrapper .quick-actions-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-guide > .quick-actions-grid { padding: 16px; }
+  .dashboard-wrapper .section-header { padding: 16px; }
 }
 
 /* TV4 RECIPE WIZARD & MEDIA STYLES */

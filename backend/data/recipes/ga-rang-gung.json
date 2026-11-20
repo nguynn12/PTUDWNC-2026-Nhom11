@@ -1,0 +1,104 @@
+{
+  "title": "Gà rang gừng",
+  "originalTitle": "Gà rang gừng",
+  "description": "Gà rang gừng dân dã ấm áp với từng miếng thịt gà săn mềm đậm đà, nước sốt sánh vàng óng ả màu cánh gián từ nước hàng tự chưng, quyện cùng từng sợi gừng cay ấm nồng nàn đưa cơm trong những ngày mưa lạnh.",
+  "categoryName": "Món kho",
+  "authorEmail": "chef.thuha@culinaryblog.local",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Linh Trang — Savoury Days",
+    "url": "https://www.savourydays.com/ga-rang-gung/",
+    "accessedOn": "2026-11-17",
+    "note": "Nguyên liệu và các bước biên tập từ tài liệu nhóm; dinh dưỡng tính toán theo Bảng thành phần thực phẩm Việt Nam (Viện Dinh Dưỡng) và USDA."
+  },
+  "nutrition": {
+    "calories": 305.0,
+    "protein": 27.0,
+    "carbohydrates": 5.0,
+    "fat": 19.0,
+    "fiber": 0.6,
+    "sodium": 790.0
+  },
+  "ingredients": [
+    {
+      "name": "Thịt gà ta (má đùi hoặc thịt đùi lọc xương)",
+      "quantity": 550.0,
+      "unit": "gram",
+      "notes": "Rửa sạch, thái miếng vuông vừa ăn khoảng 2.5x3cm"
+    },
+    {
+      "name": "Gừng tươi",
+      "quantity": 40.0,
+      "unit": "gram (1 mẩu lớn)",
+      "notes": "Cạo sạch vỏ, thái lát rồi thái chỉ mỏng"
+    },
+    {
+      "name": "Hành tím khô",
+      "quantity": 2.0,
+      "unit": "củ",
+      "notes": "Bóc vỏ, băm nhỏ"
+    },
+    {
+      "name": "Đường cát trắng (thắng nước màu)",
+      "quantity": 30.0,
+      "unit": "gram (2 thìa canh)",
+      "notes": "Tạo màu vàng óng cho thịt gà"
+    },
+    {
+      "name": "Nước mắm ngon truyền thống",
+      "quantity": 35.0,
+      "unit": "ml (2.5 thìa canh)",
+      "notes": "Gia vị ướp và nêm chính"
+    },
+    {
+      "name": "Bột nêm (hoặc muối tinh)",
+      "quantity": 1.0,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Ướp thịt gà ban đầu"
+    },
+    {
+      "name": "Hạt tiêu đen xay",
+      "quantity": 0.5,
+      "unit": "tsp (thìa cà phê)",
+      "notes": "Rắc mặt gà tạo mùi thơm ấm"
+    },
+    {
+      "name": "Dầu ăn",
+      "quantity": 15.0,
+      "unit": "ml (1 thìa canh)",
+      "notes": "Xào thịt gà"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp thịt gà",
+      "description": "Thịt gà rửa sạch bằng nước muối loãng, thấm khô. Cắt miếng vuông vừa ăn (khoảng 2.5 x 3cm). Ướp thịt gà với 1 thìa cà phê bột nêm, 1 thìa canh nước mắm ngon và một nửa lượng gừng thái chỉ. Đảo đều để khoảng 15-20 phút cho thịt ngấm.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Thắng nước màu vàng óng",
+      "description": "Cho 2 thìa canh đường vào chảo nhỏ, đun ở lửa vừa. Đường tan chảy dần sang màu vàng mật ong rồi chuyển sang màu cánh gián đậm thì đổ ngay 2 thìa canh nước sôi vào khuấy đều rồi tắt bếp.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Xào săn thịt gà trên lửa lớn",
+      "description": "Bắc chảo lớn lên bếp với 1 thìa canh dầu ăn, phi thơm hành tím băm. Trút thịt gà cùng phần gừng thái chỉ còn lại vào chảo, đảo nhanh tay trên lửa lớn trong 2 phút đến khi mặt ngoài miếng thịt gà săn lại và mất hẳn màu đỏ sống.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Rang gà ngấm nước hàng và gừng",
+      "description": "Rưới phần nước màu và 1.5 thìa canh nước mắm còn lại vào chảo thịt gà, đảo đều cho màu bám đều quanh từng miếng thịt. Đun ở lửa vừa trong khoảng 3 phút cho sôi bùng, sau đó hạ nhỏ lửa đun tiếp từ 10-12 phút cho thịt gà chín mềm ngấm gia vị. Khi nước trong chảo cạn bớt, keo sánh lại và thịt gà chuyển sang màu vàng óng ả thơm ngát mùi gừng thì rắc tiêu xay lên trên rồi tắt bếp. Dọn ăn nóng cùng cơm trắng.",
+      "durationMinutes": 15
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2012/02/GaRangGung.jpg",
+      "altText": "Gà rang gừng",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

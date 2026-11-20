@@ -1,8 +1,8 @@
 # Tài liệu Đặc tả Yêu cầu Phần mềm - Culinary Blog
 
-**Phiên bản:** 1.3.0  
-**Ngày chuẩn hóa:** 22/09/2026  
-**Trạng thái:** Approved Baseline - sử dụng xuyên suốt dự án  
+**Phiên bản:** 1.3.1 (cập nhật chờ review)\
+**Ngày chuẩn hóa:** 22/09/2026; cập nhật 14/11/2026\
+**Trạng thái:** Baseline v1.3.0 đã duyệt; bản cập nhật v1.3.1 chờ review\
 **Nguồn:** Chuyển đổi đầy đủ từ `SRS_Culinary_Blog_v1.0.0.pdf`; các nội dung mâu thuẫn đã được chuẩn hóa và đối chiếu thêm với phân tích của nhóm  
 **Tài liệu chuẩn duy nhất:** `docs/requirements/SRS.md`
 
@@ -24,6 +24,7 @@
 | 1.1.0 | 16/09/2026 | Chuyển toàn bộ PDF sang Markdown; chuẩn hóa 24 mâu thuẫn chính và các khoảng trống kỹ thuật liên quan |
 | 1.2.0 | 16/09/2026 | Tích hợp phân tích bổ sung của nhóm: UX phân số cho Quantity, nguồn dữ liệu Nutrition, phạm vi Step phân cấp và vòng đời restore/purge Recipe |
 | 1.3.0 | 22/09/2026 | Kiểm tra chéo toàn bộ SRS với 7 ADR trong tài liệu phân tích mâu thuẫn; vá 2 điểm còn sai lệch response envelope tại FR-CAT-001 và FR-CAT-002 (Chương 3.2) cho khớp chuẩn `{data, meta}` đã công bố ở Chương 5.2/8 |
+| 1.3.1 (chờ review) | 14/11/2026 | Đồng bộ thay đổi đã được chủ dự án chấp thuận: GET Recipe theo ID cho editor, token concurrency trong DTO, If-Match bắt buộc (428/400/409), Restore về Draft và tìm kiếm danh sách cá nhân |
 
 ---
 
@@ -1231,6 +1232,7 @@
 - `GET /api/v1/recipes`.
 - Mặc định public và chỉ trả Published.
 - `mine=true` yêu cầu JWT, trả Recipe của user và cho phép filter `status`.
+- Khi `mine=true`, `q` tùy chọn (tối đa 100 ký tự) tìm theo tên/slug trong Recipe của chính user, kết hợp AND với status và các bộ lọc khác trước khi đếm/phân trang.
 - Admin có thể dùng `authorId`; Author thường không được dùng filter này.
 - Public list cache Redis 1 phút; private list không dùng shared cache.
 
@@ -1301,7 +1303,7 @@
 
 #### FR-RCP-004 - Cập nhật Recipe
 
-- `PUT /api/v1/recipes/{id}`, Owner/Admin, yêu cầu `If-Match`.
+- `PUT /api/v1/recipes/{id}`, Owner/Admin, yêu cầu header `If-Match` (token trong body không thay thế header).
 - Cập nhật các field cơ bản và nutrition.
 - Draft đổi title có thể đổi slug; slug cũ được ghi RecipeSlugHistory.
 - Published hoặc Archived không đổi slug.
@@ -1360,7 +1362,7 @@
 - Background purge xóa bản ghi con và file MinIO sau 30 ngày; job phải idempotent.
 - Trả 204.
 - `GET /api/v1/admin/recipes/trash`: Admin xem danh sách Recipe đã xóa mềm, phân trang theo `DeletedAt` giảm dần.
-- `POST /api/v1/admin/recipes/{id}/restore`: Admin khôi phục trong thời hạn 30 ngày bằng cách đặt `IsDeleted=false`, `DeletedAt=null`; invalidate cache và trả 200.
+- `POST /api/v1/admin/recipes/{id}/restore`: Admin khôi phục trong thời hạn 30 ngày bằng cách đặt `IsDeleted=false`, `DeletedAt=null`, `Status=Draft`, giữ `PublishedAt` làm lịch sử; invalidate cache và trả 200.
 - `DELETE /api/v1/admin/recipes/{id}/purge`: Admin xóa vật lý ngay một Recipe đã soft-delete, toàn bộ child record và file MinIO; trả 204 và ghi audit log.
 - Author không được tự restore hoặc purge. Purge thủ công và purge job phải dùng cùng một application service để bảo đảm hành vi nhất quán.
 
@@ -2238,6 +2240,7 @@ Trong MVP, server chỉ tạo `Nutrition_Source=Manual`. Chế độ `AutoCalcul
 | GET | `/recipes` | Public; JWT khi `mine=true` |
 | GET | `/recipes/search` | Public |
 | GET | `/recipes/{slug}` | Public Published; Owner/Admin private |
+| GET | `/recipes/{id:guid}` | Bearer Author/Admin; Owner/Admin, phục vụ editor ở mọi trạng thái chưa soft-delete |
 | POST | `/recipes` | Author/Admin |
 | PUT | `/recipes/{id}` | Owner/Admin + If-Match |
 | PATCH | `/recipes/{id}/publish` | Verified Owner/Admin + If-Match |
@@ -2261,6 +2264,9 @@ Trong MVP, server chỉ tạo `Nutrition_Source=Manual`. Chế độ `AutoCalcul
 
 Quy ước bổ sung:
 
+- Summary, Detail và response mutation Recipe có `concurrencyToken` là số nguyên không dấu lấy từ PostgreSQL `xmin`; response Create/GET theo ID/Update và chuyển trạng thái trả `ETag` tương ứng.
+- Update, publish/unpublish, archive/unarchive và delete yêu cầu một strong ETag dạng `If-Match: "123"` (token nguyên dương chuẩn, không nhận weak ETag, wildcard hoặc danh sách ETag). Thiếu header trả 428 `PRECONDITION_REQUIRED`; sai định dạng trả 400 `MALFORMED_REQUEST`; phiên bản cũ trả 409 `RECIPE_CONCURRENCY_CONFLICT` theo hợp đồng dự án.
+- GET theo ID kiểm tra Owner/Admin, loại bài đã xóa và không lưu shared cache.
 - `nutrition.source` là read-only và luôn bằng `Manual` trong MVP.
 - `quantity` của Ingredient là JSON number; frontend phải chuyển phân số thành decimal trước khi gửi.
 - Step DTO không có `parentStepId` hoặc `subSteps` trong v1.2.
@@ -2289,6 +2295,7 @@ Quy ước bổ sung:
 | 409 | Unique/state/optimistic concurrency conflict |
 | 422 | Field validation hoặc business rule không đạt |
 | 423 | Tài khoản bị lockout tạm thời |
+| 428 | Thiếu header If-Match bắt buộc |
 | 429 | Vượt rate limit |
 | 500 | Lỗi không xử lý được |
 | 503 | Dependency bắt buộc không sẵn sàng |
@@ -2298,6 +2305,7 @@ Quy ước bổ sung:
 | Error code | HTTP | Ý nghĩa |
 |---|---:|---|
 | `MALFORMED_REQUEST` | 400 | Request sai cấu trúc/cú pháp |
+| `PRECONDITION_REQUIRED` | 428 | Thiếu If-Match bắt buộc |
 | `VALIDATION_ERROR` | 422 | Validation/nghiệp vụ không đạt |
 | `AUTH_EMAIL_EXISTS` | 409 | Email đã đăng ký |
 | `AUTH_INVALID_CREDENTIALS` | 401 | Credential sai |

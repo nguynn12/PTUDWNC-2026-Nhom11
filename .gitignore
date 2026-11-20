@@ -58,5 +58,7 @@ docs/plans/buoi8/
 docs/Lab*.*
 backups/
 *.dump
+/frontend/test-results/
+/frontend/playwright-report/
 
 

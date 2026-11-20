@@ -1,6 +1,8 @@
 namespace CulinaryBlog.Application.Features.Recipes.Queries.GetRecipes;
 
 using CulinaryBlog.Application.Common.Constants;
+using CulinaryBlog.Application.Common.Exceptions;
+using CulinaryBlog.Application.Common.Helpers;
 using CulinaryBlog.Application.Common.Interfaces;
 using CulinaryBlog.Application.Common.Models;
 using CulinaryBlog.Application.Features.Recipes.DTOs;
@@ -37,6 +39,8 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
     public async Task<PagedResult<RecipeSummaryDto>> Handle(GetRecipesQuery request, CancellationToken cancellationToken)
     {
+        if (!string.IsNullOrWhiteSpace(request.AuthorId) && !_currentUserService.IsAdmin)
+            throw new ForbiddenException("Chỉ Admin được lọc công thức theo tác giả.", "RECIPE_FORBIDDEN");
         // 1. Chuẩn hóa tham số phân trang
         var page = request.Page < 1 ? 1 : request.Page;
         var pageSize = request.PageSize switch
@@ -51,7 +55,10 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var cacheKey = $"{CacheConstants.RecipeListPrefix}p{page}_ps{pageSize}_c{request.CategoryId}_d{request.Difficulty}_s{request.SortBy}_{request.SortOrder}_pt{request.MaxPrepTime}_ct{request.MaxCookTime}_tt{request.MaxTotalTime}_minc{request.MinCalories}_maxc{request.MaxCalories}";
 
-        if (_cacheService != null && request.Mine != true)
+        // API-07: Chỉ đọc và lưu cache công khai khi truy vấn danh sách công khai (Published) cho khách
+        var isPublicListing = request.Mine != true && string.IsNullOrWhiteSpace(request.AuthorId) && (!request.Status.HasValue || request.Status == RecipeStatus.Published);
+
+        if (_cacheService != null && isPublicListing)
         {
             var cached = await _cacheService.GetAsync<PagedResult<RecipeSummaryDto>>(cacheKey, cancellationToken);
             if (cached != null)
@@ -84,6 +91,25 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         else
         {
             query = query.Where(r => r.Status == RecipeStatus.Published);
+            // API-14: Hỗ trợ lọc theo AuthorId cụ thể
+            if (!string.IsNullOrWhiteSpace(request.AuthorId))
+            {
+                query = query.Where(r => r.AuthorId == request.AuthorId);
+            }
+        }
+
+        // Tìm theo tên trong danh sách riêng, trước khi đếm và phân trang.
+        if (request.Mine == true && !string.IsNullOrWhiteSpace(request.Q))
+        {
+            var searchTerm = request.Q.Trim().ToLowerInvariant();
+            if (searchTerm.Length > 100)
+            {
+                throw new BusinessRuleValidationException("Từ khóa không được vượt quá 100 ký tự.", ErrorCodes.ValidationError);
+            }
+
+            var slugTerm = SlugHelper.GenerateSlug(searchTerm);
+            query = query.Where(r => r.Title.ToLower().Contains(searchTerm) ||
+                (slugTerm != "" && r.Slug.Contains(slugTerm)));
         }
 
         // 3. Áp dụng các bộ lọc đa tiêu chí (kết hợp bằng toán tử AND theo FR-SRCH-002)
@@ -128,7 +154,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         if (total == 0)
         {
             var emptyResult = new PagedResult<RecipeSummaryDto>(Array.Empty<RecipeSummaryDto>(), 0, page, pageSize);
-            if (_cacheService != null)
+            if (_cacheService != null && isPublicListing)
             {
                 await _cacheService.SetAsync(cacheKey, emptyResult, CacheConstants.RecipeListDuration, cancellationToken);
             }
@@ -136,7 +162,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
         }
 
         // 5. Áp dụng sắp xếp linh hoạt theo whitelist (FR-SRCH-003) và phân trang
-        var sortedQuery = ApplySorting(query, request.SortBy, request.SortOrder, request.Mine == true);
+        var sortedQuery = ApplySorting(query, request.SortBy, request.SortOrder);
 
         var items = await sortedQuery
             .Skip((page - 1) * pageSize)
@@ -158,15 +184,16 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
                 PrepTimeMinutes = r.PrepTimeMinutes,
                 CookTimeMinutes = r.CookTimeMinutes,
                 Servings = r.Servings,
-                Difficulty = r.Difficulty.ToString(),
-                Status = r.Status.ToString(),
+                Difficulty = r.Difficulty,
+                Status = r.Status,
                 CategoryId = r.CategoryId,
                 CategoryName = r.Category != null ? r.Category.Name : null,
                 CategorySlug = r.Category != null ? r.Category.Slug : null,
                 AuthorId = r.AuthorId,
                 AuthorName = null,
                 PublishedAt = r.PublishedAt,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                ConcurrencyToken = EF.Property<uint>(r, "xmin") != 0 ? EF.Property<uint>(r, "xmin") : null
             })
             .ToListAsync(cancellationToken);
 
@@ -186,7 +213,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
 
         var result = new PagedResult<RecipeSummaryDto>(items, total, page, pageSize);
 
-        if (_cacheService != null && request.Mine != true)
+        if (_cacheService != null && isPublicListing)
         {
             await _cacheService.SetAsync(cacheKey, result, CacheConstants.RecipeListDuration, cancellationToken);
         }
@@ -197,7 +224,7 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
     /// <summary>
     /// Áp dụng sắp xếp động theo danh sách whitelist quy định trong SRS FR-SRCH-003 và quyết định 2440.
     /// </summary>
-    private static IQueryable<Recipe> ApplySorting(IQueryable<Recipe> query, string? sortBy, string? sortOrder, bool isMine = false)
+    private static IQueryable<Recipe> ApplySorting(IQueryable<Recipe> query, string? sortBy, string? sortOrder)
     {
         var normalizedSortBy = sortBy?.Trim().ToLowerInvariant();
         var isAsc = string.Equals(sortOrder?.Trim(), "asc", StringComparison.OrdinalIgnoreCase);
@@ -207,17 +234,20 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, PagedResu
             "publishedat" => isAsc ? query.OrderBy(r => r.PublishedAt) : query.OrderByDescending(r => r.PublishedAt),
             "createdat" or "newest" => isAsc ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt),
             "updatedat" => isAsc ? query.OrderBy(r => r.UpdatedAt ?? r.CreatedAt) : query.OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt),
+            "preptime" => isAsc ? query.OrderBy(r => r.PrepTimeMinutes) : query.OrderByDescending(r => r.PrepTimeMinutes),
             "cooktime" => isAsc ? query.OrderBy(r => r.CookTimeMinutes) : query.OrderByDescending(r => r.CookTimeMinutes),
+            "servings" => isAsc ? query.OrderBy(r => r.Servings) : query.OrderByDescending(r => r.Servings),
             "totaltime" => isAsc
+                ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
+                : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
+            "quickest" => isAsc
                 ? query.OrderBy(r => r.PrepTimeMinutes + r.CookTimeMinutes)
                 : query.OrderByDescending(r => r.PrepTimeMinutes + r.CookTimeMinutes),
             "calories" => isAsc
                 ? query.OrderBy(r => r.Nutrition != null ? r.Nutrition.Calories : 0)
                 : query.OrderByDescending(r => r.Nutrition != null ? r.Nutrition.Calories : 0),
             "title" => isAsc ? query.OrderBy(r => r.Title) : query.OrderByDescending(r => r.Title),
-            _ => isMine
-                ? (isAsc ? query.OrderBy(r => r.UpdatedAt ?? r.CreatedAt) : query.OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt))
-                : query.OrderByDescending(r => r.PublishedAt) // Sắp xếp mặc định: mới nhất trước
+            _ => isAsc ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt)
         };
     }
 }

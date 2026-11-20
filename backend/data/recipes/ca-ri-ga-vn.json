@@ -1,8 +1,8 @@
 {
   "title": "Cà ri gà kiểu Việt",
   "originalTitle": "Vietnamese-Style Chicken Curry Soup",
-  "description": "Nồi cà ri gà nước cốt dừa với sả, gừng, bột cà ri, khoai tây và cà rốt, ninh liu riu đến khi gà mềm. Món nhiều nước, ăn với bánh mì hoặc cơm.",
-  "categoryName": "Món súp",
+  "description": "Món ăn ấm cúng, đậm đà không thể thiếu trong những dịp sum họp gia đình của người Việt. Thịt gà chặt miếng vừa ăn ninh mềm thấm đẫm hương vị bột cà ri thơm lừng, sả gừng ấm nóng hòa quyện cùng vị bùi bở ngọt ngào của khoai lang, khoai tây trong làn nước dùng vàng óng béo ngậy nước cốt dừa, chấm đẫm bánh mì nóng giòn hay chan bún tươi đều ngon tuyệt đỉnh.",
+  "categoryName": "Món hầm & Cà ri",
   "authorEmail": "chef.thuha@culinaryblog.local",
   "prepTimeMinutes": 30,
   "cookTimeMinutes": 120,
@@ -132,31 +132,39 @@
   ],
   "steps": [
     {
-      "title": "Áp chảo gà",
-      "description": "Đun dầu trong nồi lớn lửa vừa, xào gà và hành tây đến khi gà hơi vàng và hành mềm trong, vớt ra riêng."
+      "stepNumber": 1,
+      "title": "Sơ chế và ướp thịt gà",
+      "durationMinutes": 30,
+      "description": "Thịt gà ta chặt miếng vừa ăn, rửa sạch với nước muối loãng gừng để khử mùi. Ướp thịt với bột cà ri, sả băm, hành tím băm, tỏi băm, nước mắm ngon, hạt nêm, đường và chút tiêu xay trong 30 phút cho ngấm sâu gia vị."
     },
     {
-      "title": "Phi gia vị",
-      "description": "Xào hành khô khoảng 1 phút trong phần mỡ còn lại rồi cho tỏi, gừng, sả và bột cà ri vào xào 5 phút, thêm ớt chuông và cà rốt.",
-      "durationMinutes": 6
+      "stepNumber": 2,
+      "title": "Chiên sơ khoai tây và khoai lang",
+      "durationMinutes": 10,
+      "description": "Khoai gọt vỏ cắt khối vuông vừa ăn. Đun nóng dầu ăn, cho khoai vào chiên sơ lửa lớn khoảng 3-4 phút cho lớp vỏ ngoài se vàng săn lại (bí quyết giúp khoai khi ninh trong nồi cà ri không bị nát vụn làm đục nước súp)."
     },
     {
-      "title": "Nấu nước dùng",
-      "description": "Cho gà và hành trở lại nồi, thêm nước dùng gà, nước, nước mắm, lá chanh, lá nguyệt quế và ớt bột."
+      "stepNumber": 3,
+      "title": "Xào săn thịt gà dậy hương thơm",
+      "durationMinutes": 10,
+      "description": "Cho 2 muỗng canh dầu ăn vào nồi lớn, phi thơm phần sả đập dập cắt khúc và hành tỏi băm. Trút thịt gà đã ướp vào xào đảo liên tục ở lửa lớn trong 6-8 phút cho thịt gà săn chắc, tươm mỡ và dậy mùi thơm nức của bột cà ri."
     },
     {
-      "title": "Ninh",
-      "description": "Đun sôi, cho khoai tây vào, sôi lại rồi đổ nước cốt dừa. Hạ lửa ninh 40–60 phút đến khi khoai mềm và gà chín (nhiệt độ ở giữa miếng gà tối thiểu 74°C).",
-      "durationMinutes": 60
+      "stepNumber": 4,
+      "title": "Ninh cà ri cùng nước dừa tươi",
+      "durationMinutes": 40,
+      "description": "Đổ nước dừa tươi (hoặc nước dùng gà) xâm xấp mặt thịt, thả lá chanh và ớt tươi vào. Đun sôi bùng rồi hạ lửa nhỏ liu riu, hớt bọt mịn. Sau 20 phút, cho phần khoai tây và cà rốt vào ninh cùng thêm 15-20 phút đến khi thịt gà chín mềm róc xương, khoai chín bở ngọt bùi."
     },
     {
-      "title": "Dọn ăn",
-      "description": "Múc ra tô, trang trí bằng một nhánh ngò rí."
+      "stepNumber": 5,
+      "title": "Hòa quyện nước cốt dừa và hoàn tất",
+      "durationMinutes": 10,
+      "description": "Rót từ từ nước cốt dừa béo ngậy vào nồi, khuấy nhẹ tay, đun sôi lăn tăn trở lại trong 3-5 phút cho nước súp sánh quyện, nêm nếm lại muối đường cho vừa miệng rồi tắt bếp. Múc cà ri ra tô sâu lòng, rắc ngò rí và tiêu xay lên trên, dọn ăn kèm bánh mì giòn tan hoặc bún tươi."
     }
   ],
   "images": [
     {
-      "url": "https://www.allrecipes.com/thmb/49q7TsGwHXpZqMQOGneiq5YwUMY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/182550-e2633777b76449188f04aa9d0591883e.jpg",
+      "url": "https://images.media-allrecipes.com/userphotos/182550.jpg",
       "altText": "Cà ri gà kiểu Việt",
       "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
     }

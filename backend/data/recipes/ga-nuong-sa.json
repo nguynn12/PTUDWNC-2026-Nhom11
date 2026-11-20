@@ -1,8 +1,8 @@
 {
   "title": "Gà nướng sả",
   "originalTitle": "Vietnamese Lemongrass Chicken",
-  "description": "Đùi gà ướp sả, tỏi, nước mắm và đường rồi nướng đến khi chín vàng, thơm lừng. Ăn với cơm hoặc bún.",
-  "categoryName": "Món nướng thơm lừng",
+  "description": "Món gà nướng vàng rực rỡ, thơm nức mũi hương sả cây quyện cùng nước mắm nhĩ và tỏi ớt băm nhuyễn. Từng miếng thịt gà nướng vàng xém cạnh bắt mắt, lớp da bóng bẩy giòn rụm bên ngoài nhưng thớ thịt bên trong vẫn giữ trọn độ ẩm mềm mọng, ngọt đậm đà, ăn kèm xôi nếp dẻo thơm hoặc bánh hỏi đều tuyệt đỉnh.",
+  "categoryName": "Món nướng",
   "authorEmail": "chef.minhkhoi@culinaryblog.local",
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 10,
@@ -69,27 +69,39 @@
   ],
   "steps": [
     {
-      "title": "Làm nước ướp",
-      "description": "Trộn dầu, sả, nước cốt chanh, nước tương, đường nâu, tỏi và nước mắm cho đến khi đường tan."
+      "stepNumber": 1,
+      "title": "Pha sốt ướp gà nướng sả",
+      "durationMinutes": 5,
+      "description": "Trong bát nhỏ, trộn đều sả băm thật nhuyễn, tỏi băm, ớt băm, 2 muỗng canh nước mắm ngon, 1 muỗng canh mật ong (hoặc đường nâu), 1 muỗng canh dầu hào, 1 muỗng cà phê dầu mè thơm và tiêu xay cho đến khi sốt hòa quyện sánh đặc."
     },
     {
-      "title": "Ướp gà",
-      "description": "Cho gà vào trộn đều, ướp trong tủ lạnh 20 phút đến 1 giờ.",
-      "durationMinutes": 20
+      "stepNumber": 2,
+      "title": "Ướp gà ngấm sâu gia vị",
+      "durationMinutes": 30,
+      "description": "Dùng dao khía nhẹ vài đường chéo trên mặt miếng thịt đùi gà (hoặc ức gà) giúp gia vị thấm sâu vào từng thớ thịt. Thoa đều hỗn hợp sốt ướp khắp mặt thịt gà, bọc kín và để trong ngăn mát tủ lạnh ít nhất 30-60 phút."
     },
     {
-      "title": "Làm nóng vỉ nướng",
-      "description": "Làm nóng vỉ nướng ở lửa vừa và quét ít dầu. Vớt gà ra, rũ bớt nước ướp."
+      "stepNumber": 3,
+      "title": "Chuẩn bị lò nướng hoặc vỉ than",
+      "durationMinutes": 5,
+      "description": "Làm nóng vỉ nướng trên bếp than hoa đỏ rực (hoặc bật lò nướng/nồi chiên không dầu ở nhiệt độ 190°C). Quét một lớp dầu ăn mỏng lên vỉ nướng để chống dính."
     },
     {
-      "title": "Nướng",
-      "description": "Nướng mỗi mặt 3–5 phút đến khi gà chín, nước tiết trong. Nhiệt độ ở giữa miếng gà nên đạt tối thiểu 74°C.",
-      "durationMinutes": 10
+      "stepNumber": 4,
+      "title": "Nướng gà vàng ruộm mọng nước",
+      "durationMinutes": 12,
+      "description": "Xếp thịt gà lên vỉ nướng. Nướng mỗi mặt khoảng 5-6 phút đến khi thịt gà chín săn, bề mặt se vàng ươm. Dùng cọ quét phần nước sốt ướp còn lại lên mặt thịt gà và nướng thêm 2 phút mỗi mặt cho da gà cháy xém cạnh nhẹ, dậy mùi khói thơm lừng và đạt nhiệt độ an toàn 74°C ở giữa miếng thịt."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Thưởng thức",
+      "durationMinutes": 3,
+      "description": "Chặt thịt gà thành từng miếng vừa ăn, bày ra đĩa lót rau răm, dưa leo và muối tiêu chanh ớt dọn kèm."
     }
   ],
   "images": [
     {
-      "url": "https://www.allrecipes.com/thmb/oOXQt20gForU70bXy-bQKeUlL0k=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/6827213-vietnamese-grilled-lemongrass-chicken-AllrecipesPhoto-1x1-1-36e69cd06cd646e3b380675e7f0c5a43.jpg",
+      "url": "https://images.media-allrecipes.com/userphotos/6827213.jpg",
       "altText": "Gà nướng sả",
       "license": "Ảnh của Allrecipes (allrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
     }

@@ -2,7 +2,7 @@
 
 **Trạng thái:** Đã chốt, có hiệu lực áp dụng ngay. Ghi đè lên phần tương ứng trong `SRS.md` gốc khi có khác biệt.
 **Phạm vi:** 27 mâu thuẫn được phát hiện khi rà soát SRS trước khi tạo migration nghiệp vụ đầu tiên, chia 5 nhóm. Bổ sung D7 (chốt từ `OPEN-QUESTIONS.md` mục 1, ngày 2026-09-23) — tổng 28 mục.
-**Cách dùng cho AI coding agent:** Mỗi mục có RULE (quy tắc áp dụng ngay, không cần đọc phần giải thích để code đúng) + WHY (lý do, chỉ cần đọc nếu cần hiểu ngữ cảnh) + IMPACT (thay đổi cụ thể về schema/API/UI).
+**Cách dùng cho người triển khai:** Mỗi mục có RULE (quy tắc áp dụng ngay, không cần đọc phần giải thích để code đúng) + WHY (lý do, chỉ cần đọc nếu cần hiểu ngữ cảnh) + IMPACT (thay đổi cụ thể về schema/API/UI).
 
 ---
 
@@ -58,7 +58,7 @@
 - **RULE:**
   - List endpoint → `{"data": T[], "meta": {page, pageSize, total, totalPages, hasNextPage, hasPreviousPage}}`.
   - Detail/mutation endpoint → `{"data": T}`, không có `meta` (hoặc `null`).
-  - **Ngoại lệ (KHÔNG bọc envelope):** response `204 No Content` (không có body); endpoint `/auth/*` trả token trực tiếp ở top-level (`{accessToken, refreshToken, expiresIn}`) theo chuẩn OAuth2/JWT phổ biến.
+  - **Ngoại lệ (KHÔNG bọc envelope):** response `204 No Content` (không có body). Theo hợp đồng đã chốt trước demo, Auth cũng bọc `{data, meta}`; token nằm trong `data`.
   - `PagedResult<T>` (namespace `Application/Common/Models/`) vẫn dùng nội bộ Application layer, nhưng **không** serialize trực tiếp ra HTTP response — luôn map qua `ApiResponse<T>`/`PagedApiResponse<T>` wrapper ở tầng Presentation trước khi trả JSON.
 - **WHY:** Chương 3 dùng `PagedResult<T>` phẳng, Chương 5.2/8 dùng `{data,meta}`; nhiều endpoint ví dụ (auth, upload ảnh) trả DTO trần không bọc gì dù convention chung yêu cầu. Chọn `{data,meta}` vì nhất quán với RFC 7807 Error Format và dễ generate OpenAPI/TS type.
 - **IMPACT:** tạo `ApiResponse<T>`/`PagedApiResponse<T>` qua Minimal API `IEndpointFilter`. **Đây là thay đổi breaking rộng nhất trong toàn bộ 27 mục — chốt trước khi viết Controller đầu tiên.**

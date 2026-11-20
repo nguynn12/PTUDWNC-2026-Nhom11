@@ -19,4 +19,5 @@ public record UpdateRecipeCommand : IRequest<RecipeResponseDto>
     public RecipeDifficulty Difficulty { get; init; } = RecipeDifficulty.Easy;
     public Guid CategoryId { get; init; }
     public uint? ConcurrencyToken { get; init; }
+    public RecipeNutritionDto? Nutrition { get; init; }
 }

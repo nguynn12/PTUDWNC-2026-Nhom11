@@ -17,6 +17,27 @@ using Xunit;
 /// </summary>
 public class MinioFileStorageServiceTests : IDisposable
 {
+    private sealed class DeleteFailureClient(bool missing) : AmazonS3Client("dummy", "dummy",
+        new AmazonS3Config { ServiceURL = "http://localhost:9000", ForcePathStyle = true })
+    {
+        public override Task<DeleteObjectResponse> DeleteObjectAsync(DeleteObjectRequest request,
+            CancellationToken cancellationToken = default) => Task.FromException<DeleteObjectResponse>(missing
+                ? new AmazonS3Exception("Missing") { StatusCode = System.Net.HttpStatusCode.NotFound }
+                : new IOException("Storage unavailable"));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task DeleteAsync_OnlyMissingObjectsAreSuccess_OtherFailuresReachRetry(bool missing)
+    {
+        using var client = new DeleteFailureClient(missing);
+        var service = new MinioFileStorageService(client, Options.Create(_settings),
+            NullLogger<MinioFileStorageService>.Instance, _fallbackService);
+        if (missing) await service.DeleteAsync("recipes/missing.jpg");
+        else await Assert.ThrowsAsync<IOException>(() => service.DeleteAsync("recipes/existing.jpg"));
+    }
+
     private readonly string _testTempDir;
     private readonly FileStorageService _fallbackService;
     private readonly MinioSettings _settings;
@@ -119,6 +140,38 @@ public class MinioFileStorageServiceTests : IDisposable
         Assert.NotNull(resultUrl);
         Assert.StartsWith("/uploads/recipes/unit-test/", resultUrl);
         Assert.EndsWith(".jpg", resultUrl);
+    }
+
+    [Fact]
+    public async Task UploadAsync_WhenMinioEnabledAndFails_ShouldThrowServiceUnavailableException()
+    {
+        // MEDIA-03: Khi MinIO bật mà lỗi kết nối, phải ném ServiceUnavailableException (503), không fallback local
+        var enabledSettings = new MinioSettings
+        {
+            Enabled = true,
+            Endpoint = "http://127.0.0.1:59999", // Unreachable port
+            PublicUrl = "http://127.0.0.1:59999",
+            BucketName = "culinary-blog"
+        };
+        var s3Config = new AmazonS3Config
+        {
+            ServiceURL = enabledSettings.Endpoint,
+            ForcePathStyle = true,
+            Timeout = TimeSpan.FromMilliseconds(500),
+            MaxErrorRetry = 0
+        };
+        var failingClient = new AmazonS3Client("dummy", "dummy", s3Config);
+        var service = new MinioFileStorageService(
+            failingClient,
+            Options.Create(enabledSettings),
+            NullLogger<MinioFileStorageService>.Instance,
+            _fallbackService);
+
+        var content = "Failing upload content";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        await Assert.ThrowsAsync<CulinaryBlog.Application.Common.Exceptions.ServiceUnavailableException>(() =>
+            service.UploadAsync(stream, "dish.jpg", "image/jpeg", "recipes/fail", TestContext.Current.CancellationToken));
     }
 
     [Fact]

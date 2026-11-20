@@ -13,8 +13,7 @@ using Microsoft.Extensions.Logging;
 /// Nạp công thức THẬT từ các tệp JSON trong <c>backend/data/recipes</c> (định dạng xem README.md cùng thư mục).
 /// Mỗi công thức bắt buộc có: tác giả (tài khoản đã tồn tại, tìm theo email), danh mục, ít nhất 1 nguyên liệu,
 /// 1 bước và nguồn tham khảo. Chạy lặp lại an toàn: công thức đã có (trùng slug) thì bỏ qua.
-/// Chạy trước các seeder ngẫu nhiên nên DB mới chỉ chứa dữ liệu thật (RecipeSeeder/RecipeDetailSeeder
-/// tự bỏ qua khi đã có công thức).
+/// Luồng khởi động chỉ nạp các tệp này, không tự gọi các seeder dữ liệu ngẫu nhiên.
 /// </summary>
 public static class RecipeDataImporter
 {
@@ -146,7 +145,7 @@ public static class RecipeDataImporter
         {
             Title = d.Title.Trim(),
             Slug = slug,
-            Description = $"{d.Description.Trim()}\n\nNguồn tham khảo: {d.Source!.Name} — {d.Source.Url}",
+            Description = d.Description.Trim(),
             PrepTimeMinutes = d.PrepTimeMinutes,
             CookTimeMinutes = d.CookTimeMinutes,
             Servings = d.Servings,

@@ -106,10 +106,9 @@ public sealed class LoggingBehavior<TRequest, TResponse>(
 
     private static string ExtractResourceId(TRequest request, TResponse? response)
     {
-        // 1. Thử lấy từ Request (Id, RecipeId, CategoryId...)
+        // 1. Thử lấy ID thực thể trực tiếp từ Request (Id, RecipeId...)
         var requestIdProp = request.GetType().GetProperty("Id", BindingFlags.Public | BindingFlags.Instance)
-            ?? request.GetType().GetProperty("RecipeId", BindingFlags.Public | BindingFlags.Instance)
-            ?? request.GetType().GetProperty("CategoryId", BindingFlags.Public | BindingFlags.Instance);
+            ?? request.GetType().GetProperty("RecipeId", BindingFlags.Public | BindingFlags.Instance);
 
         if (requestIdProp != null)
         {
@@ -117,7 +116,7 @@ public sealed class LoggingBehavior<TRequest, TResponse>(
             if (val != null) return val.ToString()!;
         }
 
-        // 2. Thử lấy từ Response
+        // 2. Với các lệnh tạo mới (chưa có Id trong request): Lấy ID từ Response vừa tạo
         if (response != null)
         {
             var responseIdProp = response.GetType().GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
@@ -126,6 +125,14 @@ public sealed class LoggingBehavior<TRequest, TResponse>(
                 var val = responseIdProp.GetValue(response);
                 if (val != null) return val.ToString()!;
             }
+        }
+
+        // 3. Fallback lấy CategoryId hoặc các khóa ngoại khác từ request nếu không có Id
+        var requestCategoryProp = request.GetType().GetProperty("CategoryId", BindingFlags.Public | BindingFlags.Instance);
+        if (requestCategoryProp != null)
+        {
+            var val = requestCategoryProp.GetValue(request);
+            if (val != null) return val.ToString()!;
         }
 
         return "N/A";

@@ -4,6 +4,7 @@ using CulinaryBlog.Application.Common.Exceptions;
 using CulinaryBlog.Application.Features.RecipeIngredients.DTOs;
 using CulinaryBlog.Application.Features.RecipeIngredients.Services;
 using CulinaryBlog.Domain.Entities;
+using CulinaryBlog.Domain.Enums;
 using CulinaryBlog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -25,7 +26,7 @@ public class RecipeIngredientServiceTests
         // Arrange
         using var context = CreateInMemoryDbContext();
         var recipeId = Guid.NewGuid();
-        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Phở Bò", Description = "Món phở truyền thống", AuthorId = "user1" });
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Phở Bò", Description = "Món phở truyền thống", AuthorId = "user1", Status = RecipeStatus.Published });
         context.RecipeIngredients.AddRange(
             new RecipeIngredient { Id = Guid.NewGuid(), RecipeId = recipeId, Name = "Hành tây", OrderIndex = 2 },
             new RecipeIngredient { Id = Guid.NewGuid(), RecipeId = recipeId, Name = "Bánh phở", OrderIndex = 0 },
@@ -46,13 +47,26 @@ public class RecipeIngredientServiceTests
     }
 
     [Fact]
+    public async Task GetIngredientsAsync_WhenDraftAndNotOwner_ShouldThrowForbiddenException()
+    {
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Bún Chả", Description = "Bún chả Hà Nội", AuthorId = "user1", Status = RecipeStatus.Draft });
+        await context.SaveChangesAsync();
+
+        var service = new RecipeIngredientService(context);
+
+        await Assert.ThrowsAsync<ForbiddenException>(() => service.GetIngredientsAsync(recipeId, currentUserId: "user2", isAdmin: false));
+    }
+
+    [Fact]
     public async Task GetIngredientByIdAsync_WhenFound_ShouldReturnDto()
     {
         // Arrange
         using var context = CreateInMemoryDbContext();
         var recipeId = Guid.NewGuid();
         var ingredientId = Guid.NewGuid();
-        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Cơm Tấm", Description = "Món cơm tấm", AuthorId = "user1" });
+        context.Recipes.Add(new Recipe { Id = recipeId, Title = "Cơm Tấm", Description = "Món cơm tấm", AuthorId = "user1", Status = RecipeStatus.Published });
         context.RecipeIngredients.Add(new RecipeIngredient
         {
             Id = ingredientId,
@@ -152,5 +166,31 @@ public class RecipeIngredientServiceTests
         Assert.NotNull(item);
         Assert.True(item.IsDeleted);
         Assert.NotNull(item.DeletedAt);
+    }
+
+    [Fact]
+    public async Task AddIngredientAsync_WhenConcurrencyTokenMismatch_ShouldThrowConflictException()
+    {
+        // Arrange
+        using var context = CreateInMemoryDbContext();
+        var recipeId = Guid.NewGuid();
+        var recipe = new Recipe { Id = recipeId, Title = "Canh Chua", Description = "Canh chua cá lóc", AuthorId = "user1" };
+        context.Recipes.Add(recipe);
+        await context.SaveChangesAsync();
+
+        context.Entry(recipe).Property<uint>("xmin").CurrentValue = 200u;
+        await context.SaveChangesAsync();
+
+        var service = new RecipeIngredientService(context);
+        var request = new CreateRecipeIngredientRequest
+        {
+            Name = "Cá lóc",
+            Quantity = 500,
+            Unit = "g"
+        };
+
+        // Act & Assert - API-03
+        await Assert.ThrowsAsync<ConflictException>(() =>
+            service.AddIngredientAsync(recipeId, request, currentUserId: "user1", isAdmin: false, concurrencyToken: 199u));
     }
 }

@@ -310,6 +310,7 @@ export default function AdminCategoriesPage() {
                       <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-muted border border-border/60 mx-auto flex items-center justify-center">
                         {cat.imageUrl ? (
                           <Image
+                            referrerPolicy="no-referrer"
                             src={cat.imageUrl}
                             alt={cat.name}
                             fill
@@ -602,7 +603,7 @@ function CreateCategoryDialog({
               <div className="flex items-center gap-2 pt-1">
                 <span className="text-xs text-muted-foreground">Xem trước:</span>
                 <div className="relative w-8 h-8 rounded-md overflow-hidden border border-border">
-                  <Image src={imageUrl} alt="Preview" fill sizes="32px" className="object-cover" />
+                  <Image src={imageUrl} referrerPolicy="no-referrer" alt="Preview" fill sizes="32px" className="object-cover" />
                 </div>
               </div>
             )}
@@ -798,7 +799,7 @@ function EditCategoryDialog({
               <div className="flex items-center gap-2 pt-1">
                 <span className="text-xs text-muted-foreground">Xem trước:</span>
                 <div className="relative w-8 h-8 rounded-md overflow-hidden border border-border">
-                  <Image src={imageUrl} alt="Preview" fill sizes="32px" className="object-cover" />
+                  <Image src={imageUrl} referrerPolicy="no-referrer" alt="Preview" fill sizes="32px" className="object-cover" />
                 </div>
               </div>
             )}

@@ -71,7 +71,8 @@ public sealed class RecipeDataImporterTests : IDisposable
         Assert.Equal(RecipeStatus.Published, recipe.Status);
         Assert.NotNull(recipe.PublishedAt);
         Assert.Equal(RecipeDifficulty.Medium, recipe.Difficulty);
-        Assert.Contains("https://example.com/x", recipe.Description);
+        Assert.DoesNotContain("https://example.com/x", recipe.Description);
+        Assert.DoesNotContain("Nguồn tham khảo:", recipe.Description);
         Assert.Equal(["Muối", "Tiêu"], recipe.Ingredients.OrderBy(i => i.OrderIndex).Select(i => i.Name));
         Assert.Equal([1, 2], recipe.Steps.OrderBy(s => s.StepNumber).Select(s => s.StepNumber));
         Assert.Equal(100m, recipe.Nutrition!.Calories);
@@ -163,7 +164,7 @@ public sealed class RecipeDataImporterTests : IDisposable
             Assert.Contains(r.CategoryId, categoryIds);
             Assert.NotEmpty(r.Ingredients);
             Assert.NotEmpty(r.Steps);
-            Assert.Contains("Nguồn tham khảo:", r.Description);
+            Assert.DoesNotContain("Nguồn tham khảo:", r.Description);
         });
     }
 }

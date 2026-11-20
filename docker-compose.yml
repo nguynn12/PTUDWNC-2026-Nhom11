@@ -54,7 +54,7 @@ services:
         condition: service_healthy
 
   minio:
-    image: minio/minio:RELEASE.2024-01-16T16-07-38Z
+    image: coollabsio/minio@sha256:69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9
     container_name: culinary-blog-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
@@ -68,16 +68,22 @@ services:
       - minio_data:/data
 
   minio-init:
-    image: minio/mc:RELEASE.2024-01-16T16-06-34Z
+    image: coollabsio/minio@sha256:69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9
     container_name: culinary-blog-minio-init
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-culinary_minio_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-culinary_minio_secret}
     depends_on:
       - minio
     entrypoint: >
-      /bin/sh -c "
-      until mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER:-culinary_minio_admin} $${MINIO_ROOT_PASSWORD:-culinary_minio_secret}; do
+      /bin/sh -ec "
+      ready=0;
+      for attempt in $$(seq 1 60); do
+        if mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER:-culinary_minio_admin} $${MINIO_ROOT_PASSWORD:-culinary_minio_secret}; then ready=1; break; fi;
         echo 'Dang cho MinIO khoi dong...';
         sleep 2;
       done;
+      test $$ready -eq 1;
       mc mb myminio/culinary-blog --ignore-existing;
       mc anonymous set download myminio/culinary-blog;
       echo 'Khoi tao bucket culinary-blog voi policy public-read thanh cong.';
@@ -90,13 +96,17 @@ services:
     restart: unless-stopped
     environment:
       ACCEPT_EULA: "Y"
-      # Seq bản mới bắt buộc có mật khẩu admin hoặc tắt xác thực ở lần chạy đầu, nếu không container crash.
-      # Chỉ dùng cho môi trường dev/demo; khi triển khai thật hãy đặt SEQ_FIRSTRUN_ADMINPASSWORD thay thế.
-      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+      SEQ_FIRSTRUN_ADMINPASSWORDHASH: ${SEQ_ADMIN_PASSWORD_HASH:?Generate SEQ_ADMIN_PASSWORD_HASH in .env before starting Seq}
     ports:
       - "${SEQ_PORT:-5341}:80"
     volumes:
       - seq_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
 
   api:
     build:
@@ -105,11 +115,19 @@ services:
     image: culinaryblog-api:latest
     container_name: culinary-blog-api
     restart: unless-stopped
+    networks:
+      default:
+      proxy:
+        aliases: [api-proxy]
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-culinary_blog_dev};Username=${POSTGRES_USER:-culinary_blog};Password=${POSTGRES_PASSWORD:-culinary_blog_dev}
+      ConnectionStrings__Redis: redis:6379
+      ConnectionStrings__RedisConnection: redis:6379
+      Redis__Host: redis
+      Redis__Port: 6379
       Minio__Endpoint: http://minio:9000
-      Minio__PublicUrl: http://localhost:9000
+      Minio__PublicUrl: ${MINIO_PUBLIC_URL:-http://localhost:9000}
       Minio__AccessKey: ${MINIO_ROOT_USER:-culinary_minio_admin}
       Minio__SecretKey: ${MINIO_ROOT_PASSWORD:-culinary_minio_secret}
       Minio__BucketName: culinary-blog
@@ -122,11 +140,11 @@ services:
       Cors__AllowedOrigins__0: ${CLIENT_BASE_URL:-http://localhost:3000}
       # OPS-01: máy sạch chạy compose phải tự có schema + dữ liệu mẫu
       Database__AutoMigrate: "true"
-      # OPS-02: dùng tên dịch vụ trong mạng compose, không dùng localhost (là chính container api)
-      ConnectionStrings__Redis: redis:6379
-      Seq__ServerUrl: http://seq:80
+      SeedData__Enabled: ${SEED_DATA_ENABLED:-true}
+      ReverseProxy__KnownProxies__0: 172.30.11.10
+      Seq__ServerUrl: http://seq:5341
       # OPS-07: Seq nhận OTLP (trace + metric) ở /ingest/otlp
-      OpenTelemetry__OtlpEndpoint: http://seq:80/ingest/otlp
+      OpenTelemetry__OtlpEndpoint: http://seq:5341/ingest/otlp
       # OPS-08: để trống Email__Host thì dùng MockEmailService (chỉ ghi log), điền đủ để gửi SMTP thật
       Email__Host: ${Email__Host:-}
       Email__Port: ${Email__Port:-587}
@@ -146,7 +164,7 @@ services:
       minio-init:
         condition: service_completed_successfully
       seq:
-        condition: service_started
+        condition: service_healthy
 
   web:
     build:
@@ -173,6 +191,10 @@ services:
     image: nginx:alpine
     container_name: culinary-blog-nginx
     restart: unless-stopped
+    networks:
+      default:
+      proxy:
+        ipv4_address: 172.30.11.10
     ports:
       - "${NGINX_PORT:-80}:80"
     volumes:
@@ -180,6 +202,12 @@ services:
     depends_on:
       - api
       - web
+
+networks:
+  proxy:
+    ipam:
+      config:
+        - subnet: 172.30.11.0/24
 
 volumes:
   postgres_data:

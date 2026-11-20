@@ -1,8 +1,8 @@
 {
   "title": "Gỏi bún tôm",
   "originalTitle": "Vietnamese prawn salad",
-  "description": "Bún tươi trộn tôm luộc, dưa leo, cà rốt, hành lá, rau thơm và đậu phộng với nước sốt chanh tỏi ớt. Món gỏi mát làm trong 20 phút.",
-  "categoryName": "Salad & Gỏi",
+  "description": "Món gỏi trộn thanh mát, tươi mới và tràn đầy năng lượng cho những ngày hè oi ả. Tôm sú tươi luộc chín đỏ au ngọt lịm kết hợp cùng sợi bún gạo mềm dai, dưa leo giòn rụm, cà rốt bào sợi thanh mát, rau thơm the the và đậu phộng rang bùi bùi giã dập, hòa quyện trong nước sốt chanh tỏi ớt chua ngọt đánh thức mọi giác quan.",
+  "categoryName": "Gỏi & Nộm",
   "authorEmail": "chef.baongoc@culinaryblog.local",
   "prepTimeMinutes": 20,
   "cookTimeMinutes": 0,
@@ -19,7 +19,8 @@
     "protein": 27.0,
     "carbohydrates": 117.0,
     "fat": 4.0,
-    "fiber": 2.0
+    "fiber": 2.0,
+    "sodium": 223.0
   },
   "ingredients": [
     {
@@ -88,17 +89,28 @@
   ],
   "steps": [
     {
-      "title": "Làm nước sốt",
-      "description": "Giã tỏi, ớt và đường trong cối, thêm nước cốt chanh và 3 muỗng canh nước, khuấy đều rồi để riêng."
+      "stepNumber": 1,
+      "title": "Luộc tôm sú ngọt giòn",
+      "durationMinutes": 5,
+      "description": "Đun sôi nồi nước có thả vài lát gừng và cọng sả đập dập. Thả tôm sú tươi vào luộc chín tới trong khoảng 3 phút đến khi tôm cong tròn và chuyển sang màu đỏ au. Vớt tôm ra ngâm ngay vào âu nước đá lạnh 3 phút để tôm giòn thịt, sau đó bóc vỏ, chừa đuôi và chẻ đôi dọc sống lưng."
     },
     {
-      "title": "Ngâm bún",
-      "description": "Chan nước sôi lên bún, để 10 phút cho mềm rồi để ráo, chia ra 2 tô.",
-      "durationMinutes": 10
+      "stepNumber": 2,
+      "title": "Trộn nước sốt gỏi chua ngọt thanh tao",
+      "durationMinutes": 5,
+      "description": "Giã nhuyễn tỏi và ớt hiểm trong cối cùng đường cát. Thêm nước cốt chanh tươi và 3 muỗng canh nước ấm, khuấy đều cho đường tan hoàn toàn tạo nên vị chua thanh mặn ngọt hài hòa."
     },
     {
-      "title": "Trộn và bày",
-      "description": "Trộn tôm với rau củ rồi chia vào mỗi tô, rắc rau thơm và đậu phộng, rưới nước sốt rồi dọn ăn."
+      "stepNumber": 3,
+      "title": "Sơ chế bún và rau củ tươi",
+      "durationMinutes": 10,
+      "description": "Chần bún gạo qua nước sôi cho sợi bún mềm tơi rồi để thật ráo nước. Dưa leo bỏ ruột thái sợi que mỏng, cà rốt bào sợi, hành lá chẻ sợi, rau bạc hà và ngò rí rửa sạch để ráo."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Trộn gỏi và hoàn thiện",
+      "durationMinutes": 5,
+      "description": "Cho bún vào 2 tô sâu lòng, xếp tôm luộc đỏ au lên trên cùng dưa leo, cà rốt và rau thơm. Rưới đều nước sốt chanh tỏi ớt khắp tô, rắc đậu phộng rang giã dập lên trên cùng và trộn đều nhẹ tay khi thưởng thức."
     }
   ],
   "images": [

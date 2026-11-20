@@ -29,11 +29,22 @@ jobs:
       - name: Build solution
         run: dotnet build backend/CulinaryBlog.slnx --no-restore -c Release
 
-      # QA-03: thu coverage thật (coverlet.collector có sẵn trong 2 project test), không chỉ chạy test.
-      - name: Run Tests & Coverage
+      - name: Run Unit Tests & Coverage
         run: >
-          dotnet test backend/CulinaryBlog.slnx --no-build -c Release --verbosity normal
-          --collect:"XPlat Code Coverage" --results-directory ./coverage
+          dotnet test backend/tests/CulinaryBlog.UnitTests/CulinaryBlog.UnitTests.csproj
+          --no-build -c Release --verbosity normal
+          --collect:"XPlat Code Coverage" --results-directory ./coverage/unit
+
+      - name: Run Integration Tests & Coverage
+        run: >
+          dotnet test backend/tests/CulinaryBlog.IntegrationTests/CulinaryBlog.IntegrationTests.csproj
+          --no-build -c Release --verbosity normal
+          --collect:"XPlat Code Coverage" --results-directory ./coverage/integration
+
+      - name: Enforce NFR-MAINT-002 unit coverage
+        shell: bash
+        run: |
+          python3 backend/scripts/check_unit_coverage.py coverage/unit/*/coverage.cobertura.xml --minimum 80 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Coverage summary
         if: always()
@@ -49,8 +60,14 @@ jobs:
           name: backend-coverage
           path: coverage-report/
 
-      # QA-06: NuGet Audit KHÔNG bị tắt hẳn nhưng cảnh báo NU1901-NU1904 đang bị NoWarn trong
-      # backend/Directory.Build.props (do ImageSharp). Liệt kê lỗ hổng ra log để không bị "im lặng bỏ qua".
+      - name: Upload NFR-MAINT-002 unit coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage-nfr-maint-002
+          path: coverage/unit/*/coverage.cobertura.xml
+
+      # Xuất báo cáo dependency để phát hiện advisory mới trong các lần build sau.
       - name: NuGet vulnerability report (informational)
         run: dotnet list backend/CulinaryBlog.slnx package --vulnerable --include-transitive
         continue-on-error: true
@@ -87,53 +104,109 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:5000/api
           NEXT_PUBLIC_APP_URL: http://localhost:3000
 
-  # QA-04: chạy Playwright (frontend/e2e). Các spec hiện chạy trên giao diện, không dựng backend/PostgreSQL
-  # trong job này, nên để continue-on-error cho tới khi có môi trường e2e đầy đủ (docker compose).
   e2e:
-    name: E2E (Playwright)
+    name: E2E (PostgreSQL, Redis, MinIO, Playwright) ${{ matrix.label }}
     runs-on: ubuntu-latest
-    needs: frontend
-    continue-on-error: true
-    defaults:
-      run:
-        working-directory: frontend
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 1
+            label: 1/2
+          - shard: 2
+            label: 2/2
+          - shard: production-prefetch
+            label: production-prefetch
+    env:
+      E2E_AUTHOR_EMAIL: e2e-author@example.test
+      E2E_AUTHOR_PASSWORD: E2ePass!2026_Only
+      PLAYWRIGHT_API_URL: http://127.0.0.1:5000
+      BACKEND_API_URL: http://127.0.0.1:5000
+      # Image ghim theo digest, dùng cả MinIO server và mc có sẵn trong image.
+      MINIO_IMAGE: coollabsio/minio@sha256:69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: culinary_blog_e2e
+          POSTGRES_USER: culinary_blog
+          POSTGRES_PASSWORD: culinary_e2e_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U culinary_blog -d culinary_blog_e2e"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
-
-      - name: Build
-        run: npm run build
+      - name: Start MinIO
+        run: |
+          docker run -d --name culinary-e2e-minio -p 9000:9000 -e MINIO_ROOT_USER=culinary_minio_admin -e MINIO_ROOT_PASSWORD=culinary_minio_secret "$MINIO_IMAGE" server /data
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:9000/minio/health/ready; then break; fi
+            sleep 2
+          done
+          curl --fail http://127.0.0.1:9000/minio/health/ready
+          docker run --rm --network host --entrypoint /usr/bin/mc -e MC_HOST_local=http://culinary_minio_admin:culinary_minio_secret@127.0.0.1:9000 "$MINIO_IMAGE" mb local/culinary-blog --ignore-existing
+          docker run --rm --network host --entrypoint /usr/bin/mc -e MC_HOST_local=http://culinary_minio_admin:culinary_minio_secret@127.0.0.1:9000 "$MINIO_IMAGE" anonymous set download local/culinary-blog
+      - name: Build backend
+        run: dotnet build backend/src/CulinaryBlog.API -c Release -m:1 -nodeReuse:false
+      - name: Start backend and prepare Author
+        working-directory: backend/src/CulinaryBlog.API
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5000/api
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
-
-      - name: Start app
-        run: npm start &
-        env:
-          BACKEND_API_URL: http://localhost:5000
-
-      - name: Wait for app
-        run: npx --yes wait-on http://localhost:3000 --timeout 60000
-
+          ASPNETCORE_ENVIRONMENT: Production
+          ASPNETCORE_URLS: http://127.0.0.1:5000
+          ConnectionStrings__DefaultConnection: Host=127.0.0.1;Port=5432;Database=culinary_blog_e2e;Username=culinary_blog;Password=culinary_e2e_only
+          ConnectionStrings__Redis: 127.0.0.1:6379
+          Database__AutoMigrate: 'true'
+          SeedData__Enabled: 'true'
+          JwtSettings__Secret: E2e_Only_Signing_Key_20261115_1234567890_0987654321
+          JwtSettings__Issuer: CulinaryBlogApi
+          JwtSettings__Audience: CulinaryBlogClients
+          Seq__ServerUrl: ''
+        run: |
+          dotnet bin/Release/net10.0/CulinaryBlog.API.dll > "$RUNNER_TEMP/e2e-api.log" 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:5000/health/ready; then break; fi
+            sleep 2
+          done
+          curl --fail http://127.0.0.1:5000/health/ready
+          jq -n --arg email "$E2E_AUTHOR_EMAIL" --arg password "$E2E_AUTHOR_PASSWORD" '{email:$email,password:$password,displayName:"Tác giả kiểm thử"}' | curl --fail -H 'Content-Type: application/json' -d @- http://127.0.0.1:5000/api/v1/auth/register
+          e2e_postgres=$(docker ps --filter ancestor=postgres:16-alpine --format '{{.ID}}' | head -n 1)
+          docker exec "$e2e_postgres" psql -U culinary_blog -d culinary_blog_e2e -c 'UPDATE "AspNetUsers" SET "EmailConfirmed" = true WHERE "NormalizedEmail" = '\''E2E-AUTHOR@EXAMPLE.TEST'\'';'
+      - name: Install frontend and browser
+        run: |
+          npm --prefix frontend ci
+          cd frontend
+          npx playwright install --with-deps chromium
+      - name: Build and start frontend
+        run: |
+          npm --prefix frontend run build
+          npm --prefix frontend start > "$RUNNER_TEMP/e2e-web.log" 2>&1 &
+          npx --yes wait-on http://localhost:3000 --timeout 60000
       - name: Run Playwright
-        run: npm run test:e2e
-
-      - name: Upload report
+        if: matrix.shard != 'production-prefetch'
+        run: npm --prefix frontend run test:e2e -- --shard=${{ matrix.shard }}/2 --grep-invert 'guest-production-browsing\.spec\.ts'
+      - name: Run Playwright with production prefetch
+        if: matrix.shard == 'production-prefetch'
+        # The real browsing scenario needs its own API rate-limit budget.
+        run: npm --prefix frontend run test:e2e -- e2e/guest-production-browsing.spec.ts
+      - name: Upload diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-traces
-          path: frontend/test-results/
+          name: e2e-diagnostics-${{ matrix.shard }}
+          path: |
+            frontend/test-results/
+            ${{ runner.temp }}/e2e-api.log
+            ${{ runner.temp }}/e2e-web.log
