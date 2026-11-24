@@ -12,7 +12,6 @@ const AUTH_ONLY_PAGES = ["/auth/login", "/auth/register"];
  * quyền thật do backend kiểm tra bằng Bearer token, và RequireAuth kiểm tra lại phía client.
  */
 export async function middleware(request: NextRequest) {
-  const loggedIn = request.cookies.get(AUTH_FLAG_COOKIE)?.value === "1";
   const { pathname, search } = request.nextUrl;
 
   // API trả 301 cho slug cũ. Giữ mã 301 ở URL trang web thay vì để HTTP client tự theo redirect.
@@ -36,15 +35,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // App Router caches prefetched route responses across client-side cookie changes.
+  // Only redirect documents here. Client navigation uses the current auth store guards.
+  const fetchMode = request.headers.get("sec-fetch-mode");
+  if (fetchMode && fetchMode !== "navigate") return NextResponse.next();
+
+  const loggedIn = request.cookies.get(AUTH_FLAG_COOKIE)?.value === "1";
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   if (isProtected && !loggedIn) {
     const url = new URL("/auth/login", request.url);
     url.searchParams.set("callbackUrl", `${pathname}${search}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { headers: { "Cache-Control": "private, no-store" } });
   }
 
   if (AUTH_ONLY_PAGES.includes(pathname) && loggedIn) {
-    return NextResponse.redirect(new URL("/profile", request.url));
+    return NextResponse.redirect(new URL("/profile", request.url), { headers: { "Cache-Control": "private, no-store" } });
   }
   return NextResponse.next();
 }

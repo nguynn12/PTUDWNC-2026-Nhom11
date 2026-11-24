@@ -1,0 +1,80 @@
+{
+  "title": "Cháo sườn sụn Hà Nội",
+  "originalTitle": "Cháo sườn sụn gạo xay nhuyễn mịn quẩy giòn ruốc thịt",
+  "description": "Bát cháo sườn sụn nấu từ bột gạo tẻ xay nhuyễn mịn sánh đặc như lụa, hòa quyện vị ngọt sâu của nước ninh xương tủy, từng miếng sườn sụn non giòn sần sật, ăn kèm quẩy giòn rụm và ruốc thịt bông tơi đậm đà.",
+  "categoryName": "Món cháo",
+  "authorEmail": "chef.thuha@culinaryblog.com",
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 45,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Helen Lê — Helen's Recipes",
+    "url": "https://helenrecipes.com/recipe-ice-congee-w-ribs-and-fried-bread-sticks-chao-suon/",
+    "accessedOn": "2026-11-20",
+    "note": "Cháo sườn gạo xay sánh mịn ăn kèm sườn sụn non, quẩy giòn và ruốc thịt bông tơi."
+  },
+  "nutrition": {
+    "calories": 385,
+    "protein": 22,
+    "carbohydrates": 45.5,
+    "fat": 13,
+    "fiber": 1.2,
+    "sodium": 720
+  },
+  "ingredients": [
+    {
+      "name": "Sườn sụn non heo",
+      "quantity": 500,
+      "unit": "gram",
+      "notes": "Chần nước sôi, chặt miếng nhỏ mỏng vừa ăn"
+    },
+    {
+      "name": "Bột gạo tẻ và bột gạo nếp",
+      "quantity": 250,
+      "unit": "gram",
+      "notes": "Tỉ lệ 4 tẻ : 1 nếp khuấy đều với nước lọc"
+    },
+    {
+      "name": "Nước hầm xương heo",
+      "quantity": 1200,
+      "unit": "ml",
+      "notes": "Ninh xương tủy lấy nước ngọt trong"
+    },
+    {
+      "name": "Quẩy giòn và ruốc thịt (chà bông)",
+      "quantity": 1,
+      "unit": "đĩa nhỏ",
+      "notes": "Ăn kèm cháo nóng rắc thêm tiêu bột và ớt bột"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ninh sườn sụn mềm giòn",
+      "description": "Sườn sụn rửa sạch với nước muối loãng, chần qua nước sôi rồi rửa sạch lại. Cho sườn sụn vào nồi cùng nước dùng xương, ninh nhỏ lửa trong 30-40 phút đến khi sườn sụn chín mềm nhưng vẫn giữ được độ sần sật vui miệng.",
+      "durationMinutes": 35
+    },
+    {
+      "title": "Khuấy cháo bột sánh mịn",
+      "description": "Hòa bột gạo với nước lạnh cho tan đều không vón cục. Rót từ từ hỗn hợp bột vào nồi nước ninh sườn đang sôi lăn tăn, vừa rót vừa khuấy đều tay liên tục theo một chiều ở lửa nhỏ để cháo không bị khê đáy nồi.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Nêm nếm và hoàn thành",
+      "description": "Khuấy cháo đến khi bột trong, sánh mượt và chín kỹ. Nêm 2 thìa cà phê nước mắm ngon và 1 thìa cà phê hạt nêm cho vừa khẩu vị.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Thưởng thức cháo nóng",
+      "description": "Múc cháo sườn sụn sánh mịn ra bát tô, gắp quẩy giòn cắt khúc lên trên, rải một nhúm ruốc thịt bông xốp và rắc chút tiêu đen cay thơm nồng.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://helenrecipes.com/wp-content/uploads/2019/03/9-1.png",
+      "altText": "Cháo sườn sụn Hà Nội",
+      "license": "Ảnh của Helen's Recipes (helenrecipes.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

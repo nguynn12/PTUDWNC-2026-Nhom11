@@ -4,12 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { applyFieldErrors, type AppError } from "@/lib/errors";
 import { register as registerAccount } from "@/lib/auth/session";
 import { registerSchema, type RegisterValues } from "@/lib/validators/auth";
 import { useAuthUIStore } from "@/store/auth-ui-store";
+import { useAuthStatus } from "@/store/auth-store";
 import type { UserDto } from "@/types/auth";
 import { AuthCard } from "./AuthCard";
 import { Field } from "./Field";
@@ -22,8 +23,14 @@ const PASSWORD_HINT = "Tối thiểu 8 ký tự, gồm chữ hoa, chữ thườn
 
 export function RegisterForm() {
   const router = useRouter();
+  const status = useAuthStatus();
   const showToast = useAuthUIStore((s) => s.showToast);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // FR-AUTH-001: backend trả phiên đăng nhập ngay khi đăng ký thành công.
+  useEffect(() => {
+    if (status === "authenticated") router.replace("/profile");
+  }, [status, router]);
 
   const {
     register,
@@ -34,10 +41,8 @@ export function RegisterForm() {
 
   const mutation = useMutation<UserDto, AppError, RegisterValues>({
     mutationFn: (v) => registerAccount({ email: v.email, password: v.password, displayName: v.displayName }),
-    // FR-AUTH-001: backend trả cặp token ngay khi đăng ký nên người dùng vào thẳng trang hồ sơ.
     onSuccess: () => {
       showToast("success", "Đăng ký thành công! Hãy kiểm tra email để xác nhận tài khoản.");
-      router.replace("/profile");
     },
     onError: (error) => {
       if (error.code === "AUTH_EMAIL_EXISTS") {

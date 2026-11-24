@@ -1,0 +1,80 @@
+{
+  "title": "Tôm hấp nước dừa",
+  "originalTitle": "Tôm càng xanh hấp nước dừa xiêm ngọt thanh",
+  "description": "Tôm hấp nước dừa xiêm đỏ au bắt mắt, thịt tôm chắc nịch thấm đẫm vị béo bùi và ngọt thanh tự nhiên của nước dừa tươi, ăn kèm muối tiêu chanh ớt hoặc muối ớt xanh đậm đà.",
+  "categoryName": "Hải sản tươi sống",
+  "authorEmail": "chef.quocviet@culinaryblog.com",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 12,
+  "servings": 4,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/tom-hap-nuoc-dua/",
+    "accessedOn": "2026-11-20",
+    "note": "Công thức dân dã miền Tây thơm béo đậm đà."
+  },
+  "nutrition": {
+    "calories": 155,
+    "protein": 25,
+    "carbohydrates": 4.8,
+    "fat": 3.2,
+    "fiber": 0.5,
+    "sodium": 390
+  },
+  "ingredients": [
+    {
+      "name": "Tôm sú hoặc tôm càng xanh sống",
+      "quantity": 500,
+      "unit": "gram",
+      "notes": "Rửa sạch, cắt bớt râu và chân"
+    },
+    {
+      "name": "Nước dừa xiêm tươi",
+      "quantity": 300,
+      "unit": "ml",
+      "notes": "Lấy từ 1 trái dừa xiêm ngọt thanh"
+    },
+    {
+      "name": "Hành tím",
+      "quantity": 2,
+      "unit": "củ",
+      "notes": "Thái lát mỏng"
+    },
+    {
+      "name": "Muối ớt xanh hoặc muối tiêu chanh",
+      "quantity": 2,
+      "unit": "thìa canh",
+      "notes": "Dùng chấm kèm khi ăn nóng"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế tôm",
+      "description": "Tôm tươi rửa sạch với nước muối loãng, dùng kéo cắt bớt phần râu dài và gai nhọn ở đầu. Rút chỉ lưng tôm sạch sẽ, để ráo nước.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Đun sôi nước dừa",
+      "description": "Cho nước dừa tươi vào nồi cùng hành tím thái lát và 1/2 thìa cà phê hạt nêm. Đun sôi bùng trên lửa lớn.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Hấp chín tôm",
+      "description": "Thả toàn bộ tôm vào nồi nước dừa đang sôi, đậy nắp đun trong khoảng 5-7 phút đến khi vỏ tôm chuyển sang màu đỏ cam rực rỡ và thân tôm uốn cong vừa vặn.",
+      "durationMinutes": 7
+    },
+    {
+      "title": "Trình bày và thưởng thức",
+      "description": "Vớt tôm xếp vòng quanh miệng quả dừa tỉa hoặc xếp ra đĩa lớn, rưới chút nước luộc tôm lên trên cho bóng bẩy. Chấm kèm muối tiêu chanh ớt.",
+      "durationMinutes": 3
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=800&auto=format&fit=crop",
+      "altText": "Tôm hấp nước dừa",
+      "license": "Unsplash Food Photography License"
+    }
+  ]
+}

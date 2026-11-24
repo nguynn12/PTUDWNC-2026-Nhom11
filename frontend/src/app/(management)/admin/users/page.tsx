@@ -1,6 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Users } from "lucide-react";
+import { ManagementPageHeader } from "@/components/layout/ManagementPageHeader";
+import { EmptyState } from "@/components/common/EmptyState";
+import { ErrorState } from "@/components/common/ErrorState";
+import { Loading } from "@/components/common/Loading";
+import { Button } from "@/components/ui/button";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { ConfirmActionDialog } from "@/components/auth/ConfirmActionDialog";
 import { authApi } from "@/lib/auth/api";
@@ -17,6 +23,7 @@ function UsersContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [selected, setSelected] = useState<AdminUserDto | null>(null);
 
   const loadUsers = useCallback(async () => {
@@ -47,24 +54,19 @@ function UsersContent() {
 
   async function confirmToggle() {
     if (!selected) return;
+    setActionError(null);
     try {
       await authApi.toggleUserStatus(selected.id, !selected.isActive);
       setSelected(null);
       await loadUsers();
     } catch {
-      setError("Không thể cập nhật trạng thái tài khoản.");
+      setActionError("Không thể cập nhật trạng thái tài khoản.");
     }
   }
 
   return (
-    <main className="p-6 md:p-10">
-      <header className="admin-header">
-        <div>
-          <p className="admin-badge">Quản trị</p>
-          <h1>Danh sách người dùng</h1>
-          <p>Quản lý tài khoản Admin và Tác giả.</p>
-        </div>
-      </header>
+    <div className="management-page">
+      <ManagementPageHeader title="Người dùng" description="Quản lý tài khoản Admin và Tác giả." />
 
       <section className="admin-toolbar" aria-label="Bộ lọc người dùng">
         <input
@@ -88,29 +90,45 @@ function UsersContent() {
         </select>
       </section>
 
-      {error && <p role="alert" className="my-4 text-red-600">{error}</p>}
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead><tr><th>Người dùng</th><th>Vai trò</th><th>Email</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
-          <tbody>
-            {loading ? <tr><td colSpan={6}>Đang tải...</td></tr> : users.length === 0 ? <tr><td colSpan={6}>Không có người dùng phù hợp.</td></tr> : users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.displayName}</td>
-                <td>{user.roles.join(", ")}</td>
-                <td>{user.email}</td>
-                <td>{user.isActive ? "Đang hoạt động" : "Đã khóa"}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString("vi-VN")}</td>
-                <td><button type="button" onClick={() => setSelected(user)}>{user.isActive ? "Khóa" : "Mở khóa"}</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <nav className="mt-5 flex items-center justify-between" aria-label="Phân trang">
-        <button type="button" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Trang trước</button>
-        <span>Trang {page} / {totalPages}</span>
-        <button type="button" disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)}>Trang sau</button>
-      </nav>
+      {actionError && <p role="alert" className="text-sm text-destructive">{actionError}</p>}
+      {loading ? (
+        <Loading className="h-auto w-full py-8 text-center" text="Đang tải dữ liệu..." />
+      ) : error ? (
+        <ErrorState className="w-full max-w-none" title="Không thể tải danh sách người dùng" onRetry={() => loadUsers()} showBackHome={false} />
+      ) : users.length === 0 ? (
+        <EmptyState
+          compact
+          className="w-full max-w-none"
+          title="Không có người dùng phù hợp"
+          description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+          icon={<Users className="size-6" aria-hidden="true" />}
+        />
+      ) : (
+        <div className="admin-table-container">
+          <table className="admin-table" aria-label="Người dùng">
+            <thead><tr><th>Người dùng</th><th>Vai trò</th><th>Email</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.displayName}</td>
+                  <td>{user.roles.join(", ")}</td>
+                  <td>{user.email}</td>
+                  <td>{user.isActive ? "Đang hoạt động" : "Đã khóa"}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString("vi-VN")}</td>
+                  <td><Button type="button" size="sm" variant="outline" onClick={() => setSelected(user)}>{user.isActive ? "Khóa" : "Mở khóa"}</Button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {!loading && !error && (totalPages > 1 || page > 1) && (
+        <nav className="flex flex-wrap items-center justify-between gap-2" aria-label="Phân trang người dùng">
+            <Button type="button" size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Trang trước</Button>
+            <span>Trang {page} / {totalPages}</span>
+            <Button type="button" size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)}>Trang sau</Button>
+        </nav>
+      )}
       <ConfirmActionDialog
         open={selected !== null}
         onOpenChange={(open) => { if (!open) setSelected(null); }}
@@ -120,7 +138,7 @@ function UsersContent() {
         tone={selected?.isActive ? "danger" : "default"}
         onConfirm={confirmToggle}
       />
-    </main>
+    </div>
   );
 }
 

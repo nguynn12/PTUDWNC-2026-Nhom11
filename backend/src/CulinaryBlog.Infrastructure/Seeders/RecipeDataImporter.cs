@@ -190,6 +190,7 @@ public static class RecipeDataImporter
                 Title = s.Title.Trim(),
                 Description = s.Description.Trim(),
                 DurationMinutes = s.DurationMinutes,
+                ImageUrl = s.ImageUrl?.Trim(),
             });
         }
 
@@ -260,6 +261,7 @@ public static class RecipeDataImporter
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
         public int? DurationMinutes { get; set; }
+        public string? ImageUrl { get; set; }
     }
 
     private sealed class ImageInfo

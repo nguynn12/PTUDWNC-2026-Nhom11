@@ -25,6 +25,7 @@ export interface EmptyStateProps {
   };
   /** Lớp CSS tùy biến. */
   className?: string;
+  compact?: boolean;
 }
 
 /**
@@ -40,6 +41,7 @@ export function EmptyState({
   onAction,
   action,
   className,
+  compact = false,
 }: EmptyStateProps) {
   const finalActionLabel = action?.label ?? actionText;
   const finalActionHref = action?.href ?? actionHref;
@@ -53,8 +55,14 @@ export function EmptyState({
         className
       )}
     >
-      <CardContent className="flex flex-col items-center justify-center p-6 sm:p-10 gap-4 sm:gap-5">
-        <div className="rounded-3xl bg-primary/10 p-5 text-primary border border-primary/20 shadow-xs transition-transform duration-300 hover:scale-105">
+      <CardContent className={cn(
+        "flex flex-col items-center justify-center p-6 sm:p-10 gap-4 sm:gap-5",
+        compact && "py-0 sm:py-0 gap-3 sm:gap-3",
+      )}>
+        <div className={cn(
+          "rounded-3xl bg-primary/10 p-5 text-primary border border-primary/20 shadow-xs transition-transform duration-300 hover:scale-105",
+          compact && "rounded-xl p-3",
+        )}>
           {icon ?? <UtensilsCrossed className="w-10 h-10" aria-hidden="true" />}
         </div>
 

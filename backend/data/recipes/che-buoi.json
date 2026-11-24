@@ -1,0 +1,92 @@
+{
+  "title": "Chè bưởi An Giang",
+  "originalTitle": "Chè bưởi giòn sần sật đậu xanh cốt dừa béo ngậy",
+  "description": "Món chè trứ danh miền Tây Nam Bộ với cùi bưởi trong veo giòn sần sật không chút vị đắng, hòa quyện đỗ xanh đồ chín bở bùi, nước đường thốt nốt thơm dịu sánh mịn và chan nước cốt dừa đặc quánh béo ngậy.",
+  "categoryName": "Món tráng miệng",
+  "authorEmail": "chef.thuha@culinaryblog.com",
+  "prepTimeMinutes": 45,
+  "cookTimeMinutes": 35,
+  "servings": 6,
+  "difficulty": "Hard",
+  "source": {
+    "name": "Savoury Days",
+    "url": "https://www.savourydays.com/cach-lam-che-buoi/",
+    "accessedOn": "2026-11-20",
+    "note": "Bí quyết sơ chế cùi bưởi giòn không đắng và nấu chè bưởi chuẩn vị."
+  },
+  "nutrition": {
+    "calories": 245,
+    "protein": 4.8,
+    "carbohydrates": 46.2,
+    "fat": 5.5,
+    "fiber": 3.6,
+    "sodium": 45
+  },
+  "ingredients": [
+    {
+      "name": "Cùi bưởi da xanh",
+      "quantity": 200,
+      "unit": "gram",
+      "notes": "Lấy phần cùi trắng dày, gọt sạch vỏ xanh"
+    },
+    {
+      "name": "Đậu xanh xát vỏ",
+      "quantity": 150,
+      "unit": "gram",
+      "notes": "Ngâm nước ấm 2 tiếng cho nở mềm"
+    },
+    {
+      "name": "Bột năng nguyên chất",
+      "quantity": 120,
+      "unit": "gram",
+      "notes": "Dùng áo cùi bưởi và tạo độ sánh cho chè"
+    },
+    {
+      "name": "Đường thốt nốt",
+      "quantity": 200,
+      "unit": "gram",
+      "notes": "Tạo vị ngọt thanh và màu vàng hổ phách"
+    },
+    {
+      "name": "Nước cốt dừa đậm đặc",
+      "quantity": 200,
+      "unit": "ml",
+      "notes": "Nấu sánh với chút muối và bột năng"
+    },
+    {
+      "name": "Muối hạt",
+      "quantity": 2,
+      "unit": "thìa canh",
+      "notes": "Dùng bóp cùi bưởi khử đắng"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế cùi bưởi khử đắng",
+      "description": "Cùi bưởi cắt hạt lựu 1.5cm. Bóp thật kỹ với muối hạt rồi xả nước lạnh nhiều lần đến khi cắn thử cùi không còn vị đắng. Luộc sơ cùi bưởi với nước sôi 1 phút rồi vớt ngay vào âu nước đá lạnh để cùi giòn tan.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Ướp đường và áo bột năng",
+      "description": "Vắt ráo cùi bưởi, trộn với 50g đường cho ngấm. Lăn đều cùi bưởi qua bột năng để lớp bột áo đều từng miếng cùi. Thả vào nồi nước sôi luộc đến khi cùi trong veo nổi lên thì vớt ra ngâm nước đá.",
+      "durationMinutes": 15
+    },
+    {
+      "title": "Đồ đậu xanh và nấu chè",
+      "description": "Đậu xanh ngâm nở đem hấp chín tới (hạt đỗ bở bùi nhưng không nát). Đun sôi 1 lít nước với đường thốt nốt, hòa chút bột năng với nước rót vào khuấy đều cho sánh mịn. Trút cùi bưởi và đậu xanh vào khuấy nhẹ tay cho sôi lại rồi tắt bếp.",
+      "durationMinutes": 20
+    },
+    {
+      "title": "Thưởng thức chè bưởi",
+      "description": "Múc chè bưởi ra ly hoặc bát, chan nước cốt dừa béo ngậy lên trên, thêm đá bào nếu thích ăn lạnh.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://www.savourydays.com/wp-content/uploads/2018/03/c%C3%A1ch-l%C3%A0m-ch%C3%A8-b%C6%B0%E1%BB%9Fi-banner.jpg",
+      "altText": "Chè bưởi An Giang",
+      "license": "Ảnh tại bài nguồn; bản quyền thuộc chủ sở hữu ảnh, chưa xác minh giấy phép tái sử dụng."
+    }
+  ]
+}

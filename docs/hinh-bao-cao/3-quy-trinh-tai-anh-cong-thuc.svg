@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1330" width="1500" height="1330" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#000">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#000"/></marker></defs>
+  <rect width="1500" height="1330" fill="#fff"/>
+  <text x="750" y="40" text-anchor="middle" font-size="26" font-weight="bold">Quy trình tải lên, xử lý và lưu trữ hình ảnh công thức</text>
+
+  <g fill="none" stroke="#000" stroke-width="1.8">
+    <rect x="80" y="80" width="760" height="70"/>
+    <rect x="80" y="190" width="760" height="70"/>
+    <rect x="80" y="300" width="760" height="70"/>
+    <rect x="80" y="410" width="760" height="70"/>
+    <rect x="80" y="520" width="760" height="70"/>
+    <rect x="80" y="630" width="760" height="70"/>
+    <rect x="80" y="740" width="760" height="70"/>
+    <rect x="80" y="850" width="760" height="70"/>
+    <rect x="80" y="960" width="760" height="70"/>
+    <rect x="80" y="1070" width="760" height="70"/>
+    <rect x="80" y="1180" width="760" height="70"/>
+  </g>
+  <g fill="none" stroke="#000" stroke-width="1.6">
+    <path d="M460 150V190" marker-end="url(#a)"/>
+    <path d="M460 260V300" marker-end="url(#a)"/>
+    <path d="M460 370V410" marker-end="url(#a)"/>
+    <path d="M460 480V520" marker-end="url(#a)"/>
+    <path d="M460 590V630" marker-end="url(#a)"/>
+    <path d="M460 700V740" marker-end="url(#a)"/>
+    <path d="M460 810V850" marker-end="url(#a)"/>
+    <path d="M460 920V960" marker-end="url(#a)"/>
+    <path d="M460 1030V1070" marker-end="url(#a)"/>
+    <path d="M460 1140V1180" marker-end="url(#a)"/>
+  </g>
+  <g>
+    <text x="100" y="110" font-weight="bold">1. Chọn ảnh</text>
+    <text x="100" y="134" font-size="15">Tác giả hoặc Admin chọn tệp ảnh trên giao diện (JPEG, PNG, WebP, AVIF, tối đa 5 MB).</text>
+    <text x="100" y="220" font-weight="bold">2. Frontend gửi yêu cầu</text>
+    <text x="100" y="244" font-size="15">POST /api/v1/recipes/{id}/images (multipart: file, altText, isPrimary) kèm JWT.</text>
+    <text x="100" y="330" font-weight="bold">3. API kiểm tra yêu cầu</text>
+    <text x="100" y="354" font-size="15">Đã đăng nhập, có tệp, dung lượng không quá 5 MB.</text>
+    <text x="100" y="440" font-weight="bold">4. Kiểm tra công thức và quyền</text>
+    <text x="100" y="464" font-size="15">Công thức tồn tại; người gửi là chủ sở hữu hoặc Admin.</text>
+    <text x="100" y="550" font-weight="bold">5. Kiểm tra tệp ảnh</text>
+    <text x="100" y="574" font-size="15">Đuôi tệp, MIME, chữ ký tệp; giải mã thật bằng ImageSharp (tối đa 40 triệu điểm ảnh).</text>
+    <text x="100" y="660" font-weight="bold">6. Chuẩn bị bản ghi</text>
+    <text x="100" y="684" font-size="15">AltText tối đa 200 ký tự; nếu là ảnh chính thì bỏ cờ chính của các ảnh khác.</text>
+    <text x="100" y="770" font-weight="bold">7. Lưu ảnh gốc</text>
+    <text x="100" y="794" font-size="15">Tải lên MinIO (thư mục recipes/{id}); nếu MinIO lỗi thì ghi vào wwwroot/uploads.</text>
+    <text x="100" y="880" font-weight="bold">8. Tạo ảnh thu nhỏ</text>
+    <text x="100" y="904" font-size="15">Thumbnail 300x300 và medium 800x600 (WebP), lưu cùng nơi với ảnh gốc.</text>
+    <text x="100" y="990" font-weight="bold">9. Lưu cơ sở dữ liệu</text>
+    <text x="100" y="1014" font-size="15">Thêm bản ghi RecipeImage (3 địa chỉ ảnh, AltText, IsPrimary, OrderIndex) vào PostgreSQL.</text>
+    <text x="100" y="1100" font-weight="bold">10. Phản hồi</text>
+    <text x="100" y="1124" font-size="15">Trả 201 Created kèm thông tin ảnh.</text>
+    <text x="100" y="1210" font-weight="bold">11. Hiển thị</text>
+    <text x="100" y="1234" font-size="15">Giao diện hiển thị bằng next/image; Next tối ưu kích thước và định dạng.</text>
+  </g>
+
+  <!-- error outputs -->
+  <g fill="none" stroke="#000" stroke-width="1.8">
+    <rect x="1000" y="305" width="480" height="60"/>
+    <rect x="1000" y="415" width="480" height="60"/>
+    <rect x="1000" y="525" width="480" height="60"/>
+    <rect x="1000" y="635" width="480" height="60"/>
+  </g>
+  <g fill="none" stroke="#000" stroke-width="1.6">
+    <path d="M840 335H1000" marker-end="url(#a)"/>
+    <path d="M840 445H1000" marker-end="url(#a)"/>
+    <path d="M840 555H1000" marker-end="url(#a)"/>
+    <path d="M840 665H1000" marker-end="url(#a)"/>
+  </g>
+  <g font-size="15">
+    <text x="1010" y="341">Lỗi 401 (chưa đăng nhập) hoặc 400 (không có tệp, quá 5 MB)</text>
+    <text x="1010" y="451">Lỗi 404 (không có công thức) hoặc 403 (không có quyền)</text>
+    <text x="1010" y="561">Lỗi 400 (tệp không hợp lệ)</text>
+    <text x="1010" y="671">Lỗi 422 (AltText quá dài)</text>
+      </g>
+  <text x="1000" y="285" font-weight="bold">Trường hợp lỗi (dừng xử lý)</text>
+
+  <text x="920" y="1130" font-size="15">Ảnh công thức thật nhập từ JSON dùng</text>
+  <text x="920" y="1152" font-size="15">đường dẫn ảnh ngoài, không qua quy trình này.</text>
+</svg>

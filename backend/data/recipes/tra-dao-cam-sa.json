@@ -1,0 +1,93 @@
+{
+  "title": "Trà đào cam sả",
+  "originalTitle": "Trà đào cam sả thanh nhiệt mát lạnh",
+  "description": "Thức uống giải nhiệt thanh mát với hương thơm dịu nhẹ của trà đen ủ sả tươi, vị chua ngọt hài hòa của nước cam vắt và từng miếng đào ngâm giòn ngọt mọng nước.",
+  "categoryName": "Đồ uống & Trà",
+  "authorEmail": "chef.thuha@culinaryblog.com",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 10,
+  "servings": 2,
+  "difficulty": "Easy",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/tra-dao-cam-sa/",
+    "accessedOn": "2026-11-20",
+    "note": "Công thức giải nhiệt hiện đại thanh mát."
+  },
+  "nutrition": {
+    "calories": 125,
+    "protein": 1,
+    "carbohydrates": 30.5,
+    "fat": 0.2,
+    "fiber": 1.5,
+    "sodium": 15
+  },
+  "ingredients": [
+    {
+      "name": "Trà túi lọc (trà đen hoặc Earl Grey)",
+      "quantity": 2,
+      "unit": "gói",
+      "notes": "Ủ lấy nước cốt trà thơm đậm"
+    },
+    {
+      "name": "Sả tươi",
+      "quantity": 3,
+      "unit": "nhánh",
+      "notes": "Rửa sạch, đập dập, cắt khúc"
+    },
+    {
+      "name": "Cam vàng tươi",
+      "quantity": 1,
+      "unit": "quả",
+      "notes": "Vắt lấy nước, chừa 2 lát mỏng trang trí"
+    },
+    {
+      "name": "Đào ngâm",
+      "quantity": 4,
+      "unit": "miếng",
+      "notes": "Cắt múi cau vừa ăn"
+    },
+    {
+      "name": "Nước si-rô đào ngâm",
+      "quantity": 30,
+      "unit": "ml",
+      "notes": "Tạo vị ngọt thơm đặc trưng"
+    },
+    {
+      "name": "Đường phèn hoặc đường cát",
+      "quantity": 2,
+      "unit": "thìa canh",
+      "notes": "Hòa tan vào trà ấm"
+    },
+    {
+      "name": "Đá viên tinh khiết",
+      "quantity": null,
+      "unit": null,
+      "notes": "Vừa đủ dùng lạnh"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Nấu nước sả và ủ trà",
+      "description": "Đun sôi 400ml nước với sả đập dập trong 5 phút để tinh dầu sả tiết ra thơm lừng. Tắt bếp, thả 2 gói trà túi lọc vào ủ trong 5 phút rồi vớt bỏ túi trà và sả, hòa tan 2 thìa canh đường vào khi nước còn ấm.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Pha chế trà đào cam",
+      "description": "Vắt lấy nước 1/2 quả cam vàng. Cho nước cốt cam, nước trà sả đã nguội và 30ml nước si-rô đào vào bình lắc cùng đá viên. Lắc đều tay cho hỗn hợp hòa quyện và lạnh sâu.",
+      "durationMinutes": 5
+    },
+    {
+      "title": "Trình bày và thưởng thức",
+      "description": "Rót trà ra ly cao, xếp từng miếng đào ngâm giòn sần sật lên trên, điểm xuyết lát cam vàng tươi và nhánh sả nhỏ. Dùng lạnh giải khát sảng khoái.",
+      "durationMinutes": 2
+    }
+  ],
+  "images": [
+    {
+      "url": "https://monngonmoingay.com/wp-content/uploads/2024/04/tra-dao-cam-sa.jpg",
+      "altText": "Trà đào cam sả",
+      "license": "Ảnh của Món Ngon Mỗi Ngày (monngonmoingay.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

@@ -13,7 +13,8 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`);
+      const callbackUrl = pathname + new URL(document.URL).search;
+      router.replace(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     }
   }, [status, router, pathname]);
 

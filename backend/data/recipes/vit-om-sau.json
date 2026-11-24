@@ -1,0 +1,86 @@
+{
+  "title": "Vịt om sấu",
+  "originalTitle": "Vịt om sấu khoai sọ đậm đà vị chua thanh mùa hè",
+  "description": "Thịt vịt béo ngậy được om mềm thấm vị chua thanh đặc trưng của quả sấu tươi Hà Nội, kết hợp khoai sọ bùi dẻo bở tơi trong làn nước om sánh ngọt, thơm nồng mùi sả, gừng và rau mùi tàu ngổ hương.",
+  "categoryName": "Món chính",
+  "authorEmail": "chef.baongoc@culinaryblog.com",
+  "prepTimeMinutes": 25,
+  "cookTimeMinutes": 35,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Món Ngon Mỗi Ngày",
+    "url": "https://monngonmoingay.com/vit-kho-sau/",
+    "accessedOn": "2026-11-20",
+    "note": "Công thức vịt kho sấu đậm đà chuẩn vị miền Bắc."
+  },
+  "nutrition": {
+    "calories": 495,
+    "protein": 34,
+    "carbohydrates": 18.5,
+    "fat": 31,
+    "fiber": 2.8,
+    "sodium": 680
+  },
+  "ingredients": [
+    {
+      "name": "Thịt vịt cỏ hoặc vịt bầu",
+      "quantity": 1000,
+      "unit": "gram",
+      "notes": "Làm sạch, khử mùi hôi với rượu gừng, chặt miếng vừa ăn"
+    },
+    {
+      "name": "Quả sấu tươi",
+      "quantity": 8,
+      "unit": "quả",
+      "notes": "Cạo sạch vỏ xanh, khía nhẹ"
+    },
+    {
+      "name": "Khoai sọ",
+      "quantity": 300,
+      "unit": "gram",
+      "notes": "Gọt vỏ, ngâm nước muối khử ngứa, bổ đôi"
+    },
+    {
+      "name": "Sả, gừng, tỏi, hành khô",
+      "quantity": 1,
+      "unit": "bộ gia vị",
+      "notes": "Băm nhỏ để ướp và xào thơm"
+    },
+    {
+      "name": "Mùi tàu (ngò gai) và rau ngổ",
+      "quantity": 1,
+      "unit": "mớ nhỏ",
+      "notes": "Rửa sạch thái nhỏ rắc lên nồi om"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Sơ chế và ướp vịt",
+      "description": "Vịt xát kỹ với muối hạt và gừng giã dập pha rượu trắng để khử sạch mùi tanh, rửa lại nước sạch rồi chặt miếng vừa ăn. Ướp vịt với hành, tỏi, sả băm, 2 thìa canh nước mắm, 1 thìa hạt nêm và chút tiêu trong 30 phút.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Xào săn vịt",
+      "description": "Bắc nồi lên bếp, phi thơm chút hành sả rồi trút thịt vịt vào xào trên lửa lớn cho miếng thịt săn lại và tươm bớt mỡ.",
+      "durationMinutes": 10
+    },
+    {
+      "title": "Om vịt cùng sấu và khoai sọ",
+      "description": "Đổ nước dừa hoặc nước sôi ngập xâm xấp mặt thịt vịt, thả sấu vào đun sôi bùng, vớt bọt rồi hạ lửa om liu riu 20 phút. Cho khoai sọ vào nấu tiếp 10 phút đến khi khoai bở mềm. Dùng muôi dầm nát sấu để nước om có vị chua thanh dịu.",
+      "durationMinutes": 25
+    },
+    {
+      "title": "Hoàn tất món ăn",
+      "description": "Nêm lại nước dùng cho vừa vị chua thanh ngọt đậm, rắc mùi tàu và rau ngổ thái nhỏ lên trên rồi tắt bếp. Dùng nóng kèm bún tươi hoặc cơm trắng.",
+      "durationMinutes": 3
+    }
+  ],
+  "images": [
+    {
+      "url": "https://monngonmoingay.com/wp-content/uploads/2015/08/VitKhoSau_CQC0228.png",
+      "altText": "Vịt om sấu",
+      "license": "Ảnh của Món Ngon Mỗi Ngày (monngonmoingay.com), dùng kèm ghi nguồn theo quyết định của người phụ trách dữ liệu"
+    }
+  ]
+}

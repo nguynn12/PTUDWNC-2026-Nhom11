@@ -95,7 +95,11 @@ public static class DependencyInjection
             {
                 ServiceURL = minioSettings.Endpoint,
                 ForcePathStyle = minioSettings.ForcePathStyle,
-                UseHttp = minioSettings.Endpoint.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                UseHttp = minioSettings.Endpoint.StartsWith("http://", StringComparison.OrdinalIgnoreCase),
+                // MinIO không sẵn sàng thì phải thất bại nhanh để còn kịp chuyển sang lưu cục bộ trong thời hạn của yêu cầu
+                // (mặc định SDK chờ 100 giây và thử lại, làm tải ảnh treo rồi trả 500).
+                Timeout = TimeSpan.FromSeconds(5),
+                MaxErrorRetry = 0,
             };
             return new AmazonS3Client(minioSettings.AccessKey, minioSettings.SecretKey, s3Config);
         });

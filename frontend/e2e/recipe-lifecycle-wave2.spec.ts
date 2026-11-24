@@ -29,7 +29,8 @@ async function createDraft(page: Page) {
 
 async function findInDashboard(page: Page, title: string) {
   if (!new URL(page.url()).pathname.endsWith("/dashboard/recipes")) {
-    await page.getByRole("link", { name: "Công thức của tôi", exact: true }).click();
+    await page.getByRole("navigation", { name: "Điều hướng quản trị" })
+      .getByRole("link", { name: "Công thức của tôi", exact: true }).click();
   }
   await page.getByPlaceholder("Tìm theo tên công thức...").fill(title);
   return page.getByRole("link", { name: title, exact: true });

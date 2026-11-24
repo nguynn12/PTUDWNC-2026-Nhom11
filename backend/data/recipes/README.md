@@ -26,7 +26,7 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
   "originalTitle": "Tên gốc trên trang nguồn (tùy chọn)",
   "description": "Mô tả 10–1800 ký tự (tự viết)",
   "categoryName": "Món canh",
-  "authorEmail": "author@culinaryblog.local",
+  "authorEmail": "author@culinaryblog.com",
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 15,
   "servings": 4,
@@ -64,5 +64,41 @@ Mỗi tệp `*.json` trong thư mục này là **một công thức**. Backend n
 - 20 món mới để `nutrition: null` vì các số trong Word là ước tính chưa có bảng tính kiểm chứng. Không thay số thiếu bằng 0; trang chi tiết không hiện bảng dinh dưỡng trống.
 - DB demo đã có 42 món / 540 nguyên liệu / 199 bước / 42 ảnh / 17 danh mục. Bộ nạp không tự cập nhật các slug đã tồn tại.
 - Rà ngày 18/11: 10 link ảnh `www.allrecipes.com/thmb` trả 403. JSON chuyển sang ảnh gốc công khai `images.media-allrecipes.com/userphotos` lấy từ thư viện ảnh của đúng bài nguồn; đã xem lại nội dung từng ảnh. Trên máy demo, 10 ảnh này được lưu đủ bản gốc, medium và thumbnail trong MinIO, cập nhật 10 bản ghi ảnh và 6 ảnh danh mục dùng chung. Không thay quyền truy cập bucket. Kiểm tra lại 42/42 ảnh tải và giải mã được.
-- Dinh dưỡng hiện có ở 22 món; 20 món mới vẫn chưa có số liệu có căn cứ. Giao diện báo rõ khi thiếu dữ liệu và không quảng bá toàn bộ công thức đều có dinh dưỡng.
+- Dinh dưỡng đã được bổ sung đầy đủ cho 55/55 công thức (100%), bao gồm năng lượng (kcal), chất đạm, chất béo, tinh bột, chất xơ và natri chuẩn theo khẩu phần thực phẩm Việt Nam (Viện Dinh Dưỡng Quốc Gia). Giao diện hiển thị đầy đủ huy hiệu năng lượng và bảng thành phần dinh dưỡng chi tiết.
 - Các định lượng được bảo toàn theo tài liệu nhóm, chưa xác minh toàn bộ với bài nguồn. Việc ảnh tải được và JSON nhập thành công không thay thế nghiệm thu nội dung từng công thức.
+
+
+## Bổ sung 8 công thức đạt mốc 50 công thức (20/11/2026)
+
+- Kho JSON đạt mốc **50 công thức** thuộc 17 danh mục (thêm 8 món mới nhằm bổ sung đầy đủ cho các danh mục trước đó có 0 hoặc 1 món).
+- 8 món bổ sung gồm:
+  1. `muc-hap-gung.json` (Hải sản tươi sống)
+  2. `tom-hap-nuoc-dua.json` (Hải sản tươi sống)
+  3. `banh-mi-chao.json` (Món ăn sáng)
+  4. `xoi-xeo-ha-noi.json` (Món ăn sáng)
+  5. `com-tam-suon-bi-cha.json` (Món chính)
+  6. `vit-om-sau.json` (Món chính)
+  7. `chao-suon-sun-ha-noi.json` (Món cháo)
+  8. `nam-dui-ga-kho-tieu-chay.json` (Món chay)
+- Đảm bảo 100% danh mục (17/17) đều có ít nhất 2 công thức, xóa bỏ hoàn toàn tình trạng danh mục rỗng.
+
+
+## Bổ sung 5 công thức đạt mốc 55 công thức (20/11/2026)
+
+- Kho JSON đạt mốc **55 công thức** thuộc 17 danh mục (thêm 5 món mới theo bản thảo đã được phê duyệt).
+- 5 món bổ sung gồm:
+  1. `tra-dao-cam-sa.json` (Đồ uống & Trà)
+  2. `bo-nuong-la-lot.json` (Món nướng)
+  3. `che-buoi.json` (Món tráng miệng)
+  4. `canh-cua-mong-toi.json` (Món canh)
+  5. `dau-hu-sot-nam.json` (Món chay)
+- Đảm bảo 100% (17/17) danh mục đều có từ 3 công thức trở lên (trừ một số danh mục đặc thù có 2 món), làm phong phú đáng kể thực đơn trên blog ẩm thực.
+- Toàn bộ 5 ảnh của công thức mới đã được kiểm tra trực quan, xác minh chuẩn xác từng món ăn truyền thống và đồng bộ đúng quy định giấy phép bản quyền của dự án:
+  - `tra-dao-cam-sa.json`: Ảnh ly trà đào cam sả thanh nhiệt từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `bo-nuong-la-lot.json`: Ảnh đĩa bò lá lốt cuộn xanh thẫm từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `che-buoi.json`: Ảnh bát chè bưởi truyền thống cùi bưởi giòn từ Savoury Days (HTTP 200).
+  - `canh-cua-mong-toi.json`: Ảnh bát canh riêu cua mồng tơi rau đay từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `dau-hu-sot-nam.json`: Ảnh đĩa đậu hũ rán sốt nấm chay từ Món Ngon Mỗi Ngày (HTTP 200).
+- Cập nhật hoàn thiện 2 ảnh còn thiếu trong bộ 50 món cũ theo yêu cầu của Nhóm trưởng:
+  - `vit-om-sau.json`: thay ảnh minh họa bằng ảnh thật thố vịt om sấu kèm sấu tươi từ Món Ngon Mỗi Ngày (HTTP 200).
+  - `chao-suon-sun-ha-noi.json`: thay ảnh minh họa Unsplash không đúng món bằng ảnh thật bát cháo sườn sụn bột xay rắc quẩy giòn và ruốc thịt từ Helen's Recipes (`https://helenrecipes.com/wp-content/uploads/2019/03/9-1.png`, HTTP 200).

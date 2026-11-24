@@ -70,10 +70,10 @@ public class ApplicationDbContextInitialiser(
     /// </summary>
     private static readonly (string Email, string DisplayName)[] RecipeAuthors =
     [
-        ("chef.thuha@culinaryblog.local", "Nguyễn Thu Hà"),
-        ("chef.minhkhoi@culinaryblog.local", "Trần Minh Khôi"),
-        ("chef.baongoc@culinaryblog.local", "Lê Bảo Ngọc"),
-        ("chef.quocviet@culinaryblog.local", "Phạm Quốc Việt"),
+        ("chef.thuha@culinaryblog.com", "Nguyễn Thu Hà"),
+        ("chef.minhkhoi@culinaryblog.com", "Trần Minh Khôi"),
+        ("chef.baongoc@culinaryblog.com", "Lê Bảo Ngọc"),
+        ("chef.quocviet@culinaryblog.com", "Phạm Quốc Việt"),
     ];
 
     private async Task SeedUsersAsync()
@@ -81,9 +81,9 @@ public class ApplicationDbContextInitialiser(
         const string samplePassword = "Passw0rd!23";
 
         // Tạo các tài khoản tĩnh dùng cho việc test hệ thống
-        await CreateUserIfNotExists("admin@culinaryblog.local", "Admin User", samplePassword, Roles.Admin, true);
-        await CreateUserIfNotExists("author@culinaryblog.local", "Author User", samplePassword, Roles.Author, true);
-        await CreateUserIfNotExists("author.unverified@culinaryblog.local", "Unverified Author", samplePassword, Roles.Author, false);
+        await CreateUserIfNotExists("admin@culinaryblog.com", "Admin User", samplePassword, Roles.Admin, true);
+        await CreateUserIfNotExists("author@culinaryblog.com", "Author User", samplePassword, Roles.Author, true);
+        await CreateUserIfNotExists("author.unverified@culinaryblog.com", "Unverified Author", samplePassword, Roles.Author, false);
 
         // Tác giả cố định cho công thức thật (backend/data/recipes): email ổn định để bộ nạp liên kết đúng tác giả.
         foreach (var (email, name) in RecipeAuthors)
@@ -96,6 +96,10 @@ public class ApplicationDbContextInitialiser(
         {
             var user = ApplicationUser.Create(email, displayName);
             user.EmailConfirmed = emailConfirmed;
+            // Ảnh hồ sơ mặc định (chữ cái đầu của tên) để tài khoản mẫu có ảnh như tài khoản thật.
+            user.AvatarUrl = "https://ui-avatars.com/api/?name="
+                + Uri.EscapeDataString(displayName).Replace("%20", "+")
+                + "&size=256&background=fed8c4&color=c85a17&bold=true";
             var result = await userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {

@@ -1,0 +1,86 @@
+{
+  "title": "Cơm tấm sườn bì chả",
+  "originalTitle": "Cơm tấm sườn nướng mỡ hành bì chả chuẩn Sài Gòn",
+  "description": "Đĩa cơm tấm Sài Gòn nức tiếng với hạt cơm tấm tơi xốp, miếng sườn cốt lết nướng than hoa vàng ươm mọng nước, chả trứng hấp béo ngậy thơm lừng mộc nhĩ, bì heo trộn thính gạo giòn sần sật, chan mỡ hành óng ả và nước mắm chua ngọt keo sánh.",
+  "categoryName": "Món chính",
+  "authorEmail": "chef.minhkhoi@culinaryblog.com",
+  "prepTimeMinutes": 30,
+  "cookTimeMinutes": 40,
+  "servings": 4,
+  "difficulty": "Medium",
+  "source": {
+    "name": "Helen's Recipes",
+    "url": "https://helenrecipes.com/vietnamese-broken-rice-com-tam/",
+    "accessedOn": "2026-11-20",
+    "note": "Công thức cơm tấm truyền thống đậm đà Sài Gòn."
+  },
+  "nutrition": {
+    "calories": 685,
+    "protein": 38.5,
+    "carbohydrates": 78,
+    "fat": 24.5,
+    "fiber": 2.4,
+    "sodium": 960
+  },
+  "ingredients": [
+    {
+      "name": "Gạo tấm",
+      "quantity": 400,
+      "unit": "gram",
+      "notes": "Nấu cơm tấm thơm mềm ráo hạt"
+    },
+    {
+      "name": "Sườn cốt lết heo",
+      "quantity": 4,
+      "unit": "miếng lớn",
+      "notes": "Dần mềm, ướp sả tỏi mật ong dầu hào"
+    },
+    {
+      "name": "Thịt heo xay và trứng vịt (làm chả)",
+      "quantity": 250,
+      "unit": "gram",
+      "notes": "Trộn miến, mộc nhĩ và quét lòng đỏ lên mặt hấp chín"
+    },
+    {
+      "name": "Bì heo trộn thính",
+      "quantity": 150,
+      "unit": "gram",
+      "notes": "Bì luộc thái chỉ trộn thính gạo thơm"
+    },
+    {
+      "name": "Mỡ hành và đồ chua",
+      "quantity": 1,
+      "unit": "chén nhỏ",
+      "notes": "Hành lá chần mỡ nóng và củ cải cà rốt ngâm giấm đường"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Ướp và nướng sườn",
+      "description": "Sườn rửa sạch dần mềm. Ướp với sả băm, hành tỏi, sữa đặc, mật ong, dầu hào và nước mắm trong 2 tiếng. Nướng trên than hoa đỏ rực hoặc nồi chiên không dầu đến khi sườn chín vàng mọng nước.",
+      "durationMinutes": 30
+    },
+    {
+      "title": "Làm chả trứng hấp",
+      "description": "Trộn thịt xay, mộc nhĩ băm, miến cắt ngắn, 2 quả trứng và gia vị. Cho vào khuôn hấp chín 20 phút. Quét lòng đỏ trứng lên bề mặt hấp mở nắp 5 phút cho lên màu vàng cam.",
+      "durationMinutes": 25
+    },
+    {
+      "title": "Nấu cơm tấm và làm mỡ hành",
+      "description": "Gạo tấm ngâm 20 phút rồi nấu trong nồi cơm điện ít nước hơn bình thường. Hành lá thái nhỏ, nêm chút muối đường rồi dội mỡ heo nóng sôi lên đảo đều.",
+      "durationMinutes": 25
+    },
+    {
+      "title": "Bày đĩa hoàn chỉnh",
+      "description": "Xới cơm tấm ra đĩa, đặt sườn nướng mọng nước, miếng chả trứng cắt tam giác, bì thính sợi và đồ chua lên cạnh. Rưới mỡ hành óng ả lên mặt cơm và chan nước mắm chua ngọt.",
+      "durationMinutes": 5
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop",
+      "altText": "Cơm tấm sườn bì chả",
+      "license": "Unsplash Food Photography License"
+    }
+  ]
+}

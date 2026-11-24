@@ -22,7 +22,7 @@ import { SubmitButton } from "./SubmitButton";
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const callbackUrl = safeCallbackUrl(params.get("callbackUrl"));
+  const callbackUrl = safeCallbackUrl(params.get("callbackUrl"), "/dashboard");
   const status = useAuthStatus();
   const [serverError, setServerError] = useState<string | null>(null);
   const [googlePending, setGooglePending] = useState(false);

@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Culinary Blog — Nghệ Thuật Ẩm Thực & Hương Vị Đích Thực",
+    title: "Culinary Blog — Nghệ Thuật Ẩm Thực, Hương Vị Đích Thực",
     description:
       "Khám phá các công thức nấu ăn, hướng dẫn từng bước và thông tin dinh dưỡng khi có số liệu.",
     url: "/",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Culinary Blog — Nghệ Thuật Ẩm Thực & Hương Vị Đích Thực",
+    title: "Culinary Blog — Nghệ Thuật Ẩm Thực, Hương Vị Đích Thực",
     description: "Khám phá các công thức nấu ăn, hướng dẫn từng bước và thông tin dinh dưỡng khi có số liệu.",
   },
 };
@@ -97,8 +97,8 @@ export default async function HomePage() {
               </div>
 
               <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.15]">
-                Nghệ Thuật Ẩm Thực &amp;{" "}
-                <span className="text-primary italic">Hương Vị Đích Thực</span>
+                Nghệ Thuật Ẩm Thực
+                <span className="block text-primary italic mt-1 sm:mt-1.5">Hương Vị Đích Thực</span>
               </h1>
 
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">

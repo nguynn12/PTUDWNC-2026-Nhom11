@@ -441,7 +441,7 @@ Cấu trúc thư mục trên là **đề xuất**. Cần thống nhất với nh
   "expiresIn": 900,
   "user": {
     "id": "7c0e...",
-    "email": "author@culinaryblog.local",
+    "email": "author@culinaryblog.com",
     "displayName": "Tác giả mẫu",
     "avatarUrl": null,
     "bio": null,
@@ -792,9 +792,9 @@ README Lab 2 (cột của tôi): *"Tạo dữ liệu mẫu cho tài khoản `Aut
 ### Phạm vi
 
 - **Bao gồm:** seed idempotent theo email gồm 3 tài khoản:
-  - `admin@culinaryblog.local`: Admin, đã xác nhận email;
-  - `author@culinaryblog.local`: Author, đã xác nhận email;
-  - `author.unverified@culinaryblog.local`: Author, chưa xác nhận email, dùng để test `VerifiedAuthor`.
+  - `admin@culinaryblog.com`: Admin, đã xác nhận email;
+  - `author@culinaryblog.com`: Author, đã xác nhận email;
+  - `author.unverified@culinaryblog.com`: Author, chưa xác nhận email, dùng để test `VerifiedAuthor`.
 - **Không bao gồm:** thay đổi 15 user Bogus hiện có; seed ở Production.
 
 ### Dependency
@@ -1350,7 +1350,7 @@ Chức năng 9 (DTO, `AuthEndpoints`), 7 (`CheckCredentialsAsync`), 6, 5, 8.
 
 ```http
 POST /api/v1/auth/login
-{ "email": "author@culinaryblog.local", "password": "..." }
+{ "email": "author@culinaryblog.com", "password": "..." }
 ```
 
 | Status | Khi nào | `type` |

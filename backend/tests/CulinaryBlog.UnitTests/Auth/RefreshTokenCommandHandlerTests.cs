@@ -20,7 +20,7 @@ public sealed class RefreshTokenCommandHandlerTests
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant();
 
     private static UserAccount Account(bool isActive = true) =>
-        new(UserId, "author@culinaryblog.local", "Tác giả", null, null, ["Author"], true, isActive, DateTimeOffset.UtcNow);
+        new(UserId, "author@culinaryblog.com", "Tác giả", null, null, ["Author"], true, isActive, DateTimeOffset.UtcNow);
 
     private static RefreshTokenCommandHandler CreateHandler(FakeUnitOfWork unitOfWork, UserAccount? account) =>
         new(unitOfWork.Tokens, unitOfWork, new FakeClientInfo(), new FakeJwtService(), new FakeIdentityService { Account = account },

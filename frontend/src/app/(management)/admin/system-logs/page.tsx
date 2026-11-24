@@ -1,6 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ClipboardList } from "lucide-react";
+import { ManagementPageHeader } from "@/components/layout/ManagementPageHeader";
+import { EmptyState } from "@/components/common/EmptyState";
+import { ErrorState } from "@/components/common/ErrorState";
+import { Loading } from "@/components/common/Loading";
+import { Button } from "@/components/ui/button";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { authApi } from "@/lib/auth/api";
 import type { SystemLogDto } from "@/types/auth";
@@ -53,14 +59,8 @@ function SystemLogsContent() {
   }, [loadLogs]);
 
   return (
-    <main className="p-6 md:p-10">
-      <header className="admin-header">
-        <div>
-          <p className="admin-badge">Giám sát hệ thống</p>
-          <h1>Nhật ký hệ thống</h1>
-          <p>Theo dõi hoạt động API, lỗi và thao tác quản trị người dùng.</p>
-        </div>
-      </header>
+    <div className="management-page">
+      <ManagementPageHeader title="Nhật ký hệ thống" description="Theo dõi hoạt động API, lỗi và thao tác quản trị người dùng." />
 
       <section className="admin-toolbar" aria-label="Bộ lọc nhật ký">
         <input
@@ -85,30 +85,45 @@ function SystemLogsContent() {
         </select>
       </section>
 
-      {error && <p role="alert" className="my-4 text-red-600">{error}</p>}
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead><tr><th>Thời gian</th><th>Mức độ</th><th>Request</th><th>Trạng thái</th><th>Thời gian xử lý</th><th>IP</th></tr></thead>
-          <tbody>
-            {loading ? <tr><td colSpan={6}>Đang tải...</td></tr> : logs.length === 0 ? <tr><td colSpan={6}>Chưa có nhật ký phù hợp.</td></tr> : logs.map((log) => (
-              <tr key={log.id}>
-                <td>{new Date(log.createdAt).toLocaleString("vi-VN")}</td>
-                <td>{levelLabel(log.level)}</td>
-                <td><strong>{log.method}</strong> {log.path}</td>
-                <td className={statusClass(log.statusCode)}>{log.statusCode}</td>
-                <td>{log.durationMs} ms</td>
-                <td>{log.ipAddress ?? "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <nav className="mt-5 flex items-center justify-between" aria-label="Phân trang nhật ký">
-        <button type="button" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Trang trước</button>
-        <span>Trang {page} / {totalPages}</span>
-        <button type="button" disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)}>Trang sau</button>
-      </nav>
-    </main>
+      {loading ? (
+        <Loading className="h-auto w-full py-8 text-center" text="Đang tải dữ liệu..." />
+      ) : error ? (
+        <ErrorState className="w-full max-w-none" title="Không thể tải nhật ký hệ thống" onRetry={() => loadLogs()} showBackHome={false} />
+      ) : logs.length === 0 ? (
+        <EmptyState
+          compact
+          className="w-full max-w-none"
+          title="Không có nhật ký phù hợp"
+          description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+          icon={<ClipboardList className="size-6" aria-hidden="true" />}
+        />
+      ) : (
+        <div className="admin-table-container">
+          <table className="admin-table" aria-label="Nhật ký hệ thống">
+            <thead><tr><th>Thời gian</th><th>Mức độ</th><th>Request</th><th>Trạng thái</th><th>Thời gian xử lý</th><th>IP</th></tr></thead>
+            <tbody>
+              {logs.map((log) => (
+                <tr key={log.id}>
+                  <td>{new Date(log.createdAt).toLocaleString("vi-VN")}</td>
+                  <td>{levelLabel(log.level)}</td>
+                  <td><strong>{log.method}</strong> {log.path}</td>
+                  <td className={statusClass(log.statusCode)}>{log.statusCode}</td>
+                  <td>{log.durationMs} ms</td>
+                  <td>{log.ipAddress ?? "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {!loading && !error && (totalPages > 1 || page > 1) && (
+        <nav className="flex flex-wrap items-center justify-between gap-2" aria-label="Phân trang nhật ký">
+            <Button type="button" size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Trang trước</Button>
+            <span>Trang {page} / {totalPages}</span>
+            <Button type="button" size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)}>Trang sau</Button>
+        </nav>
+      )}
+    </div>
   );
 }
 
